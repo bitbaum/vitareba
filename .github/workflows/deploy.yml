@@ -1,0 +1,17 @@
+name: Deploy
+
+# Push to main → deploy this app to bitbaum. All the logic lives in one
+# place: maonakamoto/fleetcrown/.github/workflows/selfhost-deploy.yml
+# (docs: docs/infrastructure/self-host-cd.md there). It waits for this
+# commit's own CI to go green before anything reaches the box.
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    uses: maonakamoto/fleetcrown/.github/workflows/selfhost-deploy.yml@main
+    with:
+      app: vitareba
+    secrets: inherit
