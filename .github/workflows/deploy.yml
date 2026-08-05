@@ -6,6 +6,7 @@ name: Deploy
 # commit's own CI to go green before anything reaches the box.
 
 on:
+  workflow_dispatch: {}
   push:
     branches: [main]
 
