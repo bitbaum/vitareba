@@ -44,15 +44,5 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.4"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@parcel/watcher",
-      "@swc/core",
-      "esbuild",
-      "sharp",
-      "unrs-resolver",
-      "@tailwindcss/oxide"
-    ]
   }
 }

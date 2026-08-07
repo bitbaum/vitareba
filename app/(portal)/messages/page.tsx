@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import styles from "../portal.module.css";
-import authStyles from "../../(auth)/auth.module.css";
+import authStyles from "../../forms.module.css";
 import msgStyles from "./messages.module.css";
 import { formatDateNumeric } from "@/lib/utils/format";
 import { COMPANY } from "@/lib/config/company";
