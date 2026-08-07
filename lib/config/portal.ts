@@ -97,6 +97,9 @@ export const PROFILE_COMPLETION_THRESHOLD = 0.7;
 /** Below this fraction the profile completeness indicator shows a warning color */
 export const PROFILE_COMPLETION_LOWER_THRESHOLD = 0.3;
 
+/** Below this percentage (0–100) the dashboard's next-step funnel nudges profile completion */
+export const PROFILE_NUDGE_THRESHOLD = 70;
+
 /** Maximum number of days of check-in history that can be requested via the API */
 export const CHECKIN_FETCH_MAX_DAYS = 120;
 

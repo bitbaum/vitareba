@@ -542,6 +542,105 @@
 
 /* ─── Mobile ─────────────────────────────────────────────────────────────── */
 
+/* ─── Next-step card (the one primary action, whole card tappable) ──────── */
+
+.nextStep,
+.nextStepUrgent,
+.nextStepDone {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 0.875rem;
+  text-decoration: none;
+  min-height: 44px;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.nextStep {
+  background: var(--ink);
+}
+
+.nextStepUrgent {
+  background: var(--teal);
+}
+
+.nextStep:hover,
+.nextStepUrgent:hover,
+.nextStep:focus-visible,
+.nextStepUrgent:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  outline: none;
+}
+
+.nextStepDone {
+  background: var(--white);
+  border: 1px solid var(--border);
+}
+
+.nextStepEyebrow {
+  display: block;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--white-58);
+  margin-bottom: 0.3rem;
+}
+
+.nextStepLabel {
+  display: block;
+  font-family: var(--font-cormorant), serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--white);
+}
+
+.nextStepSub {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--white-75);
+  margin-top: 0.3rem;
+}
+
+.nextStepLabelMuted {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.nextStepSubMuted {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 0.15rem;
+}
+
+.nextStepCheck {
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--radius-full);
+  background: var(--teal-12);
+  color: var(--teal);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+}
+
+.nextStepArrow {
+  flex-shrink: 0;
+  color: var(--white-75);
+  font-size: 1.1rem;
+}
+
+.nextStepDone .nextStepArrow {
+  color: var(--muted);
+}
+
 @media (max-width: 767px) {
   /* Hero card: score block wraps below verdict title on narrow screens */
   .heroCardHead {

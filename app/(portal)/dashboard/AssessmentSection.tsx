@@ -2,12 +2,10 @@ import Link from "next/link";
 import shared from "../portal.module.css";
 import styles from "./dashboard.module.css";
 import { DIMENSIONS, getVerdict, scoreClass, type AssessmentRow } from "@/lib/assessment/data";
-import { ASSESSMENT_STALE_DAYS } from "@/lib/config/portal";
 import { PORTAL_ROUTES } from "@/lib/config/routes";
 import { BOOKING_STATUS_CONFIG, type BookingRow } from "@/lib/config/booking-status";
-import { formatDateLong, DAY_MS } from "@/lib/utils/format";
+import { formatDateLong } from "@/lib/utils/format";
 import { COMPANY } from "@/lib/config/company";
-import { OnboardingCard } from "./OnboardingCard";
 
 interface AssessmentSectionProps {
   latestAssessment: AssessmentRow | null | undefined;
@@ -15,8 +13,6 @@ interface AssessmentSectionProps {
   latestBooking: Pick<BookingRow, "status" | "preferredDate"> | null | undefined;
   threadCount: number;
   unreadMessageCount?: number;
-  /** When true the assessment CTA is already shown above — don't duplicate it here. */
-  isNewPatient?: boolean;
 }
 
 function getLowestDimension(scores: Record<string, number>) {
@@ -31,21 +27,15 @@ export function AssessmentSection({
   latestBooking,
   threadCount,
   unreadMessageCount = 0,
-  isNewPatient = false,
 }: AssessmentSectionProps) {
   if (!latestAssessment) {
-    // New patients already see OnboardingCard at the top of the stack.
-    // Patients enrolled in a programme but not yet assessed get the CTA here.
-    return isNewPatient ? null : <OnboardingCard />;
+    // The next-step funnel (NextStepCard) already carries the assessment CTA.
+    return null;
   }
 
   const verdict = getVerdict(latestAssessment.overallScore);
   const scores = latestAssessment.scores as Record<string, number> | undefined;
   const lowestDim = scores ? getLowestDimension(scores) : null;
-  const assessmentAgeDays = Math.floor(
-    (Date.now() - new Date(latestAssessment.completedAt).getTime()) / DAY_MS
-  );
-  const assessmentIsStale = assessmentAgeDays >= ASSESSMENT_STALE_DAYS;
   const delta =
     previousAssessment != null
       ? latestAssessment.overallScore - previousAssessment.overallScore
@@ -74,18 +64,13 @@ export function AssessmentSection({
             )}
           </div>
         </div>
-        <p className={styles.heroBody}>{verdict.text}</p>
-        {assessmentIsStale && (
-          <p className={styles.assessmentStaleNotice}>
-            Last taken {assessmentAgeDays} days ago — retaking now shows how your biology has shifted.
-          </p>
-        )}
+        {/* Verdict interpretation lives on /assessments — the dashboard stays glanceable */}
         <div className={styles.heroLinks}>
           <Link href={PORTAL_ROUTES.assessments} className={styles.heroLinkPrimary}>
             Full results →
           </Link>
           <Link href={PORTAL_ROUTES.assessment} className={styles.heroLinkMuted}>
-            {assessmentIsStale ? "Retake to track change →" : "Retake assessment"}
+            Retake assessment
           </Link>
         </div>
       </div>
@@ -102,9 +87,6 @@ export function AssessmentSection({
               className={`${styles.interventionScore} ${scoreClass(scores[lowestDim.id] ?? 0)}`}
             >
               {scores[lowestDim.id] ?? 0}
-            </p>
-            <p className={styles.interventionHint}>
-              This is where a targeted intervention delivers the most return.
             </p>
             <Link href={PORTAL_ROUTES.assessments} className={styles.cardLink}>
               Read full interpretation →
@@ -136,8 +118,7 @@ export function AssessmentSection({
           ) : (
             <>
               <p className={styles.bookingNoAppt}>
-                Book a discovery call — no commitment, just a direct conversation with{" "}
-                {COMPANY.clinicianName} to see if {COMPANY.shortName} is the right fit.
+                A direct conversation with {COMPANY.clinicianName} — no commitment.
               </p>
               <Link href={PORTAL_ROUTES.bookings} className={`btn-dark ${shared.ctaBtnSmall}`}>
                 Book a call →

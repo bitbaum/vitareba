@@ -2072,3 +2072,39 @@
     max-width: 100%;
   }
 }
+
+/* ─── Mobile: patient list reads as a triage list, not a spreadsheet ─────── */
+
+@media (max-width: 767px) {
+  /* Keep Signal(1) · Patient(2) · Last check-in(3); every other column
+     (sparkline, score, profile %, programme, msg, the View link) lives one
+     tap away — the whole row is already tappable (.clickableRow +
+     .stretchedLink). nth-child indexes track the <th> order in
+     app/(admin)/admin/patients/page.tsx — update both together. */
+  .table th:nth-child(n + 4),
+  .table td:nth-child(n + 4):nth-child(-n + 8) {
+    display: none;
+  }
+
+  /* The View cell(9) hosts the stretched link that makes the row tappable —
+     collapse it visually but keep it in the flow */
+  .table td:nth-child(9) {
+    width: 0;
+    padding: 0;
+  }
+
+  .table td:nth-child(9) .cellLink {
+    font-size: 0;
+  }
+
+  /* Long emails must not force horizontal scroll */
+  .table td:nth-child(2) {
+    max-width: 10rem;
+  }
+
+  .table td:nth-child(2) p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

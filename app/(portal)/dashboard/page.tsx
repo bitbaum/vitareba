@@ -11,7 +11,6 @@ import {
   clinicalGoals,
 } from "@/lib/db/schema";
 import { eq, desc, and, isNull, gte, inArray, count } from "drizzle-orm";
-import { USER_ROLE } from "@/lib/config/auth";
 import { BOOKING_STATUS } from "@/lib/config/booking-status";
 import shared from "../portal.module.css";
 import styles from "./dashboard.module.css";
@@ -26,9 +25,11 @@ import { CheckinCard } from "./CheckinCard";
 import { AssessmentSection } from "./AssessmentSection";
 import { computeProfileCompleteness, getMissingProfileFields } from "@/lib/domain/profile";
 import { getUnreadThreadCount } from "@/lib/domain/messages";
+import { computeNextStep } from "@/lib/domain/next-step";
+import { DAY_MS } from "@/lib/utils/format";
 import { PendingAssessmentSaver } from "./PendingAssessmentSaver";
 import { CheckinMiniTrend } from "./CheckinMiniTrend";
-import { OnboardingCard } from "./OnboardingCard";
+import { NextStepCard } from "./NextStepCard";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -51,8 +52,6 @@ export default async function DashboardPage() {
     profile,
     activeGoals,
     recentCheckins,
-    communityToday,
-    communityTotal,
   ] = await Promise.all([
     db.query.assessmentResults.findMany({
       where: eq(assessmentResults.userId, session.user.id),
@@ -99,9 +98,6 @@ export default async function DashboardPage() {
       ),
       orderBy: [desc(dailyCheckins.date)],
     }),
-    // Community check-in counts for social proof in the check-in prompt
-    db.select({ value: count() }).from(dailyCheckins).where(eq(dailyCheckins.date, today)).then((r) => r[0]?.value ?? 0),
-    db.select({ value: count() }).from(users).where(eq(users.role, USER_ROLE.patient)).then((r) => r[0]?.value ?? 0),
   ]);
 
   const isNewPatient = recentAssessments.length === 0 && !programmeAssignment;
@@ -118,16 +114,44 @@ export default async function DashboardPage() {
   // Last DASHBOARD_TREND_DAYS entries (DESC from DB → slice then reverse for chart)
   const trendCheckins = recentCheckins.slice(0, DASHBOARD_TREND_DAYS);
 
+  const assessmentAgeDays = recentAssessments[0]
+    ? Math.floor((now.getTime() - new Date(recentAssessments[0].completedAt).getTime()) / DAY_MS)
+    : Infinity;
+
+  const nextStep = computeNextStep({
+    hasAssessment: recentAssessments.length > 0,
+    checkedInToday: !!todayCheckin,
+    atRiskStreak,
+    unreadMessages: unreadMessageCount,
+    profileCompleteness: profilePct,
+    assessmentAgeDays,
+    hasUpcomingBooking: !!latestBooking,
+  });
+
   return (
     <div>
       <PendingAssessmentSaver />
       <h1 className={shared.pageTitle}>
-        Welcome back, <em>{firstName}</em>
+        {isNewPatient ? "Welcome" : "Welcome back"}, <em>{firstName}</em>
       </h1>
       <p className={shared.pageSub}>Your {COMPANY.shortName} patient portal</p>
 
       <div className={styles.dashStack}>
-        {isNewPatient && <OnboardingCard />}
+        <NextStepCard step={nextStep} />
+
+        {todayCheckin && (
+          <CheckinCard
+            streak={checkinStreak}
+            todayScores={{
+              sleep: todayCheckin.sleep,
+              energy: todayCheckin.energy,
+              mood: todayCheckin.mood,
+              focus: todayCheckin.focus,
+              stress: todayCheckin.stress,
+            }}
+            todayNote={todayCheckin.notes ?? undefined}
+          />
+        )}
 
         {programmeAssignment && (
           <ProgrammeCard
@@ -140,22 +164,6 @@ export default async function DashboardPage() {
 
         <ProfileCompletenessBar pct={profilePct} missingFields={missingProfileFields} />
 
-        <CheckinCard
-          hasTodayCheckin={!!todayCheckin}
-          streak={checkinStreak}
-          atRiskStreak={atRiskStreak}
-          communityToday={communityToday}
-          communityTotal={communityTotal}
-          todayScores={todayCheckin ? {
-            sleep: todayCheckin.sleep,
-            energy: todayCheckin.energy,
-            mood: todayCheckin.mood,
-            focus: todayCheckin.focus,
-            stress: todayCheckin.stress,
-          } : undefined}
-          todayNote={todayCheckin?.notes ?? undefined}
-        />
-
         <CheckinMiniTrend checkins={trendCheckins} />
 
         <AssessmentSection
@@ -164,7 +172,6 @@ export default async function DashboardPage() {
           latestBooking={latestBooking}
           threadCount={threadCount}
           unreadMessageCount={unreadMessageCount}
-          isNewPatient={isNewPatient}
         />
       </div>
     </div>

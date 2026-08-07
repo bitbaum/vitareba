@@ -570,3 +570,21 @@
 .errorHome:hover {
   text-decoration: underline;
 }
+
+/* ─── Mobile: tighter reading surface ────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  /* The page title is orientation, not content — shrink it so the next-step
+     card is visible without scrolling */
+  .pageTitle {
+    font-size: 1.5rem;
+  }
+
+  .pageSub {
+    margin-bottom: 1rem;
+  }
+
+  .card {
+    padding: 1.25rem;
+  }
+}
