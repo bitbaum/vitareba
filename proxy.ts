@@ -3,7 +3,7 @@ import createIntlMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
 import { NextResponse } from "next/server";
 import { USER_ROLE } from "@/lib/config/auth";
-import { PORTAL_ROUTES, ADMIN_ROUTES, AUTH_ROUTES, LOCALE_HEADER } from "@/lib/config/routes";
+import { PORTAL_ROUTES, ADMIN_ROUTES, AUTH_ROUTES, PUBLIC_API_PREFIXES, LOCALE_HEADER } from "@/lib/config/routes";
 
 const intlMiddleware = createIntlMiddleware(routing);
 
@@ -38,20 +38,32 @@ export default auth((req) => {
   const passThrough = () =>
     NextResponse.next({ request: { headers: req.headers } });
 
-  // Cron routes self-authenticate via the CRON_SECRET bearer (box systemd
-  // timers call them; see fleetcrown scripts/hetzner/install-app-crons.sh) —
-  // bypass the session gate that otherwise covers all of /api.
-  if (pathname.startsWith("/api/cron")) return passThrough();
+  // Public API surface (auth endpoints, registration, webhooks, cron, health):
+  // each of these routes authenticates itself — the session gate must not
+  // cover them, or login/registration break (the NextAuth session + callback
+  // endpoints live under /api/auth).
+  if (PUBLIC_API_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
+    return passThrough();
+  }
 
   // ── Portal / admin ─────────────────────────────────────────────────────
   if (PORTAL_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
     if (!session) {
+      // API calls come from fetch() — an HTML login page is not an answer.
+      if (pathname.startsWith("/api/")) {
+        return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+      }
       const loginUrl = new URL(AUTH_ROUTES.login, req.url);
       loginUrl.searchParams.set("returnTo", pathname);
       return NextResponse.redirect(loginUrl);
     }
     if (pathname.startsWith(ADMIN_ROUTES.root) && session.user.role !== USER_ROLE.admin) {
       return NextResponse.redirect(new URL(PORTAL_ROUTES.dashboard, req.url));
+    }
+    // Admins land in the admin panel, not the (empty) patient dashboard —
+    // covers the post-login redirect, the PWA start_url, and bookmarks.
+    if (pathname === PORTAL_ROUTES.dashboard && session.user.role === USER_ROLE.admin) {
+      return NextResponse.redirect(new URL(ADMIN_ROUTES.patients, req.url));
     }
     return passThrough();
   }

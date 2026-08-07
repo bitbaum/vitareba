@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import styles from "@/app/(portal)/portal.module.css";
 import { BADGE_MAX_COUNT } from "@/lib/config/portal";
-import { PORTAL_ROUTES } from "@/lib/config/routes";
+import { PORTAL_ROUTES, PORTAL_ROUTE_LABELS } from "@/lib/config/routes";
 
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
 
@@ -94,21 +94,21 @@ type NavItem = {
 
 const NAV_GROUPS: NavItem[][] = [
   [
-    { href: PORTAL_ROUTES.dashboard,   label: "Dashboard",      Icon: IcoDashboard },
+    { href: PORTAL_ROUTES.dashboard, label: PORTAL_ROUTE_LABELS[PORTAL_ROUTES.dashboard], Icon: IcoDashboard },
   ],
   [
-    { href: PORTAL_ROUTES.checkin,     label: "Daily Check-in", Icon: IcoCheckin },
-    { href: PORTAL_ROUTES.assessment,  label: "Assessment",     Icon: IcoAssessment },
-    { href: PORTAL_ROUTES.assessments, label: "My Results",     Icon: IcoResults },
-    { href: PORTAL_ROUTES.goals,       label: "My Goals",       Icon: IcoGoals, badgeKey: "goals" },
+    { href: PORTAL_ROUTES.checkin, label: PORTAL_ROUTE_LABELS[PORTAL_ROUTES.checkin], Icon: IcoCheckin },
+    { href: PORTAL_ROUTES.assessment, label: PORTAL_ROUTE_LABELS[PORTAL_ROUTES.assessment], Icon: IcoAssessment },
+    { href: PORTAL_ROUTES.assessments, label: PORTAL_ROUTE_LABELS[PORTAL_ROUTES.assessments], Icon: IcoResults },
+    { href: PORTAL_ROUTES.goals, label: PORTAL_ROUTE_LABELS[PORTAL_ROUTES.goals], Icon: IcoGoals, badgeKey: "goals" },
   ],
   [
-    { href: PORTAL_ROUTES.bookings,  label: "Bookings",                      Icon: IcoBookings },
-    { href: PORTAL_ROUTES.messages,  label: "Messages", badgeKey: "messages", Icon: IcoMessages },
-    { href: PORTAL_ROUTES.documents, label: "Documents",                      Icon: IcoDocuments },
+    { href: PORTAL_ROUTES.bookings, label: PORTAL_ROUTE_LABELS[PORTAL_ROUTES.bookings], Icon: IcoBookings },
+    { href: PORTAL_ROUTES.messages, label: PORTAL_ROUTE_LABELS[PORTAL_ROUTES.messages], badgeKey: "messages", Icon: IcoMessages },
+    { href: PORTAL_ROUTES.documents, label: PORTAL_ROUTE_LABELS[PORTAL_ROUTES.documents], Icon: IcoDocuments },
   ],
   [
-    { href: PORTAL_ROUTES.profile, label: "Profile", Icon: IcoProfile },
+    { href: PORTAL_ROUTES.profile, label: PORTAL_ROUTE_LABELS[PORTAL_ROUTES.profile], Icon: IcoProfile },
   ],
 ];
 

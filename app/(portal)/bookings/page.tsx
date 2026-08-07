@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import styles from "../portal.module.css";
 import bookingStyles from "./bookings.module.css";
-import authStyles from "../../(auth)/auth.module.css";
+import authStyles from "../../forms.module.css";
 import {
   BOOKING_STATUS,
   BOOKING_STATUS_CONFIG,

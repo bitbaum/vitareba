@@ -43,7 +43,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className={styles.shell}>
       <aside className={styles.sidebar}>
         <Link href="/" className={styles.logoLink} aria-label={`${COMPANY.shortName} — home`}>
-          <Logo />
+          <Logo variant="bright" />
         </Link>
         <p className={styles.adminBadge}>Admin</p>
         <AdminNav unreadMessages={unreadMessages} pendingBookings={pendingBookings} urgentPatients={urgentPatients} />

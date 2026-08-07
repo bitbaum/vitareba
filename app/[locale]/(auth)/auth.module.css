@@ -58,73 +58,15 @@
   gap: 1.25rem;
 }
 
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.label {
-  font-size: 0.68rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink2);
-  font-weight: 400;
-}
-
-.input {
-  padding: 0.7rem 0;
-  border: none;
-  border-bottom: 1.5px solid var(--border);
-  border-radius: 0;
-  font-size: 0.95rem;
-  font-family: inherit;
-  color: var(--ink);
-  background: transparent;
-  transition: border-color 0.15s;
-  min-height: 2.75rem;
-}
-
-.input:focus {
-  outline: none;
-  border-bottom-color: var(--teal);
-}
-
-.input::placeholder {
-  color: var(--faint);
-}
+/* Shared form primitives — single definition in app/forms.module.css */
+.field  { composes: field from "../../forms.module.css"; }
+.label  { composes: label from "../../forms.module.css"; }
+.input  { composes: input from "../../forms.module.css"; }
+.submit { composes: submit from "../../forms.module.css"; }
 
 .error {
   font-size: 0.75rem;
   color: var(--danger);
-}
-
-.submit {
-  margin-top: 0.75rem;
-  padding: 0.85rem 1.5rem;
-  background: var(--ink);
-  color: var(--white);
-  border: none;
-  border-radius: 0;
-  font-family: var(--font-dm-sans), sans-serif;
-  font-size: 0.75rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  cursor: pointer;
-  width: 100%;
-  min-height: 2.75rem;
-  transition: background 0.15s;
-}
-
-.submit:hover,
-.submit:focus-visible {
-  background: var(--teal);
-  outline: none;
-}
-
-.submit:disabled {
-  opacity: 0.5;
-  cursor: default;
 }
 
 .link {

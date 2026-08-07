@@ -60,7 +60,7 @@ export default async function PortalLayout({ children }: { children: React.React
     <div className={styles.shell}>
       <aside className={styles.sidebar}>
         <Link href="/" className={styles.logoLink} aria-label={`${COMPANY.shortName} — home`}>
-          <Logo />
+          <Logo variant="bright" />
         </Link>
         <PortalNav unreadMessages={unreadMessages} hasTodayCheckin={hasTodayCheckin} newGoals={newGoalsCount} />
       </aside>

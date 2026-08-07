@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import styles from "../portal.module.css";
 import profileStyles from "./profile.module.css";
-import authStyles from "../../(auth)/auth.module.css";
+import authStyles from "../../forms.module.css";
 import {
   SAVED_FEEDBACK_MS,
   SAVING_LABEL,

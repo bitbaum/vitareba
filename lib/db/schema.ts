@@ -331,7 +331,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   profile: one(profiles, { fields: [users.id], references: [profiles.userId] }),
   assessmentResults: many(assessmentResults),
   bookings: many(bookings),
-  documents: many(documents),
+  documents: many(documents, { relationName: "patient_documents" }),
   threads: many(threads, { relationName: "patient_threads" }),
   sentMessages: many(threadMessages),
   dailyCheckins: many(dailyCheckins),
@@ -364,8 +364,17 @@ export const bookingsRelations = relations(bookings, ({ one }) => ({
   user: one(users, { fields: [bookings.userId], references: [users.id] }),
 }));
 
+// documents ↔ users is DOUBLY connected (owner + uploader) — with two FK paths
+// between the same pair of tables, EVERY relation between them needs an
+// explicit relationName on both sides, or Drizzle's query builder throws at
+// runtime ("multiple relations … Please specify relation name") and the page
+// 500s. lib/db/relations.test.ts plans every relation to catch this in CI.
 export const documentsRelations = relations(documents, ({ one }) => ({
-  user: one(users, { fields: [documents.userId], references: [users.id] }),
+  user: one(users, {
+    fields: [documents.userId],
+    references: [users.id],
+    relationName: "patient_documents",
+  }),
   uploadedByUser: one(users, {
     fields: [documents.uploadedBy],
     references: [users.id],
