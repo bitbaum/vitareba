@@ -74,7 +74,11 @@
   outline: none;
 }
 
-.scaleBtnActive {
+/* :hover/:focus-visible included — .scaleBtn:hover otherwise outranks this
+   and paints the number teal-on-teal (invisible) on the button just clicked */
+.scaleBtnActive,
+.scaleBtnActive:hover,
+.scaleBtnActive:focus-visible {
   border-color: var(--teal);
   background: var(--teal);
   color: var(--white);

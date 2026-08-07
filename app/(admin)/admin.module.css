@@ -112,140 +112,6 @@
   flex: 1;
 }
 
-/* ─── Mobile responsive ──────────────────────────────────────────────────── */
-
-@media (max-width: 767px) {
-  /* Stack sidebar above main content */
-  .shell {
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* Convert sidebar to horizontal scrollable nav strip */
-  .sidebar {
-    position: static;
-    height: auto;
-    flex-direction: row;
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding: 0 1rem;
-    gap: 0;
-    scrollbar-width: none;
-    border-bottom: 1px solid var(--white-10);
-  }
-
-  .sidebar::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* Hide logo + badge — header already shows the user context */
-  .logoLink {
-    display: none;
-  }
-
-  .adminBadge {
-    display: none;
-  }
-
-  /* Horizontal nav */
-  .nav {
-    flex-direction: row;
-    flex-wrap: nowrap;
-    gap: 0;
-    padding: 0.6rem 0;
-    width: 100%;
-  }
-
-  .navItem {
-    white-space: nowrap;
-    padding: 0.45rem 0.85rem;
-    font-size: 0.75rem;
-    flex-shrink: 0;
-    border-radius: 0.4rem;
-  }
-
-  .navBadge {
-    margin-left: 0.25rem;
-  }
-
-  /* Tighter header padding */
-  .header {
-    padding: 0 1.25rem;
-  }
-
-  /* Main content padding */
-  .main {
-    padding: 1.5rem 1rem 2rem;
-  }
-
-  /* Tables: horizontal scroll within card */
-  .card {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* Stats grid: 2 columns instead of 4 */
-  .statsGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  /* Two-col grids → single column */
-  .twoColGrid,
-  .patientGrid {
-    grid-template-columns: 1fr;
-  }
-
-  /* Page title smaller */
-  .pageTitle {
-    font-size: 1.6rem;
-  }
-
-  /* Page header: stack title + action button */
-  .pageHeader {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  /* Patient detail header: stack name + signal badge */
-  .patientHeaderRow {
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: flex-start;
-  }
-
-  .patientSignalBlock {
-    text-align: left;
-  }
-
-  /* 2-column form grids → single column */
-  .formGrid2 {
-    grid-template-columns: 1fr;
-  }
-
-  /* 3-column goal form grid → single column */
-  .goalFormGrid3 {
-    grid-template-columns: 1fr;
-  }
-
-  /* 5-column assessment dimension grid → 3 + 2 wrap */
-  .assessDimGrid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  /* Thread compose: stack textarea + send button vertically */
-  .composeForm {
-    flex-direction: column;
-  }
-
-  .sendBtn {
-    width: 100%;
-  }
-
-  /* Widen thread detail to full viewport */
-  .threadDetail {
-    max-width: 100%;
-  }
-}
 
 /* Shared admin UI */
 .pageTitle {
@@ -2070,4 +1936,139 @@
 
 .errorHome:hover {
   text-decoration: underline;
+}
+
+/* ─── Mobile responsive ──────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  /* Stack sidebar above main content */
+  .shell {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Convert sidebar to horizontal scrollable nav strip */
+  .sidebar {
+    position: static;
+    height: auto;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0 1rem;
+    gap: 0;
+    scrollbar-width: none;
+    border-bottom: 1px solid var(--white-10);
+  }
+
+  .sidebar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide logo + badge — header already shows the user context */
+  .logoLink {
+    display: none;
+  }
+
+  .adminBadge {
+    display: none;
+  }
+
+  /* Horizontal nav */
+  .nav {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0;
+    padding: 0.6rem 0;
+    width: 100%;
+  }
+
+  .navItem {
+    white-space: nowrap;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    border-radius: 0.4rem;
+  }
+
+  .navBadge {
+    margin-left: 0.25rem;
+  }
+
+  /* Tighter header padding */
+  .header {
+    padding: 0 1.25rem;
+  }
+
+  /* Main content padding */
+  .main {
+    padding: 1.5rem 1rem 2rem;
+  }
+
+  /* Tables: horizontal scroll within card */
+  .card {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Stats grid: 2 columns instead of 4 */
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Two-col grids → single column */
+  .twoColGrid,
+  .patientGrid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Page title smaller */
+  .pageTitle {
+    font-size: 1.6rem;
+  }
+
+  /* Page header: stack title + action button */
+  .pageHeader {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  /* Patient detail header: stack name + signal badge */
+  .patientHeaderRow {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .patientSignalBlock {
+    text-align: left;
+  }
+
+  /* 2-column form grids → single column */
+  .formGrid2 {
+    grid-template-columns: 1fr;
+  }
+
+  /* 3-column goal form grid → single column */
+  .goalFormGrid3 {
+    grid-template-columns: 1fr;
+  }
+
+  /* 5-column assessment dimension grid → 3 + 2 wrap */
+  .assessDimGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Thread compose: stack textarea + send button vertically */
+  .composeForm {
+    flex-direction: column;
+  }
+
+  .sendBtn {
+    width: 100%;
+  }
+
+  /* Widen thread detail to full viewport */
+  .threadDetail {
+    max-width: 100%;
+  }
 }

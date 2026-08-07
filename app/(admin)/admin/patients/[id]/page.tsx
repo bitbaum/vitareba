@@ -157,7 +157,8 @@ export default async function PatientDetailPage({
         <div className={styles.cardWithTopMargin}>
           <p className={styles.cardLabel}>Assessment trend</p>
           <AssessmentTrendChart
-            data={patient.assessmentResults.map((r) => ({
+            // results are fetched newest-first; the time axis reads left→right
+            data={patient.assessmentResults.toReversed().map((r) => ({
               date: formatDateMonthDay(r.completedAt),
               score: r.overallScore,
             }))}

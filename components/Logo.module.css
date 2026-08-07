@@ -13,6 +13,10 @@
   color: var(--white-30);
 }
 
+.bright {
+  color: var(--white-90);
+}
+
 .small {
   font-size: 0.9rem;
 }

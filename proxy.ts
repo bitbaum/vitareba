@@ -60,6 +60,11 @@ export default auth((req) => {
     if (pathname.startsWith(ADMIN_ROUTES.root) && session.user.role !== USER_ROLE.admin) {
       return NextResponse.redirect(new URL(PORTAL_ROUTES.dashboard, req.url));
     }
+    // Admins land in the admin panel, not the (empty) patient dashboard —
+    // covers the post-login redirect, the PWA start_url, and bookmarks.
+    if (pathname === PORTAL_ROUTES.dashboard && session.user.role === USER_ROLE.admin) {
+      return NextResponse.redirect(new URL(ADMIN_ROUTES.patients, req.url));
+    }
     return passThrough();
   }
 
