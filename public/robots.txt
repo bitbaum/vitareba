@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /.next/
-
-Sitemap: https://vitareba.ch/sitemap.xml
