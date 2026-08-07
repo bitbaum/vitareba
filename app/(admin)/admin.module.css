@@ -2097,12 +2097,16 @@
     font-size: 0;
   }
 
-  /* Long emails must not force horizontal scroll */
-  .table td:nth-child(2) {
-    max-width: 10rem;
+  /* Tighter cells — desktop padding overflows a 390px card */
+  .table th,
+  .table td {
+    padding: 0.75rem 0.5rem;
   }
 
-  .table td:nth-child(2) p {
+  /* Long emails must not force horizontal scroll — the cap must sit on the
+     inner divs: max-width on a td is ignored by auto table layout */
+  .table td:nth-child(2) > div {
+    max-width: 8.5rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
