@@ -15,8 +15,11 @@ export const COMPANY = {
 // Single source of truth for the deployed portal URL used in emails and cron routes
 export const PORTAL_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://vitareba.ch";
 
-// Public-facing marketing site URL used in SEO metadata, robots.txt, and sitemap
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://vitareba.ch";
+// Public-facing marketing site URL used in SEO metadata, robots.txt, and sitemap.
+// Fallback is where the site ACTUALLY serves: vitareba.ch has no DNS A record,
+// so metadataBase, canonical URLs, the sitemap and the generated og:image all
+// named a host that does not resolve. Point it back once that domain is live.
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://vitareba.orangecat.ch";
 
 // Default "from" address for transactional emails — used as fallback when RESEND_FROM is unset.
 // Sending from vitareba.ch requires domain verification in Resend: https://resend.com/domains
