@@ -173,10 +173,66 @@
   color: var(--teal);
 }
 
+/* Mobile-only CTA block inside the dark hero panel */
+.mobileCtas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.btnLight {
+  background: var(--white);
+  color: var(--ink);
+  padding: 0.9rem 1.8rem;
+  min-height: 2.75rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: center;
+  text-decoration: none;
+  font-family: var(--font-dm-sans), sans-serif;
+  border-radius: var(--radius-xs);
+  transition: background var(--transition-normal);
+}
+
+.btnLight:hover {
+  background: var(--teal);
+  color: var(--white);
+}
+
+.btnGhostLight {
+  border: 1px solid var(--white-30);
+  color: var(--white-90);
+  padding: 0.9rem 1.8rem;
+  min-height: 2.75rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: center;
+  text-decoration: none;
+  font-family: var(--font-dm-sans), sans-serif;
+  border-radius: var(--radius-xs);
+  transition: border-color var(--transition-normal), color var(--transition-normal);
+}
+
+.btnGhostLight:hover {
+  border-color: var(--white-60);
+  color: var(--white);
+}
+
 @media (max-width: 767px) {
   .btnDark,
   .btnOutline {
     min-height: 2.75rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .mobileCtas {
+    display: none;
   }
 }
 

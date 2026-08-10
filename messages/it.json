@@ -18,6 +18,8 @@
         "signIn": "Accedi",
         "dashboard": "Dashboard",
         "cta": "Fai l'Inflection Edge",
+        "menuOpen": "Apri il menu",
+        "menuClose": "Chiudi il menu",
         "mega": {
             "programmesFooter": "Vedi tutti i programmi →",
             "programmes": [
@@ -52,7 +54,7 @@
         "titleLine1": "Psichiatria",
         "titleLine2": "Metabolica &",
         "titleEm": "Longevità Sistemica.",
-        "sub": "Andiamo oltre la diagnosi. Decodifichiamo la biologia della sua mente — e l'ambiente che la circonda — per progettare un percorso personalizzato verso performance elevate e sostenute, longevità e benessere.",
+        "sub": "Decodifichiamo la biologia della sua mente per progettare un percorso personalizzato verso performance sostenute, longevità e benessere.",
         "specialties": [
             "ADHD",
             "Longevità",

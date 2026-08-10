@@ -18,6 +18,8 @@
         "signIn": "Se connecter",
         "dashboard": "Dashboard",
         "cta": "Faire l'Inflection Edge",
+        "menuOpen": "Ouvrir le menu",
+        "menuClose": "Fermer le menu",
         "mega": {
             "programmesFooter": "Voir tous les programmes →",
             "programmes": [
@@ -52,7 +54,7 @@
         "titleLine1": "Psychiatrie",
         "titleLine2": "Métabolique &",
         "titleEm": "Longévité Systémique.",
-        "sub": "Nous allons au-delà du diagnostic. Nous décodons la biologie de votre esprit — et l'environnement qui l'entoure — pour concevoir un parcours personnalisé vers une haute performance durable, la longévité et le bien-être.",
+        "sub": "Nous décodons la biologie de votre esprit pour concevoir un parcours personnalisé vers la performance durable, la longévité et le bien-être.",
         "specialties": [
             "ADHD",
             "Longévité",

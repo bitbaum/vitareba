@@ -25,6 +25,15 @@ export default async function Hero() {
             </span>
           ))}
         </div>
+        {/* Mobile-only: primary action in the first viewport — desktop shows CTAs in the right panel */}
+        <div className={styles.mobileCtas}>
+          <a href="?assessment=open" className={styles.btnLight}>
+            {t("ctaPrimary")}
+          </a>
+          <a href={`mailto:${COMPANY.email}`} className={styles.btnGhostLight}>
+            {t("ctaSecondary")}
+          </a>
+        </div>
       </div>
 
       <div className={styles.heroR}>
