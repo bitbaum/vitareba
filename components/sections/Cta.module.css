@@ -50,8 +50,8 @@
   text-transform: uppercase;
   cursor: pointer;
   font-family: var(--font-dm-sans), sans-serif;
-  border-radius: 0.25rem;
-  transition: background 0.3s;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-normal);
 }
 
 .btnPrimary:hover {
@@ -68,10 +68,10 @@
   text-transform: uppercase;
   cursor: pointer;
   font-family: var(--font-dm-sans), sans-serif;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-sm);
   text-decoration: none;
   display: inline-block;
-  transition: all 0.3s;
+  transition: all var(--transition-normal);
 }
 
 .btnOutline:hover {

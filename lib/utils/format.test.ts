@@ -177,4 +177,20 @@ describe("formatDateISO", () => {
   it("contains the correct year", () => {
     expect(formatDateISO(new Date("2025-04-02T00:00:00.000Z"))).toContain("2025");
   });
+
+  // The clinic-timezone contract: "today" is the Zürich calendar day, not UTC.
+  // A 00:30 check-in used to be stored under YESTERDAY's date (UTC), silently
+  // overwriting it and breaking streaks.
+  it("00:30 Zürich summer time (22:30 UTC prev day) is already the new day", () => {
+    expect(formatDateISO(new Date("2026-08-10T22:30:00.000Z"))).toBe("2026-08-11");
+  });
+
+  it("00:30 Zürich winter time (23:30 UTC prev day) is already the new day", () => {
+    expect(formatDateISO(new Date("2026-01-10T23:30:00.000Z"))).toBe("2026-01-11");
+  });
+
+  it("23:59 Zürich is still the same day", () => {
+    // 21:59 UTC = 23:59 CEST on 11 Aug
+    expect(formatDateISO(new Date("2026-08-11T21:59:00.000Z"))).toBe("2026-08-11");
+  });
 });

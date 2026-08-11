@@ -10,6 +10,7 @@ import {
 } from "@/lib/config/booking-status";
 import { formatDateShort, formatDateNumeric } from "@/lib/utils/format";
 import { ADMIN_ROUTES } from "@/lib/config/routes";
+import { LoadingState } from "@/components/LoadingState";
 
 
 const FILTER_OPTIONS = ["all", ...BOOKING_STATUS_VALUES] as const;
@@ -85,7 +86,7 @@ export default function AdminBookingsPage() {
       {error && <p className={styles.formErrorMb}>{error}</p>}
 
       {loading ? (
-        <div className={styles.emptyState}>Loading…</div>
+        <LoadingState />
       ) : loadError ? (
         <div className={styles.emptyState}>Failed to load bookings. Please refresh the page.</div>
       ) : filtered.length === 0 ? (

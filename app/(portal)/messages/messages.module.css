@@ -22,7 +22,7 @@
   display: inline-block;
   width: 8px;
   height: 8px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   background: var(--teal);
   flex-shrink: 0;
 }
@@ -71,7 +71,7 @@
   text-decoration: none;
   display: inline-block;
   margin-bottom: 1rem;
-  transition: color 0.15s;
+  transition: color var(--transition-fast);
 }
 
 .backLink:hover,
@@ -103,7 +103,7 @@
 }
 
 .msgBubble {
-  border-radius: 0.75rem;
+  border-radius: var(--radius-xl);
   padding: 0.75rem 1rem;
   max-width: 80%;
   font-size: 0.85rem;
@@ -140,12 +140,12 @@
   flex: 1;
   padding: 0.65rem 0.9rem;
   border: 1px solid var(--border);
-  border-radius: 0.5rem;
+  border-radius: var(--radius-lg);
   font-family: inherit;
   font-size: 0.88rem;
   resize: none;
   min-height: 64px;
-  transition: border-color 0.15s;
+  transition: border-color var(--transition-fast);
   box-sizing: border-box;
 }
 
@@ -158,13 +158,13 @@
   background: var(--ink);
   color: var(--white);
   border: none;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-lg);
   padding: 0.65rem 1.25rem;
   font-family: var(--font-dm-sans), sans-serif;
   font-size: 0.82rem;
   letter-spacing: 0.06em;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background var(--transition-fast);
   white-space: nowrap;
 }
 

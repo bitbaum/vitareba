@@ -17,7 +17,7 @@
     var(--gold-6)
   );
   border: 1px solid var(--teal-15);
-  border-radius: 0.4rem;
+  border-radius: var(--radius-md);
   padding: 2rem 2.5rem;
   margin-top: 2rem;
 }
@@ -59,7 +59,7 @@
 .phaseN {
   width: 2rem;
   height: 2rem;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   background: var(--teal-10);
   color: var(--teal);
   display: flex;

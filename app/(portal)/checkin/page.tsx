@@ -10,6 +10,7 @@ import { PORTAL_ROUTES } from "@/lib/config/routes";
 import { formatDateISO, formatDateMonthDay } from "@/lib/utils/format";
 import { COMPANY } from "@/lib/config/company";
 import { computeStreak, streakMessage } from "@/lib/domain/checkin";
+import { LoadingState } from "@/components/LoadingState";
 
 
 type CheckinData = { date: string; notes: string } & Record<MetricKey, number>;
@@ -117,7 +118,7 @@ export default function CheckinPage() {
   const inProgress = filledCount > 0 && !allFilled;
   const streak = computeStreak(history);
 
-  if (loading) return <div className={styles.emptyState}>Loading…</div>;
+  if (loading) return <LoadingState />;
   if (loadError) return <div className={styles.emptyState}>Failed to load your check-in history. Please refresh the page.</div>;
 
   return (

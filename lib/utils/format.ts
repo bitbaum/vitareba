@@ -1,5 +1,7 @@
 // Date formatting utilities — SSOT for locale + format decisions
 
+import { CLINIC_TIMEZONE } from "@/lib/config/company";
+
 export const HOUR_MS = 60 * 60 * 1000;
 export const DAY_MS = 24 * HOUR_MS;
 
@@ -35,9 +37,21 @@ export function formatDateMonthDay(date: Date | string): string {
   return d.toLocaleDateString(LOCALE, { day: "numeric", month: "short" });
 }
 
-/** ISO date string "YYYY-MM-DD" — for DB date column comparisons */
+// en-CA is the one locale whose default date format IS "YYYY-MM-DD"
+const CLINIC_DAY = new Intl.DateTimeFormat("en-CA", {
+  timeZone: CLINIC_TIMEZONE,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+/**
+ * ISO date string "YYYY-MM-DD" in the clinic's timezone — for DB date column
+ * comparisons. NOT toISOString(): that is UTC, which put a 00:30-Zürich
+ * check-in on yesterday's date (overwriting it and breaking streaks).
+ */
 export function formatDateISO(date: Date): string {
-  return date.toISOString().slice(0, 10);
+  return CLINIC_DAY.format(date);
 }
 
 /**
@@ -45,8 +59,9 @@ export function formatDateISO(date: Date): string {
  * Accepts an ISO date string (YYYY-MM-DD) and a reference Date for testability.
  */
 export function relativeDate(dateStr: string, now: Date): string {
-  const d = new Date(dateStr + "T00:00:00");
-  const days = Math.floor((now.getTime() - d.getTime()) / DAY_MS);
+  // Compare calendar dates, not timestamps — both parsed as UTC midnight so
+  // the diff is an exact whole number of days in any server timezone.
+  const days = Math.round((Date.parse(formatDateISO(now)) - Date.parse(dateStr)) / DAY_MS);
   if (days === 0) return "Today";
   if (days === 1) return "Yesterday";
   return `${days}d ago`;

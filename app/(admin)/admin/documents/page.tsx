@@ -6,6 +6,7 @@ import styles from "../../admin.module.css";
 import { SAVED_FEEDBACK_MS } from "@/lib/config/portal";
 import { formatDateShort } from "@/lib/utils/format";
 import { ADMIN_ROUTES } from "@/lib/config/routes";
+import { LoadingState } from "@/components/LoadingState";
 
 type Patient = { id: string; name: string | null; email: string };
 type Document = {
@@ -177,7 +178,7 @@ export default function AdminDocumentsPage() {
       )}
 
       {loading ? (
-        <div className={styles.emptyState}>Loading…</div>
+        <LoadingState />
       ) : loadError ? (
         <div className={styles.emptyState}>Failed to load documents. Please refresh the page.</div>
       ) : documents.length === 0 ? (

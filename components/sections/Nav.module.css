@@ -34,7 +34,7 @@
   color: var(--muted);
   text-decoration: none;
   padding: 0.5rem 0.9rem;
-  transition: color 0.2s;
+  transition: color var(--transition-fast);
   white-space: nowrap;
 }
 
@@ -58,7 +58,7 @@
   color: var(--muted);
   text-decoration: none;
   padding: 0.5rem 0.9rem;
-  transition: color 0.2s;
+  transition: color var(--transition-fast);
   white-space: nowrap;
   cursor: pointer;
 }
@@ -70,7 +70,7 @@
 
 .chevron {
   opacity: 0.5;
-  transition: transform 0.2s, opacity 0.2s;
+  transition: transform var(--transition-fast), opacity var(--transition-fast);
   flex-shrink: 0;
 }
 
@@ -90,7 +90,7 @@
   opacity: 0;
   visibility: hidden;
   transform: translateX(-50%) translateY(-6px);
-  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+  transition: opacity var(--transition-fast) ease, transform var(--transition-fast) ease, visibility var(--transition-fast);
   pointer-events: none;
   min-width: 16rem;
   z-index: 200;
@@ -101,7 +101,7 @@
   position: relative;
   background: var(--white);
   border: 1px solid var(--border);
-  border-radius: 0.875rem;
+  border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
 }
 
@@ -117,7 +117,7 @@
   background: var(--white);
   border-left: 1px solid var(--border);
   border-top: 1px solid var(--border);
-  border-radius: 2px 0 0 0;
+  border-radius: var(--radius-2xs) 0 0 0;
 }
 
 .megaItem:hover .megaPanel,
@@ -143,9 +143,9 @@
   flex-direction: column;
   gap: 0.15rem;
   padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-lg);
   text-decoration: none;
-  transition: background 0.15s;
+  transition: background var(--transition-fast);
 }
 
 .megaCard:hover {
@@ -176,7 +176,7 @@
   text-transform: uppercase;
   color: var(--teal);
   text-decoration: none;
-  transition: color 0.15s;
+  transition: color var(--transition-fast);
 }
 
 .megaFooterLink:hover {
@@ -199,8 +199,8 @@
   font-size: 0.8rem;
   color: var(--ink2);
   text-decoration: none;
-  border-radius: 0.5rem;
-  transition: background 0.12s, color 0.12s;
+  border-radius: var(--radius-lg);
+  transition: background var(--transition-fast), color var(--transition-fast);
   letter-spacing: 0.01em;
 }
 
@@ -224,7 +224,7 @@
   text-transform: uppercase;
   color: var(--muted);
   text-decoration: none;
-  transition: color 0.2s;
+  transition: color var(--transition-fast);
   white-space: nowrap;
 }
 
@@ -242,8 +242,8 @@
   text-transform: uppercase;
   cursor: pointer;
   font-family: var(--font-dm-sans), sans-serif;
-  border-radius: 0.2rem;
-  transition: background 0.2s;
+  border-radius: var(--radius-xs);
+  transition: background var(--transition-fast);
   text-decoration: none;
   display: inline-block;
   white-space: nowrap;

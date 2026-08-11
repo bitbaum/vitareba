@@ -10,6 +10,7 @@ import { COMPANY } from "@/lib/config/company";
 import { type ThreadListItem } from "@/lib/config/messages";
 import { MESSAGE_SUBJECT_MAX_LENGTH, MESSAGE_BODY_MAX_LENGTH } from "@/lib/config/portal";
 import { PORTAL_ROUTES } from "@/lib/config/routes";
+import { LoadingState } from "@/components/LoadingState";
 
 export default function MessagesPage() {
   const [threads, setThreads] = useState<ThreadListItem[]>([]);
@@ -114,7 +115,7 @@ export default function MessagesPage() {
       )}
 
       {loading ? (
-        <div className={styles.emptyState}>Loading…</div>
+        <LoadingState />
       ) : loadError ? (
         <div className={styles.card}>
           <div className={styles.emptyState}>

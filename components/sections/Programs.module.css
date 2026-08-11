@@ -13,7 +13,7 @@
 .prog {
   background: var(--white);
   border: 1px solid var(--border);
-  border-radius: 0.4rem;
+  border-radius: var(--radius-md);
   padding: 2rem;
   position: relative;
 }
@@ -33,7 +33,7 @@
   letter-spacing: 0.15em;
   text-transform: uppercase;
   padding: 0.25rem 0.8rem;
-  border-radius: 1rem;
+  border-radius: var(--radius-2xl);
 }
 
 .name {
@@ -86,14 +86,14 @@
 .btn {
   width: 100%;
   padding: 0.7rem;
-  border-radius: 0.2rem;
+  border-radius: var(--radius-xs);
   font-size: 0.65rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   cursor: pointer;
   font-family: var(--font-dm-sans), sans-serif;
   margin-top: 1.2rem;
-  transition: all 0.3s;
+  transition: all var(--transition-normal);
   display: block;
   text-align: center;
   text-decoration: none;

@@ -84,7 +84,7 @@
   padding: 0.4rem 0.9rem;
   border: 1px solid var(--white-18);
   color: var(--white-50);
-  border-radius: 1rem;
+  border-radius: var(--radius-2xl);
 }
 
 .rightEyebrow {
@@ -144,8 +144,8 @@
   text-transform: uppercase;
   cursor: pointer;
   font-family: var(--font-dm-sans), sans-serif;
-  border-radius: 0.2rem;
-  transition: background 0.3s;
+  border-radius: var(--radius-xs);
+  transition: background var(--transition-normal);
 }
 
 .btnDark:hover {
@@ -162,8 +162,8 @@
   text-transform: uppercase;
   cursor: pointer;
   font-family: var(--font-dm-sans), sans-serif;
-  border-radius: 0.2rem;
-  transition: all 0.3s;
+  border-radius: var(--radius-xs);
+  transition: all var(--transition-normal);
   text-decoration: none;
   display: inline-block;
 }

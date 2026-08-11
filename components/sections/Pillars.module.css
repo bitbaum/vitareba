@@ -17,10 +17,10 @@
 
 .pillar {
   border: 1px solid var(--border);
-  border-radius: 0.4rem;
+  border-radius: var(--radius-md);
   padding: 2.5rem 2rem;
   position: relative;
-  transition: border-color 0.3s;
+  transition: border-color var(--transition-normal);
 }
 
 .pillar:hover {

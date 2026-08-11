@@ -15,7 +15,7 @@
   max-width: 420px;
   background: var(--white);
   border: 1px solid var(--border);
-  border-radius: 1rem;
+  border-radius: var(--radius-2xl);
   padding: 2.5rem 2.25rem;
 }
 
