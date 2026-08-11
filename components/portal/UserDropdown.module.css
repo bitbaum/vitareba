@@ -5,7 +5,7 @@
 .avatar {
   width: 2.1rem;
   height: 2.1rem;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   background: var(--ink);
   color: var(--white);
   font-size: 0.7rem;
@@ -16,7 +16,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s, border-color 0.15s;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
   font-family: var(--font-dm-sans), sans-serif;
   flex-shrink: 0;
 }
@@ -38,7 +38,7 @@
   min-width: 210px;
   background: var(--white);
   border: 1px solid var(--border);
-  border-radius: 0.75rem;
+  border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
   z-index: 200;
   overflow: hidden;
@@ -79,7 +79,7 @@
   font-size: 0.82rem;
   color: var(--ink2);
   text-decoration: none;
-  transition: background 0.1s;
+  transition: background var(--transition-fast);
 }
 
 .item:hover,
@@ -104,7 +104,7 @@
   border: none;
   cursor: pointer;
   font-family: var(--font-dm-sans), sans-serif;
-  transition: background 0.1s;
+  transition: background var(--transition-fast);
 }
 
 .signOutBtn:hover,

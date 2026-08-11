@@ -31,7 +31,7 @@
 
 .dim {
   border: 1px solid var(--white-8);
-  border-radius: 0.3rem;
+  border-radius: var(--radius-sm);
   padding: 1.2rem;
 }
 

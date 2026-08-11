@@ -2,7 +2,7 @@
 
 .heroCard {
   background: var(--ink);
-  border-radius: 1rem;
+  border-radius: var(--radius-2xl);
   padding: 2rem;
   display: flex;
   align-items: center;
@@ -17,16 +17,16 @@
 .avatarImg {
   width: 76px;
   height: 76px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   object-fit: cover;
   display: block;
-  border: 2px solid rgba(255,255,255,0.12);
+  border: 2px solid var(--white-12);
 }
 
 .avatarInitials {
   width: 76px;
   height: 76px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   background: var(--teal);
   display: flex;
   align-items: center;
@@ -57,24 +57,24 @@
 
 .heroNamePlaceholder {
   composes: heroName;
-  color: rgba(255,255,255,0.3);
+  color: var(--white-30);
 }
 
 .heroEmail {
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.45);
+  color: var(--white-40);
   margin: 0 0 0.5rem;
 }
 
 .heroMeta {
   font-size: 0.82rem;
-  color: rgba(255,255,255,0.65);
+  color: var(--white-62);
   margin: 0 0 0.35rem;
 }
 
 .heroSince {
   font-size: 0.72rem;
-  color: rgba(255,255,255,0.35);
+  color: var(--white-35);
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -124,12 +124,12 @@
   width: 100%;
   padding: 0.65rem 0.9rem;
   border: 1px solid var(--border);
-  border-radius: 0.5rem;
+  border-radius: var(--radius-lg);
   font-family: inherit;
   font-size: 0.9rem;
   resize: vertical;
   min-height: 80px;
-  transition: border-color 0.15s;
+  transition: border-color var(--transition-fast);
   box-sizing: border-box;
 }
 
@@ -148,7 +148,7 @@
 .completenessCard {
   background: var(--white);
   border: 1px solid var(--border);
-  border-radius: 0.875rem;
+  border-radius: var(--radius-xl);
   padding: 1.25rem 1.75rem;
 }
 
@@ -177,7 +177,7 @@
 .progressTrack {
   height: 4px;
   background: var(--border);
-  border-radius: 2px;
+  border-radius: var(--radius-2xs);
   overflow: hidden;
   margin-bottom: 0.75rem;
 }
@@ -185,8 +185,8 @@
 .progressFill {
   height: 100%;
   background: var(--teal);
-  border-radius: 2px;
-  transition: width 0.4s ease;
+  border-radius: var(--radius-2xs);
+  transition: width var(--transition-slow) ease;
 }
 
 .completenessHint {

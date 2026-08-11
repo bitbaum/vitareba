@@ -29,7 +29,7 @@
 
 .card {
   border: 1px solid var(--white-8);
-  border-radius: 0.3rem;
+  border-radius: var(--radius-sm);
   padding: 1.2rem;
 }
 
@@ -57,8 +57,8 @@
   text-transform: uppercase;
   text-decoration: none;
   font-family: var(--font-dm-sans), sans-serif;
-  border-radius: 0.2rem;
-  transition: all 0.3s;
+  border-radius: var(--radius-xs);
+  transition: all var(--transition-normal);
   margin-top: 1.5rem;
 }
 

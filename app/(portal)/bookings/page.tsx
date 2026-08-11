@@ -18,6 +18,7 @@ import {
 import { formatDateLong, formatDateNumeric } from "@/lib/utils/format";
 import { COMPANY } from "@/lib/config/company";
 import { CALENDLY_URL, BOOKING_SUCCESS_MS, BOOKING_NOTES_MAX_LENGTH } from "@/lib/config/portal";
+import { LoadingState } from "@/components/LoadingState";
 
 
 export default function BookingsPage() {
@@ -227,7 +228,7 @@ export default function BookingsPage() {
       )}
 
       {loading ? (
-        <div className={styles.emptyState}>Loading…</div>
+        <LoadingState />
       ) : loadError ? (
         <div className={styles.card}>
           <div className={styles.emptyState}>

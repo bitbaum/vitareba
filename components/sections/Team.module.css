@@ -18,7 +18,7 @@
 .avatar {
   width: 80px;
   height: 80px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   background: linear-gradient(135deg, var(--teal), var(--teal-30));
   margin: 0 auto 1.2rem;
   display: flex;

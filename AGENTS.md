@@ -61,6 +61,7 @@ Muted:  --muted-8, --muted-10, --muted-12, --muted-18
 
 **Border radius scale:**
 ```
+--radius-2xs:  2px
 --radius-xs:   0.2rem
 --radius-sm:   0.25rem
 --radius-md:   0.4rem
@@ -68,7 +69,10 @@ Muted:  --muted-8, --muted-10, --muted-12, --muted-18
 --radius-xl:   0.875rem
 --radius-2xl:  1rem
 --radius-full: 50%
+--radius-pill: 2rem
 ```
+
+**Token discipline is CI-enforced** (`lib/design-discipline.test.ts`): raw hex/rgb colors, literal `border-radius` values, and literal transition durations in `*.module.css` fail the test suite — use the token vars above. `style={{}}` in TSX is allowed only for data-driven values (bar widths, config-sourced chart colors) in the test's allowlist.
 
 **Transition timing:**
 ```

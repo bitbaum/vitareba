@@ -30,7 +30,7 @@
   background: var(--teal, #2a7a8a);
   color: var(--white);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   padding: 0.625rem 1.5rem;
   cursor: pointer;
   font-size: 0.9rem;

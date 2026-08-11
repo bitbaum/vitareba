@@ -2,7 +2,7 @@
 
 .savedBanner {
   background: var(--ink);
-  border-radius: 0.75rem;
+  border-radius: var(--radius-xl);
   padding: 1.75rem 2rem;
   margin-bottom: 2rem;
   display: flex;
@@ -44,7 +44,7 @@
   font-size: 0.78rem;
   color: var(--white-55);
   text-decoration: none;
-  transition: color 0.15s;
+  transition: color var(--transition-fast);
 }
 
 .savedSecondary:hover,
@@ -85,7 +85,7 @@
   margin-top: 0.75rem;
   color: var(--teal);
   text-decoration: none;
-  transition: color 0.15s;
+  transition: color var(--transition-fast);
 }
 
 .emptyLink:hover,
@@ -181,14 +181,14 @@
 .dimBar {
   height: 3px;
   background: var(--border);
-  border-radius: 2px;
+  border-radius: var(--radius-2xs);
   margin-top: 0.4rem;
   overflow: hidden;
 }
 
 .dimBarFill {
   height: 100%;
-  border-radius: 2px;
+  border-radius: var(--radius-2xs);
 }
 
 /* ── Interpretations ────────────────────────────────────────────────────── */

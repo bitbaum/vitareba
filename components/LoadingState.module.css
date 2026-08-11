@@ -1,0 +1,50 @@
+.wrap {
+  padding: 1.5rem 0;
+}
+
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.line {
+  height: 0.9rem;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    90deg,
+    var(--muted-8) 25%,
+    var(--muted-18) 50%,
+    var(--muted-8) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.line:nth-child(3n + 1) {
+  width: 92%;
+}
+
+.line:nth-child(3n + 2) {
+  width: 70%;
+}
+
+.line:nth-child(3n) {
+  width: 55%;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .line {
+    animation: none;
+    background: var(--muted-10);
+  }
+}

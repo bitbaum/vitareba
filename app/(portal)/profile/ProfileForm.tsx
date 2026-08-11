@@ -22,6 +22,7 @@ import type { ExerciseFrequency } from "@/lib/config/portal";
 import { computeProfileCompleteness } from "@/lib/domain/profile";
 import { COMPANY } from "@/lib/config/company";
 import { formatDateLong } from "@/lib/utils/format";
+import { LoadingState } from "@/components/LoadingState";
 
 type ProfileApiData = {
   // User fields (from users table — always fresh, never stale JWT)
@@ -218,7 +219,7 @@ export function ProfileForm() {
     ) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
   }
 
-  if (loading) return <div className={styles.emptyState}>Loading…</div>;
+  if (loading) return <LoadingState />;
   if (loadError) return <div className={styles.emptyState}>Failed to load your profile. Please refresh the page.</div>;
 
   const pct = computeProfileCompleteness(form as Record<string, unknown>);

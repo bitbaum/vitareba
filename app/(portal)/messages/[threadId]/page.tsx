@@ -11,6 +11,7 @@ import { COMPANY } from "@/lib/config/company";
 import { MESSAGE_POLL_INTERVAL_MS, MESSAGE_BODY_MAX_LENGTH } from "@/lib/config/portal";
 import { PORTAL_ROUTES } from "@/lib/config/routes";
 import { type ThreadDetail } from "@/lib/config/messages";
+import { LoadingState } from "@/components/LoadingState";
 
 export default function ThreadPage() {
   const params = useParams();
@@ -77,7 +78,7 @@ export default function ThreadPage() {
       </button>
     </div>
   );
-  if (!thread) return <div className={styles.emptyState}>Loading…</div>;
+  if (!thread) return <LoadingState />;
 
   return (
     <div className={msgStyles.threadDetail}>

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import styles from "@/app/(admin)/admin.module.css";
 import { type GoalRow, GOAL_TITLE_MAX_LENGTH, GOAL_NOTES_MAX_LENGTH, CHECKIN_METRICS, ASSESSMENT_GOAL_METRIC_KEY, ASSESSMENT_GOAL_METRIC_LABEL } from "@/lib/config/portal";
 import { goalBarGeometry } from "@/lib/domain/goals";
+import { LoadingState } from "@/components/LoadingState";
 
 const GOAL_METRIC_OPTIONS: { value: string; label: string }[] = [
   { value: "", label: "None — track manually" },
@@ -207,7 +208,7 @@ export function PatientGoalsCard({ patientId }: { patientId: string }) {
       )}
 
       {loading ? (
-        <p className={styles.goalMutedText}>Loading…</p>
+        <LoadingState />
       ) : loadError ? (
         <p className={styles.goalMutedText}>
           Failed to load goals.{" "}

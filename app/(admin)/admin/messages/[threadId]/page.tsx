@@ -9,6 +9,7 @@ import { USER_ROLE } from "@/lib/config/auth";
 import { type ThreadDetailWithPatient } from "@/lib/config/messages";
 import { MESSAGE_BODY_MAX_LENGTH, MESSAGE_POLL_INTERVAL_MS } from "@/lib/config/portal";
 import { ADMIN_ROUTES } from "@/lib/config/routes";
+import { LoadingState } from "@/components/LoadingState";
 
 export default function AdminThreadPage() {
   const params = useParams();
@@ -65,7 +66,7 @@ export default function AdminThreadPage() {
   }
 
   if (loadError) return <div className={styles.emptyState}>Failed to load thread. Please refresh the page.</div>;
-  if (!thread) return <div className={styles.emptyState}>Loading…</div>;
+  if (!thread) return <LoadingState />;
 
   return (
     <div className={styles.threadDetail}>

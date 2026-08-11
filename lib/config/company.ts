@@ -12,6 +12,14 @@ export const COMPANY = {
   foundingYear: 2026,
 } as const;
 
+/**
+ * The clinic's IANA timezone — SSOT for every "what day is it?" decision.
+ * Check-in day boundaries, streaks and cron date windows all use this, so a
+ * patient checking in at 00:30 Zürich time (22:30 UTC) lands on the correct
+ * calendar day regardless of server or device timezone.
+ */
+export const CLINIC_TIMEZONE = "Europe/Zurich";
+
 // Single source of truth for the deployed portal URL used in emails and cron routes
 export const PORTAL_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://vitareba.ch";
 
