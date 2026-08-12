@@ -18,6 +18,8 @@
         "signIn": "Sign in",
         "dashboard": "Dashboard",
         "cta": "Take the Inflection Edge",
+        "menuOpen": "Open menu",
+        "menuClose": "Close menu",
         "mega": {
             "programmesFooter": "View all programmes →",
             "programmes": [
@@ -52,7 +54,7 @@
         "titleLine1": "Metabolic",
         "titleLine2": "Psychiatry &",
         "titleEm": "Systemic Longevity.",
-        "sub": "We go beyond diagnosis. We decode the biology behind your mind — and the environment around it — to design a personalised path to sustained high performance, longevity and wellbeing.",
+        "sub": "We decode the biology behind your mind to design a personalised path to sustained performance, longevity and wellbeing.",
         "specialties": [
             "ADHD",
             "Longevity",

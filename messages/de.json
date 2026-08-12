@@ -18,6 +18,8 @@
         "signIn": "Anmelden",
         "dashboard": "Dashboard",
         "cta": "Inflection Edge starten",
+        "menuOpen": "Menü öffnen",
+        "menuClose": "Menü schließen",
         "mega": {
             "programmesFooter": "Alle Programme ansehen →",
             "programmes": [
@@ -52,7 +54,7 @@
         "titleLine1": "Metabolische",
         "titleLine2": "Psychiatrie &",
         "titleEm": "Systemische Longevity.",
-        "sub": "Wir gehen über die Diagnose hinaus. Wir entschlüsseln die Biologie hinter Ihrem Geist — und das Umfeld, das ihn umgibt — um einen personalisierten Weg zu nachhaltiger Hochleistung, Longevity und Wohlbefinden zu gestalten.",
+        "sub": "Wir entschlüsseln die Biologie hinter Ihrem Geist — für einen personalisierten Weg zu nachhaltiger Leistung, Longevity und Wohlbefinden.",
         "specialties": [
             "ADHD",
             "Longevity",
