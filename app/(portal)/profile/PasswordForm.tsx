@@ -68,7 +68,7 @@ export function PasswordForm() {
         {pwError && <p className={styles.formError}>{pwError}</p>}
         <button
           type="submit"
-          className={`${authStyles.submit} ${profileStyles.pwSubmitBtn}`}
+          className={`${styles.btnPrimary} ${profileStyles.pwSubmitBtn}`}
           disabled={pwSaving || !pwForm.currentPassword || !pwForm.newPassword}
         >
           {pwSaving ? SAVING_LABEL : pwSaved ? SAVED_LABEL : "Update password"}

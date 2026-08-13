@@ -11,7 +11,7 @@ export function GoalsCard({ goals }: { goals: Pick<GoalRow, "id" | "title" | "ba
   return (
     <div className={shared.card}>
       <div className={styles.goalsCardHeader}>
-        <p className={styles.goalsCardTitle}>Your goals</p>
+        <p className={shared.cardTitleFlush}>Your goals</p>
         <Link href={PORTAL_ROUTES.goals} className={styles.goalsViewAll}>View all</Link>
       </div>
       <div className={styles.goalsList}>
@@ -23,9 +23,9 @@ export function GoalsCard({ goals }: { goals: Pick<GoalRow, "id" | "title" | "ba
               <p className={styles.goalTitle}>{goal.title}</p>
               {hasProgress && (
                 <>
-                  <div className={styles.goalProgressTrack}>
+                  <div className={shared.progressTrack}>
                     <div
-                      className={styles.goalProgressFill}
+                      className={shared.progressFill}
                       style={{ width: `${currentPct ?? 0}%` }}
                     />
                   </div>

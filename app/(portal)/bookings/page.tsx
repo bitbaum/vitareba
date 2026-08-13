@@ -112,7 +112,7 @@ export default function BookingsPage() {
           </h1>
           <p className={styles.pageSub}>Consultation requests and appointments</p>
         </div>
-        <button type="button" className={`${authStyles.submit} ${styles.headerBtn}`} onClick={() => setShowForm(!showForm)}>
+        <button type="button" className={styles.btnPrimary} onClick={() => setShowForm(!showForm)}>
           + Request booking
         </button>
       </div>
@@ -124,7 +124,7 @@ export default function BookingsPage() {
             <p className={bookingStyles.calendlyBannerTitle}>
               Book directly with {COMPANY.clinicianName}
             </p>
-            <p className={bookingStyles.calendlyBannerSub}>
+            <p className={styles.meta}>
               Pick a time — instant confirmation
             </p>
           </div>
@@ -214,7 +214,7 @@ export default function BookingsPage() {
             <div className={styles.formActions}>
               <button
                 type="submit"
-                className={`${authStyles.submit} ${styles.formActionPrimary}`}
+                className={`${styles.btnPrimary} ${styles.formActionPrimary}`}
                 disabled={submitting || (bookingType === "machine" && !machineType)}
               >
                 {submitting ? "Submitting…" : "Submit request"}
@@ -266,13 +266,13 @@ export default function BookingsPage() {
                       {machineLabel ? `${typeLabel} — ${machineLabel}` : typeLabel}
                       {b.preferredDate ? ` · Preferred: ${formatDateLong(b.preferredDate)}` : ""}
                     </p>
-                    {b.notes && <p className={bookingStyles.bookingNotes}>{b.notes}</p>}
+                    {b.notes && <p className={styles.meta}>{b.notes}</p>}
                     <p className={bookingStyles.bookingRequested}>
                       Requested {formatDateNumeric(b.createdAt)}
                     </p>
                   </div>
                   <div className={bookingStyles.bookingActions}>
-                    <span className={`${bookingStyles.bookingBadge} ${s.badgeClass}`}>
+                    <span className={`${styles.pill} ${s.badgeClass}`}>
                       {s.label}
                     </span>
                     {b.status === BOOKING_STATUS.pending && (

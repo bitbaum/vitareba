@@ -230,13 +230,13 @@ export function ProfileForm() {
       {apiData && <ProfileHero apiData={{ ...apiData, name: form.name || apiData.name, occupation: form.occupation, city: form.city }} />}
 
       {/* ── Completeness indicator ────────────────────────────────────── */}
-      <div className={profileStyles.completenessCard}>
+      <div className={styles.cardTight}>
         <div className={profileStyles.completenessHeader}>
           <span className={profileStyles.completenessLabel}>Profile completeness</span>
-          <span className={profileStyles.completenessValue}>{pct}%</span>
+          <span className={`${styles.statValue} ${styles.statMd} ${profileStyles.completenessValue}`}>{pct}%</span>
         </div>
-        <div className={profileStyles.progressTrack}>
-          <div className={profileStyles.progressFill} style={{ width: `${pct}%` }} />
+        <div className={profileStyles.completenessTrack}>
+          <div className={styles.progressFill} style={{ width: `${pct}%` }} />
         </div>
         {pct < 100 && (
           <p className={profileStyles.completenessHint}>
@@ -281,23 +281,23 @@ export function ProfileForm() {
           <div className={profileStyles.fieldStack}>
             <div className={authStyles.field}>
               <label className={authStyles.label} htmlFor="concern">Main concern</label>
-              <textarea id="concern" className={profileStyles.textarea} value={form.mainConcern} onChange={set("mainConcern")} maxLength={PATIENT_NOTE_MAX_LENGTH} placeholder={`What brings you to ${COMPANY.shortName}?`} />
+              <textarea id="concern" className={styles.formTextarea} value={form.mainConcern} onChange={set("mainConcern")} maxLength={PATIENT_NOTE_MAX_LENGTH} placeholder={`What brings you to ${COMPANY.shortName}?`} />
             </div>
             <div className={authStyles.field}>
               <label className={authStyles.label} htmlFor="goals">Goals</label>
-              <textarea id="goals" className={profileStyles.textarea} value={form.goals} onChange={set("goals")} maxLength={PATIENT_NOTE_MAX_LENGTH} placeholder="What would success look like in 6 months?" />
+              <textarea id="goals" className={styles.formTextarea} value={form.goals} onChange={set("goals")} maxLength={PATIENT_NOTE_MAX_LENGTH} placeholder="What would success look like in 6 months?" />
             </div>
             <div className={authStyles.field}>
               <label className={authStyles.label} htmlFor="diagnosis">Diagnosis history</label>
-              <textarea id="diagnosis" className={profileStyles.textarea} value={form.diagnosisHistory} onChange={set("diagnosisHistory")} maxLength={PATIENT_NOTE_MAX_LENGTH} placeholder="Any prior diagnoses (ADHD, anxiety, depression, etc.)" />
+              <textarea id="diagnosis" className={styles.formTextarea} value={form.diagnosisHistory} onChange={set("diagnosisHistory")} maxLength={PATIENT_NOTE_MAX_LENGTH} placeholder="Any prior diagnoses (ADHD, anxiety, depression, etc.)" />
             </div>
             <div className={authStyles.field}>
               <label className={authStyles.label} htmlFor="meds">Current medications</label>
-              <textarea id="meds" className={profileStyles.textarea} value={form.currentMedications} onChange={set("currentMedications")} maxLength={PATIENT_NOTE_MAX_LENGTH} placeholder="Name, dose, frequency — or 'none'" />
+              <textarea id="meds" className={styles.formTextarea} value={form.currentMedications} onChange={set("currentMedications")} maxLength={PATIENT_NOTE_MAX_LENGTH} placeholder="Name, dose, frequency — or 'none'" />
             </div>
             <div className={authStyles.field}>
               <label className={authStyles.label} htmlFor="supps">Current supplements</label>
-              <textarea id="supps" className={profileStyles.textarea} value={form.currentSupplements} onChange={set("currentSupplements")} maxLength={PATIENT_NOTE_MAX_LENGTH} placeholder="Omega-3, magnesium, creatine…" />
+              <textarea id="supps" className={styles.formTextarea} value={form.currentSupplements} onChange={set("currentSupplements")} maxLength={PATIENT_NOTE_MAX_LENGTH} placeholder="Omega-3, magnesium, creatine…" />
             </div>
           </div>
         </div>
@@ -338,7 +338,7 @@ export function ProfileForm() {
             <textarea
               id="notes"
               aria-label={`Notes for ${COMPANY.clinicianName}`}
-              className={profileStyles.textareaLg}
+              className={styles.formTextareaLg}
               value={form.notes}
               onChange={set("notes")}
               maxLength={PATIENT_NOTE_MAX_LENGTH}
@@ -385,7 +385,7 @@ export function ProfileForm() {
         </div>
 
         {saveError && <p className={styles.formError}>{saveError}</p>}
-        <button type="submit" className={authStyles.submit} disabled={saving}>
+        <button type="submit" className={`${styles.btnPrimary} ${styles.btnBlock}`} disabled={saving}>
           {saving ? SAVING_LABEL : saved ? SAVED_LABEL : "Save changes"}
         </button>
       </form>

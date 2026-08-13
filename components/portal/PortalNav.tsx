@@ -4,7 +4,13 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import styles from "@/app/(portal)/portal.module.css";
 import { BADGE_MAX_COUNT } from "@/lib/config/portal";
-import { PORTAL_ROUTES, PORTAL_ROUTE_LABELS } from "@/lib/config/routes";
+import {
+  PORTAL_ROUTES,
+  PORTAL_ROUTE_LABELS,
+  PORTAL_ROUTE_SHORT_LABELS,
+  PORTAL_NAV_GROUPS,
+  PORTAL_BOTTOM_NAV,
+} from "@/lib/config/routes";
 
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
 
@@ -83,42 +89,25 @@ const IcoProfile = () => (
   </svg>
 );
 
-// ─── Nav structure ────────────────────────────────────────────────────────────
-
-type NavItem = {
-  href: string;
-  label: string;
-  Icon: React.ComponentType;
-  badgeKey?: "messages" | "goals";
+// Icon per route — presentation-only mapping; nav STRUCTURE lives in
+// lib/config/routes.ts (PORTAL_NAV_GROUPS / PORTAL_BOTTOM_NAV).
+const ROUTE_ICONS: Record<string, React.ComponentType> = {
+  [PORTAL_ROUTES.dashboard]:   IcoDashboard,
+  [PORTAL_ROUTES.checkin]:     IcoCheckin,
+  [PORTAL_ROUTES.assessment]:  IcoAssessment,
+  [PORTAL_ROUTES.assessments]: IcoResults,
+  [PORTAL_ROUTES.goals]:       IcoGoals,
+  [PORTAL_ROUTES.bookings]:    IcoBookings,
+  [PORTAL_ROUTES.messages]:    IcoMessages,
+  [PORTAL_ROUTES.documents]:   IcoDocuments,
+  [PORTAL_ROUTES.profile]:     IcoProfile,
 };
 
-const NAV_GROUPS: NavItem[][] = [
-  [
-    { href: PORTAL_ROUTES.dashboard, label: PORTAL_ROUTE_LABELS[PORTAL_ROUTES.dashboard], Icon: IcoDashboard },
-  ],
-  [
-    { href: PORTAL_ROUTES.checkin, label: PORTAL_ROUTE_LABELS[PORTAL_ROUTES.checkin], Icon: IcoCheckin },
-    { href: PORTAL_ROUTES.assessment, label: PORTAL_ROUTE_LABELS[PORTAL_ROUTES.assessment], Icon: IcoAssessment },
-    { href: PORTAL_ROUTES.assessments, label: PORTAL_ROUTE_LABELS[PORTAL_ROUTES.assessments], Icon: IcoResults },
-    { href: PORTAL_ROUTES.goals, label: PORTAL_ROUTE_LABELS[PORTAL_ROUTES.goals], Icon: IcoGoals, badgeKey: "goals" },
-  ],
-  [
-    { href: PORTAL_ROUTES.bookings, label: PORTAL_ROUTE_LABELS[PORTAL_ROUTES.bookings], Icon: IcoBookings },
-    { href: PORTAL_ROUTES.messages, label: PORTAL_ROUTE_LABELS[PORTAL_ROUTES.messages], badgeKey: "messages", Icon: IcoMessages },
-    { href: PORTAL_ROUTES.documents, label: PORTAL_ROUTE_LABELS[PORTAL_ROUTES.documents], Icon: IcoDocuments },
-  ],
-  [
-    { href: PORTAL_ROUTES.profile, label: PORTAL_ROUTE_LABELS[PORTAL_ROUTES.profile], Icon: IcoProfile },
-  ],
-];
-
-const BOTTOM_ITEMS: NavItem[] = [
-  { href: PORTAL_ROUTES.dashboard, label: "Home",      Icon: IcoDashboard },
-  { href: PORTAL_ROUTES.checkin,   label: "Check-in",  Icon: IcoCheckin },
-  { href: PORTAL_ROUTES.messages,  label: "Messages",  badgeKey: "messages", Icon: IcoMessages },
-  { href: PORTAL_ROUTES.bookings,  label: "Bookings",  Icon: IcoBookings },
-  { href: PORTAL_ROUTES.documents, label: "Documents", Icon: IcoDocuments },
-];
+// Routes that carry a live badge count
+const ROUTE_BADGE_KEYS: Record<string, "messages" | "goals"> = {
+  [PORTAL_ROUTES.messages]: "messages",
+  [PORTAL_ROUTES.goals]:    "goals",
+};
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -127,23 +116,35 @@ function isActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(href + "/");
 }
 
-type Badges = { messages: number; goals: number };
+type BadgeProps = { unreadMessages?: number; hasTodayCheckin?: boolean; newGoals?: number };
 
-// ─── Sidebar nav (desktop) ────────────────────────────────────────────────────
-
-export function PortalNav({ unreadMessages = 0, hasTodayCheckin = true, newGoals = 0 }: { unreadMessages?: number; hasTodayCheckin?: boolean; newGoals?: number }) {
+function useBadges({ unreadMessages = 0, newGoals = 0 }: BadgeProps) {
   const pathname = usePathname();
   // Suppress goals badge when the patient is already viewing the goals page
   const goalsOnPage = pathname === PORTAL_ROUTES.goals;
-  const badges: Badges = { messages: unreadMessages, goals: goalsOnPage ? 0 : newGoals };
+  return { pathname, badges: { messages: unreadMessages, goals: goalsOnPage ? 0 : newGoals } };
+}
+
+function badgeCount(href: string, badges: { messages: number; goals: number }): number {
+  const key = ROUTE_BADGE_KEYS[href];
+  return key ? badges[key] : 0;
+}
+
+// ─── Sidebar nav (desktop) ────────────────────────────────────────────────────
+
+export function PortalNav(props: BadgeProps) {
+  const { pathname, badges } = useBadges(props);
+  const hasTodayCheckin = props.hasTodayCheckin ?? true;
 
   return (
     <nav className={styles.nav} aria-label="Portal navigation">
-      {NAV_GROUPS.map((group, gi) => (
+      {PORTAL_NAV_GROUPS.map((group, gi) => (
         <div key={gi} className={styles.navGroup}>
-          {group.map(({ href, label, Icon, badgeKey }) => {
+          {group.label && <div className={styles.navGroupLabel}>{group.label}</div>}
+          {group.routes.map((href) => {
+            const Icon = ROUTE_ICONS[href];
             const active = isActive(pathname, href);
-            const count = badgeKey ? badges[badgeKey] : 0;
+            const count = badgeCount(href, badges);
             const showCheckinDot = href === PORTAL_ROUTES.checkin && !hasTodayCheckin && !active;
             return (
               <Link
@@ -153,7 +154,7 @@ export function PortalNav({ unreadMessages = 0, hasTodayCheckin = true, newGoals
                 aria-current={active ? "page" : undefined}
               >
                 <span className={styles.navIcon}><Icon /></span>
-                <span className={styles.navLabel}>{label}</span>
+                <span className={styles.navLabel}>{PORTAL_ROUTE_LABELS[href]}</span>
                 {count > 0 && (
                   <span className={styles.navBadge} aria-label={`${count} unread`}>
                     {count > BADGE_MAX_COUNT ? `${BADGE_MAX_COUNT}+` : count}
@@ -173,16 +174,16 @@ export function PortalNav({ unreadMessages = 0, hasTodayCheckin = true, newGoals
 
 // ─── Mobile bottom tab bar ────────────────────────────────────────────────────
 
-export function BottomNav({ unreadMessages = 0, hasTodayCheckin = true, newGoals = 0 }: { unreadMessages?: number; hasTodayCheckin?: boolean; newGoals?: number }) {
-  const pathname = usePathname();
-  const goalsOnPage = pathname === PORTAL_ROUTES.goals;
-  const badges: Badges = { messages: unreadMessages, goals: goalsOnPage ? 0 : newGoals };
+export function BottomNav(props: BadgeProps) {
+  const { pathname, badges } = useBadges(props);
+  const hasTodayCheckin = props.hasTodayCheckin ?? true;
 
   return (
     <nav className={styles.bottomNav} aria-label="Mobile navigation">
-      {BOTTOM_ITEMS.map(({ href, label, Icon, badgeKey }) => {
+      {PORTAL_BOTTOM_NAV.map((href) => {
+        const Icon = ROUTE_ICONS[href];
         const active = isActive(pathname, href);
-        const count = badgeKey ? badges[badgeKey] : 0;
+        const count = badgeCount(href, badges);
         const showCheckinDot = href === PORTAL_ROUTES.checkin && !hasTodayCheckin && !active;
         return (
           <Link
@@ -202,7 +203,9 @@ export function BottomNav({ unreadMessages = 0, hasTodayCheckin = true, newGoals
                 </span>
               )}
             </span>
-            <span className={styles.bottomNavLabel}>{label}</span>
+            <span className={styles.bottomNavLabel}>
+              {PORTAL_ROUTE_SHORT_LABELS[href] ?? PORTAL_ROUTE_LABELS[href]}
+            </span>
           </Link>
         );
       })}

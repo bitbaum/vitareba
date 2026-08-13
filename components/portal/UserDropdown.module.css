@@ -40,7 +40,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
-  z-index: 200;
+  z-index: var(--z-overlay);
   overflow: hidden;
 }
 

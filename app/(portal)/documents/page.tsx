@@ -47,8 +47,8 @@ export default async function DocumentsPage() {
       {docs.length === 0 ? (
         <div className={styles.card}>
           <div className={styles.emptyState}>
-            <p className={docStyles.emptyTitle}>No documents yet</p>
-            <p className={docStyles.emptyBody}>
+            <p className={styles.emptyTitle}>No documents yet</p>
+            <p className={styles.emptyBody}>
               {COMPANY.clinicianName} will share lab results, assessment reports, and programme materials here as your work together progresses.
             </p>
             <Link href={PORTAL_ROUTES.bookings} className={styles.emptyAction}>
@@ -57,14 +57,14 @@ export default async function DocumentsPage() {
           </div>
         </div>
       ) : (
-        <div className={docStyles.docList}>
+        <div className={styles.docList}>
           {docs.map((doc) => {
             const label = mimeLabel(doc.mimeType);
             return (
               <div key={doc.id} className={`${styles.card} ${docStyles.docItem}`}>
                 <div className={docStyles.docInfo}>
                   <p className={docStyles.docTitle}>{doc.title}</p>
-                  <p className={docStyles.docMeta}>
+                  <p className={styles.docMeta}>
                     {formatDateLong(doc.createdAt)}
                     {label && ` · ${label}`}
                   </p>
@@ -73,7 +73,7 @@ export default async function DocumentsPage() {
                   href={doc.fileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={docStyles.docLink}
+                  className={styles.docLink}
                 >
                   Open →
                 </a>

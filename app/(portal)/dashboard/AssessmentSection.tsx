@@ -52,7 +52,7 @@ export function AssessmentSection({
           </div>
           <div className={styles.scoreBlock}>
             <span
-              className={`${styles.scoreValue} ${scoreClass(latestAssessment.overallScore)}`}
+              className={`${shared.statValue} ${shared.statXl} ${scoreClass(latestAssessment.overallScore)}`}
             >
               {latestAssessment.overallScore}
             </span>
@@ -78,13 +78,13 @@ export function AssessmentSection({
       <div className={shared.grid2}>
         {/* Highest-leverage intervention area */}
         {lowestDim && scores && (
-          <div className={styles.cardWarn}>
+          <div className={shared.cardWarn}>
             <p className={shared.cardTitle}>Highest-leverage area</p>
             <p className={styles.interventionName}>
               {lowestDim.icon} {lowestDim.name}
             </p>
             <p
-              className={`${styles.interventionScore} ${scoreClass(scores[lowestDim.id] ?? 0)}`}
+              className={`${shared.statValue} ${shared.statLg} ${styles.interventionScore} ${scoreClass(scores[lowestDim.id] ?? 0)}`}
             >
               {scores[lowestDim.id] ?? 0}
             </p>
@@ -103,7 +103,7 @@ export function AssessmentSection({
                 const s =
                   BOOKING_STATUS_CONFIG[latestBooking.status] ?? BOOKING_STATUS_CONFIG.pending;
                 return (
-                  <span className={`${styles.bookingStatusBadge} ${s.badgeClass}`}>
+                  <span className={`${shared.pill} ${s.badgeClass}`}>
                     {s.label}
                   </span>
                 );

@@ -125,6 +125,23 @@ describe("design-token discipline", () => {
     expect(offenders, offenders.join("\n")).toEqual([]);
   });
 
+  it("every var(--x) referenced in globals.css itself is defined there", () => {
+    // Caught for real: .booking-status-pending referenced --warn-12, which was
+    // never defined — the badge background silently rendered transparent.
+    const globals = readFileSync("app/globals.css", "utf8");
+    const defined = new Set(
+      [...globals.matchAll(/^\s*(--[a-z0-9-]+)\s*:/gm)].map((m) => m[1]),
+    );
+    const offenders = globals
+      .split("\n")
+      .flatMap((line, i) =>
+        [...line.matchAll(/var\((--[a-z0-9-]+)/g)]
+          .filter((m) => !defined.has(m[1]) && !/^--font-/.test(m[1]))
+          .map((m) => `app/globals.css:${i + 1}: ${m[1]}`),
+      );
+    expect(offenders, offenders.join("\n")).toEqual([]);
+  });
+
   it("allowlist entries still exist (prune when a file drops its style prop)", () => {
     const stale = [...STYLE_PROP_ALLOWLIST].filter((f) => {
       try {
