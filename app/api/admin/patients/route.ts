@@ -7,7 +7,6 @@ import { serviceUnavailable } from "@/lib/utils/api-response";
 import { db } from "@/lib/db";
 import { patientScope } from "@/lib/domain/patients";
 import { assessmentResults, users } from "@/lib/db/schema";
-import { USER_ROLE } from "@/lib/config/auth";
 
 export async function GET() {
   const guard = await requireAdmin();

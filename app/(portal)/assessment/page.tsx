@@ -32,7 +32,7 @@ export default function AssessmentPage() {
 
   return (
     <div className={styles.page}>
-      <Assessment onClose={handleClose} onComplete={handleComplete} />
+      <Assessment embedded onClose={handleClose} onComplete={handleComplete} />
     </div>
   );
 }

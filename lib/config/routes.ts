@@ -100,6 +100,19 @@ export const ADMIN_ROUTES = {
   reports:   "/admin/reports",
 } as const satisfies Record<string, string>;
 
+/** Display label per admin route — consumed by NavBreadcrumb (same contract as PORTAL_ROUTE_LABELS). */
+export const ADMIN_ROUTE_LABELS: Record<
+  (typeof ADMIN_ROUTES)[keyof typeof ADMIN_ROUTES],
+  string
+> = {
+  [ADMIN_ROUTES.root]:      "Admin",
+  [ADMIN_ROUTES.patients]:  "Patients",
+  [ADMIN_ROUTES.bookings]:  "Bookings",
+  [ADMIN_ROUTES.messages]:  "Messages",
+  [ADMIN_ROUTES.documents]: "Documents",
+  [ADMIN_ROUTES.reports]:   "Reports",
+};
+
 /**
  * Request header set by proxy.ts middleware containing the URL-derived locale.
  * Read by app/layout.tsx so <html lang> reflects the actual URL — not a cookie

@@ -11,6 +11,8 @@ interface Props {
   name: string;
   email: string;
   role: UserRole;
+  /** Which shell the dropdown lives in — decides which side of the role switch to offer. */
+  context?: "portal" | "admin";
 }
 
 function initials(name: string, email: string): string {
@@ -23,7 +25,7 @@ function initials(name: string, email: string): string {
   return email.slice(0, 2).toUpperCase();
 }
 
-export function UserDropdown({ name, email, role }: Props) {
+export function UserDropdown({ name, email, role, context = "portal" }: Props) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -61,9 +63,14 @@ export function UserDropdown({ name, email, role }: Props) {
             {name && <p className={styles.headerEmail}>{email}</p>}
           </div>
           <div className={styles.items}>
-            {role === USER_ROLE.admin && (
-              <Link href={ADMIN_ROUTES.root} className={styles.item} onClick={() => setOpen(false)}>
-                Admin Panel ↗
+            {role === USER_ROLE.admin && context === "portal" && (
+              <Link href={ADMIN_ROUTES.patients} className={styles.item} onClick={() => setOpen(false)}>
+                Clinician area ↗
+              </Link>
+            )}
+            {context === "admin" && (
+              <Link href={PORTAL_ROUTES.dashboard} className={styles.item} onClick={() => setOpen(false)}>
+                Patient portal ↗
               </Link>
             )}
             <Link href={PORTAL_ROUTES.checkin} className={styles.item} onClick={() => setOpen(false)}>
