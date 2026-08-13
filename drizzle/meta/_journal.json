@@ -15,6 +15,13 @@
       "when": 1786627020278,
       "tag": "0001_old_eternals",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786630017951,
+      "tag": "0002_yielding_scream",
+      "breakpoints": true
     }
   ]
 }

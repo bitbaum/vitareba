@@ -23,6 +23,7 @@ export const adminBookingCreateSchema = bookingCreateSchema.extend({
  */
 export const slotBookingSchema = z.object({
   slot: z.string().datetime(),
+  clinicianId: z.string().uuid(),
   bookingType: z.enum(BOOKING_TYPE_VALUES).default("consultation"),
   machineType: z.enum(MACHINE_TYPE_VALUES).nullable().optional(),
   notes: z.string().max(BOOKING_NOTES_MAX_LENGTH).optional(),

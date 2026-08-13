@@ -44,6 +44,7 @@ vi.mock("@/lib/utils/post-response", () => ({ runAfterResponse: mockRunAfterResp
 
 import { GET, POST } from "./route";
 import { generateSlots } from "@/lib/domain/scheduling";
+import { DEFAULT_AVAILABILITY } from "@/lib/config/scheduling";
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
@@ -171,7 +172,9 @@ describe("POST /api/bookings (patient)", () => {
 });
 
 describe("POST /api/bookings (patient, slot)", () => {
-  const NOW_SLOT = generateSlots({ now: new Date(), busy: [] })[0];
+  const NOW_SLOT = generateSlots({ now: new Date(), rules: DEFAULT_AVAILABILITY, busy: [] })[0];
+  const CLINICIAN_ID = "11111111-1111-4111-8111-111111111111";
+  const CLINICIAN = { id: CLINICIAN_ID, name: "Manuel", email: "manuel@example.com" };
 
   beforeEach(() => {
     mockRequireSession.mockReset();
@@ -180,16 +183,18 @@ describe("POST /api/bookings (patient, slot)", () => {
     mockGetAdminEmails.mockReset();
     mockRunAfterResponse.mockReset();
     mockBookingFindMany.mockReset();
+    mockUserFindFirst.mockReset();
     mockGetAdminEmails.mockReturnValue([]);
+    mockUserFindFirst.mockResolvedValue(CLINICIAN); // clinician lookup
     mockBookingFindMany.mockResolvedValue([]); // no busy intervals
     setupInsert([{ ...BOOKING, status: "confirmed", scheduledAt: NOW_SLOT }]);
   });
 
-  function slotReq(slot: string) {
+  function slotReq(slot: string, clinicianId: string = CLINICIAN_ID) {
     return new Request("http://test/api/bookings", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slot }),
+      body: JSON.stringify({ slot, clinicianId }),
     });
   }
 
@@ -208,6 +213,13 @@ describe("POST /api/bookings (patient, slot)", () => {
     expect(res.status).toBe(409);
     const body = await res.json();
     expect(body.code).toBe("slot_taken");
+  });
+
+  it("rejects an unknown clinician with 400", async () => {
+    mockRequireSession.mockResolvedValue(PATIENT_SESSION);
+    mockUserFindFirst.mockResolvedValue(undefined);
+    const res = await POST(slotReq(NOW_SLOT.toISOString()));
+    expect(res.status).toBe(400);
   });
 
   it("maps a unique-index race (23505) to 409 slot_taken, not a 500", async () => {

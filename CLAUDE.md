@@ -34,7 +34,8 @@ app/
     assessment/           → Take the Inflection Edge questionnaire
     assessments/          → History + trend chart
     checkin/              → Daily wellness check-in (sleep, energy, mood, focus, stress)
-    bookings/             → Consultation booking (native slot picker + manual request)
+    bookings/             → Consultation booking (per-clinician slot picker + manual request)
+    regulation/           → Regulatory ledger: features switched off by law, with attribution
     messages/[threadId]/  → Secure async messaging with Manuel
     profile/              → Patient profile management
     layout.tsx            → Portal shell with PortalNav
@@ -54,6 +55,9 @@ app/
     bookings/             → Booking CRUD
     messages/[threadId]/  → Thread messages + email notification on send
     goals/                → Patient clinical goals (read)
+    ai/insight            → AI trend reflection for the patient (451 when legally gated)
+    account/export        → GDPR Art. 15/20 data export (self-service JSON)
+    account/deletion-request → GDPR Art. 17 erasure request (opens tracked thread)
     documents/            → Document list + upload (local-disk storage, lib/storage.ts)
     admin/patients/       → Patient list + detail (admin only)
     admin/patients/[id]/  → Goals, notes, programme assignment (admin only)
@@ -136,7 +140,8 @@ never push schema to prod by hand.
 | Programme/phase labels | `lib/config/programmes.ts` | Any component |
 | Signal thresholds + labels | `lib/config/admin.ts` | Any component |
 | Assessment questions, scoring | `lib/assessment/data.ts` | Any component |
-| Availability / slot rules | `lib/config/scheduling.ts` | Any component or route |
+| Availability / slot rules (per clinician email) | `lib/config/scheduling.ts` | Any component or route |
+| Regulatory blocks (laws, attribution, beneficiaries) | `lib/config/regulation.ts` | Any component or route |
 | DB schema | `lib/db/schema.ts` | Separate type files |
 | Portal route paths | `lib/config/routes.ts` PORTAL_ROUTES | Hardcoded strings |
 | Auth pages routing | `proxy.ts` (derives from PORTAL_ROUTES) | Scattered guards |
@@ -179,6 +184,19 @@ Everything else (/, /de/*, /en/*, etc.)
 Used in: `/admin/patients` list, `/api/cron/signals` (alerts admin on first `critical` transition), `/admin/reports`.
 
 ---
+
+## Roles & AI
+
+- `users.role` (patient/admin) is ACCESS level; `users.isClinician` marks actual
+  doctors. Dual roles are by design: a clinician can be another clinician's
+  patient (`care_team` table, symmetric pairs allowed). Patient lists =
+  role=patient OR anyone treated in care_team.
+- AI provider (`lib/ai/`): OpenAI-compatible, env `AI_BASE_URL` + `AI_API_KEY`
+  + `AI_MODEL` — must be an EU/CH-hosted provider under a DPA. AI routes return
+  **HTTP 451** with a `blockId` into `lib/config/regulation.ts` when gated
+  (no provider, or the patient hasn't given explicit consent —
+  `profiles.aiConsentAt`). The Diagnosis Assistant is permanently blocked
+  (MDR/AI Act) and says so in the UI.
 
 ## Cron Jobs
 

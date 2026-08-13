@@ -38,9 +38,16 @@ export const registerSchema = z.object({
     .max(PASSWORD_MAX_LENGTH),
 });
 
-export function resolveRole(email: string): UserRole {
+/**
+ * Effective role at sign-in. ADMIN_EMAILS is a bootstrap/recovery PROMOTION
+ * list — being on it grants admin even if the DB row lags. It never demotes:
+ * the database is the SSOT for roles granted in-product (e.g. dual-role
+ * clinicians managed via SQL/admin tooling, not env vars).
+ */
+export function resolveRole(email: string, dbRole: UserRole = USER_ROLE.patient): UserRole {
   const adminEmails = getAdminEmails().map((e) => e.toLowerCase());
-  return adminEmails.includes(email.toLowerCase()) ? USER_ROLE.admin : USER_ROLE.patient;
+  if (adminEmails.includes(email.toLowerCase())) return USER_ROLE.admin;
+  return dbRole;
 }
 
 /** Hash a plaintext password using the project's standard bcrypt cost factor */

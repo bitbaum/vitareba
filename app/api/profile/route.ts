@@ -58,7 +58,11 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ success: false, error: "Invalid data" }, { status: 400 });
   }
 
-  const { name, ...profileFields } = parsed.data;
+  const { name, aiConsent, ...profileFields } = parsed.data;
+  // Explicit AI consent (GDPR Art. 9(2)(a)) — timestamped on grant, cleared on
+  // withdrawal; both are the patient's act alone.
+  const consentPatch =
+    aiConsent === undefined ? {} : { aiConsentAt: aiConsent ? new Date() : null };
 
   let existing: typeof profiles.$inferSelect | undefined;
   let updated: typeof profiles.$inferSelect;
@@ -72,8 +76,8 @@ export async function PATCH(req: Request) {
     // Upsert profile and return updated row in one query
     [updated] = await db
       .insert(profiles)
-      .values({ userId: session.user.id, ...profileFields })
-      .onConflictDoUpdate({ target: profiles.userId, set: { ...profileFields, updatedAt: new Date() } })
+      .values({ userId: session.user.id, ...profileFields, ...consentPatch })
+      .onConflictDoUpdate({ target: profiles.userId, set: { ...profileFields, ...consentPatch, updatedAt: new Date() } })
       .returning();
   } catch (err) {
     console.error("[api/profile] upsert failed:", err);

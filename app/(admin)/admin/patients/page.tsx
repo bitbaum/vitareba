@@ -1,8 +1,8 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
-import { users, assessmentResults, bookings, dailyCheckins } from "@/lib/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { assessmentResults, bookings, careTeam, dailyCheckins, users } from "@/lib/db/schema";
+import { desc, eq, inArray, or } from "drizzle-orm";
 import Link from "next/link";
 import styles from "../../admin.module.css";
 import { scoreClass, getVerdictName } from "@/lib/assessment/data";
@@ -58,7 +58,10 @@ export default async function PatientsPage() {
 
   const [patients, unreadPatientIds, unreadThreadCount] = await Promise.all([
     db.query.users.findMany({
-    where: eq(users.role, USER_ROLE.patient),
+    where: or(
+        eq(users.role, USER_ROLE.patient),
+        inArray(users.id, db.select({ id: careTeam.patientId }).from(careTeam))
+      ),
     with: {
       profile: true,
       programmeAssignment: true,

@@ -2,6 +2,7 @@ import styles from "../portal.module.css";
 import profileStyles from "./profile.module.css";
 import { ProfileForm } from "./ProfileForm";
 import { PasswordForm } from "./PasswordForm";
+import { PrivacyCard } from "./PrivacyCard";
 
 export default function ProfilePage() {
   return (
@@ -15,6 +16,7 @@ export default function ProfilePage() {
         </p>
       </div>
       <ProfileForm />
+      <PrivacyCard />
       <PasswordForm />
     </div>
   );

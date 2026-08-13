@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
-import { eq, desc } from "drizzle-orm";
+import { and, eq, desc } from "drizzle-orm";
 import { requireSession } from "@/lib/auth/guards";
 import { db } from "@/lib/db";
 import { bookings, users } from "@/lib/db/schema";
@@ -11,6 +11,7 @@ import { PORTAL_URL, COMPANY, getAdminEmails } from "@/lib/config/company";
 import { ADMIN_ROUTES, PORTAL_ROUTES } from "@/lib/config/routes";
 import { USER_ROLE } from "@/lib/config/auth";
 import { bookingCreateSchema, adminBookingCreateSchema, slotBookingSchema } from "@/lib/domain/bookings";
+import { getAvailabilityForEmail } from "@/lib/config/scheduling";
 import { isBookableSlot } from "@/lib/domain/scheduling";
 import { getBusyIntervals } from "@/lib/domain/scheduling-data";
 
@@ -33,7 +34,10 @@ export async function GET() {
     results = await db.query.bookings.findMany({
       where,
       orderBy: [desc(bookings.createdAt)],
-      with: { user: { columns: { id: true, name: true, email: true } } },
+      with: {
+        user: { columns: { id: true, name: true, email: true } },
+        clinician: { columns: { id: true, name: true } },
+      },
     });
   } catch (err) {
     console.error("[api/bookings] GET failed:", err);
@@ -101,10 +105,26 @@ export async function POST(req: Request) {
     const slot = new Date(slotParsed.data.slot);
     const now = new Date();
 
-    // Engine re-check: the slot must still be one we'd offer right now
+    // The chosen doctor must exist and actually be a clinician
+    let clinician;
     try {
-      const busy = await getBusyIntervals(now);
-      if (!isBookableSlot(slot, { now, busy })) {
+      clinician = await db.query.users.findFirst({
+        where: and(eq(users.id, slotParsed.data.clinicianId), eq(users.isClinician, true)),
+        columns: { id: true, name: true, email: true },
+      });
+    } catch (err) {
+      console.error("[api/bookings] clinician lookup failed:", err);
+      return serviceUnavailable();
+    }
+    if (!clinician) {
+      return NextResponse.json({ success: false, error: "Unknown clinician" }, { status: 400 });
+    }
+
+    // Engine re-check: the slot must still be one we'd offer right now
+    const rules = getAvailabilityForEmail(clinician.email);
+    try {
+      const busy = await getBusyIntervals(now, clinician.id, rules);
+      if (!isBookableSlot(slot, { now, rules, busy })) {
         return NextResponse.json(
           { success: false, error: "This slot is no longer available", code: "slot_taken" },
           { status: 409 }
@@ -124,6 +144,7 @@ export async function POST(req: Request) {
           status: BOOKING_STATUS.confirmed,
           bookingType: slotParsed.data.bookingType,
           machineType: slotParsed.data.machineType,
+          clinicianId: clinician.id,
           scheduledAt: slot,
           preferredDate: formatDateISO(slot),
           notes: slotParsed.data.notes,
@@ -147,7 +168,7 @@ export async function POST(req: Request) {
       ? MACHINE_TYPE_CONFIG[slotParsed.data.machineType].label
       : null;
     const sessionLabel = machineLabel ? `${bookingTypeLabel} — ${machineLabel}` : bookingTypeLabel;
-    const slotLabel = `${formatSlotDay(slot)}, ${formatSlotTime(slot)}`;
+    const slotLabel = `${formatSlotDay(slot)}, ${formatSlotTime(slot)} with ${displayName(clinician.name, clinician.email)}`;
 
     runAfterResponse(async () => {
       const patient = await db.query.users.findFirst({

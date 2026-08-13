@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
 import { db } from "@/lib/db";
-import { users, assessmentResults, bookings, documents, threads, threadMessages, dailyCheckins, patientNotes } from "@/lib/db/schema";
+import { users, assessmentResults, bookings, documents, threads, threadMessages, dailyCheckins, patientNotes, careTeam } from "@/lib/db/schema";
 import { eq, desc, asc } from "drizzle-orm";
 import Link from "next/link";
 import styles from "../../../admin.module.css";
@@ -16,6 +16,8 @@ import { PatientBookingsCard } from "@/components/admin/PatientBookingsCard";
 import { AdminBookingForm } from "@/components/admin/AdminBookingForm";
 import { PatientMessagesCard } from "@/components/admin/PatientMessagesCard";
 import { PatientGoalsCard } from "@/components/admin/PatientGoalsCard";
+import { CareTeamCard } from "@/components/admin/CareTeamCard";
+import { AiBriefCard } from "@/components/admin/AiBriefCard";
 import { AdminProfileEditForm } from "@/components/admin/AdminProfileEditForm";
 import { formatDateShort, formatDateLong, formatDateMonthDay } from "@/lib/utils/format";
 import { USER_ROLE } from "@/lib/config/auth";
@@ -55,7 +57,23 @@ export default async function PatientDetailPage({
     },
   });
 
-  if (!patient || patient.role !== USER_ROLE.patient) notFound();
+  if (!patient) notFound();
+
+  const [careRows, allClinicians] = await Promise.all([
+    db.query.careTeam.findMany({
+      where: eq(careTeam.patientId, id),
+      columns: { clinicianId: true },
+    }),
+    db.query.users.findMany({
+      where: eq(users.isClinician, true),
+      columns: { id: true, name: true },
+    }),
+  ]);
+
+  // Viewable as a patient: plain patients always; dual-role users (clinician/
+  // admin) only once someone treats them — otherwise admin accounts would
+  // surface here as empty "patients".
+  if (patient.role !== USER_ROLE.patient && careRows.length === 0) notFound();
 
   const now = new Date();
   // dailyCheckins fetched ASC — signal function sorts internally, pass last window's worth
@@ -97,6 +115,12 @@ export default async function PatientDetailPage({
       {/* 2-column card grid */}
       <div className={styles.patientGrid}>
         <PatientProfileCard profile={patient.profile} />
+        <AiBriefCard patientId={patient.id} />
+        <CareTeamCard
+          patientId={patient.id}
+          clinicians={allClinicians.filter((c) => c.id !== patient.id)}
+          members={careRows.map((r) => r.clinicianId)}
+        />
         <PatientAssessmentCard assessmentResults={patient.assessmentResults} />
         <PatientBookingsCard bookings={patient.bookings} />
         <PatientMessagesCard threads={patient.threads} patientId={patient.id} />
