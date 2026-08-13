@@ -19,6 +19,8 @@ function ResetPasswordForm() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
+  // Token failure gets its own recovery path: a "request a new link" action
+  const [tokenInvalid, setTokenInvalid] = useState(false);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -39,7 +41,14 @@ function ResetPasswordForm() {
 
       const data = await res.json();
       if (!data.success) {
-        setError(data.error ?? t("genericError"));
+        // Map machine-readable codes to translated messages — never show the
+        // API's raw (English) error string on a localized page.
+        if (data.code === "invalid_token") {
+          setTokenInvalid(true);
+          setError(t("expiredError"));
+        } else {
+          setError(t("genericError"));
+        }
         return;
       }
 
@@ -96,7 +105,19 @@ function ResetPasswordForm() {
             autoComplete="new-password"
           />
         </div>
-        {error && <p className={styles.error}>{error}</p>}
+        {error && (
+          <p className={styles.error} role="alert">
+            {error}
+            {tokenInvalid && (
+              <>
+                {" "}
+                <Link className={styles.link} href={AUTH_ROUTES.forgotPassword}>
+                  {t("requestNew")}
+                </Link>
+              </>
+            )}
+          </p>
+        )}
         <button type="submit" className={styles.submit} disabled={loading}>
           {loading ? t("submitting") : t("submit")}
         </button>

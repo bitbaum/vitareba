@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm";
 import { randomBytes } from "crypto";
 import { db } from "@/lib/db";
 import { users, verificationTokens } from "@/lib/db/schema";
-import { sendEmail } from "@/lib/email";
+import { sendEmail, isEmailConfigured } from "@/lib/email";
 import { passwordResetEmail } from "@/lib/email/templates";
 import { PORTAL_URL, COMPANY } from "@/lib/config/company";
 import { PASSWORD_RESET_TOKEN_EXPIRY_MS, RESET_RATE_LIMIT_MS, RESET_TOKEN_IDENTIFIER_PREFIX } from "@/lib/config/auth";
@@ -17,6 +17,18 @@ const schema = z.object({ email: emailField() });
 const OK = NextResponse.json({ success: true });
 
 export async function POST(req: Request) {
+  // Provider unconfigured is a server-wide condition checked BEFORE any user
+  // lookup, so this 503 is uniform for every request and leaks nothing about
+  // account existence. Without it, "check your inbox" is a lie and the
+  // patient is silently locked out.
+  if (!isEmailConfigured()) {
+    console.error("[api/auth/forgot-password] email provider not configured — reset unavailable");
+    return NextResponse.json(
+      { success: false, error: "Password reset temporarily unavailable" },
+      { status: 503 }
+    );
+  }
+
   const body = await req.json();
   const parsed = schema.safeParse(body);
   if (!parsed.success) return OK;

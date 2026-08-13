@@ -492,7 +492,8 @@
             "emailPlaceholder": "vous@exemple.com",
             "submit": "Envoyer le lien de réinitialisation",
             "submitting": "Envoi en cours…",
-            "backToSignIn": "← Retour à la connexion"
+            "backToSignIn": "← Retour à la connexion",
+            "unavailable": "La réinitialisation du mot de passe est temporairement indisponible. Veuillez nous contacter directement à {email}."
         },
         "resetPassword": {
             "title": "Définir un nouveau mot de passe",
@@ -500,6 +501,7 @@
             "invalidTitle": "Lien invalide",
             "invalidSub": "Ce lien de réinitialisation du mot de passe manque de paramètres requis.",
             "requestNew": "Demander un nouveau lien",
+            "expiredError": "Ce lien est invalide ou a expiré.",
             "newPasswordLabel": "Nouveau mot de passe",
             "confirmPasswordLabel": "Confirmer le mot de passe",
             "newPasswordPlaceholder": "Min. 8 caractères",

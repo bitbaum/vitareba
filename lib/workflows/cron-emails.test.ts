@@ -2,7 +2,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { emailQueue } from "@/lib/db/schema";
 
-const { mockFindMany, mockBookingFindFirst, mockProfileFindFirst, mockAssessmentFindFirst, mockUpdate, mockSendEmail } = vi.hoisted(() => ({
+const { mockFindMany, mockBookingFindFirst, mockProfileFindFirst, mockAssessmentFindFirst, mockUpdate, mockSendEmail, mockIsEmailConfigured } = vi.hoisted(() => ({
+  mockIsEmailConfigured: vi.fn(),
   mockFindMany: vi.fn(),
   mockBookingFindFirst: vi.fn(),
   mockProfileFindFirst: vi.fn(),
@@ -33,6 +34,7 @@ vi.mock("@/lib/db", () => ({
 
 vi.mock("@/lib/email/index", () => ({
   sendEmail: mockSendEmail,
+  isEmailConfigured: mockIsEmailConfigured,
 }));
 
 import { runCronEmails } from "./cron-emails";
@@ -45,6 +47,9 @@ describe("runCronEmails", () => {
     mockAssessmentFindFirst.mockReset();
     mockUpdate.mockReset();
     mockSendEmail.mockReset();
+    mockSendEmail.mockResolvedValue({ sent: true });
+    mockIsEmailConfigured.mockReset();
+    mockIsEmailConfigured.mockReturnValue(true);
 
     mockUpdate.mockImplementation((table) => ({
       set: vi.fn((values) => ({
@@ -77,6 +82,29 @@ describe("runCronEmails", () => {
     });
     expect(mockSendEmail).not.toHaveBeenCalled();
     expect(mockUpdate).toHaveBeenCalledWith(emailQueue);
+  });
+
+  it("leaves the whole queue pending when the provider is unconfigured — never marks void sends as sent", async () => {
+    mockIsEmailConfigured.mockReturnValue(false);
+    const result = await runCronEmails();
+    expect(result).toEqual({ success: false, error: "Email provider not configured" });
+    expect(mockFindMany).not.toHaveBeenCalled();
+    expect(mockUpdate).not.toHaveBeenCalled();
+  });
+
+  it("marks the row failed when the provider reports a send error", async () => {
+    mockFindMany.mockResolvedValue([
+      {
+        id: "q-1",
+        userId: "user-1",
+        templateKey: "welcome_patient",
+        payload: {},
+        user: { name: "Alice", email: "alice@example.com" },
+      },
+    ]);
+    mockSendEmail.mockResolvedValue({ sent: false, error: "domain not verified" });
+    const result = await runCronEmails();
+    expect(result).toMatchObject({ success: true, sent: 0, failed: 1 });
   });
 
   it("marks unknown templates as failed without attempting delivery", async () => {

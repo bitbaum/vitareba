@@ -492,7 +492,8 @@
             "emailPlaceholder": "lei@esempio.com",
             "submit": "Invia link di reimpostazione",
             "submitting": "Invio in corso…",
-            "backToSignIn": "← Torna all'accesso"
+            "backToSignIn": "← Torna all'accesso",
+            "unavailable": "La reimpostazione della password è temporaneamente non disponibile. Contattaci direttamente all'indirizzo {email}."
         },
         "resetPassword": {
             "title": "Imposta nuova password",
@@ -500,6 +501,7 @@
             "invalidTitle": "Link non valido",
             "invalidSub": "Questo link per la reimpostazione della password manca dei parametri richiesti.",
             "requestNew": "Richiedi un nuovo link",
+            "expiredError": "Questo link non è valido o è scaduto.",
             "newPasswordLabel": "Nuova password",
             "confirmPasswordLabel": "Conferma password",
             "newPasswordPlaceholder": "Min. 8 caratteri",
