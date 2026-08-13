@@ -30,6 +30,7 @@ import { DAY_MS } from "@/lib/utils/format";
 import { PendingAssessmentSaver } from "./PendingAssessmentSaver";
 import { CheckinMiniTrend } from "./CheckinMiniTrend";
 import { NextStepCard } from "./NextStepCard";
+import { AiInsightCard } from "./AiInsightCard";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -165,6 +166,8 @@ export default async function DashboardPage() {
         <ProfileCompletenessBar pct={profilePct} missingFields={missingProfileFields} />
 
         <CheckinMiniTrend checkins={trendCheckins} />
+
+        <AiInsightCard />
 
         <AssessmentSection
           latestAssessment={recentAssessments[0]}

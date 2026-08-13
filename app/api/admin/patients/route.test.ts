@@ -9,7 +9,12 @@ const { mockRequireAdmin, mockFindMany } = vi.hoisted(() => ({
 vi.mock("@/lib/auth/guards", () => ({ requireAdmin: mockRequireAdmin }));
 
 vi.mock("@/lib/db", () => ({
-  db: { query: { users: { findMany: mockFindMany } } },
+  db: {
+    query: { users: { findMany: mockFindMany } },
+    // The care-team inclusion builds an inArray subquery — never executed
+    // here because findMany itself is mocked, it just has to construct.
+    select: () => ({ from: () => ({}) }),
+  },
 }));
 
 import { GET } from "./route";

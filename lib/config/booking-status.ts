@@ -47,6 +47,7 @@ export type BookingRow = {
   machineType: MachineType | null;
   preferredDate: string | null;
   scheduledAt: string | null;
+  clinician: { id: string; name: string | null } | null;
   notes: string | null;
   createdAt: string;
 };

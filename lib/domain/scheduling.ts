@@ -1,23 +1,17 @@
 /**
  * Slot engine — pure, injectable, timezone-correct.
  *
- * Generates bookable appointment slots from the WEEKLY_HOURS rules
- * (lib/config/scheduling.ts) minus busy intervals (today: active bookings;
- * later: external calendar free/busy feeds the same parameter).
+ * Generates bookable appointment slots for ONE clinician from their
+ * availability rules (lib/config/scheduling.ts) minus busy intervals
+ * (today: their active bookings; later: external calendar free/busy feeds
+ * the same parameter).
  *
  * All wall-clock rules are interpreted in CLINIC_TIMEZONE, so a 09:00 slot is
  * 09:00 in Zürich regardless of server timezone or DST.
  */
 
 import { CLINIC_TIMEZONE } from "@/lib/config/company";
-import {
-  WEEKLY_HOURS,
-  SLOT_MINUTES,
-  BUFFER_MINUTES,
-  LEAD_TIME_HOURS,
-  HORIZON_DAYS,
-  MAX_PER_DAY,
-} from "@/lib/config/scheduling";
+import type { ClinicianAvailability } from "@/lib/config/scheduling";
 import { DAY_MS, HOUR_MS, formatDateISO } from "@/lib/utils/format";
 
 const MINUTE_MS = 60 * 1000;
@@ -43,8 +37,8 @@ function clinicOffsetMs(at: Date): number {
 /**
  * Convert clinic wall-clock time to a UTC instant. Two-pass: guess with the
  * offset at the naive instant, then correct with the offset at the guess —
- * stable everywhere except inside a DST jump hour, which WEEKLY_HOURS
- * windows (daytime) never touch.
+ * stable everywhere except inside a DST jump hour, which working windows
+ * (daytime) never touch.
  */
 function clinicTimeToUtc(dateISO: string, time: string): Date {
   const naive = new Date(`${dateISO}T${time}:00Z`);
@@ -63,23 +57,25 @@ function isoWeekday(dateISO: string): number {
 
 export type GenerateSlotsInput = {
   now: Date;
+  /** The clinician's availability rules (lib/config/scheduling.ts). */
+  rules: ClinicianAvailability;
   /** Intervals that block slots — active bookings, later external calendars. */
   busy: BusyInterval[];
 };
 
 /**
  * All bookable slot starts, ascending. A slot is offered when:
- *  - it lies inside a WEEKLY_HOURS window (slot + buffer must fit),
- *  - it starts at least LEAD_TIME_HOURS from now, within HORIZON_DAYS,
+ *  - it lies inside a weeklyHours window (slot + buffer must fit),
+ *  - it starts at least leadTimeHours from now, within horizonDays,
  *  - it doesn't overlap any busy interval (buffer included),
- *  - its clinic day has fewer than MAX_PER_DAY busy appointments already.
+ *  - its clinic day has fewer than maxPerDay busy appointments already.
  */
-export function generateSlots({ now, busy }: GenerateSlotsInput): Date[] {
-  const earliest = now.getTime() + LEAD_TIME_HOURS * HOUR_MS;
-  const latest = now.getTime() + HORIZON_DAYS * DAY_MS;
-  const slotSpanMs = (SLOT_MINUTES + BUFFER_MINUTES) * MINUTE_MS;
+export function generateSlots({ now, rules, busy }: GenerateSlotsInput): Date[] {
+  const earliest = now.getTime() + rules.leadTimeHours * HOUR_MS;
+  const latest = now.getTime() + rules.horizonDays * DAY_MS;
+  const slotSpanMs = (rules.slotMinutes + rules.bufferMinutes) * MINUTE_MS;
 
-  // Busy appointments per clinic day, for the MAX_PER_DAY cap
+  // Busy appointments per clinic day, for the maxPerDay cap
   const busyPerDay = new Map<string, number>();
   for (const b of busy) {
     const day = formatDateISO(b.start);
@@ -88,14 +84,14 @@ export function generateSlots({ now, busy }: GenerateSlotsInput): Date[] {
 
   const slots: Date[] = [];
   const seenDays = new Set<string>();
-  for (let dayOffset = 0; dayOffset <= HORIZON_DAYS; dayOffset++) {
+  for (let dayOffset = 0; dayOffset <= rules.horizonDays; dayOffset++) {
     const dayISO = formatDateISO(new Date(now.getTime() + dayOffset * DAY_MS));
     // +24h steps can revisit a clinic date across a fall-back DST shift
     if (seenDays.has(dayISO)) continue;
     seenDays.add(dayISO);
-    const windows = WEEKLY_HOURS[isoWeekday(dayISO)] ?? [];
+    const windows = rules.weeklyHours[isoWeekday(dayISO)] ?? [];
     if (windows.length === 0) continue;
-    if ((busyPerDay.get(dayISO) ?? 0) >= MAX_PER_DAY) continue;
+    if ((busyPerDay.get(dayISO) ?? 0) >= rules.maxPerDay) continue;
 
     for (const [start, end] of windows) {
       const windowStart = clinicTimeToUtc(dayISO, start);
@@ -117,10 +113,10 @@ export function generateSlots({ now, busy }: GenerateSlotsInput): Date[] {
 }
 
 /** Busy interval a booked slot occupies (appointment + buffer). */
-export function slotBusyInterval(scheduledAt: Date): BusyInterval {
+export function slotBusyInterval(scheduledAt: Date, rules: ClinicianAvailability): BusyInterval {
   return {
     start: scheduledAt,
-    end: new Date(scheduledAt.getTime() + (SLOT_MINUTES + BUFFER_MINUTES) * MINUTE_MS),
+    end: new Date(scheduledAt.getTime() + (rules.slotMinutes + rules.bufferMinutes) * MINUTE_MS),
   };
 }
 

@@ -71,8 +71,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
           token.emailVerified =
             (user as { emailVerified?: Date | null }).emailVerified ?? null;
 
-          const existingRole = (user as { role?: string }).role ?? USER_ROLE.patient;
-          const correctRole = resolveRole(user.email ?? "");
+          const existingRole = ((user as { role?: string }).role ?? USER_ROLE.patient) as UserRole;
+          const correctRole = resolveRole(user.email ?? "", existingRole);
+          // Promote-only sync: env-listed admins get their DB row lifted so
+          // the rest of the app agrees; DB-granted roles are never demoted.
           if (correctRole !== existingRole && user.id) {
             await db
               .update(users)

@@ -24,6 +24,7 @@ export const profileUpdateSchema = z.object({
   referralSource: z.string().max(PROFILE_REFERRAL_SOURCE_MAX_LENGTH).optional(),
   notes: z.string().max(PATIENT_NOTE_MAX_LENGTH).optional(),
   digestOptOut: z.boolean().optional(),
+  aiConsent: z.boolean().optional(),
   reminderOptOut: z.boolean().optional(),
 });
 

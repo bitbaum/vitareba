@@ -54,18 +54,23 @@ export default function BookingsPage() {
   // ── Slot picker state ──────────────────────────────────────────────────────
   const [slots, setSlots] = useState<string[]>([]);
   const [slotsLoading, setSlotsLoading] = useState(true);
+  const [clinicians, setClinicians] = useState<{ id: string; name: string }[]>([]);
+  const [clinicianId, setClinicianId] = useState<string | null>(null);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [slotBooking, setSlotBooking] = useState(false);
   const [slotError, setSlotError] = useState("");
   const [slotSuccess, setSlotSuccess] = useState<string | null>(null);
 
-  const loadSlots = useCallback(async () => {
+  const loadSlots = useCallback(async (forClinician?: string | null) => {
     try {
-      const res = await fetch("/api/bookings/slots");
+      const qs = forClinician ? `?clinicianId=${forClinician}` : "";
+      const res = await fetch(`/api/bookings/slots${qs}`);
       if (!res.ok) return;
       const data = await res.json();
       setSlots(data.data ?? []);
+      setClinicians(data.clinicians ?? []);
+      setClinicianId(data.clinicianId ?? null);
     } catch {
       // slot picker degrades to the manual request flow below
     } finally {
@@ -74,6 +79,14 @@ export default function BookingsPage() {
   }, []);
 
   useEffect(() => { loadSlots(); }, [loadSlots]);
+
+  function selectClinician(id: string) {
+    if (id === clinicianId) return;
+    setSelectedSlot(null);
+    setSelectedDay(null);
+    setSlotsLoading(true);
+    loadSlots(id);
+  }
 
   // Slots grouped by clinic day, insertion order = ascending
   const slotsByDay = new Map<string, string[]>();
@@ -94,7 +107,7 @@ export default function BookingsPage() {
       const res = await fetch("/api/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slot: selectedSlot }),
+        body: JSON.stringify({ slot: selectedSlot, clinicianId }),
       });
       const data = await res.json();
       if (!res.ok || !data.success) {
@@ -103,13 +116,14 @@ export default function BookingsPage() {
             ? "That slot was just taken — the list has been refreshed, please pick another."
             : "Booking failed. Please try again."
         );
-        loadSlots();
+        loadSlots(clinicianId);
         setSelectedSlot(null);
         return;
       }
-      setSlotSuccess(`${formatSlotDay(selectedSlot)}, ${formatSlotTime(selectedSlot)}`);
+      const doc = clinicians.find((c) => c.id === clinicianId);
+      setSlotSuccess(`${formatSlotDay(selectedSlot)}, ${formatSlotTime(selectedSlot)}${doc ? ` with ${doc.name}` : ""}`);
       setSelectedSlot(null);
-      loadSlots();
+      loadSlots(clinicianId);
       load();
     } catch {
       setSlotError("Booking failed. Please try again.");
@@ -198,6 +212,22 @@ export default function BookingsPage() {
           </p>
         ) : (
           <>
+            {clinicians.length > 1 && (
+              <div className={bookingStyles.dayTabs} role="radiogroup" aria-label="Choose your clinician">
+                {clinicians.map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={c.id === clinicianId}
+                    className={`${bookingStyles.dayTab}${c.id === clinicianId ? ` ${bookingStyles.dayTabActive}` : ""}`}
+                    onClick={() => selectClinician(c.id)}
+                  >
+                    {c.name}
+                  </button>
+                ))}
+              </div>
+            )}
             <div className={bookingStyles.dayTabs} role="tablist" aria-label="Available days">
               {dayKeys.map((day) => (
                 <button
@@ -244,7 +274,7 @@ export default function BookingsPage() {
       {slotSuccess && (
         <div className={bookingStyles.successBanner}>
           <p className={bookingStyles.bannerTitle}>Appointment confirmed</p>
-          <p>{slotSuccess} with {COMPANY.clinicianName}. A confirmation email is on its way — manage or cancel it below.</p>
+          <p>{slotSuccess}. A confirmation email is on its way — manage or cancel it below.</p>
         </div>
       )}
 
@@ -374,7 +404,7 @@ export default function BookingsPage() {
                     <p className={bookingStyles.bookingItemDate}>
                       {machineLabel ? `${typeLabel} — ${machineLabel}` : typeLabel}
                       {b.scheduledAt
-                        ? ` · ${formatSlotDay(b.scheduledAt)}, ${formatSlotTime(b.scheduledAt)}`
+                        ? ` · ${formatSlotDay(b.scheduledAt)}, ${formatSlotTime(b.scheduledAt)}${b.clinician?.name ? ` · ${b.clinician.name}` : ""}`
                         : b.preferredDate
                           ? ` · Preferred: ${formatDateLong(b.preferredDate)}`
                           : ""}

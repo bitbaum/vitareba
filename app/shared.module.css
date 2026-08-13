@@ -562,6 +562,52 @@
   color: var(--teal);
 }
 
+/* ─── Legal-gate notice (HTTP 451 surfaces) ──────────────────────────────── */
+
+.legalNotice {
+  border: 1px solid var(--gold-30);
+  background: var(--gold-6);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--ink2);
+}
+
+.legalNoticeTitle {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin: 0 0 0.4rem;
+}
+
+.legalNoticeLaw {
+  margin: 0.4rem 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.legalNoticeLink {
+  color: var(--teal);
+  text-decoration: none;
+}
+
+.legalNoticeLink:hover,
+.legalNoticeLink:focus-visible {
+  text-decoration: underline;
+  outline: none;
+}
+
+/* AI output — rendered as preformatted prose */
+.aiOutput {
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: var(--ink2);
+  white-space: pre-wrap;
+  margin: 0;
+}
+
 /* ─── Error boundary ─────────────────────────────────────────────────────── */
 
 .errorPage {

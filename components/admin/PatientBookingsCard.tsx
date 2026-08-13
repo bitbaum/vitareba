@@ -4,8 +4,9 @@ import { formatDateLong, formatSlotDay, formatSlotTime } from "@/lib/utils/forma
 
 // Loosen date-ish fields: this card is called from both the server (Drizzle
 // Date) and client (API string) sides.
-type PatientBooking = Omit<BookingRow, "createdAt" | "scheduledAt"> & {
+type PatientBooking = Omit<BookingRow, "createdAt" | "scheduledAt" | "clinician"> & {
   scheduledAt: Date | string | null;
+  clinician?: { id: string; name: string | null } | null;
 };
 
 export function PatientBookingsCard({ bookings }: { bookings: PatientBooking[] }) {

@@ -1737,6 +1737,33 @@
   composes: errorHome from "../shared.module.css";
 }
 
+/* ─── AI card ────────────────────────────────────────────────────────────── */
+
+.aiActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+/* ─── Care team card ─────────────────────────────────────────────────────── */
+
+.careTeamList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.careTeamRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.careTeamRow .cellName {
+  flex: 1;
+}
+
 /* ─── Mobile responsive ──────────────────────────────────────────────────── */
 
 @media (max-width: 767px) {

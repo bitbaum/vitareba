@@ -140,6 +140,10 @@ describe("resolveRole", () => {
     expect(resolveRole("patient@example.com")).toBe("patient");
   });
 
+  it("keeps a DB-granted admin role even when the email is not env-listed (promote-only)", () => {
+    expect(resolveRole("dualrole@clinic.ch", "admin")).toBe("admin");
+  });
+
   it("is case-insensitive for admin email check", () => {
     expect(resolveRole("ADMIN@EXAMPLE.COM")).toBe("admin");
     expect(resolveRole("Boss@Clinic.ch")).toBe("admin");

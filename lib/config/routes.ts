@@ -18,6 +18,7 @@ export const PORTAL_ROUTES = {
   messages:    "/messages",
   documents:   "/documents",
   profile:     "/profile",
+  regulation:  "/regulation",
 } as const satisfies Record<string, string>;
 
 /**
@@ -38,6 +39,7 @@ export const PORTAL_ROUTE_LABELS: Record<
   [PORTAL_ROUTES.messages]:    "Messages",
   [PORTAL_ROUTES.documents]:   "Documents",
   [PORTAL_ROUTES.profile]:     "Profile",
+  [PORTAL_ROUTES.regulation]:  "Regulation",
 };
 
 /**

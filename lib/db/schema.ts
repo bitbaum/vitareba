@@ -70,6 +70,9 @@ export const users = pgTable("users", {
   image: text("image"),
   password: text("password"),
   role: roleEnum("role").notNull().default("patient"),
+  // Marks actual doctors (distinct from role=admin, which is ACCESS level —
+  // a user can be clinician AND someone's patient; George is both by design).
+  isClinician: boolean("is_clinician").notNull().default(false),
   // Brute-force protection: count of consecutive failed login attempts.
   // Resets to 0 on successful login or when a lockout is triggered.
   failedLoginAttempts: integer("failed_login_attempts").notNull().default(0),
@@ -151,6 +154,9 @@ export const profiles = pgTable("profiles", {
   dipAlertSentAt: timestamp("dip_alert_sent_at", { mode: "date" }),
   // Updated when patient opens the goals page — drives "new goals" badge in nav
   goalsSeenAt: timestamp("goals_seen_at", { mode: "date" }),
+  // Explicit consent to AI processing of clinical data (GDPR Art. 9(2)(a) /
+  // revFADP). Null = not consented; AI routes refuse without it.
+  aiConsentAt: timestamp("ai_consent_at", { mode: "date" }),
   createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { mode: "date" }).notNull().defaultNow(),
 });
@@ -201,19 +207,40 @@ export const bookings = pgTable(
     bookingType: bookingTypeEnum("booking_type").notNull().default("consultation"),
     machineType: machineTypeEnum("machine_type"),
     preferredDate: varchar("preferred_date", { length: 50 }),
+    // Which doctor the appointment is with. Null = legacy/clinic-wide rows;
+    // the slot engine treats those as busy for EVERY clinician (conservative).
+    clinicianId: uuid("clinician_id").references(() => users.id),
     // Exact slot start for portal-scheduled appointments (null = manual request
-    // without a fixed time). Single-clinician model: the partial unique index
-    // below makes double-booking a slot impossible at the DB level — the API's
+    // without a fixed time). The partial unique index below makes double-
+    // booking a clinician's slot impossible at the DB level — the API's
     // conflict re-check can race, this cannot.
     scheduledAt: timestamp("scheduled_at", { mode: "date" }),
     notes: text("notes"),
     createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
   },
   (t) => [
-    uniqueIndex("bookings_active_slot_idx")
-      .on(t.scheduledAt)
+    uniqueIndex("bookings_clinician_slot_idx")
+      .on(t.clinicianId, t.scheduledAt)
       .where(sql`${t.status} IN ('pending', 'confirmed') AND ${t.scheduledAt} IS NOT NULL`),
   ]
+);
+
+// ─── Care team ────────────────────────────────────────────────────────────────
+// Who treats whom. Symmetric pairs are allowed (Manuel treats George, George
+// treats Manuel) — that is the point: clinicians can be each other's patients.
+
+export const careTeam = pgTable(
+  "care_team",
+  {
+    clinicianId: uuid("clinician_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    patientId: uuid("patient_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.clinicianId, t.patientId] })]
 );
 
 // ─── Documents ────────────────────────────────────────────────────────────────
@@ -343,7 +370,10 @@ export const assessmentLeads = pgTable("assessment_leads", {
 export const usersRelations = relations(users, ({ one, many }) => ({
   profile: one(profiles, { fields: [users.id], references: [profiles.userId] }),
   assessmentResults: many(assessmentResults),
-  bookings: many(bookings),
+  bookings: many(bookings, { relationName: "patient_bookings" }),
+  clinicianBookings: many(bookings, { relationName: "clinician_bookings" }),
+  patientsTreated: many(careTeam, { relationName: "care_team_clinician" }),
+  clinicians: many(careTeam, { relationName: "care_team_patient" }),
   documents: many(documents, { relationName: "patient_documents" }),
   threads: many(threads, { relationName: "patient_threads" }),
   sentMessages: many(threadMessages),
@@ -374,7 +404,29 @@ export const dailyCheckinsRelations = relations(dailyCheckins, ({ one }) => ({
 }));
 
 export const bookingsRelations = relations(bookings, ({ one }) => ({
-  user: one(users, { fields: [bookings.userId], references: [users.id] }),
+  user: one(users, {
+    fields: [bookings.userId],
+    references: [users.id],
+    relationName: "patient_bookings",
+  }),
+  clinician: one(users, {
+    fields: [bookings.clinicianId],
+    references: [users.id],
+    relationName: "clinician_bookings",
+  }),
+}));
+
+export const careTeamRelations = relations(careTeam, ({ one }) => ({
+  clinician: one(users, {
+    fields: [careTeam.clinicianId],
+    references: [users.id],
+    relationName: "care_team_clinician",
+  }),
+  patient: one(users, {
+    fields: [careTeam.patientId],
+    references: [users.id],
+    relationName: "care_team_patient",
+  }),
 }));
 
 // documents ↔ users is DOUBLY connected (owner + uploader) — with two FK paths
