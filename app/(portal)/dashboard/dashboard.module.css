@@ -71,13 +71,6 @@
   text-align: right;
 }
 
-.scoreValue {
-  font-family: var(--font-cormorant), serif;
-  font-size: 3.2rem;
-  font-weight: 300;
-  line-height: 1;
-}
-
 .scoreDenom {
   font-size: 0.72rem;
   color: var(--muted);
@@ -102,10 +95,6 @@
 /* ─── Intervention area ──────────────────────────────────────────────────── */
 
 .interventionScore {
-  font-family: var(--font-cormorant), serif;
-  font-size: 2.2rem;
-  font-weight: 300;
-  line-height: 1;
   margin-bottom: 0.75rem;
 }
 
@@ -123,17 +112,6 @@
   color: var(--muted);
   line-height: 1.5;
   margin-bottom: 0.75rem;
-}
-
-/* ─── Card variants (inline expansion of shared .card) ───────────────────── */
-
-/* Warning card: card base + left accent border */
-.cardWarn {
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: 1.75rem;
-  border-left: 3px solid var(--warn);
 }
 
 .cardLink {
@@ -170,24 +148,10 @@
   line-height: 1.7;
 }
 
-.bookingStatusBadge {
-  display: inline-block;
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  padding: 0.25rem 0.65rem;
-  border-radius: var(--radius-2xl);
-  margin-bottom: 0.5rem;
-}
-
 /* ─── Messages row ───────────────────────────────────────────────────────── */
 
-/* Inline expansion of .card + flex layout */
 .messagesRow {
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: 1.75rem;
+  composes: card from "../../shared.module.css";
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -205,12 +169,8 @@
 
 /* ─── Check-in prompt ────────────────────────────────────────────────────── */
 
-/* Inline expansion of .card + flex layout */
 .checkinPrompt {
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: 1.75rem;
+  composes: card from "../../shared.module.css";
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -236,18 +196,15 @@
 
 .checkinPromptLabel {
   font-size: 0.72rem;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--teal);
   margin-bottom: 0.35rem;
 }
 
-/* Check-in done (already checked in today) — inline expansion of .card */
+/* Check-in done (already checked in today) */
 .checkinDone {
-  background: var(--off);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: 1.75rem;
+  composes: cardMuted from "../../shared.module.css";
   display: flex;
   align-items: flex-start;
   gap: 1rem;
@@ -268,7 +225,7 @@
 
 .checkinDoneLabel {
   font-size: 0.72rem;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--teal);
   margin-bottom: 0.2rem;
@@ -361,15 +318,6 @@
   margin-bottom: 1rem;
 }
 
-/* Inline expansion of .cardTitle with margin: 0 (header context, no bottom margin needed) */
-.goalsCardTitle {
-  font-size: 0.72rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--teal);
-  margin: 0;
-}
-
 .goalsViewAll {
   font-size: 0.72rem;
   color: var(--teal);
@@ -382,9 +330,7 @@
 }
 
 .goalsList {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  composes: listStack from "../../shared.module.css";
   margin-top: 0.5rem;
 }
 
@@ -392,20 +338,6 @@
   font-size: 0.85rem;
   color: var(--ink);
   margin: 0 0 0.25rem;
-}
-
-.goalProgressTrack {
-  height: 5px;
-  background: var(--border);
-  border-radius: var(--radius-xs);
-  overflow: hidden;
-}
-
-.goalProgressFill {
-  height: 100%;
-  background: var(--teal);
-  border-radius: var(--radius-xs);
-  transition: width var(--transition-normal);
 }
 
 .goalProgressMeta {
@@ -451,12 +383,8 @@
 
 /* ─── ProfileCompletenessBar ─────────────────────────────────────────────── */
 
-/* Inline expansion of .card with reduced padding */
 .profileBar {
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: 1.25rem 1.75rem;
+  composes: cardTight from "../../shared.module.css";
 }
 
 .profileBarHeader {
@@ -466,32 +394,14 @@
   margin-bottom: 0.6rem;
 }
 
-/* Inline expansion of .cardTitle with margin: 0 */
-.profileBarTitle {
-  font-size: 0.72rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--teal);
-  margin: 0;
-}
-
 .profileBarPct {
   font-size: 0.82rem;
   font-weight: 400;
 }
 
 .profileBarTrack {
-  height: 4px;
-  border-radius: var(--radius-2xs);
-  background: var(--light);
+  composes: progressTrack from "../../shared.module.css";
   margin-bottom: 0.75rem;
-}
-
-.profileBarFill {
-  height: 100%;
-  border-radius: var(--radius-2xs);
-  background: var(--teal);
-  transition: width var(--transition-normal) ease;
 }
 
 .profileBarText {

@@ -131,7 +131,7 @@ export default function CheckinPage() {
       <div className={checkinStyles.layout}>
         {/* Post-save success panel */}
         {saved && (
-          <div className={checkinStyles.successPanel}>
+          <div className={styles.cardMuted}>
             <div className={checkinStyles.successTop}>
               <span className={checkinStyles.successCheck}>✓</span>
               <div>
@@ -189,7 +189,7 @@ export default function CheckinPage() {
             </label>
             <textarea
               id="checkin-notes"
-              className={checkinStyles.notesTextarea}
+              className={styles.formTextarea}
               value={form.notes}
               onChange={(e) => setForm((prev) => ({ ...prev, notes: e.target.value }))}
               maxLength={CHECKIN_NOTES_MAX_LENGTH}
@@ -200,7 +200,7 @@ export default function CheckinPage() {
           {saveError && <p className={styles.formErrorTop}>{saveError}</p>}
           <button
             type="submit"
-            className={checkinStyles.submitBtn}
+            className={`${styles.btnPrimary} ${styles.btnBlock}`}
             disabled={saving || !allFilled}
           >
             {saving ? SAVING_LABEL : saved ? SAVED_LABEL : alreadyCheckedIn ? "Update check-in" : "Save check-in"}

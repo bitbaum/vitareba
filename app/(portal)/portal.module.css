@@ -1,3 +1,98 @@
+/* ─── Patient portal styles ──────────────────────────────────────────────────
+   Portal-specific shell (sidebar, bottom tab bar) + re-exports of the shared
+   app primitives (app/shared.module.css) so pages keep ONE styles import.
+   Do not restate shared geometry here — add to shared.module.css instead. */
+
+/* ─── Shared primitive re-exports ────────────────────────────────────────── */
+
+.mainWrap { composes: mainWrap from "../shared.module.css"; }
+.header { composes: header from "../shared.module.css"; }
+.main { composes: main from "../shared.module.css"; }
+
+.pageEyebrow { composes: pageEyebrow from "../shared.module.css"; }
+.pageTitle { composes: pageTitle from "../shared.module.css"; }
+.pageSub { composes: pageSub from "../shared.module.css"; }
+.pageHeader { composes: pageHeader from "../shared.module.css"; }
+
+.card { composes: card from "../shared.module.css"; }
+.cardMb { composes: cardMb from "../shared.module.css"; }
+.cardGap { composes: cardGap from "../shared.module.css"; }
+.cardMuted { composes: cardMuted from "../shared.module.css"; }
+.cardWarn { composes: cardWarn from "../shared.module.css"; }
+.cardTight { composes: cardTight from "../shared.module.css"; }
+.cardTitle { composes: cardTitle from "../shared.module.css"; }
+.cardTitleFlush { composes: cardTitleFlush from "../shared.module.css"; }
+.sectionLabel { composes: sectionLabel from "../shared.module.css"; }
+
+.btnPrimary { composes: btnPrimary from "../shared.module.css"; }
+.btnSm { composes: btnSm from "../shared.module.css"; }
+.btnBlock { composes: btnBlock from "../shared.module.css"; }
+.btnSecondary { composes: btnSecondary from "../shared.module.css"; }
+.btnText { composes: btnText from "../shared.module.css"; }
+
+.pill { composes: pill from "../shared.module.css"; }
+.pillTeal { composes: pillTeal from "../shared.module.css"; }
+.pillGold { composes: pillGold from "../shared.module.css"; }
+
+.statValue { composes: statValue from "../shared.module.css"; }
+.statSm { composes: statSm from "../shared.module.css"; }
+.statMd { composes: statMd from "../shared.module.css"; }
+.statLg { composes: statLg from "../shared.module.css"; }
+.statXl { composes: statXl from "../shared.module.css"; }
+
+.progressTrack { composes: progressTrack from "../shared.module.css"; }
+.progressFill { composes: progressFill from "../shared.module.css"; }
+.progressLabel { composes: progressLabel from "../shared.module.css"; }
+
+.emptyState { composes: emptyState from "../shared.module.css"; }
+.emptyTitle { composes: emptyTitle from "../shared.module.css"; }
+.emptyBody { composes: emptyBody from "../shared.module.css"; }
+.emptyAction { composes: emptyAction from "../shared.module.css"; }
+
+.checkCircle { composes: checkCircle from "../shared.module.css"; }
+
+.formStack { composes: formStack from "../shared.module.css"; }
+.formTextarea { composes: formTextarea from "../shared.module.css"; }
+.formTextareaLg { composes: formTextareaLg from "../shared.module.css"; }
+.formError { composes: formError from "../shared.module.css"; }
+.formErrorTop { composes: formErrorTop from "../shared.module.css"; }
+.formHint { composes: formHint from "../shared.module.css"; }
+.formActions { composes: formActions from "../shared.module.css"; }
+
+.listStack { composes: listStack from "../shared.module.css"; }
+.meta { composes: meta from "../shared.module.css"; }
+.metaSm { composes: metaSm from "../shared.module.css"; }
+
+.docList { composes: docList from "../shared.module.css"; }
+.docRow { composes: docRow from "../shared.module.css"; }
+.docTitle { composes: docTitle from "../shared.module.css"; }
+.docMeta { composes: docMeta from "../shared.module.css"; }
+.docLink { composes: docLink from "../shared.module.css"; }
+
+.msgList { composes: msgList from "../shared.module.css"; }
+.msgRow { composes: msgRow from "../shared.module.css"; }
+.msgRowEnd { composes: msgRowEnd from "../shared.module.css"; }
+.msgBubbleAccent { composes: msgBubbleAccent from "../shared.module.css"; }
+.msgBubbleNeutral { composes: msgBubbleNeutral from "../shared.module.css"; }
+.msgMeta { composes: msgMeta from "../shared.module.css"; }
+.msgRead { composes: msgRead from "../shared.module.css"; }
+.composeForm { composes: composeForm from "../shared.module.css"; }
+.composeRow { composes: composeRow from "../shared.module.css"; }
+.composeTextarea { composes: composeTextarea from "../shared.module.css"; }
+.sendBtn { composes: sendBtn from "../shared.module.css"; }
+.unreadDot { composes: unreadDot from "../shared.module.css"; }
+.backLink { composes: backLink from "../shared.module.css"; }
+
+.errorPage { composes: errorPage from "../shared.module.css"; }
+.errorTitle { composes: errorTitle from "../shared.module.css"; }
+.errorBody { composes: errorBody from "../shared.module.css"; }
+.errorActions { composes: errorActions from "../shared.module.css"; }
+.errorRetry { composes: errorRetry from "../shared.module.css"; }
+.errorHome { composes: errorHome from "../shared.module.css"; }
+
+/* Aliases kept for existing call sites */
+.retryBtn { composes: btnText from "../shared.module.css"; }
+
 /* ─── Portal shell ───────────────────────────────────────────────────────── */
 
 .shell {
@@ -7,7 +102,7 @@
 }
 
 .sidebar {
-  background: var(--ink);
+  background: linear-gradient(200deg, var(--ink2) -40%, var(--ink) 45%);
   color: var(--white);
   display: flex;
   flex-direction: column;
@@ -21,7 +116,9 @@
 .logoLink {
   text-decoration: none;
   color: var(--white);
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--white-8);
   display: block;
 }
 
@@ -36,15 +133,20 @@
   display: flex;
   flex-direction: column;
   gap: 0.1rem;
-  padding-bottom: 0.65rem;
-  margin-bottom: 0.65rem;
-  border-bottom: 1px solid var(--white-7);
+  margin-bottom: 1.25rem;
 }
 
 .navGroup:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
   margin-bottom: 0;
+}
+
+.navGroupLabel {
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--white-35);
+  padding: 0 0.9rem;
+  margin-bottom: 0.4rem;
 }
 
 .navItem {
@@ -167,101 +269,20 @@
   line-height: 1;
 }
 
-/* ─── Main area ──────────────────────────────────────────────────────────── */
-
-.mainWrap {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background: var(--off);
-}
-
-.header {
-  height: 56px;
-  background: var(--white);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 2.5rem;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  flex-shrink: 0;
-}
-
-.main {
-  padding: 2.5rem;
-  flex: 1;
-}
-
 /* ─── Header breadcrumb ──────────────────────────────────────────────────── */
 
 .breadcrumb {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   color: var(--muted);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   font-weight: 400;
-}
-
-/* ─── Mobile shell ───────────────────────────────────────────────────────── */
-
-@media (max-width: 767px) {
-  .shell {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
-  }
-
-  /* Hide sidebar nav entirely on mobile — replaced by bottom tab bar */
-  .sidebar {
-    position: static;
-    height: auto;
-    flex-direction: row;
-    align-items: center;
-    padding: 0.75rem 1.25rem;
-    gap: 0;
-  }
-
-  .logoLink {
-    margin-bottom: 0;
-    margin-right: auto;
-  }
-
-  /* Hide the full nav on mobile */
-  .nav {
-    display: none;
-  }
-
-  .header {
-    padding: 0 1.25rem;
-  }
-
-  /* Extra bottom padding so bottom nav doesn't cover content */
-  .main {
-    padding: 1.5rem 1.25rem 6rem;
-  }
 }
 
 /* ─── Mobile bottom nav ──────────────────────────────────────────────────── */
 
 .bottomNav {
   display: none;
-}
-
-@media (max-width: 767px) {
-  .bottomNav {
-    display: flex;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 60px;
-    background: var(--ink);
-    border-top: 1px solid var(--white-8);
-    z-index: 100;
-    padding: 0 0.25rem;
-    padding-bottom: env(safe-area-inset-bottom, 0); /* iOS home indicator */
-  }
 }
 
 .bottomNavItem {
@@ -297,45 +318,7 @@
   text-transform: uppercase;
 }
 
-/* ─── Shared page primitives ─────────────────────────────────────────────── */
-
-.pageTitle {
-  font-family: var(--font-cormorant), serif;
-  font-size: 2rem;
-  font-weight: 300;
-  margin-bottom: 0.35rem;
-}
-
-.pageTitle em {
-  font-style: italic;
-  color: var(--teal);
-}
-
-.pageSub {
-  font-size: 0.82rem;
-  color: var(--muted);
-  margin-bottom: 2rem;
-}
-
-.card {
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: 1.75rem;
-}
-
-.cardMb {
-  composes: card;
-  margin-bottom: 1.5rem;
-}
-
-.cardTitle {
-  font-size: 0.72rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--teal);
-  margin-bottom: 1rem;
-}
+/* ─── Layout helpers ─────────────────────────────────────────────────────── */
 
 .grid2 {
   display: grid;
@@ -343,248 +326,69 @@
   gap: 1.25rem;
 }
 
-@media (max-width: 767px) {
-  .grid2 {
-    grid-template-columns: 1fr;
-  }
-}
-
-.emptyState {
-  text-align: center;
-  padding: 3rem 2rem;
-  color: var(--muted);
-  font-size: 0.85rem;
-}
-
-.emptyTitle {
-  font-weight: 500;
-  margin: 0 0 0.5rem;
-}
-
-/* CTA button/link shown in empty states — works for both <a> and <button> */
-.emptyAction {
-  display: inline-block;
-  margin-top: 1.5rem;
-  padding: 0.75rem 1.5rem;
-  background: var(--ink);
-  color: var(--white);
-  border: none;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-dm-sans), sans-serif;
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background var(--transition-fast);
-}
-
-.emptyAction:hover,
-.emptyAction:focus-visible {
-  background: var(--teal);
-  outline: none;
-}
-
-/* ─── Page header row (title + action button) ────────────────────────────── */
-
-.pageHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 2rem;
-  gap: 1rem;
-}
-
-/* Override submit button sizing when used inline in a page header */
-.headerBtn {
-  margin-top: 0 !important;
-  width: auto !important;
-}
-
-@media (max-width: 767px) {
-  .pageHeader {
-    flex-wrap: wrap;
-  }
-}
-
-/* ─── List and form utilities ────────────────────────────────────────────── */
-
-.listStack {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.formStack {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.formTextarea {
-  width: 100%;
-  padding: 0.65rem 0.9rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  font-family: inherit;
-  font-size: 0.9rem;
-  resize: vertical;
-  min-height: 80px;
-  box-sizing: border-box;
-}
-
-.formError {
-  font-size: 0.75rem;
-  color: var(--danger);
-  margin: 0;
-}
-
-.formErrorTop {
-  composes: formError;
-  margin-top: 0.5rem;
-}
-
-.formActions {
-  display: flex;
-  gap: 0.75rem;
-}
-
+/* Primary form action stretches to balance the cancel button beside it */
 .formActionPrimary {
-  margin-top: 0 !important;
   flex: 1;
 }
 
 .cancelBtn {
+  composes: btnSecondary from "../shared.module.css";
   flex: 1;
-  padding: 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: none;
-  cursor: pointer;
-  font-size: 0.8rem;
-  font-family: inherit;
 }
 
-.cancelBtn:hover,
-.cancelBtn:focus-visible {
-  background: var(--light);
-  outline: none;
-}
-
-.formHint {
-  font-size: 0.82rem;
-  color: var(--muted);
-  margin-bottom: 1rem;
-}
-
-/* ─── Card with bottom gap (card above a list) ───────────────────────────── */
-
-.cardGap {
-  margin-bottom: 1.5rem;
-}
-
-/* ─── Retry inline button ────────────────────────────────────────────────── */
-
-.retryBtn {
-  color: var(--teal);
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: inherit;
-  padding: 0;
-  font-family: inherit;
-}
-
-.retryBtn:hover,
-.retryBtn:focus-visible {
-  color: var(--teal-dark);
-  outline: none;
-  text-decoration: underline;
-}
-
-/* ─── CTA button sizing (shared across dashboard + bookings) ─────────────── */
-
+/* CTA button sizing (shared across dashboard + bookings, on global .btn-dark) */
 .ctaBtnSmall {
   display: inline-block;
   padding: 0.6rem 1.25rem;
   font-size: 0.75rem;
 }
 
-/* ─── Error boundary ──────────────────────────────────────────────────────── */
-
-.errorPage {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 60vh;
-  text-align: center;
-  padding: 2rem;
-  gap: 0.75rem;
-}
-
-.errorTitle {
-  font-size: 1.25rem;
-  font-weight: 500;
-  color: var(--ink);
-  margin: 0;
-}
-
-.errorBody {
-  color: var(--muted);
-  max-width: 420px;
-  margin: 0;
-}
-
-.errorActions {
-  display: flex;
-  gap: 1rem;
-  margin-top: 0.5rem;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.errorRetry {
-  display: inline-block;
-  background: var(--teal);
-  color: var(--white);
-  border: none;
-  border-radius: var(--radius-md);
-  padding: 0.6rem 1.25rem;
-  font-size: 0.875rem;
-  cursor: pointer;
-  letter-spacing: 0.04em;
-  text-decoration: none;
-}
-
-.errorRetry:hover {
-  background: var(--teal-dark);
-}
-
-.errorHome {
-  color: var(--teal);
-  font-size: 0.875rem;
-  text-decoration: none;
-  padding: 0.6rem 0;
-}
-
-.errorHome:hover {
-  text-decoration: underline;
-}
-
-/* ─── Mobile: tighter reading surface ────────────────────────────────────── */
+/* ─── Responsive (all media rules at file end) ───────────────────────────── */
 
 @media (max-width: 767px) {
-  /* The page title is orientation, not content — shrink it so the next-step
-     card is visible without scrolling */
-  .pageTitle {
-    font-size: 1.5rem;
+  .shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    /* Clearance for the fixed bottom tab bar */
+    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
   }
 
-  .pageSub {
-    margin-bottom: 1rem;
+  /* Sidebar collapses to a top logo bar — nav moves to the bottom tab bar */
+  .sidebar {
+    position: static;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.75rem 1.25rem;
+    gap: 0;
   }
 
-  .card {
-    padding: 1.25rem;
+  .logoLink {
+    margin-bottom: 0;
+    margin-right: auto;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .nav {
+    display: none;
+  }
+
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
+
+  .bottomNav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: var(--ink);
+    border-top: 1px solid var(--white-8);
+    z-index: var(--z-nav);
+    padding: 0 0.25rem;
+    padding-bottom: env(safe-area-inset-bottom, 0); /* iOS home indicator */
   }
 }

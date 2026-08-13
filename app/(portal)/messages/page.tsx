@@ -73,7 +73,7 @@ export default function MessagesPage() {
           </h1>
           <p className={styles.pageSub}>Direct line to {COMPANY.clinicianName} — secure and asynchronous</p>
         </div>
-        <button type="button" className={`${authStyles.submit} ${styles.headerBtn}`} onClick={() => setShowForm(!showForm)}>
+        <button type="button" className={styles.btnPrimary} onClick={() => setShowForm(!showForm)}>
           + New message
         </button>
       </div>
@@ -103,7 +103,7 @@ export default function MessagesPage() {
             </div>
             {submitError && <p className={styles.formError}>{submitError}</p>}
             <div className={styles.formActions}>
-              <button type="submit" className={`${authStyles.submit} ${styles.formActionPrimary}`} disabled={submitting}>
+              <button type="submit" className={`${styles.btnPrimary} ${styles.formActionPrimary}`} disabled={submitting}>
                 {submitting ? "Sending…" : "Send message"}
               </button>
               <button type="button" onClick={() => setShowForm(false)} className={styles.cancelBtn}>
@@ -149,7 +149,7 @@ export default function MessagesPage() {
                 <div className={styles.card}>
                   <div className={msgStyles.threadRow}>
                     <div className={msgStyles.threadSubjectRow}>
-                      {isUnread && <span className={msgStyles.unreadDot} role="img" aria-label="Unread" />}
+                      {isUnread && <span className={styles.unreadDot} role="img" aria-label="Unread" />}
                       <p className={`${msgStyles.threadSubject}${isUnread ? ` ${msgStyles.threadSubjectUnread}` : ""}`}>
                         {t.subject}
                       </p>

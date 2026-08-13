@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { assessmentResults } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import Link from "next/link";
-import { DIMENSIONS, getInterpretation, scoreColor, scoreClass } from "@/lib/assessment/data";
+import { DIMENSIONS, getInterpretation, scoreClass } from "@/lib/assessment/data";
 import { ASSESSMENT_STALE_DAYS } from "@/lib/config/portal";
 import { PORTAL_ROUTES } from "@/lib/config/routes";
 import { formatDateLong, formatDateMonthDay } from "@/lib/utils/format";
@@ -91,7 +91,7 @@ export default async function AssessmentsPage({
           </div>
         </div>
       ) : (
-        <div className={assessStyles.resultsList}>
+        <div className={styles.listStack}>
           {results.map((result, i) => {
             const scores = result.scores as Record<string, number>;
             return (
@@ -101,13 +101,13 @@ export default async function AssessmentsPage({
                     <p className={styles.cardTitle}>
                       {i === 0 ? "Latest assessment" : `Assessment ${results.length - i}`}
                     </p>
-                    <p className={assessStyles.resultDate}>
+                    <p className={styles.meta}>
                       {formatDateLong(result.completedAt)}
                     </p>
                   </div>
                   <div className={assessStyles.overallBlock}>
                     <span
-                      className={`${assessStyles.overallScore} ${scoreClass(result.overallScore)}`}
+                      className={`${styles.statValue} ${styles.statXl} ${scoreClass(result.overallScore)}`}
                     >
                       {result.overallScore}
                     </span>
@@ -121,14 +121,14 @@ export default async function AssessmentsPage({
                     return (
                       <div key={dim.id} className={assessStyles.dimCell}>
                         <div className={assessStyles.dimIcon}>{dim.icon}</div>
-                        <div className={`${assessStyles.dimScore} ${scoreClass(score)}`}>
+                        <div className={`${styles.statValue} ${styles.statMd} ${scoreClass(score)}`}>
                           {score}
                         </div>
                         <div className={assessStyles.dimName}>{dim.name}</div>
                         <div className={assessStyles.dimBar}>
                           <div
-                            className={assessStyles.dimBarFill}
-                            style={{ width: `${score}%`, background: scoreColor(score) }}
+                            className={`${assessStyles.dimBarFill} ${scoreClass(score)}`}
+                            style={{ width: `${score}%` }}
                           />
                         </div>
                       </div>
@@ -143,7 +143,7 @@ export default async function AssessmentsPage({
                     return (
                       <div key={dim.id} className={assessStyles.interpRow}>
                         <div className={assessStyles.interpMeta}>
-                          <span className={`${assessStyles.interpScore} ${scoreClass(score)}`}>
+                          <span className={`${styles.statValue} ${styles.statSm} ${scoreClass(score)}`}>
                             {score}
                           </span>
                           <span className={assessStyles.interpDimName}>{dim.name}</span>

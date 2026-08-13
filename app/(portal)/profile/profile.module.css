@@ -1,7 +1,7 @@
-/* ─── Profile hero card ───────────────────────────────────────────────────── */
+/* ─── Profile — hero card, completeness, preference deltas ────────────────── */
 
 .heroCard {
-  background: var(--ink);
+  background: linear-gradient(200deg, var(--ink2) -40%, var(--ink) 45%);
   border-radius: var(--radius-2xl);
   padding: 2rem;
   display: flex;
@@ -80,15 +80,6 @@
   letter-spacing: 0.06em;
 }
 
-@media (max-width: 767px) {
-  .heroCard {
-    flex-direction: column;
-    text-align: center;
-    gap: 1rem;
-    padding: 1.5rem;
-  }
-}
-
 .layout {
   max-width: 640px;
   display: flex;
@@ -108,49 +99,13 @@
   gap: 1.1rem;
 }
 
-@media (max-width: 767px) {
-  .fieldGrid {
-    grid-template-columns: 1fr;
-  }
-}
-
 .fieldStack {
   display: flex;
   flex-direction: column;
   gap: 1.1rem;
 }
 
-.textarea {
-  width: 100%;
-  padding: 0.65rem 0.9rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  font-family: inherit;
-  font-size: 0.9rem;
-  resize: vertical;
-  min-height: 80px;
-  transition: border-color var(--transition-fast);
-  box-sizing: border-box;
-}
-
-.textarea:focus {
-  outline: none;
-  border-color: var(--teal);
-}
-
-.textareaLg {
-  composes: textarea;
-  min-height: 120px;
-}
-
 /* ── Completeness indicator ─────────────────────────────────────────────── */
-
-.completenessCard {
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: 1.25rem 1.75rem;
-}
 
 .completenessHeader {
   display: flex;
@@ -167,26 +122,12 @@
 }
 
 .completenessValue {
-  font-family: var(--font-cormorant), serif;
-  font-size: 1.6rem;
-  font-weight: 300;
   color: var(--teal);
-  line-height: 1;
 }
 
-.progressTrack {
-  height: 4px;
-  background: var(--border);
-  border-radius: var(--radius-2xs);
-  overflow: hidden;
+.completenessTrack {
+  composes: progressTrack from "../../shared.module.css";
   margin-bottom: 0.75rem;
-}
-
-.progressFill {
-  height: 100%;
-  background: var(--teal);
-  border-radius: var(--radius-2xs);
-  transition: width var(--transition-slow) ease;
 }
 
 .completenessHint {
@@ -238,4 +179,19 @@
 
 .pwSubmitBtn {
   align-self: flex-start;
+}
+
+/* ─── Mobile ──────────────────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .heroCard {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+    padding: 1.5rem;
+  }
+
+  .fieldGrid {
+    grid-template-columns: 1fr;
+  }
 }

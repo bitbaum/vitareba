@@ -55,9 +55,9 @@ export default async function GoalsPage() {
       </p>
 
       {goals.length === 0 ? (
-        <div className={`${styles.card} ${goalStyles.emptyState}`}>
-          <p className={goalStyles.emptyTitle}>No goals set yet</p>
-          <p className={goalStyles.emptyBody}>
+        <div className={`${styles.card} ${styles.emptyState}`}>
+          <p className={styles.emptyTitle}>No goals set yet</p>
+          <p className={styles.emptyBody}>
             Your clinician will add clinical goals after your first consultation. They&apos;ll
             appear here with progress tracking linked to your check-ins and assessments.
           </p>
@@ -69,8 +69,8 @@ export default async function GoalsPage() {
         <>
           {active.length > 0 && (
             <div className={goalStyles.section}>
-              <p className={goalStyles.sectionLabel}>Active goals</p>
-              <div className={goalStyles.goalList}>
+              <p className={styles.sectionLabel}>Active goals</p>
+              <div className={styles.listStack}>
                 {active.map((goal) => {
                   const pct = computeGoalProgress(goal.baseline, goal.current, goal.target);
                   const hasNumbers = goal.baseline != null || goal.current != null || goal.target != null;
@@ -82,7 +82,7 @@ export default async function GoalsPage() {
                       <p className={goalStyles.goalTitle}>{goal.title}</p>
 
                       {metricLabel && (
-                        <p className={goalStyles.goalMeta}>
+                        <p className={styles.meta}>
                           Linked metric: <span className={goalStyles.goalMetaValue}>{metricLabel}</span>
                           {autoUpdateNote && (
                             <span className={goalStyles.autoUpdateNote}> · {autoUpdateNote}</span>
@@ -94,13 +94,13 @@ export default async function GoalsPage() {
                         <div className={goalStyles.progressSection}>
                           {pct !== null ? (
                             <>
-                              <div className={goalStyles.progressTrack}>
+                              <div className={styles.progressTrack}>
                                 <div
-                                  className={goalStyles.progressFill}
+                                  className={styles.progressFill}
                                   style={{ width: `${pct}%` }}
                                 />
                               </div>
-                              <p className={goalStyles.progressLabel}>{goalProgressLabel(pct)}</p>
+                              <p className={styles.progressLabel}>{goalProgressLabel(pct)}</p>
                             </>
                           ) : null}
 
@@ -139,16 +139,16 @@ export default async function GoalsPage() {
 
           {completed.length > 0 && (
             <div className={goalStyles.section}>
-              <p className={goalStyles.sectionLabel}>Completed goals</p>
-              <div className={goalStyles.goalList}>
+              <p className={styles.sectionLabel}>Completed goals</p>
+              <div className={styles.listStack}>
                 {completed.map((goal) => (
                   <div key={goal.id} className={`${styles.card} ${goalStyles.goalCardCompleted}`}>
                     <div className={goalStyles.completedHeader}>
                       <p className={goalStyles.goalTitle}>{goal.title}</p>
-                      <span className={goalStyles.completedBadge}>Completed</span>
+                      <span className={styles.pillTeal}>Completed</span>
                     </div>
                     {goal.completedAt && (
-                      <p className={goalStyles.goalMeta}>
+                      <p className={styles.meta}>
                         Completed {formatDateLong(goal.completedAt)}
                       </p>
                     )}

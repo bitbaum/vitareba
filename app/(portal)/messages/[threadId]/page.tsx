@@ -73,7 +73,7 @@ export default function ThreadPage() {
   if (loadError) return (
     <div className={styles.emptyState}>
       Could not load this conversation.{" "}
-      <button type="button" onClick={() => { setLoadError(false); load(); }} className={msgStyles.retryBtn}>
+      <button type="button" onClick={() => { setLoadError(false); load(); }} className={styles.retryBtn}>
         Retry
       </button>
     </div>
@@ -82,22 +82,22 @@ export default function ThreadPage() {
 
   return (
     <div className={msgStyles.threadDetail}>
-      <Link href={PORTAL_ROUTES.messages} className={msgStyles.backLink}>
+      <Link href={PORTAL_ROUTES.messages} className={styles.backLink}>
         ← Back to messages
       </Link>
       <h1 className={styles.pageTitle}>{thread.subject}</h1>
 
-      <div className={`${styles.card} ${msgStyles.msgList}`}>
+      <div className={`${styles.card} ${msgStyles.msgScroll}`}>
         {thread.messages.map((msg) => {
           const isAdmin = msg.sender.role === USER_ROLE.admin;
           return (
-            <div key={msg.id} className={`${msgStyles.msgRow} ${isAdmin ? msgStyles.msgRowAdmin : msgStyles.msgRowPatient}`}>
-              <div className={`${msgStyles.msgBubble} ${isAdmin ? msgStyles.msgBubbleAdmin : msgStyles.msgBubblePatient}`}>
+            <div key={msg.id} className={isAdmin ? styles.msgRow : styles.msgRowEnd}>
+              <div className={isAdmin ? styles.msgBubbleNeutral : styles.msgBubbleAccent}>
                 {msg.body}
               </div>
-              <p className={msgStyles.msgMeta}>
+              <p className={styles.msgMeta}>
                 {isAdmin ? `${COMPANY.shortName} team` : "You"} · {formatDateTime(msg.createdAt)}
-                {!isAdmin && msg.readAt && <span className={msgStyles.msgRead}> · Read</span>}
+                {!isAdmin && msg.readAt && <span className={styles.msgRead}> · Read</span>}
               </p>
             </div>
           );
@@ -106,21 +106,21 @@ export default function ThreadPage() {
       </div>
 
       <div className={styles.card}>
-        <form onSubmit={handleSend} className={msgStyles.composeForm}>
+        <form onSubmit={handleSend} className={styles.composeRow}>
           <textarea
             aria-label="Message"
-            className={msgStyles.composeTextarea}
+            className={styles.composeTextarea}
             value={body}
             onChange={(e) => setBody(e.target.value)}
             maxLength={MESSAGE_BODY_MAX_LENGTH}
             placeholder="Type a message…"
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(e); } }}
           />
-          <button type="submit" className={msgStyles.sendBtn} disabled={sending || !body.trim()}>
+          <button type="submit" className={styles.sendBtn} disabled={sending || !body.trim()}>
             {sending ? "Sending…" : "Send"}
           </button>
         </form>
-        {sendError && <p className={msgStyles.sendError}>{sendError}</p>}
+        {sendError && <p className={styles.formErrorTop}>{sendError}</p>}
       </div>
     </div>
   );

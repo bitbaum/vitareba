@@ -41,6 +41,38 @@ export const PORTAL_ROUTE_LABELS: Record<
 };
 
 /**
+ * Portal navigation structure — SSOT for BOTH the desktop sidebar and the
+ * mobile bottom tab bar (PortalNav renders both from this). Labels come from
+ * PORTAL_ROUTE_LABELS; shortLabel overrides only where the full label doesn't
+ * fit a bottom-bar tab.
+ */
+export const PORTAL_NAV_GROUPS: {
+  label: string | null;
+  routes: (typeof PORTAL_ROUTES)[keyof typeof PORTAL_ROUTES][];
+}[] = [
+  { label: null,      routes: [PORTAL_ROUTES.dashboard] },
+  { label: "Track",   routes: [PORTAL_ROUTES.checkin, PORTAL_ROUTES.assessment, PORTAL_ROUTES.assessments, PORTAL_ROUTES.goals] },
+  { label: "Care",    routes: [PORTAL_ROUTES.bookings, PORTAL_ROUTES.messages, PORTAL_ROUTES.documents] },
+  { label: "Account", routes: [PORTAL_ROUTES.profile] },
+];
+
+export const PORTAL_BOTTOM_NAV: (typeof PORTAL_ROUTES)[keyof typeof PORTAL_ROUTES][] = [
+  PORTAL_ROUTES.dashboard,
+  PORTAL_ROUTES.checkin,
+  PORTAL_ROUTES.messages,
+  PORTAL_ROUTES.bookings,
+  PORTAL_ROUTES.documents,
+];
+
+/** Bottom-bar tab labels where the full PORTAL_ROUTE_LABELS entry is too long. */
+export const PORTAL_ROUTE_SHORT_LABELS: Partial<
+  Record<(typeof PORTAL_ROUTES)[keyof typeof PORTAL_ROUTES], string>
+> = {
+  [PORTAL_ROUTES.dashboard]: "Home",
+  [PORTAL_ROUTES.checkin]:   "Check-in",
+};
+
+/**
  * API prefixes that must be reachable WITHOUT a session — the middleware
  * exempts these from its auth gate. Each route authenticates itself:
  * /api/auth via NextAuth + per-route guards, /api/webhooks via signature,

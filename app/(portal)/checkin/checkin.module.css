@@ -104,24 +104,6 @@
   font-weight: 400;
 }
 
-.notesTextarea {
-  width: 100%;
-  padding: 0.65rem 0.9rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  font-family: inherit;
-  font-size: 0.88rem;
-  resize: vertical;
-  min-height: 72px;
-  transition: border-color var(--transition-fast);
-  box-sizing: border-box;
-}
-
-.notesTextarea:focus {
-  outline: none;
-  border-color: var(--teal);
-}
-
 /* ── Streak badge ────────────────────────────────────────────────────────── */
 
 .streakBadge {
@@ -137,13 +119,6 @@
 }
 
 /* ── Post-save success panel ────────────────────────────────────────────── */
-
-.successPanel {
-  background: var(--off);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  padding: 1.5rem;
-}
 
 .successTop {
   display: flex;
@@ -217,29 +192,6 @@
 }
 
 /* ── Submit ─────────────────────────────────────────────────────────────── */
-
-.submitBtn {
-  width: 100%;
-  padding: 0.75rem 1.5rem;
-  background: var(--ink);
-  color: var(--white);
-  border: none;
-  border-radius: var(--radius-lg);
-  font-family: var(--font-dm-sans), sans-serif;
-  font-size: 0.82rem;
-  letter-spacing: 0.08em;
-  cursor: pointer;
-  transition: background var(--transition-fast);
-}
-
-.submitBtn:hover:not(:disabled) {
-  background: var(--teal);
-}
-
-.submitBtn:disabled {
-  opacity: 0.45;
-  cursor: default;
-}
 
 .submitHint {
   text-align: center;

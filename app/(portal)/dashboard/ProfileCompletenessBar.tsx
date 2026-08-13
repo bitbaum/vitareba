@@ -1,4 +1,5 @@
 import Link from "next/link";
+import shared from "../portal.module.css";
 import styles from "./dashboard.module.css";
 import { profileCompletenessClass } from "@/lib/domain/profile";
 import { COMPANY } from "@/lib/config/company";
@@ -16,13 +17,13 @@ export function ProfileCompletenessBar({ pct, missingFields = [] }: { pct: numbe
   return (
     <div className={styles.profileBar}>
       <div className={styles.profileBarHeader}>
-        <p className={styles.profileBarTitle}>Intake profile</p>
+        <p className={shared.cardTitleFlush}>Intake profile</p>
         <span className={`${styles.profileBarPct} ${profileCompletenessClass(pct)}`}>
           {pct}%
         </span>
       </div>
       <div className={styles.profileBarTrack}>
-        <div className={styles.profileBarFill} style={{ width: `${pct}%` }} />
+        <div className={shared.progressFill} style={{ width: `${pct}%` }} />
       </div>
       <p className={styles.profileBarText}>
         {pct < PROFILE_COMPLETENESS_LOW_PCT

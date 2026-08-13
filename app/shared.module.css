@@ -1,0 +1,641 @@
+/* ─── Shared app primitives ──────────────────────────────────────────────────
+   SSOT for every visual pattern the patient portal AND the admin panel share:
+   shell, page header, cards, buttons, badges, stats, progress bars, empty
+   states, form basics, message threads, document lists, error boundaries.
+
+   portal.module.css and admin.module.css re-export these via `composes` so
+   pages keep a single styles import. Variants that override base properties
+   (padding, background) are defined HERE beside the base — cross-file
+   `composes` has unspecified order when both files set the same property.
+   Form field/label/input live in forms.module.css (older SSOT, unchanged). */
+
+/* ─── Shell ──────────────────────────────────────────────────────────────── */
+
+.mainWrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  /* Soft teal wash below the header — quiet depth instead of a flat panel */
+  background:
+    linear-gradient(180deg, var(--teal-6) 0%, transparent 220px),
+    var(--off);
+}
+
+.header {
+  height: 56px;
+  background: var(--white-90);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2.5rem;
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  flex-shrink: 0;
+}
+
+.main {
+  padding: 2.5rem;
+  flex: 1;
+}
+
+/* ─── Page header ────────────────────────────────────────────────────────── */
+
+.pageEyebrow {
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 0.5rem;
+}
+
+.pageTitle {
+  font-family: var(--font-cormorant), serif;
+  font-size: 2.2rem;
+  font-weight: 300;
+  line-height: 1.15;
+  margin-bottom: 0.4rem;
+}
+
+.pageTitle em {
+  font-style: italic;
+  color: var(--teal);
+}
+
+.pageSub {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-bottom: 2rem;
+}
+
+/* Title/sub block + primary action side by side */
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+/* ─── Cards ──────────────────────────────────────────────────────────────── */
+
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-xs);
+}
+
+.cardMb {
+  composes: card;
+  margin-bottom: 1.5rem;
+}
+
+/* Card above a list */
+.cardGap {
+  margin-bottom: 1.5rem;
+}
+
+/* Variants that override base properties live beside the base (order-safe) */
+.cardMuted {
+  composes: card;
+  background: var(--off);
+  box-shadow: none;
+}
+
+.cardWarn {
+  composes: card;
+  border-left: 3px solid var(--warn);
+}
+
+.cardTight {
+  composes: card;
+  padding: 1.25rem 1.75rem;
+}
+
+.cardTitle {
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 1rem;
+}
+
+.cardTitleFlush {
+  composes: cardTitle;
+  margin-bottom: 0;
+}
+
+/* Muted variant — section labels between cards */
+.sectionLabel {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 0.75rem;
+}
+
+/* ─── Buttons ────────────────────────────────────────────────────────────── */
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--ink);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.7rem 1.4rem;
+  min-height: 2.75rem;
+  font-family: var(--font-dm-sans), sans-serif;
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.btnPrimary:hover,
+.btnPrimary:focus-visible {
+  background: var(--teal);
+  color: var(--white);
+  outline: none;
+}
+
+.btnPrimary:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.btnSm {
+  padding: 0.5rem 1rem;
+  min-height: 2.25rem;
+  font-size: 0.7rem;
+}
+
+.btnBlock {
+  width: 100%;
+}
+
+.btnSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: transparent;
+  color: var(--ink2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.7rem 1.4rem;
+  min-height: 2.75rem;
+  font-family: var(--font-dm-sans), sans-serif;
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.btnSecondary:hover,
+.btnSecondary:focus-visible {
+  background: var(--off);
+  border-color: var(--ink2);
+  outline: none;
+}
+
+.btnSecondary:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Inline text button (retry links, quiet actions) */
+.btnText {
+  color: var(--teal);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
+  font-family: inherit;
+}
+
+.btnText:hover,
+.btnText:focus-visible {
+  color: var(--teal-dark);
+  outline: none;
+  text-decoration: underline;
+}
+
+/* ─── Badges / pills ─────────────────────────────────────────────────────── */
+
+.pill {
+  display: inline-block;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.pillTeal {
+  composes: pill;
+  color: var(--teal);
+  background: var(--teal-10);
+}
+
+.pillGold {
+  composes: pill;
+  color: var(--gold);
+  background: var(--gold-12);
+}
+
+/* ─── Stat numbers (Cormorant display scale) ─────────────────────────────── */
+
+.statValue {
+  font-family: var(--font-cormorant), serif;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.statSm { font-size: 1.4rem; }
+.statMd { font-size: 1.6rem; }
+.statLg { font-size: 2.2rem; }
+.statXl { font-size: 3rem; }
+
+/* ─── Progress bars ──────────────────────────────────────────────────────── */
+
+.progressTrack {
+  height: 5px;
+  background: var(--light);
+  border-radius: var(--radius-2xs);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--teal);
+  border-radius: var(--radius-2xs);
+  transition: width var(--transition-normal) ease;
+}
+
+.progressLabel {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* ─── Empty states ───────────────────────────────────────────────────────── */
+
+.emptyState {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.emptyTitle {
+  font-family: var(--font-cormorant), serif;
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: var(--ink);
+  margin: 0 0 0.5rem;
+}
+
+.emptyBody {
+  color: var(--muted);
+  font-size: 0.85rem;
+  max-width: 420px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.emptyAction {
+  composes: btnPrimary;
+  margin-top: 1.5rem;
+}
+
+/* ─── Success check circle ───────────────────────────────────────────────── */
+
+.checkCircle {
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-full);
+  background: var(--teal-10);
+  color: var(--teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ─── Form basics (textarea-level; field/label/input → forms.module.css) ── */
+
+.formStack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.formTextarea {
+  width: 100%;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--ink);
+  resize: vertical;
+  min-height: 80px;
+  box-sizing: border-box;
+  transition: border-color var(--transition-fast);
+}
+
+.formTextarea:focus {
+  outline: none;
+  border-color: var(--teal);
+}
+
+.formTextareaLg {
+  composes: formTextarea;
+  min-height: 120px;
+}
+
+.formError {
+  font-size: 0.75rem;
+  color: var(--danger);
+  margin: 0;
+}
+
+.formErrorTop {
+  composes: formError;
+  margin-top: 0.5rem;
+}
+
+.formHint {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.formActions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* ─── Lists / meta text ──────────────────────────────────────────────────── */
+
+.listStack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.meta {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.metaSm {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+/* ─── Document list ──────────────────────────────────────────────────────── */
+
+.docList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.docRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.docTitle {
+  font-size: 0.9rem;
+  color: var(--ink);
+  margin: 0 0 0.15rem;
+}
+
+.docMeta {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.docLink {
+  color: var(--teal);
+  font-size: 0.8rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.docLink:hover,
+.docLink:focus-visible {
+  color: var(--teal-dark);
+  text-decoration: underline;
+  outline: none;
+}
+
+/* ─── Message thread ─────────────────────────────────────────────────────── */
+
+.msgList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.msgRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.msgRowEnd {
+  composes: msgRow;
+  align-items: flex-end;
+}
+
+.msgBubble {
+  max-width: 75%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-xl);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.msgBubbleAccent {
+  composes: msgBubble;
+  background: var(--teal);
+  color: var(--white);
+  border-bottom-right-radius: var(--radius-xs);
+}
+
+.msgBubbleNeutral {
+  composes: msgBubble;
+  background: var(--light);
+  color: var(--ink);
+  border-bottom-left-radius: var(--radius-xs);
+}
+
+.msgMeta {
+  font-size: 0.68rem;
+  color: var(--muted);
+  padding: 0 0.25rem;
+}
+
+.composeForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Inline compose row — textarea beside the send button (thread views) */
+.composeRow {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+.composeTextarea {
+  composes: formTextarea;
+  flex: 1;
+  resize: none;
+  min-height: 64px;
+  font-size: 0.88rem;
+}
+
+.sendBtn {
+  composes: btnPrimary;
+  align-self: flex-end;
+}
+
+.unreadDot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--teal);
+  flex-shrink: 0;
+}
+
+.backLink {
+  font-size: 0.78rem;
+  color: var(--teal);
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 1rem;
+  transition: color var(--transition-fast);
+}
+
+.backLink:hover,
+.backLink:focus-visible {
+  color: var(--teal-dark);
+  outline: none;
+}
+
+.msgRead {
+  color: var(--teal);
+}
+
+/* ─── Error boundary ─────────────────────────────────────────────────────── */
+
+.errorPage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+  padding: 2rem;
+  gap: 0.75rem;
+}
+
+.errorTitle {
+  font-family: var(--font-cormorant), serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--ink);
+  margin: 0;
+}
+
+.errorBody {
+  color: var(--muted);
+  max-width: 420px;
+  margin: 0;
+}
+
+.errorActions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.errorRetry {
+  composes: btnPrimary;
+}
+
+.errorHome {
+  color: var(--teal);
+  font-size: 0.875rem;
+  text-decoration: none;
+  padding: 0.6rem 0;
+}
+
+.errorHome:hover {
+  text-decoration: underline;
+}
+
+/* ─── Responsive (all media rules at file end) ───────────────────────────── */
+
+@media (max-width: 767px) {
+  .header {
+    padding: 0 1.25rem;
+  }
+
+  .main {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .pageTitle {
+    font-size: 1.5rem;
+  }
+
+  .pageSub {
+    margin-bottom: 1rem;
+  }
+
+  .pageHeader {
+    flex-wrap: wrap;
+  }
+
+  .card {
+    padding: 1.25rem;
+  }
+
+  .msgBubble {
+    max-width: 88%;
+  }
+}

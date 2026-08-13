@@ -1,4 +1,4 @@
-/* ─── Calendly shortcut banner ───────────────────────────────────────────── */
+/* ─── Bookings — banners, type toggle, list-row deltas ───────────────────── */
 
 .calendlyBanner {
   background: var(--teal-6);
@@ -20,14 +20,6 @@
   margin: 0 0 0.2rem;
 }
 
-.calendlyBannerSub {
-  font-size: 0.78rem;
-  color: var(--muted);
-  margin: 0;
-}
-
-/* ─── Submission success banner ──────────────────────────────────────────── */
-
 .successBanner {
   background: var(--teal-8);
   border: 1px solid var(--teal-25);
@@ -43,7 +35,7 @@
   margin: 0 0 0.25rem;
 }
 
-/* ─── Booking type toggle ────────────────────────────────────────────────── */
+/* ─── Booking type toggle (segmented control) ────────────────────────────── */
 
 .typeToggle {
   display: flex;
@@ -93,12 +85,6 @@
   margin: 0 0 0.35rem;
 }
 
-.bookingNotes {
-  font-size: 0.78rem;
-  color: var(--muted);
-  margin: 0;
-}
-
 .bookingRequested {
   font-size: 0.7rem;
   color: var(--muted);
@@ -111,15 +97,6 @@
   align-items: flex-end;
   gap: 0.5rem;
   flex-shrink: 0;
-}
-
-.bookingBadge {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  padding: 0.3rem 0.75rem;
-  border-radius: var(--radius-2xl);
-  white-space: nowrap;
 }
 
 .cancelBookingBtn {
