@@ -43,6 +43,7 @@ vi.mock("@/lib/config/company", async (importOriginal) => {
 vi.mock("@/lib/utils/post-response", () => ({ runAfterResponse: mockRunAfterResponse }));
 
 import { GET, POST } from "./route";
+import { generateSlots } from "@/lib/domain/scheduling";
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
@@ -166,6 +167,60 @@ describe("POST /api/bookings (patient)", () => {
         subject: expect.stringContaining("consultation request"),
       })
     );
+  });
+});
+
+describe("POST /api/bookings (patient, slot)", () => {
+  const NOW_SLOT = generateSlots({ now: new Date(), busy: [] })[0];
+
+  beforeEach(() => {
+    mockRequireSession.mockReset();
+    mockInsert.mockReset();
+    mockSendEmail.mockReset();
+    mockGetAdminEmails.mockReset();
+    mockRunAfterResponse.mockReset();
+    mockBookingFindMany.mockReset();
+    mockGetAdminEmails.mockReturnValue([]);
+    mockBookingFindMany.mockResolvedValue([]); // no busy intervals
+    setupInsert([{ ...BOOKING, status: "confirmed", scheduledAt: NOW_SLOT }]);
+  });
+
+  function slotReq(slot: string) {
+    return new Request("http://test/api/bookings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slot }),
+    });
+  }
+
+  it("books an offered slot as confirmed", async () => {
+    mockRequireSession.mockResolvedValue(PATIENT_SESSION);
+    const res = await POST(slotReq(NOW_SLOT.toISOString()));
+    expect(res.status).toBe(201);
+    const { data } = await res.json();
+    expect(data.status).toBe("confirmed");
+  });
+
+  it("rejects an off-grid instant with 409", async () => {
+    mockRequireSession.mockResolvedValue(PATIENT_SESSION);
+    const offGrid = new Date(NOW_SLOT.getTime() + 7 * 60_000);
+    const res = await POST(slotReq(offGrid.toISOString()));
+    expect(res.status).toBe(409);
+    const body = await res.json();
+    expect(body.code).toBe("slot_taken");
+  });
+
+  it("maps a unique-index race (23505) to 409 slot_taken, not a 500", async () => {
+    mockRequireSession.mockResolvedValue(PATIENT_SESSION);
+    mockInsert.mockImplementation(() => ({
+      values: vi.fn(() => ({
+        returning: vi.fn().mockRejectedValue(Object.assign(new Error("duplicate"), { code: "23505" })),
+      })),
+    }));
+    const res = await POST(slotReq(NOW_SLOT.toISOString()));
+    expect(res.status).toBe(409);
+    const body = await res.json();
+    expect(body.code).toBe("slot_taken");
   });
 });
 

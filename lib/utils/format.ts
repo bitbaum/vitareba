@@ -54,6 +54,31 @@ export function formatDateISO(date: Date): string {
   return CLINIC_DAY.format(date);
 }
 
+// Appointment slots are clinic wall time — a 09:30 slot must read 09:30
+// regardless of the server's or visitor's timezone.
+const SLOT_DAY = new Intl.DateTimeFormat(LOCALE, {
+  timeZone: CLINIC_TIMEZONE,
+  weekday: "short",
+  day: "numeric",
+  month: "short",
+});
+const SLOT_TIME = new Intl.DateTimeFormat(LOCALE, {
+  timeZone: CLINIC_TIMEZONE,
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
+});
+
+/** "Mon 17 Aug" — clinic-timezone day label for a slot group. */
+export function formatSlotDay(date: Date | string): string {
+  return SLOT_DAY.format(typeof date === "string" ? new Date(date) : date);
+}
+
+/** "09:30" — clinic-timezone time label for a slot. */
+export function formatSlotTime(date: Date | string): string {
+  return SLOT_TIME.format(typeof date === "string" ? new Date(date) : date);
+}
+
 /**
  * Human-readable relative date label for admin lists: "Today", "Yesterday", "Nd ago".
  * Accepts an ISO date string (YYYY-MM-DD) and a reference Date for testability.

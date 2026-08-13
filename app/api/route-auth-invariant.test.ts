@@ -48,7 +48,6 @@ const SELF_AUTHENTICATING = new Set<string>([
   "/api/auth/reset-password", // authenticates via single-use reset token
   "/api/account", // registration; Zod-validated, creates (never reads) a user
   "/api/assessment-leads", // anonymous funnel counter — no PII in or out
-  "/api/webhooks/calendly", // Calendly HMAC signature check
   "/api/health", // liveness probe — returns nothing sensitive
 ]);
 

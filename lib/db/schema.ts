@@ -11,7 +11,7 @@ import {
   primaryKey,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import type { AdapterAccountType } from "next-auth/adapters";
 
 // ─── Enums ────────────────────────────────────────────────────────────────────
@@ -190,18 +190,31 @@ export const assessmentResults = pgTable("assessment_results", {
 
 // ─── Bookings ─────────────────────────────────────────────────────────────────
 
-export const bookings = pgTable("bookings", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  status: bookingStatusEnum("status").notNull().default("pending"),
-  bookingType: bookingTypeEnum("booking_type").notNull().default("consultation"),
-  machineType: machineTypeEnum("machine_type"),
-  preferredDate: varchar("preferred_date", { length: 50 }),
-  notes: text("notes"),
-  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
-});
+export const bookings = pgTable(
+  "bookings",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    status: bookingStatusEnum("status").notNull().default("pending"),
+    bookingType: bookingTypeEnum("booking_type").notNull().default("consultation"),
+    machineType: machineTypeEnum("machine_type"),
+    preferredDate: varchar("preferred_date", { length: 50 }),
+    // Exact slot start for portal-scheduled appointments (null = manual request
+    // without a fixed time). Single-clinician model: the partial unique index
+    // below makes double-booking a slot impossible at the DB level — the API's
+    // conflict re-check can race, this cannot.
+    scheduledAt: timestamp("scheduled_at", { mode: "date" }),
+    notes: text("notes"),
+    createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("bookings_active_slot_idx")
+      .on(t.scheduledAt)
+      .where(sql`${t.status} IN ('pending', 'confirmed') AND ${t.scheduledAt} IS NOT NULL`),
+  ]
+);
 
 // ─── Documents ────────────────────────────────────────────────────────────────
 

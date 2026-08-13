@@ -8,7 +8,7 @@ import {
   BOOKING_TYPE_CONFIG, MACHINE_TYPE_CONFIG,
   type BookingRowWithUser, type BookingStatus,
 } from "@/lib/config/booking-status";
-import { formatDateShort, formatDateNumeric } from "@/lib/utils/format";
+import { formatDateShort, formatDateNumeric, formatSlotDay, formatSlotTime } from "@/lib/utils/format";
 import { ADMIN_ROUTES } from "@/lib/config/routes";
 import { LoadingState } from "@/components/LoadingState";
 
@@ -129,9 +129,11 @@ export default function AdminBookingsPage() {
                       )}
                     </td>
                     <td className={styles.cellNowrap}>
-                      {b.preferredDate
-                        ? formatDateShort(b.preferredDate)
-                        : <span className={styles.cellMuted}>—</span>}
+                      {b.scheduledAt
+                        ? `${formatSlotDay(b.scheduledAt)}, ${formatSlotTime(b.scheduledAt)}`
+                        : b.preferredDate
+                          ? formatDateShort(b.preferredDate)
+                          : <span className={styles.cellMuted}>—</span>}
                     </td>
                     <td className={styles.tdNotes}>
                       {b.notes ? (

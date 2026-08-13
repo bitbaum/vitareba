@@ -1,10 +1,14 @@
 import styles from "@/app/(admin)/admin.module.css";
 import { BOOKING_STATUS_CONFIG, BOOKING_TYPE_CONFIG, MACHINE_TYPE_CONFIG, type BookingRow } from "@/lib/config/booking-status";
-import { formatDateLong } from "@/lib/utils/format";
+import { formatDateLong, formatSlotDay, formatSlotTime } from "@/lib/utils/format";
 
-// Omit createdAt: this card is called from both the server (Drizzle Date) and client (API string).
-// The component only renders id/status/bookingType/machineType/preferredDate/notes.
-export function PatientBookingsCard({ bookings }: { bookings: Omit<BookingRow, "createdAt">[] }) {
+// Loosen date-ish fields: this card is called from both the server (Drizzle
+// Date) and client (API string) sides.
+type PatientBooking = Omit<BookingRow, "createdAt" | "scheduledAt"> & {
+  scheduledAt: Date | string | null;
+};
+
+export function PatientBookingsCard({ bookings }: { bookings: PatientBooking[] }) {
   return (
     <div className={styles.card}>
       <p className={styles.cardLabel}>Bookings ({bookings.length})</p>
@@ -21,7 +25,11 @@ export function PatientBookingsCard({ bookings }: { bookings: Omit<BookingRow, "
                 <div>
                   <div className={styles.bookingDate}>
                     {machineLabel ? `${typeLabel} — ${machineLabel}` : typeLabel}
-                    {b.preferredDate ? ` · ${formatDateLong(b.preferredDate)}` : ""}
+                    {b.scheduledAt
+                      ? ` · ${formatSlotDay(b.scheduledAt)}, ${formatSlotTime(b.scheduledAt)}`
+                      : b.preferredDate
+                        ? ` · ${formatDateLong(b.preferredDate)}`
+                        : ""}
                   </div>
                   {b.notes && <div className={styles.bookingNotes}>{b.notes}</div>}
                 </div>

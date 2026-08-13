@@ -159,8 +159,6 @@ export const GOAL_PROGRESS_LOW_PCT = 40;
 export const PROFILE_COMPLETENESS_LOW_PCT = 40;
 export const PROFILE_COMPLETENESS_HIGH_PCT = 80;
 
-/** Calendly booking URL embedded in the patient bookings page (null when not configured) */
-export const CALENDLY_URL = process.env.NEXT_PUBLIC_CALENDLY_URL ?? null;
 
 /** Clinical goal row as returned by the goals API (dates are strings) */
 export type GoalRow = {
