@@ -1,23 +1,80 @@
 /* ─── Bookings — banners, type toggle, list-row deltas ───────────────────── */
 
-.calendlyBanner {
-  background: var(--teal-6);
-  border: 1px solid var(--teal-20);
-  border-radius: var(--radius-xl);
-  padding: 1.25rem 1.5rem;
-  margin-bottom: 1.5rem;
+/* ─── Slot picker ────────────────────────────────────────────────────────── */
+
+.dayTabs {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+  margin-bottom: 0.9rem;
+  scrollbar-width: none;
 }
 
-.calendlyBannerTitle {
-  font-size: 0.88rem;
+.dayTab {
+  flex-shrink: 0;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-family: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), color var(--transition-fast), background var(--transition-fast);
+}
+
+.dayTab:hover,
+.dayTab:focus-visible {
+  border-color: var(--teal);
+  color: var(--teal);
+  outline: none;
+}
+
+.dayTabActive {
+  border-color: var(--teal);
+  background: var(--teal-10);
+  color: var(--teal);
   font-weight: 500;
-  color: var(--ink);
-  margin: 0 0 0.2rem;
+}
+
+.slotGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(5rem, 1fr));
+  gap: 0.5rem;
+}
+
+.slotBtn {
+  padding: 0.55rem 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--ink2);
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  min-height: 2.75rem; /* 44px touch target */
+  transition: border-color var(--transition-fast), color var(--transition-fast), background var(--transition-fast);
+}
+
+.slotBtn:hover,
+.slotBtn:focus-visible {
+  border-color: var(--teal);
+  color: var(--teal);
+  outline: none;
+}
+
+.slotBtnActive,
+.slotBtnActive:hover,
+.slotBtnActive:focus-visible {
+  border-color: var(--teal);
+  background: var(--teal);
+  color: var(--white);
+}
+
+.slotConfirm {
+  margin-top: 1rem;
 }
 
 .successBanner {

@@ -8,6 +8,13 @@
       "when": 1784304026941,
       "tag": "0000_brown_bullseye",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1786627020278,
+      "tag": "0001_old_eternals",
+      "breakpoints": true
     }
   ]
 }

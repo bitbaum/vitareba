@@ -46,6 +46,7 @@ export type BookingRow = {
   bookingType: BookingType;
   machineType: MachineType | null;
   preferredDate: string | null;
+  scheduledAt: string | null;
   notes: string | null;
   createdAt: string;
 };

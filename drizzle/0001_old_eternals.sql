@@ -1,0 +1,2 @@
+ALTER TABLE "bookings" ADD COLUMN "scheduled_at" timestamp;--> statement-breakpoint
+CREATE UNIQUE INDEX "bookings_active_slot_idx" ON "bookings" USING btree ("scheduled_at") WHERE "bookings"."status" IN ('pending', 'confirmed') AND "bookings"."scheduled_at" IS NOT NULL;

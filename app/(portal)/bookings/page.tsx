@@ -15,9 +15,9 @@ import {
   type BookingType,
   type MachineType,
 } from "@/lib/config/booking-status";
-import { formatDateLong, formatDateNumeric } from "@/lib/utils/format";
+import { formatDateLong, formatDateNumeric, formatSlotDay, formatSlotTime } from "@/lib/utils/format";
 import { COMPANY } from "@/lib/config/company";
-import { CALENDLY_URL, BOOKING_SUCCESS_MS, BOOKING_NOTES_MAX_LENGTH } from "@/lib/config/portal";
+import { BOOKING_SUCCESS_MS, BOOKING_NOTES_MAX_LENGTH } from "@/lib/config/portal";
 import { LoadingState } from "@/components/LoadingState";
 
 
@@ -50,6 +50,73 @@ export default function BookingsPage() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  // ── Slot picker state ──────────────────────────────────────────────────────
+  const [slots, setSlots] = useState<string[]>([]);
+  const [slotsLoading, setSlotsLoading] = useState(true);
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [slotBooking, setSlotBooking] = useState(false);
+  const [slotError, setSlotError] = useState("");
+  const [slotSuccess, setSlotSuccess] = useState<string | null>(null);
+
+  const loadSlots = useCallback(async () => {
+    try {
+      const res = await fetch("/api/bookings/slots");
+      if (!res.ok) return;
+      const data = await res.json();
+      setSlots(data.data ?? []);
+    } catch {
+      // slot picker degrades to the manual request flow below
+    } finally {
+      setSlotsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { loadSlots(); }, [loadSlots]);
+
+  // Slots grouped by clinic day, insertion order = ascending
+  const slotsByDay = new Map<string, string[]>();
+  for (const iso of slots) {
+    const day = formatSlotDay(iso);
+    const list = slotsByDay.get(day) ?? [];
+    list.push(iso);
+    slotsByDay.set(day, list);
+  }
+  const dayKeys = [...slotsByDay.keys()];
+  const activeDay = selectedDay && slotsByDay.has(selectedDay) ? selectedDay : dayKeys[0] ?? null;
+
+  async function handleSlotBook() {
+    if (!selectedSlot) return;
+    setSlotBooking(true);
+    setSlotError("");
+    try {
+      const res = await fetch("/api/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slot: selectedSlot }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        setSlotError(
+          data.code === "slot_taken"
+            ? "That slot was just taken — the list has been refreshed, please pick another."
+            : "Booking failed. Please try again."
+        );
+        loadSlots();
+        setSelectedSlot(null);
+        return;
+      }
+      setSlotSuccess(`${formatSlotDay(selectedSlot)}, ${formatSlotTime(selectedSlot)}`);
+      setSelectedSlot(null);
+      loadSlots();
+      load();
+    } catch {
+      setSlotError("Booking failed. Please try again.");
+    } finally {
+      setSlotBooking(false);
+    }
+  }
 
   function resetForm() {
     setBookingType("consultation");
@@ -117,25 +184,67 @@ export default function BookingsPage() {
         </button>
       </div>
 
-      {/* Calendly shortcut */}
-      {CALENDLY_URL && (
-        <div className={bookingStyles.calendlyBanner}>
-          <div>
-            <p className={bookingStyles.calendlyBannerTitle}>
-              Book directly with {COMPANY.clinicianName}
-            </p>
-            <p className={styles.meta}>
-              Pick a time — instant confirmation
-            </p>
-          </div>
-          <a
-            href={CALENDLY_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`btn-dark ${styles.ctaBtnSmall}`}
-          >
-            Book on Calendly →
-          </a>
+      {/* Native slot picker — conflict-free, instantly confirmed */}
+      <div className={`${styles.card} ${styles.cardGap}`}>
+        <p className={styles.cardTitle}>Book an appointment</p>
+        <p className={styles.formHint}>
+          Pick a free time with {COMPANY.clinicianName} — confirmed instantly. Times are Zürich time.
+        </p>
+        {slotsLoading ? (
+          <LoadingState lines={2} />
+        ) : dayKeys.length === 0 ? (
+          <p className={styles.meta}>
+            No open slots at the moment — send a request below and {COMPANY.clinicianName} will find a time with you.
+          </p>
+        ) : (
+          <>
+            <div className={bookingStyles.dayTabs} role="tablist" aria-label="Available days">
+              {dayKeys.map((day) => (
+                <button
+                  key={day}
+                  type="button"
+                  role="tab"
+                  aria-selected={day === activeDay}
+                  className={`${bookingStyles.dayTab}${day === activeDay ? ` ${bookingStyles.dayTabActive}` : ""}`}
+                  onClick={() => { setSelectedDay(day); setSelectedSlot(null); }}
+                >
+                  {day}
+                </button>
+              ))}
+            </div>
+            <div className={bookingStyles.slotGrid}>
+              {(activeDay ? slotsByDay.get(activeDay) ?? [] : []).map((iso) => (
+                <button
+                  key={iso}
+                  type="button"
+                  className={`${bookingStyles.slotBtn}${iso === selectedSlot ? ` ${bookingStyles.slotBtnActive}` : ""}`}
+                  onClick={() => setSelectedSlot(iso === selectedSlot ? null : iso)}
+                >
+                  {formatSlotTime(iso)}
+                </button>
+              ))}
+            </div>
+            {selectedSlot && (
+              <button
+                type="button"
+                className={`${styles.btnPrimary} ${styles.btnBlock} ${bookingStyles.slotConfirm}`}
+                onClick={handleSlotBook}
+                disabled={slotBooking}
+              >
+                {slotBooking
+                  ? "Booking…"
+                  : `Confirm ${formatSlotDay(selectedSlot)}, ${formatSlotTime(selectedSlot)}`}
+              </button>
+            )}
+            {slotError && <p className={styles.formErrorTop}>{slotError}</p>}
+          </>
+        )}
+      </div>
+
+      {slotSuccess && (
+        <div className={bookingStyles.successBanner}>
+          <p className={bookingStyles.bannerTitle}>Appointment confirmed</p>
+          <p>{slotSuccess} with {COMPANY.clinicianName}. A confirmation email is on its way — manage or cancel it below.</p>
         </div>
       )}
 
@@ -264,7 +373,11 @@ export default function BookingsPage() {
                   <div className={bookingStyles.bookingItemInfo}>
                     <p className={bookingStyles.bookingItemDate}>
                       {machineLabel ? `${typeLabel} — ${machineLabel}` : typeLabel}
-                      {b.preferredDate ? ` · Preferred: ${formatDateLong(b.preferredDate)}` : ""}
+                      {b.scheduledAt
+                        ? ` · ${formatSlotDay(b.scheduledAt)}, ${formatSlotTime(b.scheduledAt)}`
+                        : b.preferredDate
+                          ? ` · Preferred: ${formatDateLong(b.preferredDate)}`
+                          : ""}
                     </p>
                     {b.notes && <p className={styles.meta}>{b.notes}</p>}
                     <p className={bookingStyles.bookingRequested}>

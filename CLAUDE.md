@@ -34,7 +34,7 @@ app/
     assessment/           → Take the Inflection Edge questionnaire
     assessments/          → History + trend chart
     checkin/              → Daily wellness check-in (sleep, energy, mood, focus, stress)
-    bookings/             → Consultation booking (Calendly + manual)
+    bookings/             → Consultation booking (native slot picker + manual request)
     messages/[threadId]/  → Secure async messaging with Manuel
     profile/              → Patient profile management
     layout.tsx            → Portal shell with PortalNav
@@ -63,7 +63,6 @@ app/
       signals             → Daily 02:00 — compute patient signals, alert on critical
       emails              → Daily 08:00 — process email queue
       weekly-digest       → Sunday 08:00 — weekly summary to patients
-    webhooks/calendly/    → Calendly invitee.created / invitee.canceled → bookings table
   [locale]/               → Localized marketing site (de/en/fr/it)
   page.tsx                → Root redirect → /de/
   layout.tsx              → Root layout: fonts, metadata, SessionProvider
@@ -137,6 +136,7 @@ never push schema to prod by hand.
 | Programme/phase labels | `lib/config/programmes.ts` | Any component |
 | Signal thresholds + labels | `lib/config/admin.ts` | Any component |
 | Assessment questions, scoring | `lib/assessment/data.ts` | Any component |
+| Availability / slot rules | `lib/config/scheduling.ts` | Any component or route |
 | DB schema | `lib/db/schema.ts` | Separate type files |
 | Portal route paths | `lib/config/routes.ts` PORTAL_ROUTES | Hardcoded strings |
 | Auth pages routing | `proxy.ts` (derives from PORTAL_ROUTES) | Scattered guards |
