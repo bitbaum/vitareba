@@ -1,13 +1,14 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 // Locale-aware router & Link so /de/login → /de/register (not /register)
 import { Link, useRouter } from "@/lib/i18n/navigation";
 import styles from "../auth.module.css";
-import { AUTH_ROUTES, PORTAL_ROUTES } from "@/lib/config/routes";
+import { ADMIN_ROUTES, AUTH_ROUTES, PORTAL_ROUTES } from "@/lib/config/routes";
+import { USER_ROLE } from "@/lib/config/auth";
 import { sanitizeReturnTo } from "@/lib/domain/auth";
 
 function LoginForm() {
@@ -33,7 +34,15 @@ function LoginForm() {
         setError(t("error"));
         return;
       }
-      router.push(returnTo);
+      // Default landing is role-aware: clinicians start their day in the admin
+      // panel, patients on the dashboard. An explicit returnTo always wins —
+      // the portal stays fully reachable for dual-role users.
+      let dest = returnTo;
+      if (returnTo === PORTAL_ROUTES.dashboard) {
+        const session = await getSession();
+        if (session?.user.role === USER_ROLE.admin) dest = ADMIN_ROUTES.patients;
+      }
+      router.push(dest);
       router.refresh();
     } catch {
       setError(t("error"));

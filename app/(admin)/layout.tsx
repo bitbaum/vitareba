@@ -6,6 +6,7 @@ import Logo from "@/components/Logo";
 import styles from "./admin.module.css";
 import { UserDropdown } from "@/components/portal/UserDropdown";
 import { AdminNav } from "@/components/admin/AdminNav";
+import { NavBreadcrumb } from "@/components/portal/NavBreadcrumb";
 import { db } from "@/lib/db";
 import { users, bookings, profiles } from "@/lib/db/schema";
 import { eq, inArray, count } from "drizzle-orm";
@@ -47,11 +48,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </Link>
         <p className={styles.adminBadge}>Admin</p>
         <AdminNav unreadMessages={unreadMessages} pendingBookings={pendingBookings} urgentPatients={urgentPatients} />
+        <Link href={PORTAL_ROUTES.dashboard} className={styles.roleSwitch}>
+          ← Patient portal
+        </Link>
       </aside>
       <div className={styles.mainWrap}>
         <header className={styles.header}>
-          <div />
-          <UserDropdown name={name} email={email} role={USER_ROLE.admin} />
+          <NavBreadcrumb />
+          <UserDropdown name={name} email={email} role={USER_ROLE.admin} context="admin" />
         </header>
         <main className={styles.main}>{children}</main>
       </div>

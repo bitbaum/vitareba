@@ -27,6 +27,12 @@ export default async function AdminMessagesPage() {
 
   const unreadCount = unreadIds.size;
 
+  // Unread threads first — they are the reason the clinician opened this page.
+  // Stable sort keeps newest-first ordering within each group.
+  allThreads.sort(
+    (a, b) => Number(unreadIds.has(b.id)) - Number(unreadIds.has(a.id))
+  );
+
   return (
     <div>
       <h1 className={styles.pageTitle}>

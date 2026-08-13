@@ -90,6 +90,10 @@
   composes: mainWrap from "../shared.module.css";
 }
 
+.roleSwitch {
+  composes: roleSwitch from "../shared.module.css";
+}
+
 .header {
   composes: header from "../shared.module.css";
 }
@@ -1818,6 +1822,16 @@
 
   .navBadge {
     margin-left: 0.25rem;
+  }
+
+  /* Role switch joins the horizontal nav strip on mobile */
+  .roleSwitch {
+    border-top: none;
+    margin: 0;
+    padding: 0.45rem 0.85rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+    align-self: center;
   }
 
   /* Tighter header padding */

@@ -13,7 +13,8 @@ import { eq, and, isNull } from "drizzle-orm";
 import { getUnreadThreadCount } from "@/lib/domain/messages";
 import { formatDateISO } from "@/lib/utils/format";
 import { COMPANY } from "@/lib/config/company";
-import { AUTH_ROUTES } from "@/lib/config/routes";
+import { USER_ROLE } from "@/lib/config/auth";
+import { ADMIN_ROUTES, AUTH_ROUTES } from "@/lib/config/routes";
 
 // Private patient area — defense-in-depth alongside robots.txt disallow.
 export const metadata: Metadata = {
@@ -63,6 +64,11 @@ export default async function PortalLayout({ children }: { children: React.React
           <Logo variant="bright" />
         </Link>
         <PortalNav unreadMessages={unreadMessages} hasTodayCheckin={hasTodayCheckin} newGoals={newGoalsCount} />
+        {session.user.role === USER_ROLE.admin && (
+          <Link href={ADMIN_ROUTES.patients} className={styles.roleSwitch}>
+            Clinician area →
+          </Link>
+        )}
       </aside>
 
       <div className={styles.mainWrap}>

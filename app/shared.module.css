@@ -608,6 +608,39 @@
   margin: 0;
 }
 
+/* ─── Header breadcrumb (portal + admin shells) ──────────────────────────── */
+
+.breadcrumb {
+  font-size: 0.72rem;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+/* ─── Role switch (dual-role clinician⇄patient) ──────────────────────────── */
+/* Sidebar link that swaps between the patient portal and the clinician area.
+   Same treatment in both shells so switching always looks like switching. */
+
+.roleSwitch {
+  display: block;
+  margin-top: auto;
+  padding: 0.65rem 0.75rem;
+  border-top: 1px solid var(--white-10);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--white-58);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.roleSwitch:hover,
+.roleSwitch:focus-visible {
+  color: var(--white-90);
+  outline: none;
+}
+
 /* ─── Error boundary ─────────────────────────────────────────────────────── */
 
 .errorPage {

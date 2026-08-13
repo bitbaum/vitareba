@@ -16,6 +16,8 @@ import styles from "./Assessment.module.css";
 interface Props {
   onClose: () => void;
   onComplete?: (scores: Record<DimensionId, number>, overallScore: number) => void;
+  /** Render inside the surrounding layout (portal shell stays visible) instead of as a full-screen overlay. */
+  embedded?: boolean;
 }
 
 type Screen = "intro" | "question" | "results";
@@ -45,7 +47,7 @@ type AssessmentI18n = {
 
 const emptyAnswers = () => Array<number | null>(QUESTIONS.length).fill(null);
 
-export default function Assessment({ onClose, onComplete }: Props) {
+export default function Assessment({ onClose, onComplete, embedded = false }: Props) {
   const [screen, setScreen] = useState<Screen>("intro");
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState<(number | null)[]>(emptyAnswers());
@@ -54,12 +56,14 @@ export default function Assessment({ onClose, onComplete }: Props) {
   const i18n = msgs.assessment;
 
   useEffect(() => {
+    // Only the full-screen overlay locks page scroll — embedded mode scrolls with the page.
+    if (embedded) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = prev;
     };
-  }, []);
+  }, [embedded]);
 
   const start = useCallback(() => {
     setCurrentQ(0);
@@ -166,9 +170,9 @@ export default function Assessment({ onClose, onComplete }: Props) {
 
   return (
     <div
-      className={styles.overlay}
-      role="dialog"
-      aria-modal="true"
+      className={embedded ? `${styles.overlay} ${styles.embedded}` : styles.overlay}
+      role={embedded ? "region" : "dialog"}
+      aria-modal={embedded ? undefined : "true"}
       aria-labelledby="assessment-title"
     >
       <div className={styles.ovPb}>

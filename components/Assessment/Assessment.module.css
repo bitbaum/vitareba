@@ -8,6 +8,27 @@
   flex-direction: column;
 }
 
+/* Embedded variant — the portal /assessment page renders the instrument
+   INSIDE the portal shell (sidebar + header stay visible) instead of
+   hijacking the whole viewport like the marketing overlay does. The fixed
+   children (progress bar, close button) become absolute within this frame. */
+.embedded {
+  position: relative;
+  inset: auto;
+  z-index: auto;
+  border-radius: var(--radius-xl);
+  min-height: calc(100vh - 14rem);
+  overflow: hidden;
+}
+
+.embedded .ovPb {
+  position: absolute;
+}
+
+.embedded .ovClose {
+  position: absolute;
+}
+
 .ovPb {
   position: fixed;
   top: 0;
