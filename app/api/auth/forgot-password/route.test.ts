@@ -8,12 +8,14 @@ const {
   mockInsert,
   mockDelete,
   mockSendEmail,
+  mockIsEmailConfigured,
 } = vi.hoisted(() => ({
   mockUserFindFirst: vi.fn(),
   mockTokenFindFirst: vi.fn(),
   mockInsert: vi.fn(),
   mockDelete: vi.fn(),
   mockSendEmail: vi.fn(),
+  mockIsEmailConfigured: vi.fn(),
 }));
 
 vi.mock("@/lib/db", () => ({
@@ -27,7 +29,10 @@ vi.mock("@/lib/db", () => ({
   },
 }));
 
-vi.mock("@/lib/email/index", () => ({ sendEmail: mockSendEmail }));
+vi.mock("@/lib/email/index", () => ({
+  sendEmail: mockSendEmail,
+  isEmailConfigured: mockIsEmailConfigured,
+}));
 
 vi.mock("@/lib/config/company", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/config/company")>();
@@ -58,7 +63,9 @@ describe("POST /api/auth/forgot-password", () => {
     mockInsert.mockReset();
     mockDelete.mockReset();
     mockSendEmail.mockReset();
-    mockSendEmail.mockResolvedValue(undefined);
+    mockSendEmail.mockResolvedValue({ sent: true });
+    mockIsEmailConfigured.mockReset();
+    mockIsEmailConfigured.mockReturnValue(true);
     mockDelete.mockReturnValue({ where: vi.fn().mockResolvedValue({}) });
     mockInsert.mockReturnValue({ values: vi.fn().mockResolvedValue({}) });
     mockTokenFindFirst.mockResolvedValue(null); // no prior token by default
@@ -66,6 +73,17 @@ describe("POST /api/auth/forgot-password", () => {
 
   // Anti-enumeration: all responses are 200 regardless of outcome.
   // Side effects (email sent / not sent) are what distinguish paths.
+
+  // The one deliberate exception: provider unconfigured is a server-wide
+  // condition checked before any user lookup — a uniform 503 leaks nothing
+  // and prevents the "check your inbox" lie that silently locks patients out.
+  it("returns 503 before any user lookup when the email provider is unconfigured", async () => {
+    mockIsEmailConfigured.mockReturnValue(false);
+    const res = await POST(makeRequest("alice@example.com"));
+    expect(res.status).toBe(503);
+    expect(mockUserFindFirst).not.toHaveBeenCalled();
+    expect(mockSendEmail).not.toHaveBeenCalled();
+  });
 
   it("returns 200 for an invalid email format and does not send email", async () => {
     const res = await POST(makeRequest("not-an-email"));

@@ -3,7 +3,7 @@ import { emailQueue, assessmentResults, bookings, profiles } from "@/lib/db/sche
 import { eq, lte, and, inArray } from "drizzle-orm";
 import { computeProfileCompleteness } from "@/lib/domain/profile";
 import { BOOKING_STATUS } from "@/lib/config/booking-status";
-import { sendEmail } from "@/lib/email/index";
+import { sendEmail, isEmailConfigured } from "@/lib/email/index";
 import {
   assessmentResultsEmail,
   assessmentMeaningEmail,
@@ -21,9 +21,16 @@ import { displayName } from "@/lib/utils/format";
 
 export type CronEmailsResult =
   | { success: true; sent: number; failed: number; processed: number }
-  | { success: false; error: "Database unavailable" };
+  | { success: false; error: "Database unavailable" | "Email provider not configured" };
 
 export async function runCronEmails(now: Date = new Date()): Promise<CronEmailsResult> {
+  // No provider → leave every row pending (retried next run once configured)
+  // instead of "sending" into the void and marking the queue sent.
+  if (!isEmailConfigured()) {
+    console.error("[cron/emails] RESEND_API_KEY not configured — queue left pending");
+    return { success: false, error: "Email provider not configured" };
+  }
+
   let pending;
   try {
     pending = await db.query.emailQueue.findMany({
@@ -141,7 +148,8 @@ export async function runCronEmails(now: Date = new Date()): Promise<CronEmailsR
         continue;
       }
 
-      await sendEmail({ to: user.email, subject, html });
+      const result = await sendEmail({ to: user.email, subject, html });
+      if (!result.sent) throw new Error(result.error);
 
       await db
         .update(emailQueue)

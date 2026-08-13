@@ -492,7 +492,8 @@
             "emailPlaceholder": "sie@beispiel.com",
             "submit": "Reset-Link senden",
             "submitting": "Wird gesendet…",
-            "backToSignIn": "← Zurück zur Anmeldung"
+            "backToSignIn": "← Zurück zur Anmeldung",
+            "unavailable": "Das Zurücksetzen des Passworts ist vorübergehend nicht verfügbar. Bitte kontaktieren Sie uns direkt unter {email}."
         },
         "resetPassword": {
             "title": "Neues Passwort festlegen",
@@ -500,6 +501,7 @@
             "invalidTitle": "Ungültiger Link",
             "invalidSub": "Diesem Passwort-Reset-Link fehlen erforderliche Parameter.",
             "requestNew": "Neuen Link anfordern",
+            "expiredError": "Dieser Link ist ungültig oder abgelaufen.",
             "newPasswordLabel": "Neues Passwort",
             "confirmPasswordLabel": "Passwort bestätigen",
             "newPasswordPlaceholder": "Mind. 8 Zeichen",

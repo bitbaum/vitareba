@@ -492,7 +492,8 @@
             "emailPlaceholder": "you@example.com",
             "submit": "Send reset link",
             "submitting": "Sending…",
-            "backToSignIn": "← Back to sign in"
+            "backToSignIn": "← Back to sign in",
+            "unavailable": "Password reset is temporarily unavailable. Please contact us directly at {email}."
         },
         "resetPassword": {
             "title": "Set new password",
@@ -500,6 +501,7 @@
             "invalidTitle": "Invalid link",
             "invalidSub": "This password reset link is missing required parameters.",
             "requestNew": "Request a new link",
+            "expiredError": "This link is invalid or has expired.",
             "newPasswordLabel": "New password",
             "confirmPasswordLabel": "Confirm password",
             "newPasswordPlaceholder": "Min. 8 characters",

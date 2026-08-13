@@ -19,7 +19,10 @@ export async function POST(req: Request) {
   const body = await req.json();
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ success: false, error: "Invalid data" }, { status: 400 });
+    return NextResponse.json(
+      { success: false, error: "Invalid data", code: "invalid_data" },
+      { status: 400 }
+    );
   }
 
   const { token, email, password } = parsed.data;
@@ -39,7 +42,10 @@ export async function POST(req: Request) {
   }
 
   if (!record) {
-    return NextResponse.json({ success: false, error: "Invalid or expired link" }, { status: 400 });
+    return NextResponse.json(
+      { success: false, error: "Invalid or expired link", code: "invalid_token" },
+      { status: 400 }
+    );
   }
 
   const hashed = await hashPassword(password);
@@ -54,7 +60,10 @@ export async function POST(req: Request) {
     await db.delete(verificationTokens).where(eq(verificationTokens.identifier, `${RESET_TOKEN_IDENTIFIER_PREFIX}${email}`));
   } catch (err) {
     console.error("[api/auth/reset-password] update failed:", err);
-    return NextResponse.json({ success: false, error: "Failed to reset password — please try again" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "Failed to reset password — please try again", code: "server_error" },
+      { status: 500 }
+    );
   }
 
   return NextResponse.json({ success: true });
