@@ -1,11 +1,12 @@
 export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
-import { desc, eq, inArray, or } from "drizzle-orm";
+import { desc } from "drizzle-orm";
 import { requireAdmin } from "@/lib/auth/guards";
 import { serviceUnavailable } from "@/lib/utils/api-response";
 import { db } from "@/lib/db";
-import { assessmentResults, careTeam, users } from "@/lib/db/schema";
+import { patientScope } from "@/lib/domain/patients";
+import { assessmentResults, users } from "@/lib/db/schema";
 import { USER_ROLE } from "@/lib/config/auth";
 
 export async function GET() {
@@ -15,10 +16,7 @@ export async function GET() {
   let patients;
   try {
     patients = await db.query.users.findMany({
-      where: or(
-        eq(users.role, USER_ROLE.patient),
-        inArray(users.id, db.select({ id: careTeam.patientId }).from(careTeam))
-      ),
+      where: patientScope(),
       orderBy: [desc(users.createdAt)],
       with: {
         profile: true,

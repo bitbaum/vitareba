@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
+import { patientScope } from "@/lib/domain/patients";
 import { users, assessmentResults, bookings, dailyCheckins, assessmentLeads } from "@/lib/db/schema";
 import { eq, desc, gte, isNotNull, count } from "drizzle-orm";
 import styles from "../../admin.module.css";
@@ -48,7 +49,7 @@ export default async function ReportsPage() {
   ] = await Promise.all([
     // All patients with signal-relevant data
     db.query.users.findMany({
-      where: eq(users.role, USER_ROLE.patient),
+      where: patientScope(),
       with: {
         assessmentResults: {
           orderBy: [desc(assessmentResults.completedAt)],
