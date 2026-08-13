@@ -13,15 +13,20 @@ import { ADMIN_ROUTES } from "@/lib/config/routes";
 import { LoadingState } from "@/components/LoadingState";
 
 
-const FILTER_OPTIONS = ["all", ...BOOKING_STATUS_VALUES] as const;
+// "upcoming" answers the clinician's daily question — who am I seeing next? —
+// and is the default: slot bookings are born confirmed, so the old "pending"
+// default showed an empty list on a normal day.
+const FILTER_OPTIONS = ["upcoming", "all", ...BOOKING_STATUS_VALUES] as const;
 type FilterOption = (typeof FILTER_OPTIONS)[number];
+
+const ACTIVE_STATUSES: BookingStatus[] = [BOOKING_STATUS.pending, BOOKING_STATUS.confirmed];
 
 export default function AdminBookingsPage() {
   const [bookings, setBookings] = useState<BookingRowWithUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [updating, setUpdating] = useState<string | null>(null);
-  const [filter, setFilter] = useState<FilterOption>(BOOKING_STATUS.pending);
+  const [filter, setFilter] = useState<FilterOption>("upcoming");
   const [error, setError] = useState("");
 
   const load = useCallback(async () => {
@@ -58,7 +63,16 @@ export default function AdminBookingsPage() {
     }
   }
 
-  const filtered = filter === "all" ? bookings : bookings.filter((b) => b.status === (filter as BookingStatus));
+  const now = Date.now();
+  const upcoming = bookings
+    .filter((b) => b.scheduledAt && new Date(b.scheduledAt).getTime() >= now && ACTIVE_STATUSES.includes(b.status))
+    .sort((a, b) => new Date(a.scheduledAt!).getTime() - new Date(b.scheduledAt!).getTime());
+  const filtered =
+    filter === "upcoming"
+      ? upcoming
+      : filter === "all"
+        ? bookings
+        : bookings.filter((b) => b.status === (filter as BookingStatus));
   const pendingCount = bookings.filter((b) => b.status === BOOKING_STATUS.pending).length;
 
   return (
@@ -67,7 +81,11 @@ export default function AdminBookingsPage() {
         <em>Bookings</em>
       </h1>
       <p className={styles.pageSub}>
-        {bookings.length} total · {pendingCount} pending
+        {loading
+          ? "Loading…"
+          : upcoming.length > 0
+            ? `Next: ${formatSlotDay(upcoming[0].scheduledAt!)}, ${formatSlotTime(upcoming[0].scheduledAt!)} — ${upcoming[0].user.name ?? upcoming[0].user.email} · ${upcoming.length} upcoming · ${pendingCount} pending`
+            : `No upcoming appointments · ${bookings.length} total · ${pendingCount} pending`}
       </p>
 
       <div className={styles.filterBar}>
@@ -91,7 +109,11 @@ export default function AdminBookingsPage() {
         <div className={styles.emptyState}>Failed to load bookings. Please refresh the page.</div>
       ) : filtered.length === 0 ? (
         <div className={styles.card}>
-          <div className={styles.emptyState}>No {filter === "all" ? "" : filter} bookings.</div>
+          <div className={styles.emptyState}>
+            {filter === "upcoming"
+              ? "No upcoming appointments — your calendar is clear."
+              : `No ${filter === "all" ? "" : filter} bookings.`}
+          </div>
         </div>
       ) : (
         <div className={styles.card}>
