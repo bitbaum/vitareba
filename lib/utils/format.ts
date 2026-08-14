@@ -79,6 +79,40 @@ export function formatSlotTime(date: Date | string): string {
   return SLOT_TIME.format(typeof date === "string" ? new Date(date) : date);
 }
 
+const SLOT_PARTS = new Intl.DateTimeFormat(LOCALE, {
+  timeZone: CLINIC_TIMEZONE,
+  weekday: "short",
+  day: "numeric",
+  month: "short",
+  hour: "2-digit",
+  // h23, not hour12:false — some locales render midnight as "24" under the
+  // latter, which would fall outside every day part.
+  hourCycle: "h23",
+});
+
+/**
+ * A slot broken into its display pieces — the date rail needs weekday, day
+ * number and month separately, and grouping by part of day needs the clinic
+ * hour (NOT the visitor's: a 09:30 Zürich slot must group as morning even for
+ * a patient reading the page from Tokyo).
+ */
+export function slotParts(date: Date | string): {
+  weekday: string;
+  day: string;
+  month: string;
+  hour: number;
+} {
+  const parts = SLOT_PARTS.formatToParts(typeof date === "string" ? new Date(date) : date);
+  const pick = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((p) => p.type === type)?.value ?? "";
+  return {
+    weekday: pick("weekday"),
+    day: pick("day"),
+    month: pick("month"),
+    hour: Number(pick("hour")),
+  };
+}
+
 /**
  * Human-readable relative date label for admin lists: "Today", "Yesterday", "Nd ago".
  * Accepts an ISO date string (YYYY-MM-DD) and a reference Date for testability.

@@ -12,6 +12,7 @@ import { ADMIN_ROUTES, PORTAL_ROUTES } from "@/lib/config/routes";
 import { USER_ROLE } from "@/lib/config/auth";
 import { replySchema } from "@/lib/domain/messages";
 import { runAfterResponse } from "@/lib/utils/post-response";
+import { getClinicianById, type ClinicianContact } from "@/lib/domain/care-team";
 import { serviceUnavailable, badRequest } from "@/lib/utils/api-response";
 import { UUID_RE } from "@/lib/utils/validate";
 import { displayName } from "@/lib/utils/format";
@@ -33,6 +34,7 @@ export async function GET(
       where: eq(threads.id, threadId),
       with: {
         patient: { columns: { id: true, name: true, email: true } },
+        clinician: { columns: { id: true, name: true } },
         messages: {
           orderBy: [asc(threadMessages.createdAt)],
           with: { sender: { columns: { id: true, name: true, role: true } } },
@@ -109,8 +111,18 @@ export async function POST(
   }
 
   // Schedule notification work after the response so it is not dropped when the
-  // request lifecycle ends.
-  const adminEmails = getAdminEmails();
+  // request lifecycle ends. A reply follows the thread's addressee: mailing
+  // every admin about a conversation addressed to one doctor is how a shared
+  // inbox becomes noise nobody reads.
+  let addressee: ClinicianContact | null = null;
+  if (thread.clinicianId) {
+    try {
+      addressee = await getClinicianById(thread.clinicianId);
+    } catch (err) {
+      console.error("[api/messages/threadId] clinician lookup failed:", err);
+    }
+  }
+  const inboundRecipients = addressee ? [addressee.email] : getAdminEmails();
 
   if (session.user.role === USER_ROLE.admin) {
     runAfterResponse(async () => {
@@ -130,17 +142,19 @@ export async function POST(
         }),
       });
     }, "[api/messages/threadId] patient notification failed:");
-  } else if (adminEmails.length > 0) {
+  } else if (inboundRecipients.length > 0) {
     runAfterResponse(async () => {
       const patient = await db.query.users.findFirst({
         where: eq(users.id, session.user.id),
         columns: { name: true, email: true },
       });
       await sendEmail({
-        to: adminEmails,
+        to: inboundRecipients,
         subject: `New message from ${displayName(patient?.name, patient?.email)}: ${thread.subject}`,
         html: newMessageEmail({
-          recipientName: COMPANY.clinicianName,
+          recipientName: addressee
+            ? displayName(addressee.name, addressee.email)
+            : COMPANY.clinicianName,
           senderName: displayName(patient?.name, patient?.email),
           subject: thread.subject,
           portalUrl: `${PORTAL_URL}${ADMIN_ROUTES.messages}/${threadId}`,

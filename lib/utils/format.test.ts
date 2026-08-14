@@ -10,6 +10,7 @@ import {
   formatDateISO,
   displayName,
   relativeDate,
+  slotParts,
 } from "./format";
 
 // Fixed reference date: 2 April 2025, 10:05 UTC
@@ -192,5 +193,38 @@ describe("formatDateISO", () => {
   it("23:59 Zürich is still the same day", () => {
     // 21:59 UTC = 23:59 CEST on 11 Aug
     expect(formatDateISO(new Date("2026-08-11T21:59:00.000Z"))).toBe("2026-08-11");
+  });
+});
+
+// ─── slotParts ────────────────────────────────────────────────────────────────
+
+describe("slotParts", () => {
+  // 07:30 UTC = 09:30 Zürich (CEST)
+  const MORNING = "2026-08-20T07:30:00.000Z";
+
+  it("splits a slot into the pieces the date rail renders", () => {
+    const { weekday, day, month } = slotParts(MORNING);
+    expect(weekday).toBe("Thu");
+    expect(day).toBe("20");
+    expect(month).toBe("Aug");
+  });
+
+  it("reports the CLINIC hour, not the reader's — grouping must not shift by timezone", () => {
+    expect(slotParts(MORNING).hour).toBe(9);
+    // 16:30 UTC = 18:30 Zürich → evening, even though UTC still reads afternoon.
+    expect(slotParts("2026-08-20T16:30:00.000Z").hour).toBe(18);
+  });
+
+  it("survives winter time (CET, +1)", () => {
+    expect(slotParts("2026-01-20T08:30:00.000Z").hour).toBe(9);
+  });
+
+  it("accepts a Date as well as an ISO string", () => {
+    expect(slotParts(new Date(MORNING))).toEqual(slotParts(MORNING));
+  });
+
+  it("renders midnight as hour 0, never 24 (24 falls outside every day part)", () => {
+    // 22:30 UTC = 00:30 Zürich the next day.
+    expect(slotParts("2026-08-19T22:30:00.000Z").hour).toBe(0);
   });
 });

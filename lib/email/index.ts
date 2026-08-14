@@ -21,6 +21,12 @@ type SendOptions = {
   to: string | string[];
   subject: string;
   html: string;
+  /**
+   * File attachments. Used for calendar invites (.ics): attaching the event
+   * is what lets Gmail / Apple Mail / Outlook offer "add to calendar" without
+   * the clinic integrating with any single calendar vendor.
+   */
+  attachments?: { filename: string; content: string; contentType?: string }[];
 };
 
 export type SendResult = { sent: true } | { sent: false; error: string };
@@ -31,7 +37,7 @@ export type SendResult = { sent: true } | { sent: false; error: string };
  * so ignoring the result means "sent" can silently be a lie. Callers where
  * delivery matters (email queue, password reset) must check `.sent`.
  */
-export async function sendEmail({ to, subject, html }: SendOptions): Promise<SendResult> {
+export async function sendEmail({ to, subject, html, attachments }: SendOptions): Promise<SendResult> {
   if (!isEmailConfigured()) {
     // Dev/build without key: log so developers see the email content
     console.log(`[email] To: ${JSON.stringify(to)}\nSubject: ${subject}`);
@@ -43,6 +49,15 @@ export async function sendEmail({ to, subject, html }: SendOptions): Promise<Sen
       to: Array.isArray(to) ? to : [to],
       subject,
       html,
+      ...(attachments?.length
+        ? {
+            attachments: attachments.map((a) => ({
+              filename: a.filename,
+              content: Buffer.from(a.content, "utf8").toString("base64"),
+              contentType: a.contentType,
+            })),
+          }
+        : {}),
     });
     if (error) {
       console.error("[email] send failed:", error.message);

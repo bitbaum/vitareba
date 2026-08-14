@@ -3,18 +3,15 @@ export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { eq, desc } from "drizzle-orm";
-import { requireSession, requireAdmin } from "@/lib/auth/guards";
+import { requireSession } from "@/lib/auth/guards";
 import { db } from "@/lib/db";
-import { documents, users } from "@/lib/db/schema";
+import { documents } from "@/lib/db/schema";
 import { USER_ROLE } from "@/lib/config/auth";
-import { sendEmail } from "@/lib/email";
-import { newDocumentEmail } from "@/lib/email/templates";
-import { PORTAL_URL } from "@/lib/config/company";
 import { DOCUMENT_TITLE_MAX_LENGTH, MIME_TYPE_MAX_LENGTH } from "@/lib/config/portal";
 import { UUID_RE } from "@/lib/utils/validate";
 import { runAfterResponse } from "@/lib/utils/post-response";
 import { serviceUnavailable } from "@/lib/utils/api-response";
-import { displayName } from "@/lib/utils/format";
+import { notifyDocumentAdded } from "@/lib/domain/document-notify";
 
 const createSchema = z.object({
   userId: z.string().uuid(),
@@ -60,7 +57,7 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const guard = await requireAdmin();
+  const guard = await requireSession();
   if (guard.error) return guard.error;
   const { session } = guard;
 
@@ -70,35 +67,28 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: "Invalid data" }, { status: 400 });
   }
 
+  // Same ownership rule as /api/documents/upload: only an admin may name the
+  // owner — everybody else files documents against their own record.
+  const ownerId =
+    session.user.role === USER_ROLE.admin ? parsed.data.userId : session.user.id;
+
   let doc: typeof documents.$inferSelect;
   try {
     [doc] = await db
       .insert(documents)
-      .values({ ...parsed.data, uploadedBy: session.user.id })
+      .values({ ...parsed.data, userId: ownerId, uploadedBy: session.user.id })
       .returning();
   } catch (err) {
     console.error("[api/documents] insert failed:", err);
     return NextResponse.json({ success: false, error: "Failed to save document — please try again" }, { status: 500 });
   }
 
-  // Schedule patient notification after the response so the work is not
-  // dropped when the request lifecycle ends.
-  runAfterResponse(async () => {
-    const patient = await db.query.users.findFirst({
-      where: eq(users.id, parsed.data.userId),
-      columns: { name: true, email: true },
-    });
-    if (!patient?.email) return;
-    await sendEmail({
-      to: patient.email,
-      subject: `New document shared: ${parsed.data.title}`,
-      html: newDocumentEmail({
-        patientName: displayName(patient.name, patient.email),
-        title: parsed.data.title,
-        portalUrl: PORTAL_URL,
-      }),
-    });
-  }, "[api/documents] notification failed:");
+  // Schedule the notification after the response so the work is not dropped
+  // when the request lifecycle ends.
+  runAfterResponse(
+    () => notifyDocumentAdded({ patientId: ownerId, uploaderId: session.user.id, title: parsed.data.title }),
+    "[api/documents] notification failed:"
+  );
 
   return NextResponse.json({ success: true, data: doc }, { status: 201 });
 }

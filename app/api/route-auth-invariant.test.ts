@@ -49,6 +49,9 @@ const SELF_AUTHENTICATING = new Set<string>([
   "/api/account", // registration; Zod-validated, creates (never reads) a user
   "/api/assessment-leads", // anonymous funnel counter — no PII in or out
   "/api/health", // liveness probe — returns nothing sensitive
+  // Calendar subscription feed: clients send no cookies, so the URL is the
+  // credential — an HMAC of the user id verified in the handler.
+  "/api/calendar/[id]/[token]",
 ]);
 
 const CRON_SECRET_CHECK = /CRON_SECRET/;

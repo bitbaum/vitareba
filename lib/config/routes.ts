@@ -89,6 +89,11 @@ export const PUBLIC_API_PREFIXES = [
   "/api/webhooks",
   "/api/cron",
   "/api/health",
+  // Calendar clients (Google/Apple/Outlook) poll a URL forever and never send
+  // cookies — a session gate here means the feed simply never works. Routes
+  // under this prefix authenticate themselves (HMAC token, or requireSession),
+  // which route-auth-invariant.test.ts enforces.
+  "/api/calendar",
 ] as const satisfies readonly string[];
 
 export const ADMIN_ROUTES = {

@@ -2,17 +2,14 @@ export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
 import { putLocal } from "@/lib/storage";
-import { requireAdmin } from "@/lib/auth/guards";
+import { requireSession } from "@/lib/auth/guards";
 import { db } from "@/lib/db";
-import { documents, users } from "@/lib/db/schema";
+import { documents } from "@/lib/db/schema";
 import { DOCUMENT_TITLE_MAX_LENGTH, DOCUMENT_MAX_FILE_SIZE_MB } from "@/lib/config/portal";
+import { USER_ROLE } from "@/lib/config/auth";
 import { UUID_RE } from "@/lib/utils/validate";
-import { sendEmail } from "@/lib/email";
-import { newDocumentEmail } from "@/lib/email/templates";
-import { PORTAL_URL } from "@/lib/config/company";
-import { eq } from "drizzle-orm";
 import { runAfterResponse } from "@/lib/utils/post-response";
-import { displayName } from "@/lib/utils/format";
+import { notifyDocumentAdded } from "@/lib/domain/document-notify";
 
 const MAX_BYTES = DOCUMENT_MAX_FILE_SIZE_MB * 1024 * 1024;
 
@@ -31,14 +28,20 @@ const ALLOWED_MIME_TYPES = new Set([
 ]);
 
 export async function POST(req: Request) {
-  const guard = await requireAdmin();
+  const guard = await requireSession();
   if (guard.error) return guard.error;
   const { session } = guard;
 
   const formData = await req.formData();
   const file = formData.get("file") as File | null;
   const title = formData.get("title") as string | null;
-  const patientId = formData.get("patientId") as string | null;
+
+  // Ownership is decided server-side, never by the client: an admin may upload
+  // for any patient, everybody else can only ever upload for themselves.
+  const isAdmin = session.user.role === USER_ROLE.admin;
+  const patientId = isAdmin
+    ? (formData.get("patientId") as string | null)
+    : session.user.id;
 
   if (!file || !title?.trim() || !patientId) {
     return NextResponse.json({ success: false, error: "file, title, and patientId required" }, { status: 400 });
@@ -91,24 +94,13 @@ export async function POST(req: Request) {
 
   const trimmedTitle = title.trim();
 
-  // Schedule patient notification after the response so the work is not
-  // dropped when the request lifecycle ends.
-  runAfterResponse(async () => {
-    const patient = await db.query.users.findFirst({
-      where: eq(users.id, patientId),
-      columns: { name: true, email: true },
-    });
-    if (!patient?.email) return;
-    await sendEmail({
-      to: patient.email,
-      subject: `New document shared: ${trimmedTitle}`,
-      html: newDocumentEmail({
-        patientName: displayName(patient.name, patient.email),
-        title: trimmedTitle,
-        portalUrl: PORTAL_URL,
-      }),
-    });
-  }, "[api/documents/upload] notification failed:");
+  // Schedule the notification after the response so the work is not dropped
+  // when the request lifecycle ends. Who gets told depends on who uploaded —
+  // see lib/domain/document-notify.ts.
+  runAfterResponse(
+    () => notifyDocumentAdded({ patientId, uploaderId: session.user.id, title: trimmedTitle }),
+    "[api/documents/upload] notification failed:"
+  );
 
   return NextResponse.json({ success: true, data: doc }, { status: 201 });
 }

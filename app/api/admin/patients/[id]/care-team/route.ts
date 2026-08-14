@@ -1,13 +1,11 @@
 export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
-import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/guards";
 import { serviceUnavailable, badRequest } from "@/lib/utils/api-response";
 import { UUID_RE } from "@/lib/utils/validate";
-import { db } from "@/lib/db";
-import { careTeam, users } from "@/lib/db/schema";
+import { addCareTeamMember, removeCareTeamMember } from "@/lib/domain/care-team";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -23,20 +21,10 @@ export async function POST(req: Request, { params }: RouteContext) {
 
   const parsed = bodySchema.safeParse(await req.json());
   if (!parsed.success) return badRequest("Invalid data");
-  const { clinicianId } = parsed.data;
-  if (clinicianId === id) return badRequest("A clinician cannot treat themselves");
 
   try {
-    const clinician = await db.query.users.findFirst({
-      where: and(eq(users.id, clinicianId), eq(users.isClinician, true)),
-      columns: { id: true },
-    });
-    if (!clinician) return badRequest("Unknown clinician");
-
-    await db
-      .insert(careTeam)
-      .values({ clinicianId, patientId: id })
-      .onConflictDoNothing();
+    const result = await addCareTeamMember(parsed.data.clinicianId, id);
+    if (!result.ok) return badRequest(result.error);
   } catch (err) {
     console.error("[api/admin/care-team] POST failed:", err);
     return serviceUnavailable();
@@ -57,9 +45,7 @@ export async function DELETE(req: Request, { params }: RouteContext) {
   if (!parsed.success) return badRequest("Invalid data");
 
   try {
-    await db
-      .delete(careTeam)
-      .where(and(eq(careTeam.patientId, id), eq(careTeam.clinicianId, parsed.data.clinicianId)));
+    await removeCareTeamMember(parsed.data.clinicianId, id);
   } catch (err) {
     console.error("[api/admin/care-team] DELETE failed:", err);
     return serviceUnavailable();

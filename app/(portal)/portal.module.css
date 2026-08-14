@@ -383,7 +383,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 60px;
+    height: var(--portal-bottom-nav-h);
     background: var(--ink);
     border-top: 1px solid var(--white-8);
     z-index: var(--z-nav);

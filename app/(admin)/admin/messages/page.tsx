@@ -19,6 +19,7 @@ export default async function AdminMessagesPage() {
       orderBy: [desc(threads.lastMessageAt)],
       with: {
         patient: { columns: { id: true, name: true, email: true } },
+        clinician: { columns: { id: true, name: true } },
         messages: { orderBy: [desc(threadMessages.createdAt)], limit: 1 },
       },
     }),
@@ -74,8 +75,13 @@ export default async function AdminMessagesPage() {
                       </div>
                       <div className={styles.cellSub}>{t.patient.email}</div>
                     </td>
-                    <td className={isUnread ? styles.unreadSubject : undefined}>
-                      {t.subject}
+                    <td>
+                      <div className={isUnread ? styles.unreadSubject : undefined}>
+                        {t.subject}
+                      </div>
+                      {t.clinician?.name && (
+                        <div className={styles.cellSub}>→ {t.clinician.name}</div>
+                      )}
                     </td>
                     <td className={styles.tdMaxW}>
                       {t.messages[0] ? (

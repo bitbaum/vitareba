@@ -63,6 +63,26 @@ export const CLINICIAN_AVAILABILITY: Record<string, Partial<ClinicianAvailabilit
   },
 };
 
+/**
+ * How a day's slots are grouped in the picker. A patient scans "an afternoon
+ * next week", not a flat list of 14 times — the boundaries are clinic wall
+ * hours, so they line up with the availability windows above.
+ */
+export const DAY_PARTS = [
+  { id: "morning", label: "Morning", untilHour: 12 },
+  { id: "afternoon", label: "Afternoon", untilHour: 17 },
+  { id: "evening", label: "Evening", untilHour: 24 },
+] as const;
+
+export type DayPartId = (typeof DAY_PARTS)[number]["id"];
+
+/**
+ * How much history the subscribable calendar feed carries. Long enough that a
+ * client re-syncing after a break still sees (and can delete) recently
+ * cancelled appointments; short enough that the feed stays small forever.
+ */
+export const CALENDAR_FEED_PAST_DAYS = 60;
+
 export function getAvailabilityForEmail(email: string | null | undefined): ClinicianAvailability {
   const override = email ? CLINICIAN_AVAILABILITY[email.toLowerCase()] : undefined;
   return { ...DEFAULT_AVAILABILITY, ...override };

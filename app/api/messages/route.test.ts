@@ -9,14 +9,18 @@ const {
   mockSendEmail,
   mockGetAdminEmails,
   mockRunAfterResponse,
+  mockGetClinicianById,
+  mockGetPrimaryClinicianId,
 } = vi.hoisted(() => ({
-  mockRequireSession:    vi.fn(),
-  mockFindMany:          vi.fn(),
-  mockUserFindFirst:     vi.fn(),
-  mockInsert:            vi.fn(),
-  mockSendEmail:         vi.fn(),
-  mockGetAdminEmails:    vi.fn(),
-  mockRunAfterResponse:  vi.fn(),
+  mockRequireSession:        vi.fn(),
+  mockFindMany:              vi.fn(),
+  mockUserFindFirst:         vi.fn(),
+  mockInsert:                vi.fn(),
+  mockSendEmail:             vi.fn(),
+  mockGetAdminEmails:        vi.fn(),
+  mockRunAfterResponse:      vi.fn(),
+  mockGetClinicianById:      vi.fn(),
+  mockGetPrimaryClinicianId: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/guards", () => ({ requireSession: mockRequireSession }));
@@ -40,6 +44,11 @@ vi.mock("@/lib/config/company", async (importOriginal) => {
 
 vi.mock("@/lib/utils/post-response", () => ({ runAfterResponse: mockRunAfterResponse }));
 
+vi.mock("@/lib/domain/care-team", () => ({
+  getClinicianById: mockGetClinicianById,
+  getPrimaryClinicianId: mockGetPrimaryClinicianId,
+}));
+
 import { GET, POST } from "./route";
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
@@ -51,10 +60,14 @@ const UNAUTH          = { session: null, error: new Response(null, { status: 401
 const THREAD = {
   id: "thread-1",
   patientId: "patient-1",
+  clinicianId: null,
   subject: "Protocol question",
   lastMessageAt: new Date("2026-05-07T00:00:00Z"),
   createdAt:     new Date("2026-05-07T00:00:00Z"),
 };
+
+const CLINICIAN_ID = "b1ffc99a-9c0b-4ef8-bb6d-6bb9bd380a22";
+const CLINICIAN = { id: CLINICIAN_ID, name: "Dr Manuel Schabus", email: "manuel@vitareba.ch" };
 
 const VALID_POST_BODY = {
   subject: "Question about my protocol",
@@ -69,14 +82,17 @@ function makePostRequest(body: unknown) {
   });
 }
 
+// Captures the values passed to the threads insert so tests can assert what
+// was actually stored on the thread row.
+let threadValues: ReturnType<typeof vi.fn>;
+
 // Sets up the two sequential inserts: threads (with .returning) then threadMessages (no .returning)
 function setupInsert() {
+  threadValues = vi.fn().mockReturnValue({
+    returning: vi.fn().mockResolvedValue([THREAD]),
+  });
   mockInsert
-    .mockReturnValueOnce({
-      values: vi.fn().mockReturnValue({
-        returning: vi.fn().mockResolvedValue([THREAD]),
-      }),
-    })
+    .mockReturnValueOnce({ values: threadValues })
     .mockReturnValueOnce({
       values: vi.fn().mockResolvedValue({}),
     });
@@ -132,10 +148,15 @@ describe("POST /api/messages", () => {
     mockSendEmail.mockReset();
     mockGetAdminEmails.mockReset();
     mockRunAfterResponse.mockReset();
+    mockGetClinicianById.mockReset();
+    mockGetPrimaryClinicianId.mockReset();
 
     mockRequireSession.mockResolvedValue(PATIENT_SESSION);
     mockGetAdminEmails.mockReturnValue(["admin@vitareba.ch"]);
     mockSendEmail.mockResolvedValue(undefined);
+    // Default: nobody treats this patient yet → unaddressed thread
+    mockGetPrimaryClinicianId.mockResolvedValue(null);
+    mockGetClinicianById.mockResolvedValue(null);
     setupInsert();
   });
 
@@ -214,6 +235,56 @@ describe("POST /api/messages", () => {
         to: "alice@example.com",
         subject: expect.stringContaining(VALID_POST_BODY.subject),
       })
+    );
+  });
+
+  it("stores an explicit clinicianId on the thread", async () => {
+    mockGetClinicianById.mockResolvedValue(CLINICIAN);
+    const res = await POST(makePostRequest({ ...VALID_POST_BODY, clinicianId: CLINICIAN_ID }));
+    expect(res.status).toBe(201);
+    expect(mockGetClinicianById).toHaveBeenCalledWith(CLINICIAN_ID);
+    expect(threadValues).toHaveBeenCalledWith(
+      expect.objectContaining({ patientId: "patient-1", clinicianId: CLINICIAN_ID })
+    );
+  });
+
+  it("defaults to the patient's primary clinician when none is given", async () => {
+    mockGetPrimaryClinicianId.mockResolvedValue(CLINICIAN_ID);
+    mockGetClinicianById.mockResolvedValue(CLINICIAN);
+    const res = await POST(makePostRequest(VALID_POST_BODY));
+    expect(res.status).toBe(201);
+    expect(mockGetPrimaryClinicianId).toHaveBeenCalledWith("patient-1");
+    expect(threadValues).toHaveBeenCalledWith(
+      expect.objectContaining({ clinicianId: CLINICIAN_ID })
+    );
+  });
+
+  it("stores a null clinician when nobody treats the patient", async () => {
+    const res = await POST(makePostRequest(VALID_POST_BODY));
+    expect(res.status).toBe(201);
+    expect(threadValues).toHaveBeenCalledWith(expect.objectContaining({ clinicianId: null }));
+  });
+
+  it("rejects a clinicianId that is not a real clinician", async () => {
+    mockGetClinicianById.mockResolvedValue(null); // unknown id, or a non-clinician user
+    const res = await POST(makePostRequest({ ...VALID_POST_BODY, clinicianId: CLINICIAN_ID }));
+    expect(res.status).toBe(400);
+    expect(mockInsert).not.toHaveBeenCalled();
+  });
+
+  it("rejects a malformed clinicianId before it reaches the DB", async () => {
+    const res = await POST(makePostRequest({ ...VALID_POST_BODY, clinicianId: "not-a-uuid" }));
+    expect(res.status).toBe(400);
+    expect(mockGetClinicianById).not.toHaveBeenCalled();
+  });
+
+  it("emails the addressed clinician instead of every admin", async () => {
+    mockGetClinicianById.mockResolvedValue(CLINICIAN);
+    mockUserFindFirst.mockResolvedValue({ name: "Alice", email: "alice@example.com" });
+    await POST(makePostRequest({ ...VALID_POST_BODY, clinicianId: CLINICIAN_ID }));
+    await mockRunAfterResponse.mock.calls[0][0]();
+    expect(mockSendEmail).toHaveBeenCalledWith(
+      expect.objectContaining({ to: [CLINICIAN.email] })
     );
   });
 

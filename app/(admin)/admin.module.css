@@ -634,6 +634,31 @@
   composes: docLink from "../shared.module.css";
 }
 
+/* ─── Calendar feed URL ───────────────────────────────────────────────────── */
+
+.feedUrlRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* The URL is long and unbreakable — let it scroll rather than blow the layout. */
+.feedUrl {
+  flex: 1 1 20rem;
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding: 0.5rem 0.7rem;
+  background: var(--off);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.78rem;
+  color: var(--ink2);
+}
+
 /* ─── Thread detail (admin messages/[threadId]) ───────────────────────────── */
 
 .threadDetail {
