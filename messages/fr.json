@@ -617,7 +617,7 @@
         },
         "results": {
             "startingPoint": "Voici votre point de départ.",
-            "ctaSub": "Un appel découverte de 30 minutes avec {clinicianName} traduit ces scores en plan concret — quelles dimensions traiter en premier, quelles interventions sont disponibles et à quoi ressemble un programme {shortName} pour votre profil spécifique.",
+            "ctaSub": "Un appel découverte de 30 minutes avec notre équipe clinique traduit ces scores en plan concret — quelles dimensions traiter en premier, quelles interventions sont disponibles et à quoi ressemble un programme {shortName} pour votre profil spécifique.",
             "ctaNoCommitment": "Sans engagement. Juste de la clarté.",
             "saveResults": "Sauvegarder les résultats + réserver un appel →",
             "retake": "Reprendre l'évaluation"

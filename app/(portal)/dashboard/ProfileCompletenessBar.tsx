@@ -8,7 +8,15 @@ import { PORTAL_ROUTES } from "@/lib/config/routes";
 
 const MAX_SHOWN_FIELDS = 3;
 
-export function ProfileCompletenessBar({ pct, missingFields = [] }: { pct: number; missingFields?: string[] }) {
+export function ProfileCompletenessBar({
+  pct,
+  missingFields = [],
+  clinician = COMPANY.clinicianFallback,
+}: {
+  pct: number;
+  missingFields?: string[];
+  clinician?: string;
+}) {
   if (pct >= 100) return null;
 
   const shown = missingFields.slice(0, MAX_SHOWN_FIELDS);
@@ -27,10 +35,10 @@ export function ProfileCompletenessBar({ pct, missingFields = [] }: { pct: numbe
       </div>
       <p className={styles.profileBarText}>
         {pct < PROFILE_COMPLETENESS_LOW_PCT
-          ? `A full profile lets ${COMPANY.clinicianName} arrive at your consultation already knowing your context — not spending the first 20 minutes gathering basics.`
+          ? `A full profile lets ${clinician} arrive at your consultation already knowing your context — not spending the first 20 minutes gathering basics.`
           : pct < PROFILE_COMPLETENESS_HIGH_PCT
-          ? `Almost there — a complete profile means ${COMPANY.clinicianName} can design your programme before you even walk in the door.`
-          : `Just a few fields left — complete your profile so ${COMPANY.clinicianName} has the full picture.`}
+          ? `Almost there — a complete profile means ${clinician} can design your programme before you even walk in the door.`
+          : `Just a few fields left — complete your profile so ${clinician} has the full picture.`}
         {" "}
         <Link href={PORTAL_ROUTES.profile} className={styles.profileBarLink}>
           Complete profile →

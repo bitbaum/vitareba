@@ -3,7 +3,7 @@
 import { useState } from "react";
 import styles from "@/app/(admin)/admin.module.css";
 import { SAVED_FEEDBACK_MS, PATIENT_NOTE_MAX_LENGTH } from "@/lib/config/portal";
-import { PROGRAMME_CONFIG, PHASE_CONFIG, PROGRAMME_ENUM_VALUES, PHASE_ENUM_VALUES } from "@/lib/config/programmes";
+import { PROGRAMME_CONFIG, PHASE_CONFIG, PROGRAMME_ENUM_VALUES, PHASE_ENUM_VALUES, phaseDescription } from "@/lib/config/programmes";
 import type { ProgrammeKey, PhaseKey } from "@/lib/config/programmes";
 
 type Assignment = {
@@ -16,9 +16,12 @@ type Assignment = {
 export function ProgrammeAssignmentForm({
   patientId,
   initial,
+  clinician,
 }: {
   patientId: string;
   initial: Assignment | null;
+  /** This patient's clinician, so the preview shows the copy they will read. */
+  clinician: string;
 }) {
   const [programme, setProgramme] = useState<ProgrammeKey | "">(initial?.programme ?? "");
   const [phase, setPhase] = useState<PhaseKey | "">(initial?.phase ?? "");
@@ -123,7 +126,7 @@ export function ProgrammeAssignmentForm({
         <div className={styles.assignPreview}>
           <strong className={styles.assignPreviewLabel}>{PROGRAMME_CONFIG[programme as ProgrammeKey]?.label}</strong>
           {" — "}
-          {PHASE_CONFIG[phase as PhaseKey]?.description}
+          {phaseDescription(phase as PhaseKey, clinician)}
         </div>
       )}
 

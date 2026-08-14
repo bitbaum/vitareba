@@ -12,6 +12,7 @@ import { USER_ROLE } from "@/lib/config/auth";
 import { PORTAL_URL, getAdminEmails } from "@/lib/config/company";
 import { ADMIN_ROUTES } from "@/lib/config/routes";
 import { displayName } from "@/lib/utils/format";
+import { clinicianLabelFor } from "@/lib/domain/clinician-label";
 
 export type CronSignalsResult =
   | { success: true; alerts: number; goalsCompleted: number; checked: number }
@@ -163,7 +164,12 @@ export async function runCronSignals(now: Date = new Date()): Promise<CronSignal
               sendEmail({
                 to: patient.email,
                 subject: `Goal achieved: ${goal.title}`,
-                html: goalAchievedPatientEmail({ patientName, goalTitle: goal.title, portalUrl: PORTAL_URL }),
+                html: goalAchievedPatientEmail({
+                  patientName,
+                  goalTitle: goal.title,
+                  portalUrl: PORTAL_URL,
+                  clinician: await clinicianLabelFor(patient.id),
+                }),
               }).catch((err) =>
                 console.error("[cron/signals] goal achievement patient email failed:", patient.id, err)
               )

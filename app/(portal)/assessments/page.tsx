@@ -6,8 +6,8 @@ import Link from "next/link";
 import { DIMENSIONS, getInterpretation, scoreClass } from "@/lib/assessment/data";
 import { ASSESSMENT_STALE_DAYS } from "@/lib/config/portal";
 import { PORTAL_ROUTES } from "@/lib/config/routes";
-import { formatDateLong, formatDateMonthDay } from "@/lib/utils/format";
-import { COMPANY } from "@/lib/config/company";
+import { formatDateLong, formatDateMonthDay, sentenceCase } from "@/lib/utils/format";
+import { clinicianLabelFor } from "@/lib/domain/clinician-label";
 import styles from "../portal.module.css";
 import assessStyles from "./assessments.module.css";
 import { AssessmentTrendChartWrapper } from "./AssessmentTrendChartWrapper";
@@ -20,12 +20,13 @@ export default async function AssessmentsPage({
   const session = await auth();
   if (!session) return null;
 
-  const [params, results] = await Promise.all([
+  const [params, results, clinician] = await Promise.all([
     searchParams,
     db.query.assessmentResults.findMany({
       where: eq(assessmentResults.userId, session.user.id),
       orderBy: [desc(assessmentResults.completedAt)],
     }),
+    clinicianLabelFor(session.user.id),
   ]);
 
   const justSaved = params.saved === "1";
@@ -65,10 +66,10 @@ export default async function AssessmentsPage({
             </p>
           </div>
           <p className={assessStyles.savedBody}>
-            This is your baseline. Every check-in, every retake builds on it — showing you exactly how your biology and performance evolve over time. {COMPANY.clinicianName} reviews this data before every consultation to design your programme around your actual profile, not a generic template.
+            This is your baseline. Every check-in, every retake builds on it — showing you exactly how your biology and performance evolve over time. {sentenceCase(clinician)} reviews this data before every consultation to design your programme around your actual profile, not a generic template.
           </p>
           <p className={assessStyles.savedBody}>
-            The single highest-leverage next step: a 30-minute discovery call with {COMPANY.clinicianName} to translate your scores into a concrete plan.
+            The single highest-leverage next step: a 30-minute discovery call with {clinician} to translate your scores into a concrete plan.
           </p>
           <div className={assessStyles.savedActions}>
             <Link href={PORTAL_ROUTES.bookings} className="btn-dark">

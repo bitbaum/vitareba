@@ -8,6 +8,7 @@ import { weeklyDigestEmail } from "@/lib/email/templates";
 import { getVerdictName } from "@/lib/assessment/data";
 import { PORTAL_URL, COMPANY } from "@/lib/config/company";
 import { formatDateISO, displayName } from "@/lib/utils/format";
+import { clinicianLabelFor } from "@/lib/domain/clinician-label";
 import { USER_ROLE } from "@/lib/config/auth";
 import { CHECKIN_METRICS, DAYS_PER_WEEK, WEEKLY_DIGEST_STREAK_WINDOW_DAYS, type MetricKey } from "@/lib/config/portal";
 import { BOOKING_STATUS, BOOKING_STATUS_CONFIG } from "@/lib/config/booking-status";
@@ -100,7 +101,7 @@ export async function runCronWeeklyDigest(now: Date = new Date()): Promise<CronW
   const skippedCount = patients.length - sendable.length;
 
   const results = await Promise.allSettled(
-    sendable.map((patient) => {
+    sendable.map(async (patient) => {
       const recentCheckins = checkinsByPatient.get(patient.id) ?? [];
       const thisWeekCheckins = recentCheckins.filter((checkin) => checkin.date >= thisWeekISO);
       const prevWeekCheckins = recentCheckins.filter(
@@ -132,6 +133,7 @@ export async function runCronWeeklyDigest(now: Date = new Date()): Promise<CronW
         activeGoals: goalSummaries,
         portalUrl: PORTAL_URL,
         streak,
+        clinician: await clinicianLabelFor(patient.id),
       });
 
       return sendEmail({

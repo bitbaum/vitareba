@@ -617,7 +617,7 @@
         },
         "results": {
             "startingPoint": "Questo è il tuo punto di partenza.",
-            "ctaSub": "Una chiamata di scoperta di 30 minuti con {clinicianName} traduce questi punteggi in un piano concreto — quali dimensioni affrontare per prime, quali interventi sono disponibili e come appare un programma {shortName} per il tuo profilo specifico.",
+            "ctaSub": "Una chiamata di scoperta di 30 minuti con il nostro team clinico traduce questi punteggi in un piano concreto — quali dimensioni affrontare per prime, quali interventi sono disponibili e come appare un programma {shortName} per il tuo profilo specifico.",
             "ctaNoCommitment": "Nessun impegno. Solo chiarezza.",
             "saveResults": "Salva i risultati + prenota una chiamata →",
             "retake": "Rifai la valutazione"

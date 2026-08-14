@@ -1,7 +1,20 @@
 export const COMPANY = {
   name: "VitaReBa GmbH",
   shortName: "VitaReBa",
-  clinicianName: "Manuel",
+  /**
+   * How to refer to a patient's doctor when we do NOT know who it is — before
+   * a care team exists, or in copy addressed to no one in particular.
+   *
+   * There is deliberately no `clinicianName` here. Who treats a given patient
+   * is answered by `care_team` (lib/domain/care-team.ts); naming one doctor in
+   * config made every email tell every patient the same name, which stopped
+   * being true the moment the clinic had two. Resolve the real name with
+   * `clinicianLabelFor(patientId)` and fall back to this.
+   *
+   * Lowercase on purpose — it appears mid-sentence more often than not. Use
+   * `sentenceCase()` where it starts a sentence.
+   */
+  clinicianFallback: "your clinician",
   partnerBrand: "Surf Your Life",
   email: "manuel@surfyourlife.org",
   address: {

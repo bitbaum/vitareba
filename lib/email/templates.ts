@@ -5,6 +5,7 @@ import { PORTAL_ROUTES } from "@/lib/config/routes";
 import { type MetricKey, CHECKIN_STREAK_MILESTONES } from "@/lib/config/portal";
 import { PASSWORD_RESET_TOKEN_EXPIRY_MS } from "@/lib/config/auth";
 import { streakMessage } from "@/lib/domain/checkin";
+import { sentenceCase } from "@/lib/utils/format";
 import {
   COLOR_INK, COLOR_INK2, COLOR_MUTED, COLOR_TEAL, COLOR_GOLD,
   COLOR_OFF, COLOR_LIGHT, COLOR_BORDER, COLOR_WARN, COLOR_DANGER, COLOR_WHITE,
@@ -210,20 +211,23 @@ export function newMessageEmail({
 export function welcomePatientEmail({
   patientName,
   portalUrl,
+  clinician = COMPANY.clinicianFallback,
 }: {
   patientName: string;
   portalUrl: string;
+  clinician?: string;
 }) {
   patientName = escapeHtml(patientName);
+  clinician = escapeHtml(clinician);
 
   return layout(`
     <p>Hi ${patientName},</p>
     <p>Welcome to ${COMPANY.shortName}. Your patient portal is ready.</p>
-    <p>${COMPANY.clinicianName} works with a small number of patients at a time — which means your programme will be built around your specific biology, not a template. To make that possible, ${COMPANY.clinicianName} needs your data.</p>
+    <p>${sentenceCase(clinician)} works with a small number of patients at a time — which means your programme will be built around your specific biology, not a template. To make that possible, ${clinician} needs your data.</p>
     <div class="divider"></div>
     <p><strong>Here is what to do first:</strong></p>
-    <p>1. <strong>Complete your profile</strong> — your clinical history, current medications, and lifestyle baseline give ${COMPANY.clinicianName} the context needed before your first consultation.</p>
-    <p>2. <strong>Take the Inflection Edge</strong> — 30 questions, 5 minutes. Your results map your ADHD profile across five dimensions and unlock ${COMPANY.clinicianName}'s ability to personalise your protocol.</p>
+    <p>1. <strong>Complete your profile</strong> — your clinical history, current medications, and lifestyle baseline give ${clinician} the context needed before your first consultation.</p>
+    <p>2. <strong>Take the Inflection Edge</strong> — 30 questions, 5 minutes. Your results map your ADHD profile across five dimensions and unlock ${clinician}'s ability to personalise your protocol.</p>
     <p>3. <strong>Check in daily</strong> — takes 30 seconds. Sleep, energy, mood, focus, stress. Over time this becomes your most valuable clinical dataset.</p>
     <div class="divider"></div>
     <p><a class="btn" href="${portalUrl}${PORTAL_ROUTES.dashboard}">Open your portal</a></p>
@@ -236,16 +240,19 @@ export function welcomePatientEmail({
 export function profileCompletionEmail({
   patientName,
   portalUrl,
+  clinician = COMPANY.clinicianFallback,
 }: {
   patientName: string;
   portalUrl: string;
+  clinician?: string;
 }) {
   patientName = escapeHtml(patientName);
+  clinician = escapeHtml(clinician);
 
   return layout(`
     <p>Hi ${patientName},</p>
     <p>One quick thing before your first consultation: your profile.</p>
-    <p>${COMPANY.clinicianName} reviews every patient's profile before meeting them. Your clinical history, current medications, and lifestyle baseline allow for your first session to already be built around your situation — not spending the first 20 minutes gathering basics.</p>
+    <p>${sentenceCase(clinician)} reviews every patient's profile before meeting them. Your clinical history, current medications, and lifestyle baseline allow for your first session to already be built around your situation — not spending the first 20 minutes gathering basics.</p>
     <p>It takes about 5 minutes and makes a measurable difference to the quality of your first consultation.</p>
     <p><a class="btn" href="${portalUrl}${PORTAL_ROUTES.profile}">Complete your profile</a></p>
     <p class="meta">Already done? Ignore this email.</p>
@@ -257,17 +264,20 @@ export function profileCompletionEmail({
 export function assessmentCtaEmail({
   patientName,
   portalUrl,
+  clinician = COMPANY.clinicianFallback,
 }: {
   patientName: string;
   portalUrl: string;
+  clinician?: string;
 }) {
   patientName = escapeHtml(patientName);
+  clinician = escapeHtml(clinician);
 
   return layout(`
     <p>Hi ${patientName},</p>
-    <p>The Inflection Edge is the foundation of everything ${COMPANY.clinicianName} does with you.</p>
-    <p>It maps your ADHD profile across five dimensions — Arousal, Divergent Output, Hyperfocus, Volatility, and Environment Design. Each dimension produces a 0–100 score that tells ${COMPANY.clinicianName} where your highest-leverage intervention points are.</p>
-    <p>Without it, ${COMPANY.clinicianName} is working blind. With it, your protocol can be designed before you even sit down together.</p>
+    <p>The Inflection Edge is the foundation of everything ${clinician} does with you.</p>
+    <p>It maps your ADHD profile across five dimensions — Arousal, Divergent Output, Hyperfocus, Volatility, and Environment Design. Each dimension produces a 0–100 score that tells ${clinician} where your highest-leverage intervention points are.</p>
+    <p>Without it, ${clinician} is working blind. With it, your protocol can be designed before you even sit down together.</p>
     <p>It takes 5 minutes.</p>
     <p><a class="btn" href="${portalUrl}${PORTAL_ROUTES.assessment}">Take the Inflection Edge →</a></p>
   `);
@@ -348,6 +358,7 @@ export function assessmentResultsEmail({
   verdictText,
   dimensions,
   portalUrl,
+  clinician = COMPANY.clinicianFallback,
 }: {
   patientName: string;
   overallScore: number;
@@ -355,8 +366,10 @@ export function assessmentResultsEmail({
   verdictText: string;
   dimensions: Array<{ icon: string; name: string; score: number; interpretation: string }>;
   portalUrl: string;
+  clinician?: string;
 }) {
   patientName = escapeHtml(patientName);
+  clinician = escapeHtml(clinician);
 
   const dimRows = dimensions
     .map(
@@ -386,7 +399,7 @@ export function assessmentResultsEmail({
     </table>
     <div class="divider"></div>
     <p><a class="btn" href="${portalUrl}">View full results in portal</a></p>
-    <p class="meta">${COMPANY.clinicianName} will review your profile and be in touch about next steps.</p>
+    <p class="meta">${sentenceCase(clinician)} will review your profile and be in touch about next steps.</p>
   `);
 }
 
@@ -395,22 +408,25 @@ export function assessmentResultsEmail({
 export function assessmentMeaningEmail({
   patientName,
   portalUrl,
+  clinician = COMPANY.clinicianFallback,
 }: {
   patientName: string;
   portalUrl: string;
+  clinician?: string;
 }) {
   patientName = escapeHtml(patientName);
+  clinician = escapeHtml(clinician);
 
   return layout(`
     <p>Hi ${patientName},</p>
     <p>You took the Inflection Edge two days ago. This email explains what the five dimensions actually measure — and why they matter clinically.</p>
     <div class="divider"></div>
     <p><strong>⚡ Arousal &amp; Activation</strong><br/>
-    This is your ability to initiate. Most ADHD interventions start here because without reliable activation, nothing else works. ${COMPANY.clinicianName} looks at whether the barrier to starting is biological (dopamine regulation), structural (environment), or habitual.</p>
+    This is your ability to initiate. Most ADHD interventions start here because without reliable activation, nothing else works. ${clinician} looks at whether the barrier to starting is biological (dopamine regulation), structural (environment), or habitual.</p>
     <p><strong>💥 Divergent Output</strong><br/>
-    Raw creative capacity. ADHD brains often generate more ideas than neurotypical ones — the clinical question is whether that output is captured, developed, and deployed, or scattered. ${COMPANY.clinicianName} tracks the gap between ideation and execution.</p>
+    Raw creative capacity. ADHD brains often generate more ideas than neurotypical ones — the clinical question is whether that output is captured, developed, and deployed, or scattered. ${clinician} tracks the gap between ideation and execution.</p>
     <p><strong>🎯 Hyperfocus</strong><br/>
-    Your ability to enter deep, extended flow states. When managed well, hyperfocus is an asymmetric advantage. When uncontrolled, it burns time and relationships. ${COMPANY.clinicianName} maps how deliberate versus reactive your hyperfocus currently is.</p>
+    Your ability to enter deep, extended flow states. When managed well, hyperfocus is an asymmetric advantage. When uncontrolled, it burns time and relationships. ${clinician} maps how deliberate versus reactive your hyperfocus currently is.</p>
     <p><strong>🌊 Volatility &amp; Cost</strong><br/>
     Emotional and performance variance. The real-world cost of ADHD is often paid here — in decisions made in the wrong state, relationships affected by unpredictability, and energy spent on recovery. This is where biological stabilisation has the most direct impact.</p>
     <p><strong>🏗️ Environment Design</strong><br/>
@@ -426,16 +442,19 @@ export function assessmentBookingEmail({
   patientName,
   overallScore,
   portalUrl,
+  clinician = COMPANY.clinicianFallback,
 }: {
   patientName: string;
   overallScore: number;
   portalUrl: string;
+  clinician?: string;
 }) {
   patientName = escapeHtml(patientName);
+  clinician = escapeHtml(clinician);
 
   return layout(`
     <p>Hi ${patientName},</p>
-    <p>${COMPANY.clinicianName} has had time to review your Inflection Edge profile (overall score: <strong>${overallScore}/100</strong>).</p>
+    <p>${sentenceCase(clinician)} has had time to review your Inflection Edge profile (overall score: <strong>${overallScore}/100</strong>).</p>
     <p>If you would like to discuss what your results mean for your specific situation — and what interventions are most relevant for your neurotype — you can book a consultation directly.</p>
     <p><a class="btn" href="${portalUrl}${PORTAL_ROUTES.bookings}">Book a consultation</a></p>
     <div class="divider"></div>
@@ -459,9 +478,10 @@ type MetricInsight = { label: string; delta: number };
  */
 function weeklyInsight(
   curr: Record<MetricKey, number>,
-  prev: Record<MetricKey, number> | null
+  prev: Record<MetricKey, number> | null,
+  clinician: string
 ): string | null {
-  if (!prev) return `First week of data on record — ${COMPANY.clinicianName} now has a baseline to track against.`;
+  if (!prev) return `First week of data on record — ${clinician} now has a baseline to track against.`;
 
   const metrics: MetricInsight[] = [
     { label: "sleep",  delta: curr.sleep  - prev.sleep },
@@ -492,7 +512,7 @@ function weeklyInsight(
     return `Strong week — ${fmt(improved)} improved.`;
   }
   if (declined.length > 0 && improved.length === 0) {
-    return `${fmt(declined)} dipped this week — consistent check-ins help ${COMPANY.clinicianName} catch these early.`;
+    return `${fmt(declined)} dipped this week — consistent check-ins help ${clinician} catch these early.`;
   }
   // Mixed: name the biggest mover in each direction
   return `${improved[0].label} improved while ${declined[0].label} dipped.`;
@@ -530,6 +550,7 @@ export function weeklyDigestEmail({
   activeGoals = [],
   portalUrl,
   streak = 0,
+  clinician = COMPANY.clinicianFallback,
 }: {
   patientName: string;
   thisWeekAvgs: WeekAvgs;
@@ -540,11 +561,13 @@ export function weeklyDigestEmail({
   activeGoals?: DigestGoal[];
   portalUrl: string;
   streak?: number;
+  clinician?: string;
 }) {
   patientName = escapeHtml(patientName);
+  clinician = escapeHtml(clinician);
 
   const hasCheckins = thisWeekAvgs !== null;
-  const insight = hasCheckins ? weeklyInsight(thisWeekAvgs!, prevWeekAvgs) : null;
+  const insight = hasCheckins ? weeklyInsight(thisWeekAvgs!, prevWeekAvgs, clinician) : null;
 
   const checkinSection = hasCheckins ? `
     ${insight ? `<p style="font-size:0.9rem;color:${COLOR_INK};font-style:italic;margin-bottom:1rem">${insight}</p>` : ""}
@@ -567,7 +590,7 @@ export function weeklyDigestEmail({
       </tbody>
     </table>
     <div class="divider"></div>` : `
-    <p class="meta">No check-ins this week. Consistent tracking helps ${COMPANY.clinicianName} see your patterns clearly.</p>
+    <p class="meta">No check-ins this week. Consistent tracking helps ${clinician} see your patterns clearly.</p>
     <div class="divider"></div>`;
 
   const assessmentSection = latestScore !== null ? `
@@ -622,19 +645,22 @@ export function checkinReminderEmail({
   patientName,
   portalUrl,
   atRiskStreak = 0,
+  clinician = COMPANY.clinicianFallback,
 }: {
   patientName: string;
   portalUrl: string;
   atRiskStreak?: number;
+  clinician?: string;
 }) {
   patientName = escapeHtml(patientName);
+  clinician = escapeHtml(clinician);
 
   const streakLine = atRiskStreak >= 2
     ? `<p style="font-size:1rem;font-weight:600;color:${COLOR_INK}">🔥 ${atRiskStreak}-day streak — don't break it now.</p>`
     : "";
   const bodyLine = atRiskStreak >= 2
-    ? `<p>You've logged ${atRiskStreak} days in a row. One more entry keeps your streak alive and gives ${COMPANY.clinicianName} a complete picture of your week.</p>`
-    : `<p>Logging your daily check-in takes 30 seconds and helps ${COMPANY.clinicianName} track your progress across sleep, energy, mood, focus, and stress.</p>`;
+    ? `<p>You've logged ${atRiskStreak} days in a row. One more entry keeps your streak alive and gives ${clinician} a complete picture of your week.</p>`
+    : `<p>Logging your daily check-in takes 30 seconds and helps ${clinician} track your progress across sleep, energy, mood, focus, and stress.</p>`;
 
   return layout(`
     <p>Hi <strong>${patientName}</strong>,</p>
@@ -711,13 +737,15 @@ export function checkinStreakMilestoneEmail({
   patientName,
   streak,
   portalUrl,
+  clinician = COMPANY.clinicianFallback,
 }: {
   patientName: string;
   streak: number;
   portalUrl: string;
+  clinician?: string;
 }) {
   patientName = escapeHtml(patientName);
-  const clinician = COMPANY.clinicianName;
+  clinician = escapeHtml(clinician);
 
   const [STREAK_7, STREAK_30, STREAK_100] = CHECKIN_STREAK_MILESTONES;
   let heading: string;
@@ -802,13 +830,16 @@ export function goalAchievedPatientEmail({
   patientName,
   goalTitle,
   portalUrl,
+  clinician = COMPANY.clinicianFallback,
 }: {
   patientName: string;
   goalTitle: string;
   portalUrl: string;
+  clinician?: string;
 }) {
   patientName = escapeHtml(patientName);
   goalTitle = escapeHtml(goalTitle);
+  clinician = escapeHtml(clinician);
 
   return layout(`
     <p>Hi ${patientName},</p>
@@ -816,7 +847,7 @@ export function goalAchievedPatientEmail({
     <p>This is a real milestone. Your consistent check-ins and assessments made it visible — and now it&rsquo;s recorded as complete.</p>
     <div class="divider"></div>
     <p><a class="btn" href="${portalUrl}${PORTAL_ROUTES.goals}">View your goals →</a></p>
-    <p class="meta">${COMPANY.clinicianName} has also been notified. Well done.</p>
+    <p class="meta">${sentenceCase(clinician)} has also been notified. Well done.</p>
   `);
 }
 
@@ -826,17 +857,23 @@ export function newDocumentEmail({
   patientName,
   title,
   portalUrl,
+  // The person who actually uploaded it — NOT the patient's primary clinician.
+  // Any member of the care team can share a document, and telling the patient
+  // the wrong doctor sent their lab result is worse than not naming anyone.
+  sharedBy = COMPANY.clinicianFallback,
 }: {
   patientName: string;
   title: string;
   portalUrl: string;
+  sharedBy?: string;
 }) {
   patientName = escapeHtml(patientName);
   title = escapeHtml(title);
+  sharedBy = escapeHtml(sharedBy);
 
   return layout(`
     <p>Hi ${patientName},</p>
-    <p>${COMPANY.clinicianName} has shared a new document with you: <strong>${title}</strong></p>
+    <p>${sentenceCase(sharedBy)} has shared a new document with you: <strong>${title}</strong></p>
     <p>Open it directly in your patient portal.</p>
     <p><a class="btn" href="${portalUrl}${PORTAL_ROUTES.documents}">View documents →</a></p>
   `);
@@ -874,21 +911,25 @@ export function programmeAssignedEmail({
   phaseLabel,
   phaseDescription,
   portalUrl,
+  // The admin who performed the enrolment, not the primary clinician.
+  enrolledBy = COMPANY.clinicianFallback,
 }: {
   patientName: string;
   programmeLabel: string;
   phaseLabel: string;
   phaseDescription: string;
   portalUrl: string;
+  enrolledBy?: string;
 }) {
   patientName = escapeHtml(patientName);
   programmeLabel = escapeHtml(programmeLabel);
   phaseLabel = escapeHtml(phaseLabel);
   phaseDescription = escapeHtml(phaseDescription);
+  enrolledBy = escapeHtml(enrolledBy);
 
   return layout(`
     <p>Hi ${patientName},</p>
-    <p>${COMPANY.clinicianName} has enrolled you in a clinical programme: <strong>${programmeLabel}</strong></p>
+    <p>${sentenceCase(enrolledBy)} has enrolled you in a clinical programme: <strong>${programmeLabel}</strong></p>
     <div class="divider"></div>
     <p class="meta"><strong>Current phase:</strong> ${phaseLabel}</p>
     <p>${phaseDescription}</p>

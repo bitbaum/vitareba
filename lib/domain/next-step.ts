@@ -65,7 +65,9 @@ export function computeNextStep(s: NextStepInput): NextStep {
     return {
       key: "messages",
       href: PORTAL_ROUTES.messages,
-      label: s.unreadMessages === 1 ? "Read Manuel's reply" : "Read Manuel's replies",
+      // Unattributed on purpose: any care-team member can reply, and this pure
+      // function has no way to know which one did.
+      label: s.unreadMessages === 1 ? "Read the reply" : "Read the replies",
       sub: `${s.unreadMessages} unread`,
       urgent: false,
     };
