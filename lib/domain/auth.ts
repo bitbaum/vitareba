@@ -10,6 +10,7 @@ import {
   BCRYPT_SALT_ROUNDS,
   LOGIN_LOCKOUT_THRESHOLD,
   LOGIN_LOCKOUT_DURATION_MS,
+  SESSION_REVALIDATE_MS,
 } from "@/lib/config/auth";
 
 /**
@@ -48,6 +49,69 @@ export function resolveRole(email: string, dbRole: UserRole = USER_ROLE.patient)
   const adminEmails = getAdminEmails().map((e) => e.toLowerCase());
   if (adminEmails.includes(email.toLowerCase())) return USER_ROLE.admin;
   return dbRole;
+}
+
+// ─── Session revalidation ─────────────────────────────────────────────────────
+
+/**
+ * A JWT as far as this module is concerned. Open-ended because Auth.js owns the
+ * token's shape; the keys read here are `id`, `role`, `emailVerified`, and
+ * `checkedAt` (epoch ms of the last successful check against the users table).
+ */
+export type SessionToken = Record<string, unknown>;
+
+/** The user row fields a session depends on. */
+export type SessionUserRow = {
+  email: string;
+  role: UserRole;
+  emailVerified: Date | null;
+};
+
+/**
+ * Whether this token is due for a check against the database.
+ *
+ * A token with no `checkedAt` is due immediately: it was either just minted or
+ * issued before this mechanism existed, and both should be verified once.
+ */
+export function shouldRevalidateSession(
+  token: SessionToken,
+  now: number,
+  intervalMs: number = SESSION_REVALIDATE_MS
+): boolean {
+  const checkedAt = typeof token.checkedAt === "number" ? token.checkedAt : null;
+  if (checkedAt === null) return true;
+  // A clock moving backwards (NTP correction) must not park a token in the
+  // future and skip checks forever.
+  if (checkedAt > now) return true;
+  return now - checkedAt >= intervalMs;
+}
+
+/**
+ * The token to carry forward after a revalidation attempt.
+ *
+ * - user row gone      → null, which ends the session (a deleted account must
+ *                        not keep working until its cookie expires)
+ * - user row present   → role and verification refreshed from the database, so
+ *                        a demotion takes effect within one interval
+ * - lookup unavailable → the token unchanged and NOT stamped, so the check is
+ *                        retried on the next request. A database blip must not
+ *                        sign the whole clinic out; it also must not be
+ *                        mistaken for "this user no longer exists".
+ */
+export function revalidatedSessionToken<T extends SessionToken>(
+  token: T,
+  row: SessionUserRow | null | undefined,
+  now: number,
+  lookupFailed = false
+): T | null {
+  if (lookupFailed) return token;
+  if (!row) return null;
+  return {
+    ...token,
+    role: resolveRole(row.email, row.role),
+    emailVerified: row.emailVerified,
+    checkedAt: now,
+  };
 }
 
 /** Hash a plaintext password using the project's standard bcrypt cost factor */

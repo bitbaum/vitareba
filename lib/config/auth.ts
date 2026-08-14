@@ -10,6 +10,16 @@ export const USER_ROLE = {
   admin: "admin",
 } as const satisfies Record<UserRole, UserRole>;
 
+/**
+ * How long (ms) a session may go without being checked against the users table.
+ *
+ * JWT sessions are self-contained: nothing in the token knows the row it came
+ * from was deleted or demoted, so without this a revoked admin keeps admin
+ * until the cookie expires. Re-reading the row on every request would put a
+ * query in front of every page; this bounds the staleness window instead.
+ */
+export const SESSION_REVALIDATE_MS = 5 * 60 * 1000; // 5 minutes
+
 /** bcrypt cost factor used for password hashing — applies to registration, reset, and change-password */
 export const BCRYPT_SALT_ROUNDS = 12;
 

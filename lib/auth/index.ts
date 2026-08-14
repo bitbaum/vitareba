@@ -5,7 +5,15 @@ import Google from "next-auth/providers/google";
 import { eq } from "drizzle-orm";
 import { getInstance } from "@/lib/db";
 import { users } from "@/lib/db/schema";
-import { isUserLocked, loginSchema, nextLoginAttemptState, resolveRole, verifyPassword } from "@/lib/domain/auth";
+import {
+  isUserLocked,
+  loginSchema,
+  nextLoginAttemptState,
+  resolveRole,
+  revalidatedSessionToken,
+  shouldRevalidateSession,
+  verifyPassword,
+} from "@/lib/domain/auth";
 import { USER_ROLE, type UserRole } from "@/lib/config/auth";
 import { AUTH_ROUTES } from "@/lib/config/routes";
 
@@ -66,6 +74,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
     ],
     callbacks: {
       async jwt({ token, user }) {
+        const now = Date.now();
+
         if (user) {
           token.id = user.id;
           token.emailVerified =
@@ -82,8 +92,31 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
               .where(eq(users.id, user.id));
           }
           token.role = correctRole;
+          token.checkedAt = now;
+          return token;
         }
-        return token;
+
+        // Past sign-in the token is on its own: nothing in it knows the row it
+        // came from was deleted or demoted. Re-read that row periodically so a
+        // revoked account stops working within SESSION_REVALIDATE_MS instead of
+        // at cookie expiry. Returning null here ends the session.
+        if (!shouldRevalidateSession(token, now)) return token;
+
+        const userId = typeof token.id === "string" ? token.id : null;
+        if (!userId) return null;
+
+        try {
+          const row = await db.query.users.findFirst({
+            where: eq(users.id, userId),
+            columns: { email: true, role: true, emailVerified: true },
+          });
+          return revalidatedSessionToken(token, row, now);
+        } catch (err) {
+          console.error("[auth] session revalidation failed:", err);
+          // Unreachable database is not evidence the user is gone — keep the
+          // token unstamped so the next request tries again.
+          return revalidatedSessionToken(token, null, now, true);
+        }
       },
       session({ session, token }) {
         session.user.id = token.id as string;
