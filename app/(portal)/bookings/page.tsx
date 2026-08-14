@@ -371,7 +371,7 @@ export default function BookingsPage() {
       {submitSuccess && (
         <div className={bookingStyles.successBanner}>
           <p className={bookingStyles.bannerTitle}>Booking request submitted</p>
-          <p>{COMPANY.clinicianName} reviews all requests personally and will be in touch within 24 hours to confirm your appointment.</p>
+          <p>A clinician reviews every request personally and will be in touch within 24 hours to confirm your appointment.</p>
         </div>
       )}
 
@@ -379,7 +379,8 @@ export default function BookingsPage() {
         <div className={`${styles.card} ${styles.cardGap}`}>
           <p className={styles.cardTitle}>Request a booking</p>
           <p className={styles.formHint}>
-            {COMPANY.clinicianName} reviews every request personally. Include anything that helps him prepare — your Inflection Edge scores are already on file.
+            Use this when none of the times above work. A clinician reviews every request personally —
+            include anything that helps them prepare; your Inflection Edge scores are already on file.
           </p>
           <form onSubmit={handleSubmit} className={styles.formStack}>
             {/* Booking type */}
@@ -471,7 +472,7 @@ export default function BookingsPage() {
         <div className={styles.card}>
           <div className={styles.emptyState}>
             <p className={styles.emptyTitle}>No bookings yet</p>
-            <p>A discovery call is the fastest way to find out if {COMPANY.shortName} is right for you — 30 minutes with {COMPANY.clinicianName} to look at your Inflection Edge results and map out a programme.</p>
+            <p>A discovery call is the fastest way to find out if {COMPANY.shortName} is right for you — {slotMinutes} minutes with {clinicianLabel} to look at your Inflection Edge results and map out a programme.</p>
             <button
               type="button"
               className={styles.emptyAction}
