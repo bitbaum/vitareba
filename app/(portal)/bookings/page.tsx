@@ -333,7 +333,9 @@ export default function BookingsPage() {
                   ))}
                 </div>
 
-                <div className={bookingStyles.confirmBar}>
+                <div
+                  className={`${bookingStyles.confirmBar}${selectedSlot ? ` ${bookingStyles.confirmBarPinned}` : ""}`}
+                >
                   <div>
                     <p className={bookingStyles.confirmSummary}>
                       {selectedSlot

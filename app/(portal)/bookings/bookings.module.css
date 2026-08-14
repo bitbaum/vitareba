@@ -271,8 +271,11 @@
 }
 
 @media (max-width: 767px) {
-  /* The confirm action follows the thumb instead of scrolling away. */
-  .confirmBar {
+  /* The confirm action follows the thumb instead of scrolling away — but only
+     once there IS something to confirm. Pinning an empty, disabled bar just
+     parks a white slab over "pick a day", which is the step the patient still
+     has to reach. */
+  .confirmBarPinned {
     position: sticky;
     bottom: calc(var(--portal-bottom-nav-h) + env(safe-area-inset-bottom, 0px));
     z-index: var(--z-nav);
