@@ -617,7 +617,7 @@
         },
         "results": {
             "startingPoint": "This is your starting point.",
-            "ctaSub": "A 30-minute discovery call with {clinicianName} translates these scores into a concrete plan — which dimensions to address first, what interventions are available, and what a {shortName} programme looks like for your specific profile.",
+            "ctaSub": "A 30-minute discovery call with our clinical team translates these scores into a concrete plan — which dimensions to address first, what interventions are available, and what a {shortName} programme looks like for your specific profile.",
             "ctaNoCommitment": "No commitment. Just clarity.",
             "saveResults": "Save results + book a call →",
             "retake": "Retake Assessment"

@@ -8,8 +8,9 @@ import { eq } from "drizzle-orm";
 import { programmeUpdateSchema } from "@/lib/domain/programmes";
 import { sendEmail } from "@/lib/email";
 import { programmeAssignedEmail } from "@/lib/email/templates";
-import { PORTAL_URL } from "@/lib/config/company";
-import { PROGRAMME_CONFIG, PHASE_CONFIG } from "@/lib/config/programmes";
+import { PORTAL_URL, COMPANY } from "@/lib/config/company";
+import { PROGRAMME_CONFIG, PHASE_CONFIG, phaseDescription } from "@/lib/config/programmes";
+import { clinicianLabelFor } from "@/lib/domain/clinician-label";
 import { runAfterResponse } from "@/lib/utils/post-response";
 import { serviceUnavailable, badRequest } from "@/lib/utils/api-response";
 import { UUID_RE } from "@/lib/utils/validate";
@@ -83,11 +84,23 @@ export async function PATCH(req: Request, { params }: RouteContext) {
 
       const programme = parsed.data.programme;
       const phase = parsed.data.phase;
+      const assignedById = session.user.id;
       runAfterResponse(async () => {
-        const patient = await db.query.users.findFirst({
-          where: eq(users.id, id),
-          columns: { name: true, email: true },
-        });
+        const [patient, assigner, clinician] = await Promise.all([
+          db.query.users.findFirst({
+            where: eq(users.id, id),
+            columns: { name: true, email: true },
+          }),
+          // The admin who clicked enrol — the patient should be told who acted
+          // on their record, not whoever config once called "the clinician".
+          db.query.users.findFirst({
+            where: eq(users.id, assignedById),
+            columns: { name: true, email: true },
+          }),
+          // The phase copy is about ongoing care, so it names the patient's own
+          // clinician — which is not necessarily whoever clicked enrol.
+          clinicianLabelFor(id),
+        ]);
         if (!patient?.email) return;
         await sendEmail({
           to: patient.email,
@@ -96,8 +109,11 @@ export async function PATCH(req: Request, { params }: RouteContext) {
             patientName: displayName(patient.name, patient.email),
             programmeLabel: PROGRAMME_CONFIG[programme].label,
             phaseLabel: PHASE_CONFIG[phase].label,
-            phaseDescription: PHASE_CONFIG[phase].description,
+            phaseDescription: phaseDescription(phase, clinician),
             portalUrl: PORTAL_URL,
+            enrolledBy: assigner
+              ? displayName(assigner.name, assigner.email, COMPANY.clinicianFallback)
+              : COMPANY.clinicianFallback,
           }),
         });
       }, "[api/admin/programme] notification failed:");

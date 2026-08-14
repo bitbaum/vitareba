@@ -58,9 +58,10 @@ export default function ResultsScreen({
   const verdictName = i18n.verdicts[verdict.i18nKey]?.name ?? verdict.name;
   const verdictText = i18n.verdicts[verdict.i18nKey]?.text ?? verdict.text;
 
-  const ctaSub = i18n.results.ctaSub
-    .replace("{clinicianName}", COMPANY.clinicianName)
-    .replace("{shortName}", COMPANY.shortName);
+  // No patient exists here — this runs on the public marketing site. There is
+  // nobody to look a clinician up for, so the copy speaks about the team rather
+  // than naming a doctor the visitor has not been assigned.
+  const ctaSub = i18n.results.ctaSub.replace("{shortName}", COMPANY.shortName);
 
   return (
     <div className={`${styles.ovScreen} ${styles.active}`}>

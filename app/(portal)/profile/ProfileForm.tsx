@@ -138,7 +138,7 @@ function ProfileHero({
   );
 }
 
-export function ProfileForm() {
+export function ProfileForm({ clinician = COMPANY.clinicianFallback }: { clinician?: string }) {
   const [apiData, setApiData] = useState<ProfileApiData | null>(null);
   const [form, setForm] = useState<ProfileData>(EMPTY_FORM);
   const [loading, setLoading] = useState(true);
@@ -240,7 +240,7 @@ export function ProfileForm() {
         </div>
         {pct < 100 && (
           <p className={profileStyles.completenessHint}>
-            A complete profile helps {COMPANY.clinicianName} personalise your programme and provide
+            A complete profile helps {clinician} personalise your programme and provide
             24/7 tailored support.
           </p>
         )}
@@ -333,16 +333,16 @@ export function ProfileForm() {
 
         {/* ── Notes ────────────────────────────────────────────────── */}
         <div className={styles.card}>
-          <p className={styles.cardTitle}>Notes for {COMPANY.clinicianName}</p>
+          <p className={styles.cardTitle}>Notes for {clinician}</p>
           <div className={authStyles.field}>
             <textarea
               id="notes"
-              aria-label={`Notes for ${COMPANY.clinicianName}`}
+              aria-label={`Notes for ${clinician}`}
               className={styles.formTextareaLg}
               value={form.notes}
               onChange={set("notes")}
               maxLength={PATIENT_NOTE_MAX_LENGTH}
-              placeholder={`Anything else you'd like ${COMPANY.clinicianName} to know before your first consultation…`}
+              placeholder={`Anything else you'd like ${clinician} to know before your first consultation…`}
             />
           </div>
         </div>

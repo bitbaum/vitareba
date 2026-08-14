@@ -7,6 +7,7 @@ import { db } from "@/lib/db";
 import { dailyCheckins, users } from "@/lib/db/schema";
 import { CHECKIN_HISTORY_DAYS, CHECKIN_FETCH_MAX_DAYS, CHECKIN_STREAK_MILESTONES } from "@/lib/config/portal";
 import { formatDateISO, displayName } from "@/lib/utils/format";
+import { clinicianLabelFor } from "@/lib/domain/clinician-label";
 import { checkinSchema, computeStreak } from "@/lib/domain/checkin";
 import { sendEmail } from "@/lib/email/index";
 import { checkinStreakMilestoneEmail } from "@/lib/email/templates";
@@ -142,6 +143,7 @@ async function detectAndSendStreakMilestone(userId: string): Promise<void> {
       patientName: displayName(user.name, user.email),
       streak,
       portalUrl: PORTAL_URL,
+      clinician: await clinicianLabelFor(userId),
     }),
   });
 }

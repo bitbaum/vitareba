@@ -13,6 +13,8 @@ interface AssessmentSectionProps {
   latestBooking: Pick<BookingRow, "status" | "preferredDate"> | null | undefined;
   threadCount: number;
   unreadMessageCount?: number;
+  /** Resolved from care_team by the page — never a name from config. */
+  clinician?: string;
 }
 
 function getLowestDimension(scores: Record<string, number>) {
@@ -27,6 +29,7 @@ export function AssessmentSection({
   latestBooking,
   threadCount,
   unreadMessageCount = 0,
+  clinician = COMPANY.clinicianFallback,
 }: AssessmentSectionProps) {
   if (!latestAssessment) {
     // The next-step funnel (NextStepCard) already carries the assessment CTA.
@@ -118,7 +121,7 @@ export function AssessmentSection({
           ) : (
             <>
               <p className={styles.bookingNoAppt}>
-                A direct conversation with {COMPANY.clinicianName} — no commitment.
+                A direct conversation with {clinician} — no commitment.
               </p>
               <Link href={PORTAL_ROUTES.bookings} className={`btn-dark ${shared.ctaBtnSmall}`}>
                 Book a call →
@@ -134,8 +137,11 @@ export function AssessmentSection({
           <div>
             <p className={shared.cardTitle}>Messages</p>
             <p className={styles.messagesBody}>
+              {/* Deliberately unattributed: any care-team member can reply, and
+                  this row does not know which one did. Naming the primary
+                  clinician here would be a guess shown as a fact. */}
               {unreadMessageCount > 0
-                ? `${COMPANY.clinicianName} sent you ${unreadMessageCount === 1 ? "a reply" : `${unreadMessageCount} replies`} — open to read`
+                ? `${unreadMessageCount === 1 ? "A reply is" : `${unreadMessageCount} replies are`} waiting — open to read`
                 : `${threadCount} active thread${threadCount !== 1 ? "s" : ""} with the ${COMPANY.shortName} team`}
             </p>
           </div>

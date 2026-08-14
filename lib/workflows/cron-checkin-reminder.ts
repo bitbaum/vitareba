@@ -5,6 +5,7 @@ import { sendEmail } from "@/lib/email/index";
 import { checkinReminderEmail } from "@/lib/email/templates";
 import { PORTAL_URL } from "@/lib/config/company";
 import { formatDateISO, displayName } from "@/lib/utils/format";
+import { clinicianLabelFor } from "@/lib/domain/clinician-label";
 import { USER_ROLE } from "@/lib/config/auth";
 import { computeStreak } from "@/lib/domain/checkin";
 import { CHECKIN_HISTORY_DAYS } from "@/lib/config/portal";
@@ -53,15 +54,16 @@ export async function runCronCheckinReminder(now: Date = new Date()): Promise<Cr
   yesterday.setDate(yesterday.getDate() - 1);
 
   const results = await Promise.allSettled(
-    sendable.map((patient) => {
+    sendable.map(async (patient) => {
       const patientName = displayName(patient.name, patient.email);
       const atRiskStreak = computeStreak(patient.dailyCheckins, yesterday);
+      const clinician = await clinicianLabelFor(patient.id);
       return sendEmail({
         to: patient.email!,
         subject: atRiskStreak >= 2
           ? `🔥 ${atRiskStreak}-day streak — log today to keep it alive`
           : "How are you doing today?",
-        html: checkinReminderEmail({ patientName, portalUrl: PORTAL_URL, atRiskStreak }),
+        html: checkinReminderEmail({ patientName, portalUrl: PORTAL_URL, atRiskStreak, clinician }),
       });
     })
   );

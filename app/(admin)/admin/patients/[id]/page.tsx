@@ -8,6 +8,7 @@ import styles from "../../../admin.module.css";
 import { DocumentAddForm } from "@/components/admin/DocumentAddForm";
 import { AdminNotesForm } from "@/components/admin/AdminNotesForm";
 import { ProgrammeAssignmentForm } from "@/components/admin/ProgrammeAssignmentForm";
+import { clinicianLabelFor } from "@/lib/domain/clinician-label";
 import { CheckinTrendChart } from "@/components/portal/CheckinTrendChart";
 import { AssessmentTrendChart } from "@/components/portal/AssessmentTrendChart";
 import { PatientProfileCard } from "@/components/admin/PatientProfileCard";
@@ -205,6 +206,7 @@ export default async function PatientDetailPage({
                   <p className={styles.cardLabel}>Programme assignment</p>
                   <ProgrammeAssignmentForm
                     patientId={patient.id}
+                    clinician={await clinicianLabelFor(patient.id)}
                     initial={patient.programmeAssignment ? {
                       programme: patient.programmeAssignment.programme,
                       phase: patient.programmeAssignment.phase,

@@ -617,7 +617,7 @@
         },
         "results": {
             "startingPoint": "Dies ist Ihr Ausgangspunkt.",
-            "ctaSub": "Ein 30-minütiges Discovery Call mit {clinicianName} übersetzt diese Werte in einen konkreten Plan — welche Dimensionen zuerst anzugehen sind, welche Interventionen verfügbar sind und wie ein {shortName}-Programm für Ihr spezifisches Profil aussieht.",
+            "ctaSub": "Ein 30-minütiger Discovery Call mit unserem klinischen Team übersetzt diese Werte in einen konkreten Plan — welche Dimensionen zuerst anzugehen sind, welche Interventionen verfügbar sind und wie ein {shortName}-Programm für Ihr spezifisches Profil aussieht.",
             "ctaNoCommitment": "Kein Commitment. Nur Klarheit.",
             "saveResults": "Ergebnisse speichern + Termin buchen →",
             "retake": "Assessment wiederholen"

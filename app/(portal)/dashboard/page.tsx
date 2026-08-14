@@ -24,6 +24,7 @@ import { GoalsCard } from "./GoalsCard";
 import { CheckinCard } from "./CheckinCard";
 import { AssessmentSection } from "./AssessmentSection";
 import { computeProfileCompleteness, getMissingProfileFields } from "@/lib/domain/profile";
+import { clinicianLabelFor } from "@/lib/domain/clinician-label";
 import { getUnreadThreadCount } from "@/lib/domain/messages";
 import { computeNextStep } from "@/lib/domain/next-step";
 import { DAY_MS } from "@/lib/utils/format";
@@ -53,6 +54,7 @@ export default async function DashboardPage() {
     profile,
     activeGoals,
     recentCheckins,
+    clinician,
   ] = await Promise.all([
     db.query.assessmentResults.findMany({
       where: eq(assessmentResults.userId, session.user.id),
@@ -99,6 +101,9 @@ export default async function DashboardPage() {
       ),
       orderBy: [desc(dailyCheckins.date)],
     }),
+    // Copy on this page tells the patient what their doctor will do with the
+    // data. Which doctor that is comes from care_team, not from config.
+    clinicianLabelFor(session.user.id),
   ]);
 
   const isNewPatient = recentAssessments.length === 0 && !programmeAssignment;
@@ -158,12 +163,17 @@ export default async function DashboardPage() {
           <ProgrammeCard
             programme={programmeAssignment.programme}
             phase={programmeAssignment.phase}
+            clinician={clinician}
           />
         )}
 
         <GoalsCard goals={activeGoals} />
 
-        <ProfileCompletenessBar pct={profilePct} missingFields={missingProfileFields} />
+        <ProfileCompletenessBar
+          pct={profilePct}
+          missingFields={missingProfileFields}
+          clinician={clinician}
+        />
 
         <CheckinMiniTrend checkins={trendCheckins} />
 
@@ -175,6 +185,7 @@ export default async function DashboardPage() {
           latestBooking={latestBooking}
           threadCount={threadCount}
           unreadMessageCount={unreadMessageCount}
+          clinician={clinician}
         />
       </div>
     </div>

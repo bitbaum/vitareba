@@ -8,10 +8,8 @@
  * Role titles and bios live in messages/{locale}.json under team.members.{key}.
  */
 
-import { COMPANY } from "@/lib/config/company";
-
 export const TEAM_MEMBERS = [
-  { key: "manuel",   initials: "M",  name: COMPANY.clinicianName },
+  { key: "manuel",   initials: "M",  name: "Manuel" },
   { key: "montagna", initials: "DM", name: "Dr. Montagna" },
 ] as const;
 

@@ -138,3 +138,15 @@ export function displayName(
 ): string {
   return name ?? email?.split("@")[0] ?? fallback;
 }
+
+/**
+ * Capitalises the first character for sentence-initial use.
+ *
+ * Exists because clinician labels are resolved at runtime and may be a real
+ * name ("Manuel" — unchanged) or the neutral fallback ("your clinician" →
+ * "Your clinician"). Copy that starts a sentence with one must not depend on
+ * which it got.
+ */
+export function sentenceCase(label: string): string {
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}

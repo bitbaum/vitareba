@@ -154,7 +154,7 @@ export async function POST(
         html: newMessageEmail({
           recipientName: addressee
             ? displayName(addressee.name, addressee.email)
-            : COMPANY.clinicianName,
+            : COMPANY.clinicianFallback,
           senderName: displayName(patient?.name, patient?.email),
           subject: thread.subject,
           portalUrl: `${PORTAL_URL}${ADMIN_ROUTES.messages}/${threadId}`,

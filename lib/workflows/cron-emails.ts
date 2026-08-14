@@ -18,6 +18,7 @@ import { EMAIL_TEMPLATE } from "@/lib/config/email-sequences";
 import { EMAIL_QUEUE_STATUS } from "@/lib/config/email-queue";
 import { GOAL_PROGRESS_COMPLETE_PCT } from "@/lib/config/portal";
 import { displayName } from "@/lib/utils/format";
+import { clinicianLabelFor } from "@/lib/domain/clinician-label";
 
 export type CronEmailsResult =
   | { success: true; sent: number; failed: number; processed: number }
@@ -61,6 +62,9 @@ export async function runCronEmails(now: Date = new Date()): Promise<CronEmailsR
 
     const payload = item.payload as Record<string, unknown>;
     const patientName = displayName(user.name, user.email);
+    // Resolved once per queued email: who actually treats this patient, so the
+    // copy names their doctor rather than a doctor.
+    const clinician = await clinicianLabelFor(item.userId);
 
     try {
       let html: string;
@@ -83,10 +87,11 @@ export async function runCronEmails(now: Date = new Date()): Promise<CronEmailsR
           verdictText: verdict.text,
           dimensions,
           portalUrl: PORTAL_URL,
+          clinician,
         });
         subject = `Your Inflection Edge results — ${verdict.name}`;
       } else if (item.templateKey === EMAIL_TEMPLATE.assessmentMeaning) {
-        html = assessmentMeaningEmail({ patientName, portalUrl: PORTAL_URL });
+        html = assessmentMeaningEmail({ patientName, portalUrl: PORTAL_URL, clinician });
         subject = "What your Inflection Edge profile means clinically";
       } else if (item.templateKey === EMAIL_TEMPLATE.assessmentBooking) {
         const existingBooking = await db.query.bookings.findFirst({
@@ -105,10 +110,10 @@ export async function runCronEmails(now: Date = new Date()): Promise<CronEmailsR
           continue;
         }
         const overallScore = payload.overallScore as number;
-        html = assessmentBookingEmail({ patientName, overallScore, portalUrl: PORTAL_URL });
-        subject = `Book a consultation with ${COMPANY.clinicianName}`;
+        html = assessmentBookingEmail({ patientName, overallScore, portalUrl: PORTAL_URL, clinician });
+        subject = `Book a consultation with ${clinician}`;
       } else if (item.templateKey === EMAIL_TEMPLATE.welcomePatient) {
-        html = welcomePatientEmail({ patientName, portalUrl: PORTAL_URL });
+        html = welcomePatientEmail({ patientName, portalUrl: PORTAL_URL, clinician });
         subject = `Welcome to ${COMPANY.shortName} — here is where to start`;
       } else if (item.templateKey === EMAIL_TEMPLATE.profileCompletion) {
         const existingProfile = await db.query.profiles.findFirst({
@@ -122,7 +127,7 @@ export async function runCronEmails(now: Date = new Date()): Promise<CronEmailsR
           sent++;
           continue;
         }
-        html = profileCompletionEmail({ patientName, portalUrl: PORTAL_URL });
+        html = profileCompletionEmail({ patientName, portalUrl: PORTAL_URL, clinician });
         subject = "One thing before your first consultation";
       } else if (item.templateKey === EMAIL_TEMPLATE.assessmentCta) {
         const existingResult = await db.query.assessmentResults.findFirst({
@@ -137,7 +142,7 @@ export async function runCronEmails(now: Date = new Date()): Promise<CronEmailsR
           sent++;
           continue;
         }
-        html = assessmentCtaEmail({ patientName, portalUrl: PORTAL_URL });
+        html = assessmentCtaEmail({ patientName, portalUrl: PORTAL_URL, clinician });
         subject = "Your Inflection Edge is waiting";
       } else {
         await db

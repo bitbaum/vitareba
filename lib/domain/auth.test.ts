@@ -9,7 +9,10 @@ import {
   nextLoginAttemptState,
   sanitizeReturnTo,
   emailField,
+  shouldRevalidateSession,
+  revalidatedSessionToken,
 } from "./auth";
+import { SESSION_REVALIDATE_MS, USER_ROLE } from "@/lib/config/auth";
 import { z } from "zod";
 
 // bcrypt cost 12 is intentionally slow (production security); use 4 in tests
@@ -413,5 +416,95 @@ describe("registerSchema (uses emailField)", () => {
     });
     expect(result.success).toBe(true);
     if (result.success) expect(result.data.email).toBe("alice@example.com");
+  });
+});
+
+// ─── Session revalidation ─────────────────────────────────────────────────────
+// A JWT session is self-contained, so deleting or demoting a user in the
+// database does not by itself stop their session. These cover the mechanism
+// that closes that window.
+
+describe("shouldRevalidateSession", () => {
+  const NOW = 1_700_000_000_000;
+
+  it("checks a token that has never been checked", () => {
+    // Tokens issued before this mechanism existed carry no checkedAt — they are
+    // exactly the sessions most likely to be stale.
+    expect(shouldRevalidateSession({}, NOW)).toBe(true);
+  });
+
+  it("skips a token checked within the interval", () => {
+    expect(shouldRevalidateSession({ checkedAt: NOW - 1000 }, NOW)).toBe(false);
+  });
+
+  it("checks a token once the interval has elapsed", () => {
+    expect(shouldRevalidateSession({ checkedAt: NOW - SESSION_REVALIDATE_MS }, NOW)).toBe(true);
+  });
+
+  it("checks a token stamped in the future", () => {
+    // A backwards clock correction must not park a token beyond every check.
+    expect(shouldRevalidateSession({ checkedAt: NOW + 60_000 }, NOW)).toBe(true);
+  });
+
+  it("checks a token whose stamp is not a number", () => {
+    expect(shouldRevalidateSession({ checkedAt: "recently" }, NOW)).toBe(true);
+  });
+});
+
+describe("revalidatedSessionToken", () => {
+  const NOW = 1_700_000_000_000;
+  const token = { id: "u1", role: USER_ROLE.admin, emailVerified: null, checkedAt: NOW - 1 };
+  const originalAdminEmails = process.env.ADMIN_EMAILS;
+
+  beforeEach(() => {
+    process.env.ADMIN_EMAILS = "admin@example.com";
+  });
+
+  afterEach(() => {
+    process.env.ADMIN_EMAILS = originalAdminEmails;
+  });
+
+  it("ends the session when the user row is gone", () => {
+    expect(revalidatedSessionToken(token, null, NOW)).toBeNull();
+    expect(revalidatedSessionToken(token, undefined, NOW)).toBeNull();
+  });
+
+  it("demotes a session whose database role was revoked", () => {
+    const next = revalidatedSessionToken(
+      token,
+      { email: "patient@example.com", role: USER_ROLE.patient, emailVerified: null },
+      NOW
+    );
+    expect(next?.role).toBe(USER_ROLE.patient);
+    expect(next?.checkedAt).toBe(NOW);
+  });
+
+  it("keeps an env-listed admin admin even if the row says patient", () => {
+    // resolveRole is promote-only — ADMIN_EMAILS is the recovery path and must
+    // survive revalidation, or a lagging row would lock the owner out.
+    const next = revalidatedSessionToken(
+      token,
+      { email: "admin@example.com", role: USER_ROLE.patient, emailVerified: null },
+      NOW
+    );
+    expect(next?.role).toBe(USER_ROLE.admin);
+  });
+
+  it("refreshes email verification from the row", () => {
+    const verifiedAt = new Date(NOW);
+    const next = revalidatedSessionToken(
+      token,
+      { email: "p@example.com", role: USER_ROLE.patient, emailVerified: verifiedAt },
+      NOW
+    );
+    expect(next?.emailVerified).toBe(verifiedAt);
+  });
+
+  it("keeps the session alive, unstamped, when the lookup failed", () => {
+    // An unreachable database is not evidence the user was deleted, and must
+    // not sign the whole clinic out.
+    const next = revalidatedSessionToken(token, null, NOW, true);
+    expect(next).toBe(token);
+    expect(next?.checkedAt).toBe(NOW - 1);
   });
 });

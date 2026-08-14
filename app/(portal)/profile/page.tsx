@@ -5,9 +5,14 @@ import { ProfileForm } from "./ProfileForm";
 import { PasswordForm } from "./PasswordForm";
 import { PrivacyCard } from "./PrivacyCard";
 import { CareTeamCard } from "./CareTeamCard";
+import { clinicianLabelFor } from "@/lib/domain/clinician-label";
+import { COMPANY } from "@/lib/config/company";
 
 export default async function ProfilePage() {
   const session = await auth();
+  const clinician = session?.user?.id
+    ? await clinicianLabelFor(session.user.id)
+    : COMPANY.clinicianFallback;
 
   return (
     <div className={profileStyles.layout}>
@@ -19,7 +24,7 @@ export default async function ProfilePage() {
           The more you share, the more tailored your support can be.
         </p>
       </div>
-      <ProfileForm />
+      <ProfileForm clinician={clinician} />
       <CareTeamCard selfId={session?.user?.id ?? ""} />
       <PrivacyCard />
       <PasswordForm />

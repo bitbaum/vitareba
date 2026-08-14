@@ -112,7 +112,7 @@ export async function POST(req: Request) {
   // back to the whole admin mailbox.
   const clinicianName = clinician
     ? displayName(clinician.name, clinician.email)
-    : COMPANY.clinicianName;
+    : COMPANY.clinicianFallback;
   const inboundRecipients = clinician ? [clinician.email] : getAdminEmails();
   if (session.user.role === USER_ROLE.admin) {
     runAfterResponse(async () => {
