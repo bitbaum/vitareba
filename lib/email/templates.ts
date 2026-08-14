@@ -842,6 +842,30 @@ export function newDocumentEmail({
   `);
 }
 
+// ─── Document uploaded BY the patient (to their care team) ────────────────────
+
+export function patientDocumentUploadedEmail({
+  patientName,
+  title,
+  adminUrl,
+}: {
+  patientName: string;
+  title: string;
+  adminUrl: string;
+}) {
+  patientName = escapeHtml(patientName);
+  title = escapeHtml(title);
+
+  return layout(`
+    <p>A patient has added a document to their own record.</p>
+    <div class="divider"></div>
+    <p class="meta"><strong>Patient:</strong> ${patientName}</p>
+    <p class="meta"><strong>Document:</strong> ${title}</p>
+    <div class="divider"></div>
+    <p><a class="btn" href="${adminUrl}">Open patient record →</a></p>
+  `);
+}
+
 // ─── Programme assigned (to patient) ──────────────────────────────────────────
 
 export function programmeAssignedEmail({

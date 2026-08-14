@@ -11,6 +11,7 @@ import {
 import { formatDateShort, formatDateNumeric, formatSlotDay, formatSlotTime } from "@/lib/utils/format";
 import { ADMIN_ROUTES } from "@/lib/config/routes";
 import { LoadingState } from "@/components/LoadingState";
+import { CalendarSubscribeCard } from "@/components/admin/CalendarSubscribeCard";
 
 
 // "upcoming" answers the clinician's daily question — who am I seeing next? —
@@ -87,6 +88,8 @@ export default function AdminBookingsPage() {
             ? `Next: ${formatSlotDay(upcoming[0].scheduledAt!)}, ${formatSlotTime(upcoming[0].scheduledAt!)} — ${upcoming[0].user.name ?? upcoming[0].user.email} · ${upcoming.length} upcoming · ${pendingCount} pending`
             : `No upcoming appointments · ${bookings.length} total · ${pendingCount} pending`}
       </p>
+
+      <CalendarSubscribeCard />
 
       <div className={styles.filterBar}>
         {FILTER_OPTIONS.map((f) => (

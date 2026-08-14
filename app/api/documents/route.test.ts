@@ -3,32 +3,35 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const {
   mockRequireSession,
-  mockRequireAdmin,
   mockFindMany,
   mockUserFindFirst,
+  mockUserFindMany,
+  mockGetCareTeamIds,
   mockInsert,
+  mockValues,
   mockSendEmail,
   mockRunAfterResponse,
 } = vi.hoisted(() => ({
   mockRequireSession:   vi.fn(),
-  mockRequireAdmin:     vi.fn(),
   mockFindMany:         vi.fn(),
   mockUserFindFirst:    vi.fn(),
+  mockUserFindMany:     vi.fn(),
+  mockGetCareTeamIds:   vi.fn(),
   mockInsert:           vi.fn(),
+  mockValues:           vi.fn(),
   mockSendEmail:        vi.fn(),
   mockRunAfterResponse: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/guards", () => ({
   requireSession: mockRequireSession,
-  requireAdmin:   mockRequireAdmin,
 }));
 
 vi.mock("@/lib/db", () => ({
   db: {
     query: {
       documents: { findMany: mockFindMany },
-      users:     { findFirst: mockUserFindFirst },
+      users:     { findFirst: mockUserFindFirst, findMany: mockUserFindMany },
     },
     insert: mockInsert,
   },
@@ -38,20 +41,24 @@ vi.mock("@/lib/email/index", () => ({ sendEmail: mockSendEmail }));
 
 vi.mock("@/lib/utils/post-response", () => ({ runAfterResponse: mockRunAfterResponse }));
 
+vi.mock("@/lib/domain/care-team", () => ({ getCareTeamIds: mockGetCareTeamIds }));
+
 import { GET, POST } from "./route";
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
-const PATIENT_SESSION = { session: { user: { id: "patient-1", role: "patient" } }, error: null };
-const ADMIN_SESSION   = { session: { user: { id: "admin-1", role: "admin"   } }, error: null };
+const VALID_PATIENT_ID = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11";
+const OTHER_PATIENT_ID = "b1ffcd88-8d1a-4fa7-aa5c-5aa8ac270b22";
+const ADMIN_ID         = "c2aade77-7e2b-4b96-99b4-49b79b160c33";
+
+const PATIENT_SESSION = { session: { user: { id: VALID_PATIENT_ID, role: "patient" } }, error: null };
+const ADMIN_SESSION   = { session: { user: { id: ADMIN_ID,         role: "admin"   } }, error: null };
 const UNAUTH          = { session: null, error: new Response(null, { status: 401 }) };
 
-const DOC = { id: "doc-1", userId: "patient-1", title: "Lab results", fileUrl: "https://blob.example.com/file.pdf" };
-
-const VALID_PATIENT_ID = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11";
+const DOC = { id: "doc-1", userId: VALID_PATIENT_ID, title: "Lab results", fileUrl: "https://blob.example.com/file.pdf" };
 
 const VALID_POST_BODY = {
-  userId:   "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+  userId:   VALID_PATIENT_ID,
   title:    "Lab results",
   fileUrl:  "https://blob.example.com/file.pdf",
   mimeType: "application/pdf",
@@ -126,22 +133,24 @@ describe("GET /api/documents", () => {
 
 describe("POST /api/documents", () => {
   beforeEach(() => {
-    mockRequireAdmin.mockReset();
+    mockRequireSession.mockReset();
     mockInsert.mockReset();
+    mockValues.mockReset();
     mockUserFindFirst.mockReset();
+    mockUserFindMany.mockReset();
+    mockGetCareTeamIds.mockReset();
     mockSendEmail.mockReset();
     mockRunAfterResponse.mockReset();
-    mockRequireAdmin.mockResolvedValue(ADMIN_SESSION);
+    mockRequireSession.mockResolvedValue(ADMIN_SESSION);
     mockSendEmail.mockResolvedValue(undefined);
-    mockInsert.mockReturnValue({
-      values: vi.fn().mockReturnValue({
-        returning: vi.fn().mockResolvedValue([DOC]),
-      }),
-    });
+    mockGetCareTeamIds.mockResolvedValue([]);
+    mockUserFindMany.mockResolvedValue([]);
+    mockValues.mockReturnValue({ returning: vi.fn().mockResolvedValue([DOC]) });
+    mockInsert.mockReturnValue({ values: mockValues });
   });
 
-  it("returns 401 when caller is not an admin", async () => {
-    mockRequireAdmin.mockResolvedValue(UNAUTH);
+  it("returns 401 when unauthenticated", async () => {
+    mockRequireSession.mockResolvedValue(UNAUTH);
     const res = await POST(makePostRequest(VALID_POST_BODY));
     expect(res.status).toBe(401);
   });
@@ -152,13 +161,28 @@ describe("POST /api/documents", () => {
   });
 
   it("returns 500 when the DB insert throws", async () => {
-    mockInsert.mockReturnValue({
-      values: vi.fn().mockReturnValue({
-        returning: vi.fn().mockRejectedValue(new Error("db down")),
-      }),
-    });
+    mockValues.mockReturnValue({ returning: vi.fn().mockRejectedValue(new Error("db down")) });
     const res = await POST(makePostRequest(VALID_POST_BODY));
     expect(res.status).toBe(500);
+  });
+
+  it("lets an admin file a document against any patient", async () => {
+    const res = await POST(makePostRequest({ ...VALID_POST_BODY, userId: OTHER_PATIENT_ID }));
+    expect(res.status).toBe(201);
+    expect(mockValues.mock.calls[0][0]).toMatchObject({
+      userId: OTHER_PATIENT_ID,
+      uploadedBy: ADMIN_ID,
+    });
+  });
+
+  it("forces a non-admin's document onto their own record", async () => {
+    mockRequireSession.mockResolvedValue(PATIENT_SESSION);
+    const res = await POST(makePostRequest({ ...VALID_POST_BODY, userId: OTHER_PATIENT_ID }));
+    expect(res.status).toBe(201);
+    expect(mockValues.mock.calls[0][0]).toMatchObject({
+      userId: VALID_PATIENT_ID,
+      uploadedBy: VALID_PATIENT_ID,
+    });
   });
 
   it("returns 201 with the document and schedules a patient notification", async () => {

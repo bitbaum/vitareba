@@ -14,6 +14,8 @@ import { bookingCreateSchema, adminBookingCreateSchema, slotBookingSchema } from
 import { getAvailabilityForEmail } from "@/lib/config/scheduling";
 import { isBookableSlot } from "@/lib/domain/scheduling";
 import { getBusyIntervals } from "@/lib/domain/scheduling-data";
+import { buildIcsInvite } from "@/lib/domain/ics";
+import { bookingIcsEvent } from "@/lib/domain/booking-calendar";
 
 import { BOOKING_STATUS, BOOKING_TYPE_CONFIG, MACHINE_TYPE_CONFIG } from "@/lib/config/booking-status";
 import { runAfterResponse } from "@/lib/utils/post-response";
@@ -175,6 +177,28 @@ export async function POST(req: Request) {
         where: eq(users.id, session.user.id),
         columns: { name: true, email: true },
       });
+
+      // The appointment as a calendar invite. Attaching it is what turns a
+      // confirmation email into a calendar entry in one tap — on any provider,
+      // with no integration to configure.
+      const invite = patient?.email
+        ? buildIcsInvite(
+            bookingIcsEvent({
+              bookingId: booking.id,
+              start: slot,
+              slotMinutes: rules.slotMinutes,
+              status: BOOKING_STATUS.confirmed,
+              patient: { name: patient.name, email: patient.email },
+              clinician: { name: clinician.name, email: clinician.email },
+              sessionLabel,
+              createdAt: booking.createdAt,
+            })
+          )
+        : null;
+      const attachments = invite
+        ? [{ filename: "appointment.ics", content: invite, contentType: "text/calendar; method=REQUEST" }]
+        : undefined;
+
       if (patient?.email) {
         await sendEmail({
           to: patient.email,
@@ -184,12 +208,19 @@ export async function POST(req: Request) {
             sessionLabel: `${sessionLabel} · ${slotLabel}`,
             portalUrl: `${PORTAL_URL}${PORTAL_ROUTES.bookings}`,
           }),
+          attachments,
         });
       }
-      const adminEmails = getAdminEmails();
-      if (adminEmails.length > 0) {
+
+      // Notify the clinician whose calendar this lands in — not just whoever
+      // happens to be in ADMIN_EMAILS. Admins still get it (clinic oversight),
+      // deduplicated so a clinician who is also an admin isn't emailed twice.
+      const recipients = Array.from(
+        new Set([clinician.email, ...getAdminEmails()].map((e) => e.toLowerCase()))
+      );
+      if (recipients.length > 0) {
         await sendEmail({
-          to: adminEmails,
+          to: recipients,
           subject: `New appointment: ${slotLabel} — ${displayName(patient?.name, patient?.email ?? session.user.email)}`,
           html: bookingRequestAdminEmail({
             patientName: displayName(patient?.name, patient?.email, "Unknown"),
@@ -200,6 +231,7 @@ export async function POST(req: Request) {
             preferredDate: formatDateISO(slot),
             adminUrl: `${PORTAL_URL}${ADMIN_ROUTES.patients}/${session.user.id}`,
           }),
+          attachments,
         });
       }
     }, "[api/bookings] slot booking emails failed:");

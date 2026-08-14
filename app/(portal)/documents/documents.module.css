@@ -17,6 +17,43 @@
   text-overflow: ellipsis;
 }
 
+/* Provenance line — "Uploaded by you" vs the clinician who shared it */
+.docSource {
+  color: var(--teal);
+}
+
+/* ─── Patient upload form ────────────────────────────────────────────────── */
+
+.uploadForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.uploadHint {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin: -0.35rem 0 0;
+  line-height: 1.5;
+}
+
+.uploadGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.1rem;
+}
+
+.fileInput {
+  composes: input from "../../forms.module.css";
+  padding-top: 0.4rem;
+  cursor: pointer;
+}
+
+.uploadSubmit {
+  align-self: flex-start;
+}
+
 /* ─── Mobile ─────────────────────────────────────────────────────────────── */
 
 @media (max-width: 767px) {
@@ -24,5 +61,14 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 0.35rem;
+  }
+
+  .uploadGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .uploadSubmit {
+    align-self: stretch;
+    width: 100%;
   }
 }

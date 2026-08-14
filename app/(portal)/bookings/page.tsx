@@ -15,10 +15,22 @@ import {
   type BookingType,
   type MachineType,
 } from "@/lib/config/booking-status";
-import { formatDateLong, formatDateNumeric, formatSlotDay, formatSlotTime } from "@/lib/utils/format";
+import { formatDateLong, formatDateNumeric, formatSlotDay, formatSlotTime, slotParts } from "@/lib/utils/format";
 import { COMPANY } from "@/lib/config/company";
+import { DAY_PARTS, DEFAULT_AVAILABILITY } from "@/lib/config/scheduling";
 import { BOOKING_SUCCESS_MS, BOOKING_NOTES_MAX_LENGTH } from "@/lib/config/portal";
 import { LoadingState } from "@/components/LoadingState";
+
+// Shown until the server reports the selected clinician's real slot length.
+const DEFAULT_SLOT_MINUTES = DEFAULT_AVAILABILITY.slotMinutes;
+
+/** Two-letter monogram for the clinician avatar; falls back to a neutral mark. */
+function initials(name: string | null): string {
+  const parts = (name ?? "").trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "··";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
 
 
 export default function BookingsPage() {
@@ -54,8 +66,10 @@ export default function BookingsPage() {
   // ── Slot picker state ──────────────────────────────────────────────────────
   const [slots, setSlots] = useState<string[]>([]);
   const [slotsLoading, setSlotsLoading] = useState(true);
-  const [clinicians, setClinicians] = useState<{ id: string; name: string }[]>([]);
+  const [clinicians, setClinicians] = useState<{ id: string; name: string | null }[]>([]);
   const [clinicianId, setClinicianId] = useState<string | null>(null);
+  const [careTeam, setCareTeam] = useState<string[]>([]);
+  const [slotMinutes, setSlotMinutes] = useState(DEFAULT_SLOT_MINUTES);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [slotBooking, setSlotBooking] = useState(false);
@@ -71,6 +85,8 @@ export default function BookingsPage() {
       setSlots(data.data ?? []);
       setClinicians(data.clinicians ?? []);
       setClinicianId(data.clinicianId ?? null);
+      setCareTeam(data.careTeam ?? []);
+      if (data.slotMinutes) setSlotMinutes(data.slotMinutes);
     } catch {
       // slot picker degrades to the manual request flow below
     } finally {
@@ -98,6 +114,23 @@ export default function BookingsPage() {
   }
   const dayKeys = [...slotsByDay.keys()];
   const activeDay = selectedDay && slotsByDay.has(selectedDay) ? selectedDay : dayKeys[0] ?? null;
+  const activeSlots = activeDay ? slotsByDay.get(activeDay) ?? [] : [];
+
+  // Within a day, split into morning / afternoon / evening so the grid reads
+  // as a schedule instead of an undifferentiated wall of times.
+  const partedSlots = DAY_PARTS.map((part, i) => {
+    const fromHour = i === 0 ? 0 : DAY_PARTS[i - 1].untilHour;
+    return {
+      ...part,
+      slots: activeSlots.filter((iso) => {
+        const { hour } = slotParts(iso);
+        return hour >= fromHour && hour < part.untilHour;
+      }),
+    };
+  }).filter((p) => p.slots.length > 0);
+
+  const selectedClinician = clinicians.find((c) => c.id === clinicianId) ?? null;
+  const clinicianLabel = selectedClinician?.name ?? "your clinician";
 
   async function handleSlotBook() {
     if (!selectedSlot) return;
@@ -201,70 +234,127 @@ export default function BookingsPage() {
       {/* Native slot picker — conflict-free, instantly confirmed */}
       <div className={`${styles.card} ${styles.cardGap}`}>
         <p className={styles.cardTitle}>Book an appointment</p>
-        <p className={styles.formHint}>
-          Pick a free time with {COMPANY.clinicianName} — confirmed instantly. Times are Zürich time.
-        </p>
         {slotsLoading ? (
           <LoadingState lines={2} />
-        ) : dayKeys.length === 0 ? (
-          <p className={styles.meta}>
-            No open slots at the moment — send a request below and {COMPANY.clinicianName} will find a time with you.
-          </p>
         ) : (
           <>
-            {clinicians.length > 1 && (
-              <div className={bookingStyles.dayTabs} role="radiogroup" aria-label="Choose your clinician">
-                {clinicians.map((c) => (
-                  <button
-                    key={c.id}
-                    type="button"
-                    role="radio"
-                    aria-checked={c.id === clinicianId}
-                    className={`${bookingStyles.dayTab}${c.id === clinicianId ? ` ${bookingStyles.dayTabActive}` : ""}`}
-                    onClick={() => selectClinician(c.id)}
-                  >
-                    {c.name}
-                  </button>
-                ))}
+            {clinicians.length > 0 && (
+              <div className={bookingStyles.pickerStep}>
+                <p className={bookingStyles.stepLabel}>1 · Who you&apos;d like to see</p>
+                <div className={bookingStyles.clinicianRow} role="radiogroup" aria-label="Choose your clinician">
+                  {clinicians.map((c) => {
+                    const active = c.id === clinicianId;
+                    const mine = careTeam.includes(c.id);
+                    return (
+                      <button
+                        key={c.id}
+                        type="button"
+                        role="radio"
+                        aria-checked={active}
+                        className={`${bookingStyles.clinicianCard}${active ? ` ${bookingStyles.clinicianCardActive}` : ""}`}
+                        onClick={() => selectClinician(c.id)}
+                      >
+                        <span className={bookingStyles.clinicianAvatar} aria-hidden="true">
+                          {initials(c.name)}
+                        </span>
+                        <span className={bookingStyles.clinicianText}>
+                          <span className={bookingStyles.clinicianName}>
+                            {c.name ?? "Clinician"}
+                            {mine && <span className={bookingStyles.clinicianBadge}>Your clinician</span>}
+                          </span>
+                          <span className={bookingStyles.clinicianMeta}>
+                            {active
+                              ? dayKeys.length > 0
+                                ? `Next free: ${dayKeys[0]}`
+                                : "No open times right now"
+                              : "See available times"}
+                          </span>
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             )}
-            <div className={bookingStyles.dayTabs} role="tablist" aria-label="Available days">
-              {dayKeys.map((day) => (
-                <button
-                  key={day}
-                  type="button"
-                  role="tab"
-                  aria-selected={day === activeDay}
-                  className={`${bookingStyles.dayTab}${day === activeDay ? ` ${bookingStyles.dayTabActive}` : ""}`}
-                  onClick={() => { setSelectedDay(day); setSelectedSlot(null); }}
-                >
-                  {day}
-                </button>
-              ))}
-            </div>
-            <div className={bookingStyles.slotGrid}>
-              {(activeDay ? slotsByDay.get(activeDay) ?? [] : []).map((iso) => (
-                <button
-                  key={iso}
-                  type="button"
-                  className={`${bookingStyles.slotBtn}${iso === selectedSlot ? ` ${bookingStyles.slotBtnActive}` : ""}`}
-                  onClick={() => setSelectedSlot(iso === selectedSlot ? null : iso)}
-                >
-                  {formatSlotTime(iso)}
-                </button>
-              ))}
-            </div>
-            {selectedSlot && (
-              <button
-                type="button"
-                className={`${styles.btnPrimary} ${styles.btnBlock} ${bookingStyles.slotConfirm}`}
-                onClick={handleSlotBook}
-                disabled={slotBooking}
-              >
-                {slotBooking
-                  ? "Booking…"
-                  : `Confirm ${formatSlotDay(selectedSlot)}, ${formatSlotTime(selectedSlot)}`}
-              </button>
+
+            {dayKeys.length === 0 ? (
+              <p className={styles.meta}>
+                No open slots with {clinicianLabel} at the moment — send a request below and the clinic will find a time with you.
+              </p>
+            ) : (
+              <>
+                <div className={bookingStyles.pickerStep}>
+                  <p className={bookingStyles.stepLabel}>2 · Pick a day</p>
+                  <div className={bookingStyles.dateRail} role="tablist" aria-label="Available days">
+                    {dayKeys.map((day) => {
+                      const daySlots = slotsByDay.get(day) ?? [];
+                      const { weekday, day: dayNum, month } = slotParts(daySlots[0]);
+                      const active = day === activeDay;
+                      return (
+                        <button
+                          key={day}
+                          type="button"
+                          role="tab"
+                          aria-selected={active}
+                          className={`${bookingStyles.dateCell}${active ? ` ${bookingStyles.dateCellActive}` : ""}`}
+                          onClick={() => { setSelectedDay(day); setSelectedSlot(null); }}
+                        >
+                          <span className={bookingStyles.dateWeekday}>{weekday}</span>
+                          <span className={bookingStyles.dateDay}>{dayNum}</span>
+                          <span className={bookingStyles.dateMonth}>{month}</span>
+                          <span className={bookingStyles.dateCount}>
+                            {daySlots.length} free
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className={bookingStyles.pickerStep}>
+                  <p className={bookingStyles.stepLabel}>3 · Choose a time</p>
+                  {partedSlots.map((part) => (
+                    <div key={part.id} className={bookingStyles.partGroup}>
+                      <p className={bookingStyles.partLabel}>{part.label}</p>
+                      <div className={bookingStyles.slotGrid}>
+                        {part.slots.map((iso) => (
+                          <button
+                            key={iso}
+                            type="button"
+                            aria-pressed={iso === selectedSlot}
+                            className={`${bookingStyles.slotBtn}${iso === selectedSlot ? ` ${bookingStyles.slotBtnActive}` : ""}`}
+                            onClick={() => setSelectedSlot(iso === selectedSlot ? null : iso)}
+                          >
+                            {formatSlotTime(iso)}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className={bookingStyles.confirmBar}>
+                  <div>
+                    <p className={bookingStyles.confirmSummary}>
+                      {selectedSlot
+                        ? `${formatSlotDay(selectedSlot)} at ${formatSlotTime(selectedSlot)}`
+                        : "Select a time to continue"}
+                    </p>
+                    <p className={bookingStyles.confirmMeta}>
+                      {slotMinutes} min with {clinicianLabel} · Zürich time
+                      {selectedSlot ? " · calendar invite included" : ""}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className={`${styles.btnPrimary} ${bookingStyles.confirmBtn}`}
+                    onClick={handleSlotBook}
+                    disabled={!selectedSlot || slotBooking}
+                  >
+                    {slotBooking ? "Booking…" : "Confirm appointment"}
+                  </button>
+                </div>
+              </>
             )}
             {slotError && <p className={styles.formErrorTop}>{slotError}</p>}
           </>

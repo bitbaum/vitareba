@@ -12,6 +12,19 @@ export const BOOKING_STATUS = {
   cancelled: "cancelled",
 } as const satisfies Record<BookingStatus, BookingStatus>;
 
+/**
+ * Calendar SEQUENCE per status. Subscribed calendars only apply an update when
+ * SEQUENCE grows, and bookings carry no updatedAt column — status progression
+ * is therefore the version counter (a cancellation must outrank every earlier
+ * state or the appointment never disappears from the clinician's calendar).
+ */
+export const ICS_SEQUENCE_BY_STATUS: Record<BookingStatus, number> = {
+  pending: 0,
+  confirmed: 1,
+  attended: 2,
+  cancelled: 3,
+};
+
 /** Canonical booking type values */
 export const BOOKING_TYPE_VALUES = ["consultation", "machine"] as const;
 export type BookingType = (typeof BOOKING_TYPE_VALUES)[number];

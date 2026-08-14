@@ -1,5 +1,12 @@
 // Message/thread type definitions — SSOT for API-serialised shapes used across portal and admin
 
+/**
+ * The clinician a thread is addressed to. Null for threads opened before
+ * multi-clinician care, or by a patient nobody treats yet — the UI must say
+ * something neutral rather than naming a clinician who isn't involved.
+ */
+export type ThreadClinician = { id: string; name: string | null } | null;
+
 /** A single message within a thread (API serialised — dates are strings) */
 export type MessageRow = {
   id: string;
@@ -19,6 +26,7 @@ export type ThreadListItem = {
   createdAt: string;
   lastMessageAt: string;
   patient: { id: string };
+  clinician: ThreadClinician;
   messages: { body: string; senderId: string; readAt: string | null }[];
 };
 
@@ -26,6 +34,7 @@ export type ThreadListItem = {
 export type ThreadDetail = {
   id: string;
   subject: string;
+  clinician: ThreadClinician;
   messages: MessageRow[];
 };
 

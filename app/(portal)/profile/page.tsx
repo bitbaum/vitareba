@@ -1,10 +1,14 @@
+import { auth } from "@/lib/auth";
 import styles from "../portal.module.css";
 import profileStyles from "./profile.module.css";
 import { ProfileForm } from "./ProfileForm";
 import { PasswordForm } from "./PasswordForm";
 import { PrivacyCard } from "./PrivacyCard";
+import { CareTeamCard } from "./CareTeamCard";
 
-export default function ProfilePage() {
+export default async function ProfilePage() {
+  const session = await auth();
+
   return (
     <div className={profileStyles.layout}>
       <div>
@@ -16,6 +20,7 @@ export default function ProfilePage() {
         </p>
       </div>
       <ProfileForm />
+      <CareTeamCard selfId={session?.user?.id ?? ""} />
       <PrivacyCard />
       <PasswordForm />
     </div>

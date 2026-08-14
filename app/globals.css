@@ -109,6 +109,9 @@
   --transition-normal: 0.3s;
   --transition-slow:   0.4s;
 
+  /* Mobile bottom nav height — anything sticky above it must clear this. */
+  --portal-bottom-nav-h: 60px;
+
   /* Z-index scale */
   --z-sticky:        10;
   --z-nav:           100;

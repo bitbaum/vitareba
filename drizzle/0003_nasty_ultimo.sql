@@ -1,0 +1,2 @@
+ALTER TABLE "threads" ADD COLUMN "clinician_id" uuid;--> statement-breakpoint
+ALTER TABLE "threads" ADD CONSTRAINT "threads_clinician_id_users_id_fk" FOREIGN KEY ("clinician_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;

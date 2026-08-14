@@ -266,6 +266,10 @@ export const threads = pgTable("threads", {
   patientId: uuid("patient_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  // Who the thread is addressed to. NULLABLE by necessity: threads opened
+  // before multi-clinician care have no addressee, and a patient nobody treats
+  // yet must still be able to reach the clinic (falls back to all admins).
+  clinicianId: uuid("clinician_id").references(() => users.id),
   subject: text("subject").notNull(),
   createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
   lastMessageAt: timestamp("last_message_at", { mode: "date" }).notNull().defaultNow(),
@@ -376,6 +380,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   clinicians: many(careTeam, { relationName: "care_team_patient" }),
   documents: many(documents, { relationName: "patient_documents" }),
   threads: many(threads, { relationName: "patient_threads" }),
+  clinicianThreads: many(threads, { relationName: "clinician_threads" }),
   sentMessages: many(threadMessages),
   dailyCheckins: many(dailyCheckins),
   patientNotes: many(patientNotes, { relationName: "patient_notes" }),
@@ -447,11 +452,19 @@ export const documentsRelations = relations(documents, ({ one }) => ({
   }),
 }));
 
+// threads ↔ users is DOUBLY connected too (patient + addressed clinician), so
+// the same rule as documents applies: both relations carry an explicit
+// relationName on both sides, or the query builder throws at runtime.
 export const threadsRelations = relations(threads, ({ one, many }) => ({
   patient: one(users, {
     fields: [threads.patientId],
     references: [users.id],
     relationName: "patient_threads",
+  }),
+  clinician: one(users, {
+    fields: [threads.clinicianId],
+    references: [users.id],
+    relationName: "clinician_threads",
   }),
   messages: many(threadMessages),
 }));

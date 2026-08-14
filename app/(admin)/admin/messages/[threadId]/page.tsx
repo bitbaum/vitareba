@@ -83,6 +83,7 @@ export default function AdminThreadPage() {
           <Link href={`${ADMIN_ROUTES.patients}/${thread.patient.id}`} className={styles.threadPatientLink}>
             View profile →
           </Link>
+          {thread.clinician?.name && ` · → ${thread.clinician.name}`}
         </p>
       </div>
 

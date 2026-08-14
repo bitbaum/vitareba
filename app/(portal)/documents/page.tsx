@@ -4,10 +4,8 @@ import { documents } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import styles from "../portal.module.css";
 import docStyles from "./documents.module.css";
-import { formatDateLong } from "@/lib/utils/format";
-import { COMPANY } from "@/lib/config/company";
-import Link from "next/link";
-import { PORTAL_ROUTES } from "@/lib/config/routes";
+import { formatDateLong, displayName } from "@/lib/utils/format";
+import { DocumentUploadForm } from "./DocumentUploadForm";
 
 function mimeLabel(mimeType: string | null): string | null {
   if (!mimeType) return null;
@@ -18,15 +16,20 @@ function mimeLabel(mimeType: string | null): string | null {
   return null;
 }
 
+type DocumentWithUploader = typeof documents.$inferSelect & {
+  uploadedByUser: { name: string | null; email: string | null } | null;
+};
+
 export default async function DocumentsPage() {
   const session = await auth();
   if (!session) return null;
 
-  let docs: (typeof documents.$inferSelect)[];
+  let docs: DocumentWithUploader[];
   try {
     docs = await db.query.documents.findMany({
       where: eq(documents.userId, session.user.id),
       orderBy: [desc(documents.createdAt)],
+      with: { uploadedByUser: { columns: { name: true, email: true } } },
     });
   } catch {
     return (
@@ -41,30 +44,38 @@ export default async function DocumentsPage() {
     <div>
       <h1 className={styles.pageTitle}>My <em>Documents</em></h1>
       <p className={styles.pageSub}>
-        Clinical documents shared by {COMPANY.clinicianName} — lab results, reports, and programme materials.
+        Everything on file for your care — lab results, reports and programme materials shared by your
+        care team, plus anything you add yourself.
       </p>
+
+      <DocumentUploadForm />
 
       {docs.length === 0 ? (
         <div className={styles.card}>
           <div className={styles.emptyState}>
             <p className={styles.emptyTitle}>No documents yet</p>
             <p className={styles.emptyBody}>
-              {COMPANY.clinicianName} will share lab results, assessment reports, and programme materials here as your work together progresses.
+              Your care team will share lab results, assessment reports and programme materials here.
+              You can also add your own — a lab result from elsewhere, a referral letter, a photo of a
+              prescription.
             </p>
-            <Link href={PORTAL_ROUTES.bookings} className={styles.emptyAction}>
-              Book a consultation →
-            </Link>
           </div>
         </div>
       ) : (
         <div className={styles.docList}>
           {docs.map((doc) => {
             const label = mimeLabel(doc.mimeType);
+            const source =
+              doc.uploadedBy === session.user.id
+                ? "Uploaded by you"
+                : `Shared by ${displayName(doc.uploadedByUser?.name, doc.uploadedByUser?.email, "your care team")}`;
             return (
               <div key={doc.id} className={`${styles.card} ${docStyles.docItem}`}>
                 <div className={docStyles.docInfo}>
                   <p className={docStyles.docTitle}>{doc.title}</p>
                   <p className={styles.docMeta}>
+                    <span className={docStyles.docSource}>{source}</span>
+                    {" · "}
                     {formatDateLong(doc.createdAt)}
                     {label && ` · ${label}`}
                   </p>
