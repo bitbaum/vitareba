@@ -69,6 +69,30 @@ export async function getPrimaryClinicianId(patientId: string): Promise<string |
   return row?.clinicianId ?? null;
 }
 
+/**
+ * The patient's default clinician as a full record — id AND name, which the
+ * label alone cannot give a UI that has to address that person (book them,
+ * message them, link to them). Null when nobody treats them yet.
+ */
+export async function getPrimaryClinician(patientId: string): Promise<ClinicianContact | null> {
+  const clinicianId = await getPrimaryClinicianId(patientId);
+  if (!clinicianId) return null;
+  return getClinicianById(clinicianId);
+}
+
+/**
+ * Does this clinician treat this patient? The mutual case is the interesting
+ * one: two clinicians on each other's care team are each other's patient, and
+ * the portal should say so rather than pretend the relationship runs one way.
+ */
+export async function isTreating(clinicianId: string, patientId: string): Promise<boolean> {
+  const row = await db.query.careTeam.findFirst({
+    where: and(eq(careTeam.clinicianId, clinicianId), eq(careTeam.patientId, patientId)),
+    columns: { patientId: true },
+  });
+  return Boolean(row);
+}
+
 export async function addCareTeamMember(
   clinicianId: string,
   patientId: string

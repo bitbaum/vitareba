@@ -10,6 +10,8 @@ import { PORTAL_ROUTES } from "@/lib/config/routes";
 import { formatDateISO, formatDateMonthDay, sentenceCase } from "@/lib/utils/format";
 import { computeStreak, streakMessage } from "@/lib/domain/checkin";
 import { LoadingState } from "@/components/LoadingState";
+import { CheckinCoach } from "./CheckinCoach";
+import { QuickBook } from "./QuickBook";
 
 
 type CheckinData = { date: string; notes: string } & Record<MetricKey, number>;
@@ -27,7 +29,17 @@ function todayISO() {
   return formatDateISO(new Date());
 }
 
-export function CheckinForm({ clinician }: { clinician: string }) {
+export function CheckinForm({
+  clinician,
+  clinicianId,
+  mutualHref,
+}: {
+  clinician: string;
+  /** care_team's answer to "who treats me" — the person the actions address. */
+  clinicianId: string | null;
+  /** Set only when the viewer also treats that person: the mutual-care case. */
+  mutualHref: string | null;
+}) {
   const today = todayISO();
 
   const [form, setForm] = useState<CheckinData>({
@@ -116,6 +128,7 @@ export function CheckinForm({ clinician }: { clinician: string }) {
   const allFilled = filledCount === CHECKIN_METRICS.length;
   const inProgress = filledCount > 0 && !allFilled;
   const streak = computeStreak(history);
+  const doneToday = saved || alreadyCheckedIn;
 
   if (loading) return <LoadingState />;
   if (loadError) return <div className={styles.emptyState}>Failed to load your check-in history. Please refresh the page.</div>;
@@ -128,24 +141,43 @@ export function CheckinForm({ clinician }: { clinician: string }) {
       <p className={styles.pageSub}>Track your wellbeing — takes 30 seconds</p>
 
       <div className={checkinStyles.layout}>
-        {/* Post-save success panel */}
-        {saved && (
-          <div className={styles.cardMuted}>
-            <div className={checkinStyles.successTop}>
-              <span className={checkinStyles.successCheck}>✓</span>
-              <div>
-                <p className={checkinStyles.successTitle}>Check-in saved</p>
-                <p className={checkinStyles.successStreak}>{streakMessage(streak)}</p>
+        {/* Post-check-in panel — stays for the whole visit once today is
+            logged, not just for the few seconds the "Saved ✓" flag lives.
+            "What can I do now?" is a question the patient asks on every
+            return visit, not only in the second after they press save. */}
+        {doneToday && (
+          <>
+            <div className={styles.cardMuted}>
+              <div className={checkinStyles.successTop}>
+                <span className={checkinStyles.successCheck}>✓</span>
+                <div>
+                  <p className={checkinStyles.successTitle}>
+                    {saved ? "Check-in saved" : "Today's check-in is in"}
+                  </p>
+                  <p className={checkinStyles.successStreak}>{streakMessage(streak)}</p>
+                </div>
               </div>
+              <p className={checkinStyles.successBody}>
+                Each data point refines your pattern. {sentenceCase(clinician)} reviews your trend before every consultation — this is the raw material of your programme. Ask about it below, or take it straight to {clinician}.
+              </p>
+              <div className={checkinStyles.successLinks}>
+                <Link href={PORTAL_ROUTES.messages} className={checkinStyles.successLinkPrimary}>Message {clinician} →</Link>
+                <Link href={PORTAL_ROUTES.dashboard} className={checkinStyles.successLinkMuted}>Dashboard</Link>
+                <Link href={PORTAL_ROUTES.assessments} className={checkinStyles.successLinkMuted}>Full results</Link>
+              </div>
+              {mutualHref && (
+                <p className={checkinStyles.mutualNote}>
+                  You are also {clinician}&apos;s clinician —{" "}
+                  <Link href={mutualHref} className={checkinStyles.mutualLink}>
+                    open their record →
+                  </Link>
+                </p>
+              )}
             </div>
-            <p className={checkinStyles.successBody}>
-              Each data point refines your pattern. {sentenceCase(clinician)} reviews your trend before every consultation — this is the raw material of your programme.
-            </p>
-            <div className={checkinStyles.successLinks}>
-              <Link href={PORTAL_ROUTES.dashboard} className={checkinStyles.successLinkPrimary}>Back to dashboard →</Link>
-              <Link href={PORTAL_ROUTES.assessments} className={checkinStyles.successLinkMuted}>View full results</Link>
-            </div>
-          </div>
+
+            <CheckinCoach clinicianLabel={clinician} />
+            <QuickBook clinicianLabel={clinician} clinicianId={clinicianId} />
+          </>
         )}
 
         {/* Form */}

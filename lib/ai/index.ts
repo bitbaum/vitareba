@@ -27,17 +27,32 @@ export function isAiDpaSigned(): boolean {
 
 export type AiResult = { ok: true; text: string } | { ok: false; error: string };
 
+/** One turn of a conversation. The system prompt is passed separately. */
+export type AiTurn = { role: "user" | "assistant"; content: string };
+
+/**
+ * One call to the provider. Two shapes, same function:
+ *   - one-shot:  { system, user }              — briefs, insights, digests
+ *   - multi-turn: { system, history }          — the patient's own conversation
+ * `history` is sent verbatim before `user`, so a caller may also append a fresh
+ * question to a prior exchange. At least one of the two must be present.
+ */
 export async function aiChat({
   system,
   user,
+  history = [],
   maxTokens = 900,
 }: {
   system: string;
-  user: string;
+  user?: string;
+  history?: AiTurn[];
   maxTokens?: number;
 }): Promise<AiResult> {
   if (!isAiConfigured()) {
     return { ok: false, error: "AI provider not configured" };
+  }
+  if (history.length === 0 && !user) {
+    return { ok: false, error: "AI request had no user message" };
   }
 
   try {
@@ -53,7 +68,8 @@ export async function aiChat({
         temperature: 0.3,
         messages: [
           { role: "system", content: system },
-          { role: "user", content: user },
+          ...history,
+          ...(user ? [{ role: "user", content: user }] : []),
         ],
       }),
     });

@@ -96,6 +96,32 @@ export function patientInsightPrompt(digest: string): { system: string; user: st
   };
 }
 
+/**
+ * The post-check-in companion — a CONVERSATION, not a one-shot reflection, so
+ * the turns come from the client and only the system prompt is built here.
+ *
+ * Two rules earn their place: the model answers from the digest and nothing
+ * else (a companion that invents a trend is worse than no companion in a
+ * clinical product), and anything the data cannot settle is handed to the
+ * named human. `clinicianLabel` is resolved from care_team by the caller —
+ * never a name from config.
+ */
+export function checkinCompanionSystem(digest: string, clinicianLabel: string): string {
+  return [
+    "You are a reflective companion for a patient in a metabolic-psychiatry programme, " +
+      "talking with them right after their daily check-in. Warm, plain language, second person, " +
+      "2–5 sentences per reply. Ask a short follow-up question when it would help them think.",
+    `Answer ONLY from the tracked data below. If it cannot answer the question, say so plainly and ` +
+      `suggest they raise it with ${clinicianLabel} — you can point out that they can book a ` +
+      `consultation or send a message from this page. Never invent numbers or trends.`,
+    "You do not diagnose, do not interpret symptoms as conditions, and never give medication, " +
+      "dosage or supplement advice — that is the clinician's job. If the patient describes " +
+      `something acute or distressing, say so kindly and point them to ${clinicianLabel}; ` +
+      "for an emergency, tell them to contact local emergency services.",
+    `The patient's tracked data:\n\n${digest}`,
+  ].join("\n\n");
+}
+
 export function differentialPrompt(digest: string): { system: string; user: string } {
   return {
     system:

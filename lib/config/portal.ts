@@ -123,6 +123,26 @@ export const PATIENT_NOTE_MAX_LENGTH = 5_000;
 /** Daily check-in optional notes max length */
 export const CHECKIN_NOTES_MAX_LENGTH = 1_000;
 
+/** Post-check-in AI companion: one message's max length (Zod schema + textarea) */
+export const CHECKIN_CHAT_MESSAGE_MAX_LENGTH = 2_000;
+
+/**
+ * Max turns (user + assistant) sent in one conversation. The client trims to
+ * the most recent ones and the API rejects anything longer — an unbounded
+ * history is an unbounded bill and an unbounded prompt.
+ */
+export const CHECKIN_CHAT_MAX_TURNS = 20;
+
+/** One-tap openers, so the patient never faces an empty box after checking in */
+export const CHECKIN_CHAT_STARTERS = [
+  "What does today's check-in say?",
+  "Why does my focus keep dipping?",
+  "What should I try this week?",
+] as const;
+
+/** How many of the next free slots the post-check-in quick-book offers */
+export const CHECKIN_QUICK_SLOT_COUNT = 3;
+
 /** Booking preferred date string max length (YYYY-MM-DD format from date input) */
 export const BOOKING_PREFERRED_DATE_MAX_LENGTH = 50;
 
