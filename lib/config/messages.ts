@@ -27,7 +27,9 @@ export type ThreadListItem = {
   lastMessageAt: string;
   patient: { id: string };
   clinician: ThreadClinician;
-  messages: { body: string; senderId: string; readAt: string | null }[];
+  // senderId is null when the sender's account was deleted — the message text
+  // survives in the patient's record without an author.
+  messages: { body: string; senderId: string | null; readAt: string | null }[];
 };
 
 /** Full thread with messages, returned by GET /api/messages/[id] (portal view) */

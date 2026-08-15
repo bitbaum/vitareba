@@ -289,9 +289,14 @@ export const threadMessages = pgTable("thread_messages", {
   threadId: uuid("thread_id")
     .notNull()
     .references(() => threads.id, { onDelete: "cascade" }),
-  senderId: uuid("sender_id")
-    .notNull()
-    .references(() => users.id),
+  // Nullable + SET NULL, unlike the other authorship columns: a PATIENT is a
+  // sender too, so NO ACTION here vetoed erasing any patient who had ever sent
+  // a message — which is nearly all of them. Erasing a patient still removes
+  // their messages (threads cascade on patientId, messages on threadId); the
+  // null case only arises for a deleted clinician's replies in a thread that
+  // survives, where keeping the text with an unknown author beats deleting a
+  // patient's clinical history.
+  senderId: uuid("sender_id").references(() => users.id, { onDelete: "set null" }),
   body: text("body").notNull(),
   readAt: timestamp("read_at", { mode: "date" }),
   createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
