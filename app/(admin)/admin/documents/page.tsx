@@ -5,7 +5,7 @@ import Link from "next/link";
 import styles from "../../admin.module.css";
 import { SAVED_FEEDBACK_MS } from "@/lib/config/portal";
 import { formatDateShort } from "@/lib/utils/format";
-import { ADMIN_ROUTES } from "@/lib/config/routes";
+import { ADMIN_ROUTES, documentFileUrl } from "@/lib/config/routes";
 import { LoadingState } from "@/components/LoadingState";
 
 type Patient = { id: string; name: string | null; email: string };
@@ -217,7 +217,7 @@ export default function AdminDocumentsPage() {
                   </td>
                   <td>
                     <a
-                      href={doc.fileUrl}
+                      href={documentFileUrl(doc.id)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className={styles.cellLink}

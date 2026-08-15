@@ -22,6 +22,13 @@ export const PORTAL_ROUTES = {
 } as const satisfies Record<string, string>;
 
 /**
+ * The only way to fetch a document's bytes. Never link to documents.fileUrl
+ * directly: that is a storage location, not an authorised URL, and linking it
+ * puts a patient's medical file on the open web.
+ */
+export const documentFileUrl = (id: string): string => `/api/documents/${id}/file`;
+
+/**
  * Display label for every portal route — consumed by PortalNav AND
  * NavBreadcrumb. Keyed off PORTAL_ROUTES so a new route without a label is a
  * type error, not a silently blank breadcrumb.

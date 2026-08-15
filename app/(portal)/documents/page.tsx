@@ -5,6 +5,7 @@ import { eq, desc } from "drizzle-orm";
 import styles from "../portal.module.css";
 import docStyles from "./documents.module.css";
 import { formatDateLong, displayName } from "@/lib/utils/format";
+import { documentFileUrl } from "@/lib/config/routes";
 import { DocumentUploadForm } from "./DocumentUploadForm";
 
 function mimeLabel(mimeType: string | null): string | null {
@@ -81,7 +82,7 @@ export default async function DocumentsPage() {
                   </p>
                 </div>
                 <a
-                  href={doc.fileUrl}
+                  href={documentFileUrl(doc.id)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.docLink}

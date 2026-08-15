@@ -1,9 +1,10 @@
-import { mkdir, writeFile, unlink } from "fs/promises";
+import { mkdir, writeFile, unlink, readFile } from "fs/promises";
 import path from "path";
 
 // Local-disk file storage (replaces @vercel/blob on the self-hosted box).
-// Files land in UPLOADS_DIR (Caddy serves them under /uploads/*); the
-// returned URL is root-relative so it works behind any domain.
+// Files land in UPLOADS_DIR and are read back through an AUTHENTICATED route
+// (/api/documents/[id]/file) — nothing serves this directory to the public.
+// The stored URL stays root-relative so it survives a domain change.
 const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(process.cwd(), "uploads");
 
 function safeKey(key: string): string {
@@ -19,6 +20,26 @@ export async function putLocal(key: string, file: File | Buffer): Promise<{ url:
   const data = Buffer.isBuffer(file) ? file : Buffer.from(await file.arrayBuffer());
   await writeFile(dest, data);
   return { url: `/uploads/${k}` };
+}
+
+/** Marker for a locally-stored file. Documents may also carry an external URL
+ *  (an admin can attach a link), which is not ours to read off disk. */
+export const LOCAL_URL_PREFIX = "/uploads/";
+
+export function isLocalUrl(url: string): boolean {
+  return url.startsWith(LOCAL_URL_PREFIX);
+}
+
+/**
+ * Read a stored file back. `url` is the value held in documents.fileUrl.
+ * safeKey() is what stops a crafted key from escaping UPLOADS_DIR — the
+ * caller has already proven the requester may see this document, but the
+ * path itself still comes from the database and is treated as untrusted.
+ */
+export async function readLocal(url: string): Promise<Buffer> {
+  if (!isLocalUrl(url)) throw new Error("not a local storage url");
+  const k = safeKey(url.slice(LOCAL_URL_PREFIX.length));
+  return readFile(path.join(UPLOADS_DIR, k));
 }
 
 export async function delLocal(url: string): Promise<void> {

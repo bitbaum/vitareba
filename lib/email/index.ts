@@ -1,5 +1,5 @@
 import { Resend } from "resend";
-import { DEFAULT_FROM_EMAIL } from "@/lib/config/company";
+import { COMPANY, DEFAULT_FROM_EMAIL } from "@/lib/config/company";
 
 // Lazy client — only instantiated when RESEND_API_KEY is present at call time
 let _resend: Resend | null = null;
@@ -8,13 +8,37 @@ function getResend(): Resend {
   return _resend;
 }
 
-const FROM = process.env.RESEND_FROM ?? DEFAULT_FROM_EMAIL;
+/**
+ * Resend's shared sandbox sender domain. Mail sent from it reaches ONLY the
+ * Resend account owner's own address — every other recipient is rejected by
+ * the API. It is fine for local development and catastrophic in production,
+ * where it means no patient ever receives a password reset.
+ */
+const SANDBOX_SENDER_DOMAIN = "resend.dev";
+
+// Read at call time, not at module load, so the guard reflects the real
+// runtime env (and stays testable).
+function fromAddress(): string {
+  return process.env.RESEND_FROM ?? DEFAULT_FROM_EMAIL;
+}
+
+/** True when the configured sender can only reach the provider account owner. */
+export function usesSandboxSender(from: string = fromAddress()): boolean {
+  return from.toLowerCase().includes(`@${SANDBOX_SENDER_DOMAIN}`);
+}
 
 /** Whether the email provider is usable at all. Flows that DEPEND on an email
  *  arriving (password reset) must check this and fail loudly instead of
- *  letting a patient wait for an email that will never come. */
+ *  letting a patient wait for an email that will never come.
+ *
+ *  A sandbox sender counts as UNCONFIGURED in production. It looks configured
+ *  — the key is set, the API returns no transport error — but delivers to
+ *  nobody, so treating it as working is what turns "check your inbox" into a
+ *  silent lockout. This shipped to production once; the guard ends the class. */
 export function isEmailConfigured(): boolean {
-  return Boolean(process.env.RESEND_API_KEY);
+  if (!process.env.RESEND_API_KEY) return false;
+  if (process.env.NODE_ENV === "production" && usesSandboxSender()) return false;
+  return true;
 }
 
 type SendOptions = {
@@ -41,11 +65,17 @@ export async function sendEmail({ to, subject, html, attachments }: SendOptions)
   if (!isEmailConfigured()) {
     // Dev/build without key: log so developers see the email content
     console.log(`[email] To: ${JSON.stringify(to)}\nSubject: ${subject}`);
-    return { sent: false, error: "RESEND_API_KEY not configured" };
+    const reason = process.env.RESEND_API_KEY
+      ? `sender ${fromAddress()} is a ${SANDBOX_SENDER_DOMAIN} sandbox address and reaches no patient`
+      : "RESEND_API_KEY not configured";
+    return { sent: false, error: reason };
   }
   try {
     const { error } = await getResend().emails.send({
-      from: FROM,
+      from: fromAddress(),
+      // A clinical email a patient cannot answer is a dead end. Replies go to
+      // the clinic inbox rather than an unmonitored noreply@ sender.
+      replyTo: COMPANY.email,
       to: Array.isArray(to) ? to : [to],
       subject,
       html,
