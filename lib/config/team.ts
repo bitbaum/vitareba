@@ -8,9 +8,16 @@
  * Role titles and bios live in messages/{locale}.json under team.members.{key}.
  */
 
+/**
+ * Names as the practice itself publishes them (vitareba.com) and as the Swiss
+ * commercial register records them. Titles live in messages/{locale}.json.
+ *
+ * Deliberately no honorific we cannot source: "Dr." is a credential claim, and
+ * asserting one for a real person on a medical site is not ours to make.
+ */
 export const TEAM_MEMBERS = [
-  { key: "manuel",   initials: "M",  name: "Manuel" },
-  { key: "montagna", initials: "DM", name: "Dr. Montagna" },
+  { key: "manuel",   initials: "MR", name: "Manuel Riegner" },
+  { key: "montagna", initials: "JM", name: "Jonas Montagna" },
 ] as const;
 
 export type TeamMemberKey = (typeof TEAM_MEMBERS)[number]["key"];

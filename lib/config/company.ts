@@ -16,14 +16,36 @@ export const COMPANY = {
    */
   clinicianFallback: "your clinician",
   partnerBrand: "Surf Your Life",
-  email: "manuel@surfyourlife.org",
+  /**
+   * The clinic's own address, not the founder's coaching brand. Patient mail
+   * that replies to a coaching inbox blurs the line the practice deliberately
+   * draws between regulated medical care and non-medical coaching.
+   *
+   * HIN (Health Info Net) is the Swiss secure-email network for medical
+   * correspondence — it is the address the practice publishes, so it is the
+   * address patients should reach.
+   */
+  email: "vitareba@hin.ch",
+  phone: "+41 78 659 86 13",
   address: {
     street: "Zollikerstrasse 183",
     zip: "8008",
     city: "Zürich",
   },
-  foundingYear: 2026,
+  // VitaReBa GmbH was entered in the Swiss commercial register in 2024.
+  foundingYear: 2024,
 } as const;
+
+/**
+ * Emergency routing. A platform that asks a psychiatric population about mood
+ * and stress every day must be able to say, on any screen, where to go when
+ * the answer is "not safe" — and must say plainly that it is not that service.
+ */
+export const EMERGENCY_CONTACTS = [
+  { region: "Switzerland", number: "144", label: "Emergency medical services" },
+  { region: "Europe", number: "112", label: "General emergency" },
+  { region: "Switzerland", number: "143", label: "Die Dargebotene Hand · crisis support" },
+] as const;
 
 /**
  * The clinic's IANA timezone — SSOT for every "what day is it?" decision.

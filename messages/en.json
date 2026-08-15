@@ -1,626 +1,626 @@
 {
-    "meta": {
-        "tagline": "Metabolic Psychiatry & Systemic Longevity",
-        "description": "Zürich clinic for metabolic psychiatry and systemic longevity. ADHD diagnostics, biology-led treatment and personalised optimisation for high performers."
-    },
-    "notFound": {
-        "title": "Page not found",
-        "body": "The page you were looking for doesn't exist or has been moved.",
-        "cta": "Back to home"
-    },
-    "nav": {
-        "programmes": "Programmes",
-        "approach": "Approach",
-        "diagnostics": "Diagnostics",
-        "longevity": "Longevity",
-        "pricing": "Pricing",
-        "team": "Team",
-        "signIn": "Sign in",
-        "dashboard": "Dashboard",
-        "cta": "Take the Inflection Edge",
-        "menuOpen": "Open menu",
-        "menuClose": "Close menu",
-        "mega": {
-            "programmesFooter": "View all programmes →",
-            "programmes": [
-                {
-                    "label": "ADHD & High Performance",
-                    "sub": "Decode your neurotype, then optimise it"
-                },
-                {
-                    "label": "Metabolic Psychiatry",
-                    "sub": "Biology-first approach to mental health"
-                },
-                {
-                    "label": "Psychedelic Readiness",
-                    "sub": "Preparation, integration & aftercare"
-                }
-            ],
-            "approach": [
-                "Metabolic Assessment",
-                "ADHD as Performance System",
-                "Psychedelic-assisted Therapy",
-                "International Patients"
-            ],
-            "diagnostics": [
-                "Full Metabolic Workup",
-                "Neuropsychological Testing",
-                "Home Test Kits"
-            ]
-        }
-    },
-    "hero": {
-        "eyebrow": "Zürich · 8008 · International Patients Welcome",
-        "titleLine1": "Metabolic",
-        "titleLine2": "Psychiatry &",
-        "titleEm": "Systemic Longevity.",
-        "sub": "We decode the biology behind your mind to design a personalised path to sustained performance, longevity and wellbeing.",
-        "specialties": [
-            "ADHD",
-            "Longevity",
-            "Addiction",
-            "Burnout",
-            "High Performance",
-            "Psychedelic Therapy"
-        ],
-        "flagship": "Our Flagship Programme",
-        "flagshipTitle": "ADHD & the",
-        "flagshipTitleEm": "High-Performing Mind",
-        "flagshipSub": "A world-first integrated programme combining formal ADHD diagnostics, metabolic medicine, longevity technologies, psychedelic-state therapies and personalised Surf Your Life performance coaching.",
-        "quote": "The ADHD brain is not a broken lake that needs calming. It is a powerful ocean — and you were never taught to surf it.",
-        "ctaPrimary": "Take the Inflection Edge →",
-        "ctaSecondary": "Book Consultation"
-    },
-    "impactStats": {
-        "eyebrow": "The Numbers No One Talks About",
-        "heading": "ADHD is not just a performance issue.",
-        "headingEm": "It's a longevity issue.",
-        "body": "These are not just cognitive challenges. Untreated ADHD drives metabolic dysfunction, accelerated cellular aging, chronic inflammation, and poor self-regulation of the exact health behaviours that determine how long and how well you live. This is why metabolic psychiatry and longevity medicine must work together — and why VitaReBa exists.",
-        "stats": [
-            {
-                "number": "13",
-                "unit": " yrs",
-                "label": "Reduced life expectancy for adults with persistent ADHD",
-                "source": "Barkley & Fischer, 2019"
-            },
-            {
-                "number": "4×",
-                "unit": "",
-                "label": "Higher risk of accidental injury, substance abuse and metabolic disease",
-                "source": "Journal of Attention Disorders"
-            },
-            {
-                "number": "40",
-                "unit": "%",
-                "label": "Of ADHD adults have clinically significant sleep disorders affecting cellular recovery",
-                "source": "Barkley, 2015"
-            },
-            {
-                "number": "#1",
-                "unit": "",
-                "label": "ADHD presents a greater mortality risk than poor diet, inactivity, obesity and smoking — combined",
-                "source": "Barkley, CHADD 2018"
-            }
-        ]
-    },
-    "pillars": {
-        "eyebrow": "Our Three Pillars",
-        "heading": "Three programmes.",
-        "headingEm": "One integrated approach.",
-        "sub": "Each programme addresses a different entry point — but all share the same metabolic foundation, the same clinical rigour, and the same commitment to treating root causes, not symptoms.",
-        "items": {
-            "metabolic": {
-                "name": "Metabolic Psychiatry",
-                "desc": "The overarching framework. We assess psychiatric conditions through metabolic, biological and physiological root causes — neuroinflammation, mitochondrial health, gut-brain axis, circadian rhythmics, and stress markers. Because mental health and longevity share the same biological foundation. Advanced diagnostics delivered via clinic sessions and home test kits.",
-                "tags": [
-                    "Neuroinflammation",
-                    "Gut-Brain Axis",
-                    "Mitochondrial",
-                    "Longevity",
-                    "Home Test Kits"
-                ]
-            },
-            "adhd": {
-                "name": "ADHD for High Performers",
-                "desc": "Our flagship programme featuring the proprietary SYL Clock — mapping your symptoms across four life dimensions: health, mindset, relationships and career. Formal diagnosis, metabolic workup, longevity medicine and 90 days of Surf Your Life transformation coaching.",
-                "tags": [
-                    "SYL Clock",
-                    "4 Dimensions",
-                    "90-Day Coaching",
-                    "Surf Your Life"
-                ]
-            },
-            "psychedelic": {
-                "name": "Psychedelic Readiness",
-                "desc": "A three-month structured preparation protocol combining physical diagnostics, metabolic optimisation and psychological readiness assessment. Emerging research shows psychedelics don't just support neuroplasticity — they may extend cellular lifespan, preserve telomeres, and promote healthier aging.",
-                "tags": [
-                    "3-Month Protocol",
-                    "Physical Readiness",
-                    "Neuroplasticity",
-                    "Longevity",
-                    "Swiss Framework"
-                ]
-            }
-        }
-    },
-    "approach": {
-        "eyebrow": "Our Approach",
-        "heading": "We diagnose",
-        "headingEm": "and design.",
-        "sub": "Standard psychiatry diagnoses and prescribes. We map the full biological picture and build a personalised architecture for your mind and body.",
-        "items": [
-            {
-                "title": "Metabolic Psychiatry",
-                "body": "We assess the biological substrate of your mental performance — the body systems that directly regulate attention, arousal, mood and energy. No other clinic in Switzerland combines these layers in a single diagnostic protocol."
-            },
-            {
-                "title": "ADHD as a Performance System",
-                "body": "ADHD is not a deficit. It is an asymmetric performance profile — with extraordinary peaks, real costs, and specific conditions under which it excels. We map your profile precisely and build the architecture that turns asymmetry into advantage."
-            },
-            {
-                "title": "Psychedelic-Assisted Therapy",
-                "body": "Ketamine-assisted therapy and structured breathwork protocols within Swiss regulatory frameworks. We create windows of heightened neuroplasticity — and our three-month readiness programme ensures you enter these experiences from the strongest possible foundation."
-            },
-            {
-                "title": "International Patients",
-                "body": "We receive patients from across Europe, the Middle East and beyond. Full concierge coordination for travel, accommodation and scheduling — complete discretion from first contact to final session."
-            }
-        ]
-    },
-    "pathway": {
-        "eyebrow": "Clinical Pathway",
-        "heading": "Six layers.",
-        "headingEm": "One integrated protocol.",
-        "steps": [
-            {
-                "sub": "Entry Point",
-                "title": "Inflection Edge Assessment",
-                "text": "Our proprietary 30-question, 5-dimension performance instrument. Produces your Neurotype Blueprint and frames the entire diagnostic conversation.",
-                "tags": [
-                    "Online · Free",
-                    "5 Dimensions",
-                    "Performance Blueprint"
-                ]
-            },
-            {
-                "sub": "Clinical Diagnosis",
-                "title": "Formal ADHD Diagnostic",
-                "text": "Comprehensive psychiatric assessment by our metabolic psychiatrist. Beyond checklists — we assess ADHD type, comorbidities, rejection sensitivity, executive function, and your specific performance phenotype.",
-                "tags": [
-                    "DSM-5 / ICD-11",
-                    "Comorbidity Mapping",
-                    "Medication Review"
-                ]
-            },
-            {
-                "sub": "Biological Layer",
-                "title": "Full Metabolic Workup",
-                "text": "The assessment that sets VitaReBa apart. We examine the biological systems driving your presentation — gut-brain axis, neurotransmitters, mitochondrial function, hormones, micronutrients, toxins, HRV, circadian rhythm and more.",
-                "tags": [
-                    "Gut · Brain Axis",
-                    "Mitochondrial",
-                    "HRV · Circadian",
-                    "Toxins"
-                ]
-            },
-            {
-                "sub": "Neuroplasticity & Longevity",
-                "title": "Psychedelic-State Therapy",
-                "text": "Ketamine-assisted therapy and structured breathwork protocols inducing non-ordinary states — creating windows of heightened neuroplasticity. Research now shows psychedelics also preserve telomere length, upregulate longevity genes (SIRT1), and reduce oxidative stress at the cellular level.",
-                "tags": [
-                    "Ketamine-Assisted",
-                    "Breathwork",
-                    "Neuroplasticity",
-                    "Longevity",
-                    "Swiss Law"
-                ]
-            },
-            {
-                "sub": "Longevity Medicine",
-                "title": "VitaReBa Technology Protocol",
-                "text": "ADHD reduces life expectancy by up to 13 years. Our longevity medicine technologies directly address this — mitochondrial health, nervous system recovery, cellular longevity, and the biological foundations of sustained cognitive performance.",
-                "tags": [
-                    "H₂ Therapy",
-                    "IHHT",
-                    "PEMF",
-                    "Infrared",
-                    "HRV Biofeedback"
-                ]
-            },
-            {
-                "sub": "Performance Architecture",
-                "title": "Surf Your Life + Home Harmony",
-                "text": "The coaching layer that converts clinical insights into daily architecture. You redesign how you work, lead, decide and recover — based on your specific neurotype. Includes a full audit of your personal and professional environments.",
-                "tags": [
-                    "Surf Your Life",
-                    "Home Harmony",
-                    "90-Day Programme"
-                ]
-            }
-        ]
-    },
-    "diagnostics": {
-        "eyebrow": "Diagnostic Depth",
-        "heading": "The most complete",
-        "headingLine2": "biological picture",
-        "headingEm": "available.",
-        "sub": "Our metabolic workup examines six biological systems that directly influence cognitive performance, mood and energy. Available in-clinic and via home test kits for international patients.",
-        "categories": [
-            {
-                "cat": "Gut · Brain Axis",
-                "items": [
-                    "Complete microbiome analysis",
-                    "Intestinal permeability markers",
-                    "Neurotransmitter precursor status",
-                    "Inflammatory cascade mapping"
-                ]
-            },
-            {
-                "cat": "Mitochondrial Health",
-                "items": [
-                    "Cellular energy production capacity",
-                    "Oxidative stress burden",
-                    "Mitochondrial efficiency markers",
-                    "Energy metabolism pathways"
-                ]
-            },
-            {
-                "cat": "Hormones",
-                "items": [
-                    "Full cortisol rhythm & stress axis",
-                    "Thyroid comprehensive panel",
-                    "Sex hormones & adrenal function",
-                    "Insulin & metabolic regulators"
-                ]
-            },
-            {
-                "cat": "Micronutrients & Toxins",
-                "items": [
-                    "Key mineral & vitamin status",
-                    "Omega fatty acid profile",
-                    "Heavy metal & environmental toxin load",
-                    "Inflammatory & oxidative markers"
-                ]
-            },
-            {
-                "cat": "HRV · Circadian · Sleep",
-                "items": [
-                    "Heart rate variability baseline",
-                    "Circadian rhythm mapping",
-                    "Sleep architecture assessment",
-                    "Autonomic nervous system regulation"
-                ]
-            },
-            {
-                "cat": "Stress & Serotonin Markers",
-                "items": [
-                    "Serotonin & dopamine metabolism",
-                    "Cortisol awakening response",
-                    "GABA & glutamate balance",
-                    "Adrenal reserve capacity"
-                ]
-            }
-        ]
-    },
-    "sylClock": {
-        "eyebrow": "Proprietary Instrument",
-        "heading": "The SYL Clock.",
-        "headingEm": "Four dimensions. One picture.",
-        "body": "The Surf Your Life Clock maps your ADHD symptoms across the four dimensions that matter most. Not just how your brain works — but how it shows up in every area of your life. The result is the most actionable performance map available.",
-        "dimensions": {
-            "health": {
-                "name": "Health",
-                "text": "Energy, sleep, nutrition, exercise, substance use — the biological foundation everything else rests on."
-            },
-            "mindset": {
-                "name": "Mindset",
-                "text": "Focus patterns, emotional regulation, inner narrative, decision quality and cognitive performance under pressure."
-            },
-            "relationships": {
-                "name": "Relationships",
-                "text": "Communication patterns, rejection sensitivity, trust, intimacy and how your neurotype shapes your connections."
-            },
-            "career": {
-                "name": "Career",
-                "text": "Leadership style, productivity architecture, team dynamics, strategic thinking and professional trajectory."
-            }
-        }
-    },
-    "psychedelicReadiness": {
-        "eyebrow": "Psychedelic Readiness Programme",
-        "heading": "Three months.",
-        "headingEm": "Complete preparation.",
-        "sub": "A structured protocol for anyone considering psychedelic-assisted therapy — whether with us or with a referral partner clinic. We ensure your body, metabolism and mind are optimally prepared.",
-        "calloutTitle": "Beyond neuroplasticity: the longevity dimension",
-        "calloutText": "A 2025 study published in Nature's npj Aging found that psilocybin extended human cellular lifespan by up to 57%, preserved telomere length, and increased survival of aged mice by 30%. The compound upregulates SIRT1 — a key gene in longevity and DNA repair — and reduces oxidative stress at the cellular level. These findings suggest psychedelics may be potent geroprotective agents, making metabolic preparation even more critical.",
-        "calloutCite": "Kato et al., npj Aging, 2025 · Emory University / Baylor College of Medicine",
-        "phases": [
-            {
-                "title": "Physical Diagnostics",
-                "text": "Full metabolic workup, cardiovascular assessment, medication review, and contraindication screening. We identify and address any biological factors that could affect your experience and its longevity benefits."
-            },
-            {
-                "title": "Metabolic Optimisation",
-                "text": "Targeted supplementation, gut health protocol, sleep architecture improvement, and nervous system regulation. Building the biological foundation for both neuroplasticity and the cellular longevity effects of psychedelic therapy."
-            },
-            {
-                "title": "Psychological Readiness",
-                "text": "Intention setting, breathwork training, mindfulness practice, and integration framework preparation. Ensuring you have the tools to process and sustain the insights that emerge — for lasting change."
-            }
-        ],
-        "footer": "Available for individual clients and referral partners — psychedelic clinics, retreat centres, and medical practitioners seeking thorough pre-treatment preparation for their patients."
-    },
-    "addiction": {
-        "eyebrow": "Addiction Treatment",
-        "heading": "Where ADHD ends",
-        "headingMid": "and addiction",
-        "headingEm": "begins",
-        "headingEnd": "is rarely obvious.",
-        "body1": "ADHD and addiction are among the most frequently co-occurring conditions in high-performing adults. For many, substance use — alcohol, stimulants, prescription medications — begins as self-medication for an undiagnosed or undertreated ADHD brain.",
-        "body2": "We offer exclusive, fully private addiction treatment in Switzerland — integrated with the complete metabolic and psychiatric picture. Not a clinic setting. Not an institutional programme. A discreet, evidence-based, deeply personal process.",
-        "enquire": "Enquire Confidentially",
-        "cards": [
-            {
-                "label": "Fully Private",
-                "text": "No clinical setting. No institutional record. Complete discretion from first contact to final session."
-            },
-            {
-                "label": "Dual Diagnosis",
-                "text": "ADHD and addiction treated together — not sequentially. The metabolic root causes of both are addressed simultaneously."
-            },
-            {
-                "label": "Switzerland-Based",
-                "text": "Access to world-class Swiss medical infrastructure, legal therapeutic frameworks, and an environment of absolute safety."
-            },
-            {
-                "label": "International Clients",
-                "text": "Full concierge coordination. We receive clients from across Europe, the Middle East and beyond."
-            }
-        ]
-    },
-    "programs": {
-        "eyebrow": "Programme Architecture",
-        "heading": "Three entry points.",
-        "headingEm": "One destination.",
-        "items": {
-            "edge_diagnostic": {
-                "note": "One-time · 2 sessions",
-                "desc": "The most complete ADHD biological picture available in Switzerland. Formal diagnosis, full metabolic workup, and your personalised Neurotype Blueprint.",
-                "badge": null,
-                "btnLabel": "Enquire",
-                "features": [
-                    "Inflection Edge assessment",
-                    "Formal ADHD diagnostic",
-                    "Full metabolic workup",
-                    "Neurotype Blueprint session",
-                    "Medication & supplement protocol"
-                ]
-            },
-            "riding_the_wave": {
-                "note": "90-day programme",
-                "desc": "The complete integrated programme — clinical diagnosis, biological optimisation, longevity medicine, and 90 days of Surf Your Life transformation coaching.",
-                "badge": "Most chosen",
-                "btnLabel": "Begin the Journey",
-                "features": [
-                    "Everything in Edge Diagnostic",
-                    "90-day Surf Your Life coaching",
-                    "SYL Clock full mapping",
-                    "VitaReBa technology protocol",
-                    "Home Harmony environment audit",
-                    "Psychedelic therapy assessment"
-                ]
-            },
-            "total_longevity": {
-                "note": "Annual · Fully concierge",
-                "desc": "The comprehensive annual architecture — ongoing biological monitoring, regular consultations, psychedelic therapy, and continuous performance optimisation.",
-                "badge": null,
-                "btnLabel": "Enquire",
-                "features": [
-                    "Everything in Riding the Wave",
-                    "Psychedelic-assisted therapy",
-                    "Quarterly metabolic retesting",
-                    "Monthly consultations",
-                    "Annual Inflection instruments retake"
-                ]
-            }
-        }
-    },
-    "team": {
-        "eyebrow": "Clinical Team",
-        "heading": "Built around",
-        "headingEm": "precision.",
-        "members": {
-            "manuel": {
-                "role": "Founder · Surf Your Life",
-                "bio": "The architect behind VitaReBa's integrated approach. Combining performance coaching with metabolic psychiatry to build the life architecture high-performing minds need."
-            },
-            "montagna": {
-                "role": "Metabolic Psychiatrist",
-                "bio": "Specialist in metabolic psychiatry with deep expertise in ADHD, addiction and the biological substrates of cognitive performance."
-            }
-        }
-    },
-    "cta": {
-        "eyebrow": "Begin Here",
-        "heading": "Your ocean.",
-        "headingEm": "Precisely mapped.",
-        "sub": "Start with the Inflection Edge — our free ADHD performance assessment. In 8 minutes you will have the most precise picture of your neurotype you have ever seen. Your results are your Epoch — the beginning of a new chapter.",
-        "ctaPrimary": "Take the Inflection Edge →",
-        "ctaSecondary": "Book a Discovery Call"
-    },
-    "footer": {
-        "legal": "All psychedelic therapies within Swiss regulatory frameworks"
-    },
-    "auth": {
-        "login": {
-            "title": "Welcome",
-            "titleEm": "back",
-            "sub": "Sign in to continue",
-            "emailLabel": "Email",
-            "passwordLabel": "Password",
-            "emailPlaceholder": "you@example.com",
-            "passwordPlaceholder": "••••••••",
-            "submit": "Sign in",
-            "submitting": "Signing in…",
-            "error": "Invalid email or password.",
-            "noAccount": "No account?",
-            "registerLink": "Register",
-            "forgotPassword": "Forgot password?"
+  "meta": {
+    "tagline": "Metabolic Psychiatry & Systemic Longevity",
+    "description": "Zürich clinic for metabolic psychiatry and systemic longevity. ADHD diagnostics, biology-led treatment and personalised optimisation for high performers."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "The page you were looking for doesn't exist or has been moved.",
+    "cta": "Back to home"
+  },
+  "nav": {
+    "programmes": "Programmes",
+    "approach": "Approach",
+    "diagnostics": "Diagnostics",
+    "longevity": "Longevity",
+    "pricing": "Pricing",
+    "team": "Team",
+    "signIn": "Sign in",
+    "dashboard": "Dashboard",
+    "cta": "Take the Inflection Edge",
+    "menuOpen": "Open menu",
+    "menuClose": "Close menu",
+    "mega": {
+      "programmesFooter": "View all programmes →",
+      "programmes": [
+        {
+          "label": "ADHD & High Performance",
+          "sub": "Decode your neurotype, then optimise it"
         },
-        "register": {
-            "title": "Create",
-            "titleEm": "your account",
-            "sub": "Email and password — nothing more",
-            "subAssessment": "One step to save your results.",
-            "assessmentBanner": "Your Inflection Edge results are ready to save. Create your account and they'll be waiting in your portal — along with a direct line to Manuel to discuss next steps.",
-            "emailLabel": "Email",
-            "passwordLabel": "Password",
-            "emailPlaceholder": "you@example.com",
-            "passwordPlaceholder": "Min. 8 characters",
-            "submit": "Create account",
-            "submitting": "Creating account…",
-            "hasAccount": "Already have an account?",
-            "signInLink": "Sign in",
-            "genericError": "Something went wrong. Please try again."
+        {
+          "label": "Metabolic Psychiatry",
+          "sub": "Biology-first approach to mental health"
         },
-        "forgotPassword": {
-            "title": "Reset password",
-            "sub": "Enter your email and we'll send you a reset link.",
-            "successTitle": "Check your inbox",
-            "successSub": "If an account exists for {email}, you will receive a password reset link within a few minutes.",
-            "emailLabel": "Email",
-            "emailPlaceholder": "you@example.com",
-            "submit": "Send reset link",
-            "submitting": "Sending…",
-            "backToSignIn": "← Back to sign in",
-            "unavailable": "Password reset is temporarily unavailable. Please contact us directly at {email}."
-        },
-        "resetPassword": {
-            "title": "Set new password",
-            "sub": "Choose a strong password for your account",
-            "invalidTitle": "Invalid link",
-            "invalidSub": "This password reset link is missing required parameters.",
-            "requestNew": "Request a new link",
-            "expiredError": "This link is invalid or has expired.",
-            "newPasswordLabel": "New password",
-            "confirmPasswordLabel": "Confirm password",
-            "newPasswordPlaceholder": "Min. 8 characters",
-            "confirmPasswordPlaceholder": "Repeat password",
-            "mismatchError": "Passwords do not match.",
-            "genericError": "Something went wrong. The link may have expired.",
-            "submit": "Update password",
-            "submitting": "Updating…"
+        {
+          "label": "Psychedelic Readiness",
+          "sub": "Preparation, integration & aftercare"
         }
-    },
-    "assessment": {
-        "instrument": "ADHD Performance Instrument",
-        "subtitle": "Your neurotype. Mapped precisely.",
-        "intro": "{count} questions · {dims} dimensions · One precision performance blueprint mapping when your ADHD brain operates at its ceiling — and what is currently preventing it.",
-        "statsQuestions": "Questions",
-        "statsDimensions": "Dimensions",
-        "statsDuration": "8 min",
-        "statsDurationLabel": "Duration",
-        "beginButton": "Begin Assessment",
-        "disclaimer": "Grounded in peer-reviewed research. Not a clinical diagnostic tool.",
-        "progressLabel": "Dimension",
-        "progressOf": "of",
-        "scaleMin": "Strongly disagree",
-        "scaleMax": "Strongly agree",
-        "back": "← Back",
-        "next": "Next →",
-        "seeResults": "See Results →",
-        "ariaClose": "Close assessment",
-        "ariaRate": "Rate {n} out of 5",
-        "dimensions": {
-            "arousal": "Arousal & Activation",
-            "divergent": "Divergent Output",
-            "hyperfocus": "Hyperfocus",
-            "volatility": "Volatility & Cost",
-            "environment": "Environment Design"
-        },
-        "questions": [
-            "I can reliably get myself into a productive state when I need to.",
-            "My energy levels are consistent throughout the day.",
-            "I need external pressure (deadlines, consequences) to start important tasks.",
-            "I know my peak performance windows and schedule my most important work in them.",
-            "I often feel mentally exhausted despite not having done much.",
-            "Caffeine or stimulants are essential for me to function normally.",
-            "I generate more ideas than most people around me.",
-            "My best ideas come at unexpected, inconvenient times.",
-            "I can effectively capture and develop my ideas into finished outputs.",
-            "People describe me as creative or unconventional in my thinking.",
-            "I often start new projects before finishing existing ones.",
-            "My creative output directly contributes to my professional success.",
-            "When I am deeply engaged, I lose track of time completely.",
-            "I can deliberately enter a state of deep focus when I choose to.",
-            "My hyperfocus episodes are productive rather than consuming.",
-            "I struggle to shift attention from one task to another when needed.",
-            "I have strategies to protect my deep work from interruption.",
-            "My best work happens in intense bursts rather than steady effort.",
-            "My mood can shift dramatically within a single day.",
-            "I make impulsive decisions I later regret.",
-            "I can manage my emotional reactions in professional settings.",
-            "Rejection or criticism affects me more intensely than it seems to affect others.",
-            "My performance variance frustrates the people around me.",
-            "I have reliable strategies for recovering from emotional lows.",
-            "My workspace is designed to support my focus and productivity.",
-            "I have clear boundaries between work and personal time.",
-            "The people around me understand how my brain works.",
-            "I regularly feel overwhelmed by my physical environment.",
-            "My daily routine supports my cognitive performance.",
-            "I have deliberately designed my life around how my brain works best."
-        ],
-        "verdicts": {
-            "deepFriction": {
-                "name": "Deep Friction",
-                "text": "Your ADHD profile is producing significant friction across multiple dimensions. The biological and structural interventions are clear — and so is the magnitude of what becomes available when they're addressed."
-            },
-            "managedTension": {
-                "name": "Managed Tension",
-                "text": "You have developed coping strategies, but the underlying tension between your neurotype and your environment is still producing real costs. The work is moving from coping to designing."
-            },
-            "asymmetricPerformance": {
-                "name": "Asymmetric Performance",
-                "text": "You have significant strengths and specific vulnerabilities. This is the profile most responsive to targeted intervention — because the foundation is already strong."
-            },
-            "optimisedNeurotype": {
-                "name": "Optimised Neurotype",
-                "text": "Your ADHD profile is largely working for you. The refinement available at this level is precision optimisation — fine-tuning the edges to extract the full potential of your neurotype."
-            }
-        },
-        "interpretations": {
-            "arousal": {
-                "low": "Your activation system is largely externally driven. You rely on urgency, novelty or crisis to get started. This is the most energy-expensive way to operate — and it's the pattern most responsive to biological intervention.",
-                "mid": "You have partial control over your activation but it's inconsistent. Some days you can self-start; others you can't. The variability itself is the signal — it points to biological fluctuation that can be stabilised.",
-                "high": "Your arousal system is well-regulated. You can reliably get yourself into a productive state. The remaining work is optimising your peak windows and reducing the energy cost of activation."
-            },
-            "divergent": {
-                "low": "Your creative output is either suppressed or not being captured effectively. ADHD brains generate enormous creative potential — if yours isn't visible, the environment is likely the bottleneck, not the brain.",
-                "mid": "You generate substantial creative output but struggle to convert it into finished work. The gap between ideation and execution is your highest-leverage intervention point.",
-                "high": "Your divergent thinking is a well-deployed asset. The work now is building systems that protect and channel this capacity so it compounds rather than scatters."
-            },
-            "hyperfocus": {
-                "low": "Hyperfocus is either rare or uncontrolled — happening to you rather than for you. Shifting to deliberately designed hyperfocus is the highest-leverage change available.",
-                "mid": "You experience hyperfocus regularly but can't always direct it. The work is building triggers, protection and exit strategies so you can deploy this capacity strategically.",
-                "high": "Hyperfocus is a well-understood, regularly deployed asset. The refinement now is building better protection for these states once they are activated."
-            },
-            "volatility": {
-                "low": "Your performance volatility is producing significant real-world costs in decisions, relationships and health. This requires biological and structural intervention — not discipline, but design.",
-                "mid": "Your volatility is manageable but costly in ways others absorb more than you see. The work is raising your baseline floor through biological stabilisation and structural support.",
-                "high": "You have reasonable control over your performance variation. The remaining work is building a more consistent baseline so the people around you can rely on which version of you shows up."
-            },
-            "environment": {
-                "low": "There is a large gap between the environment you currently work in and the one your brain needs. This is likely the single biggest drag on your performance — and the most fixable problem in your profile.",
-                "mid": "You understand your environmental needs partially but haven't fully designed around them. Deliberate redesign of your workspace, schedule and team structure will compound every other intervention.",
-                "high": "You have built an environment that works with your neurotype. The task now is protecting it as the complexity of your life and business increases."
-            }
-        },
-        "results": {
-            "startingPoint": "This is your starting point.",
-            "ctaSub": "A 30-minute discovery call with our clinical team translates these scores into a concrete plan — which dimensions to address first, what interventions are available, and what a {shortName} programme looks like for your specific profile.",
-            "ctaNoCommitment": "No commitment. Just clarity.",
-            "saveResults": "Save results + book a call →",
-            "retake": "Retake Assessment"
-        }
+      ],
+      "approach": [
+        "Metabolic Assessment",
+        "ADHD as Performance System",
+        "Psychedelic-assisted Therapy",
+        "International Patients"
+      ],
+      "diagnostics": [
+        "Full Metabolic Workup",
+        "Neuropsychological Testing",
+        "Home Test Kits"
+      ]
     }
+  },
+  "hero": {
+    "eyebrow": "Zürich · 8008 · International Patients Welcome",
+    "titleLine1": "Metabolic",
+    "titleLine2": "Psychiatry &",
+    "titleEm": "Systemic Longevity.",
+    "sub": "We decode the biology behind your mind to design a personalised path to sustained performance, longevity and wellbeing.",
+    "specialties": [
+      "ADHD",
+      "Longevity",
+      "Addiction",
+      "Burnout",
+      "High Performance",
+      "Psychedelic Therapy"
+    ],
+    "flagship": "Our Flagship Programme",
+    "flagshipTitle": "ADHD & the",
+    "flagshipTitleEm": "High-Performing Mind",
+    "flagshipSub": "A world-first integrated programme combining formal ADHD diagnostics, metabolic medicine, longevity technologies, psychedelic-state therapies and personalised Surf Your Life performance coaching.",
+    "quote": "The ADHD brain is not a broken lake that needs calming. It is a powerful ocean — and you were never taught to surf it.",
+    "ctaPrimary": "Take the Inflection Edge →",
+    "ctaSecondary": "Book Consultation"
+  },
+  "impactStats": {
+    "eyebrow": "The Numbers No One Talks About",
+    "heading": "ADHD is not just a performance issue.",
+    "headingEm": "It's a longevity issue.",
+    "body": "These are not just cognitive challenges. Untreated ADHD drives metabolic dysfunction, accelerated cellular aging, chronic inflammation, and poor self-regulation of the exact health behaviours that determine how long and how well you live. This is why metabolic psychiatry and longevity medicine must work together — and why VitaReBa exists.",
+    "stats": [
+      {
+        "number": "13",
+        "unit": " yrs",
+        "label": "Reduced life expectancy for adults with persistent ADHD",
+        "source": "Barkley & Fischer, 2019"
+      },
+      {
+        "number": "4×",
+        "unit": "",
+        "label": "Higher risk of accidental injury, substance abuse and metabolic disease",
+        "source": "Journal of Attention Disorders"
+      },
+      {
+        "number": "40",
+        "unit": "%",
+        "label": "Of ADHD adults have clinically significant sleep disorders affecting cellular recovery",
+        "source": "Barkley, 2015"
+      },
+      {
+        "number": "#1",
+        "unit": "",
+        "label": "ADHD presents a greater mortality risk than poor diet, inactivity, obesity and smoking — combined",
+        "source": "Barkley, CHADD 2018"
+      }
+    ]
+  },
+  "pillars": {
+    "eyebrow": "Our Three Pillars",
+    "heading": "Three programmes.",
+    "headingEm": "One integrated approach.",
+    "sub": "Each programme addresses a different entry point — but all share the same metabolic foundation, the same clinical rigour, and the same commitment to treating root causes, not symptoms.",
+    "items": {
+      "metabolic": {
+        "name": "Metabolic Psychiatry",
+        "desc": "The overarching framework. We assess psychiatric conditions through metabolic, biological and physiological root causes — neuroinflammation, mitochondrial health, gut-brain axis, circadian rhythmics, and stress markers. Because mental health and longevity share the same biological foundation. Advanced diagnostics delivered via clinic sessions and home test kits.",
+        "tags": [
+          "Neuroinflammation",
+          "Gut-Brain Axis",
+          "Mitochondrial",
+          "Longevity",
+          "Home Test Kits"
+        ]
+      },
+      "adhd": {
+        "name": "ADHD for High Performers",
+        "desc": "Our flagship programme featuring the proprietary SYL Clock — mapping your symptoms across four life dimensions: health, mindset, relationships and career. Formal diagnosis, metabolic workup, longevity medicine and 90 days of Surf Your Life transformation coaching.",
+        "tags": [
+          "SYL Clock",
+          "4 Dimensions",
+          "90-Day Coaching",
+          "Surf Your Life"
+        ]
+      },
+      "psychedelic": {
+        "name": "Psychedelic Readiness",
+        "desc": "A three-month structured preparation protocol combining physical diagnostics, metabolic optimisation and psychological readiness assessment. Emerging research shows psychedelics don't just support neuroplasticity — they may extend cellular lifespan, preserve telomeres, and promote healthier aging.",
+        "tags": [
+          "3-Month Protocol",
+          "Physical Readiness",
+          "Neuroplasticity",
+          "Longevity",
+          "Swiss Framework"
+        ]
+      }
+    }
+  },
+  "approach": {
+    "eyebrow": "Our Approach",
+    "heading": "We diagnose",
+    "headingEm": "and design.",
+    "sub": "Standard psychiatry diagnoses and prescribes. We map the full biological picture and build a personalised architecture for your mind and body.",
+    "items": [
+      {
+        "title": "Metabolic Psychiatry",
+        "body": "We assess the biological substrate of your mental performance — the body systems that directly regulate attention, arousal, mood and energy. No other clinic in Switzerland combines these layers in a single diagnostic protocol."
+      },
+      {
+        "title": "ADHD as a Performance System",
+        "body": "ADHD is not a deficit. It is an asymmetric performance profile — with extraordinary peaks, real costs, and specific conditions under which it excels. We map your profile precisely and build the architecture that turns asymmetry into advantage."
+      },
+      {
+        "title": "Psychedelic-Assisted Therapy",
+        "body": "Ketamine-assisted therapy and structured breathwork protocols within Swiss regulatory frameworks. We create windows of heightened neuroplasticity — and our three-month readiness programme ensures you enter these experiences from the strongest possible foundation."
+      },
+      {
+        "title": "International Patients",
+        "body": "We receive patients from across Europe, the Middle East and beyond. Full concierge coordination for travel, accommodation and scheduling — complete discretion from first contact to final session."
+      }
+    ]
+  },
+  "pathway": {
+    "eyebrow": "Clinical Pathway",
+    "heading": "Six layers.",
+    "headingEm": "One integrated protocol.",
+    "steps": [
+      {
+        "sub": "Entry Point",
+        "title": "Inflection Edge Assessment",
+        "text": "Our proprietary 30-question, 5-dimension performance instrument. Produces your Neurotype Blueprint and frames the entire diagnostic conversation.",
+        "tags": [
+          "Online · Free",
+          "5 Dimensions",
+          "Performance Blueprint"
+        ]
+      },
+      {
+        "sub": "Clinical Diagnosis",
+        "title": "Formal ADHD Diagnostic",
+        "text": "Comprehensive psychiatric assessment by our metabolic psychiatrist. Beyond checklists — we assess ADHD type, comorbidities, rejection sensitivity, executive function, and your specific performance phenotype.",
+        "tags": [
+          "DSM-5 / ICD-11",
+          "Comorbidity Mapping",
+          "Medication Review"
+        ]
+      },
+      {
+        "sub": "Biological Layer",
+        "title": "Full Metabolic Workup",
+        "text": "The assessment that sets VitaReBa apart. We examine the biological systems driving your presentation — gut-brain axis, neurotransmitters, mitochondrial function, hormones, micronutrients, toxins, HRV, circadian rhythm and more.",
+        "tags": [
+          "Gut · Brain Axis",
+          "Mitochondrial",
+          "HRV · Circadian",
+          "Toxins"
+        ]
+      },
+      {
+        "sub": "Neuroplasticity & Longevity",
+        "title": "Psychedelic-State Therapy",
+        "text": "Ketamine-assisted therapy and structured breathwork protocols inducing non-ordinary states — creating windows of heightened neuroplasticity. Research now shows psychedelics also preserve telomere length, upregulate longevity genes (SIRT1), and reduce oxidative stress at the cellular level.",
+        "tags": [
+          "Ketamine-Assisted",
+          "Breathwork",
+          "Neuroplasticity",
+          "Longevity",
+          "Swiss Law"
+        ]
+      },
+      {
+        "sub": "Longevity Medicine",
+        "title": "VitaReBa Technology Protocol",
+        "text": "ADHD reduces life expectancy by up to 13 years. Our longevity medicine technologies directly address this — mitochondrial health, nervous system recovery, cellular longevity, and the biological foundations of sustained cognitive performance.",
+        "tags": [
+          "H₂ Therapy",
+          "IHHT",
+          "PEMF",
+          "Infrared",
+          "HRV Biofeedback"
+        ]
+      },
+      {
+        "sub": "Performance Architecture",
+        "title": "Surf Your Life + Home Harmony",
+        "text": "The coaching layer that converts clinical insights into daily architecture. You redesign how you work, lead, decide and recover — based on your specific neurotype. Includes a full audit of your personal and professional environments.",
+        "tags": [
+          "Surf Your Life",
+          "Home Harmony",
+          "90-Day Programme"
+        ]
+      }
+    ]
+  },
+  "diagnostics": {
+    "eyebrow": "Diagnostic Depth",
+    "heading": "The most complete",
+    "headingLine2": "biological picture",
+    "headingEm": "available.",
+    "sub": "Our metabolic workup examines six biological systems that directly influence cognitive performance, mood and energy. Available in-clinic and via home test kits for international patients.",
+    "categories": [
+      {
+        "cat": "Gut · Brain Axis",
+        "items": [
+          "Complete microbiome analysis",
+          "Intestinal permeability markers",
+          "Neurotransmitter precursor status",
+          "Inflammatory cascade mapping"
+        ]
+      },
+      {
+        "cat": "Mitochondrial Health",
+        "items": [
+          "Cellular energy production capacity",
+          "Oxidative stress burden",
+          "Mitochondrial efficiency markers",
+          "Energy metabolism pathways"
+        ]
+      },
+      {
+        "cat": "Hormones",
+        "items": [
+          "Full cortisol rhythm & stress axis",
+          "Thyroid comprehensive panel",
+          "Sex hormones & adrenal function",
+          "Insulin & metabolic regulators"
+        ]
+      },
+      {
+        "cat": "Micronutrients & Toxins",
+        "items": [
+          "Key mineral & vitamin status",
+          "Omega fatty acid profile",
+          "Heavy metal & environmental toxin load",
+          "Inflammatory & oxidative markers"
+        ]
+      },
+      {
+        "cat": "HRV · Circadian · Sleep",
+        "items": [
+          "Heart rate variability baseline",
+          "Circadian rhythm mapping",
+          "Sleep architecture assessment",
+          "Autonomic nervous system regulation"
+        ]
+      },
+      {
+        "cat": "Stress & Serotonin Markers",
+        "items": [
+          "Serotonin & dopamine metabolism",
+          "Cortisol awakening response",
+          "GABA & glutamate balance",
+          "Adrenal reserve capacity"
+        ]
+      }
+    ]
+  },
+  "sylClock": {
+    "eyebrow": "Proprietary Instrument",
+    "heading": "The SYL Clock.",
+    "headingEm": "Four dimensions. One picture.",
+    "body": "The Surf Your Life Clock maps your ADHD symptoms across the four dimensions that matter most. Not just how your brain works — but how it shows up in every area of your life. The result is the most actionable performance map available.",
+    "dimensions": {
+      "health": {
+        "name": "Health",
+        "text": "Energy, sleep, nutrition, exercise, substance use — the biological foundation everything else rests on."
+      },
+      "mindset": {
+        "name": "Mindset",
+        "text": "Focus patterns, emotional regulation, inner narrative, decision quality and cognitive performance under pressure."
+      },
+      "relationships": {
+        "name": "Relationships",
+        "text": "Communication patterns, rejection sensitivity, trust, intimacy and how your neurotype shapes your connections."
+      },
+      "career": {
+        "name": "Career",
+        "text": "Leadership style, productivity architecture, team dynamics, strategic thinking and professional trajectory."
+      }
+    }
+  },
+  "psychedelicReadiness": {
+    "eyebrow": "Psychedelic Readiness Programme",
+    "heading": "Three months.",
+    "headingEm": "Complete preparation.",
+    "sub": "A structured protocol for anyone considering psychedelic-assisted therapy — whether with us or with a referral partner clinic. We ensure your body, metabolism and mind are optimally prepared.",
+    "calloutTitle": "Beyond neuroplasticity: the longevity dimension",
+    "calloutText": "A 2025 study published in Nature's npj Aging found that psilocybin extended human cellular lifespan by up to 57%, preserved telomere length, and increased survival of aged mice by 30%. The compound upregulates SIRT1 — a key gene in longevity and DNA repair — and reduces oxidative stress at the cellular level. These findings suggest psychedelics may be potent geroprotective agents, making metabolic preparation even more critical.",
+    "calloutCite": "Kato et al., npj Aging, 2025 · Emory University / Baylor College of Medicine",
+    "phases": [
+      {
+        "title": "Physical Diagnostics",
+        "text": "Full metabolic workup, cardiovascular assessment, medication review, and contraindication screening. We identify and address any biological factors that could affect your experience and its longevity benefits."
+      },
+      {
+        "title": "Metabolic Optimisation",
+        "text": "Targeted supplementation, gut health protocol, sleep architecture improvement, and nervous system regulation. Building the biological foundation for both neuroplasticity and the cellular longevity effects of psychedelic therapy."
+      },
+      {
+        "title": "Psychological Readiness",
+        "text": "Intention setting, breathwork training, mindfulness practice, and integration framework preparation. Ensuring you have the tools to process and sustain the insights that emerge — for lasting change."
+      }
+    ],
+    "footer": "Available for individual clients and referral partners — psychedelic clinics, retreat centres, and medical practitioners seeking thorough pre-treatment preparation for their patients."
+  },
+  "addiction": {
+    "eyebrow": "Addiction Treatment",
+    "heading": "Where ADHD ends",
+    "headingMid": "and addiction",
+    "headingEm": "begins",
+    "headingEnd": "is rarely obvious.",
+    "body1": "ADHD and addiction are among the most frequently co-occurring conditions in high-performing adults. For many, substance use — alcohol, stimulants, prescription medications — begins as self-medication for an undiagnosed or undertreated ADHD brain.",
+    "body2": "We offer exclusive, fully private addiction treatment in Switzerland — integrated with the complete metabolic and psychiatric picture. Not a clinic setting. Not an institutional programme. A discreet, evidence-based, deeply personal process.",
+    "enquire": "Enquire Confidentially",
+    "cards": [
+      {
+        "label": "Fully Private",
+        "text": "No clinical setting. No institutional record. Complete discretion from first contact to final session."
+      },
+      {
+        "label": "Dual Diagnosis",
+        "text": "ADHD and addiction treated together — not sequentially. The metabolic root causes of both are addressed simultaneously."
+      },
+      {
+        "label": "Switzerland-Based",
+        "text": "Access to world-class Swiss medical infrastructure, legal therapeutic frameworks, and an environment of absolute safety."
+      },
+      {
+        "label": "International Clients",
+        "text": "Full concierge coordination. We receive clients from across Europe, the Middle East and beyond."
+      }
+    ]
+  },
+  "programs": {
+    "eyebrow": "Programme Architecture",
+    "heading": "Three entry points.",
+    "headingEm": "One destination.",
+    "items": {
+      "edge_diagnostic": {
+        "note": "One-time · 2 sessions",
+        "desc": "The most complete ADHD biological picture available in Switzerland. Formal diagnosis, full metabolic workup, and your personalised Neurotype Blueprint.",
+        "badge": null,
+        "btnLabel": "Enquire",
+        "features": [
+          "Inflection Edge assessment",
+          "Formal ADHD diagnostic",
+          "Full metabolic workup",
+          "Neurotype Blueprint session",
+          "Medication & supplement protocol"
+        ]
+      },
+      "riding_the_wave": {
+        "note": "90-day programme",
+        "desc": "The complete integrated programme — clinical diagnosis, biological optimisation, longevity medicine, and 90 days of Surf Your Life transformation coaching.",
+        "badge": "Most chosen",
+        "btnLabel": "Begin the Journey",
+        "features": [
+          "Everything in Edge Diagnostic",
+          "90-day Surf Your Life coaching",
+          "SYL Clock full mapping",
+          "VitaReBa technology protocol",
+          "Home Harmony environment audit",
+          "Psychedelic therapy assessment"
+        ]
+      },
+      "total_longevity": {
+        "note": "Annual · Fully concierge",
+        "desc": "The comprehensive annual architecture — ongoing biological monitoring, regular consultations, psychedelic therapy, and continuous performance optimisation.",
+        "badge": null,
+        "btnLabel": "Enquire",
+        "features": [
+          "Everything in Riding the Wave",
+          "Psychedelic-assisted therapy",
+          "Quarterly metabolic retesting",
+          "Monthly consultations",
+          "Annual Inflection instruments retake"
+        ]
+      }
+    }
+  },
+  "team": {
+    "eyebrow": "Clinical Team",
+    "heading": "Built around",
+    "headingEm": "precision.",
+    "members": {
+      "manuel": {
+        "role": "MD and General Practitioner",
+        "bio": "Architect of the VitaReBa programme system. Author of the Surf Your Life methodology, the Threshold Protocol, the Rhythm Check and the Inflection Clock. Clinical lead for the integration of metabolic psychiatry, PSI Theory, and systemic behaviour change."
+      },
+      "montagna": {
+        "role": "Co-founder"
+      }
+    },
+    "lead": "A Swiss-registered medical entity — not a coaching brand wearing medical clothes. Biology, psychiatry, and the integrative work all under the same clinical roof."
+  },
+  "cta": {
+    "eyebrow": "Begin Here",
+    "heading": "Your ocean.",
+    "headingEm": "Precisely mapped.",
+    "sub": "Start with the Inflection Edge — our free ADHD performance assessment. In 8 minutes you will have the most precise picture of your neurotype you have ever seen. Your results are your Epoch — the beginning of a new chapter.",
+    "ctaPrimary": "Take the Inflection Edge →",
+    "ctaSecondary": "Book a Discovery Call"
+  },
+  "footer": {
+    "legal": "All psychedelic therapies within Swiss regulatory frameworks"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome",
+      "titleEm": "back",
+      "sub": "Sign in to continue",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "emailPlaceholder": "you@example.com",
+      "passwordPlaceholder": "••••••••",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "error": "Invalid email or password.",
+      "noAccount": "No account?",
+      "registerLink": "Register",
+      "forgotPassword": "Forgot password?"
+    },
+    "register": {
+      "title": "Create",
+      "titleEm": "your account",
+      "sub": "Email and password — nothing more",
+      "subAssessment": "One step to save your results.",
+      "assessmentBanner": "Your Inflection Edge results are ready to save. Create your account and they'll be waiting in your portal — along with a direct line to Manuel to discuss next steps.",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "emailPlaceholder": "you@example.com",
+      "passwordPlaceholder": "Min. 8 characters",
+      "submit": "Create account",
+      "submitting": "Creating account…",
+      "hasAccount": "Already have an account?",
+      "signInLink": "Sign in",
+      "genericError": "Something went wrong. Please try again."
+    },
+    "forgotPassword": {
+      "title": "Reset password",
+      "sub": "Enter your email and we'll send you a reset link.",
+      "successTitle": "Check your inbox",
+      "successSub": "If an account exists for {email}, you will receive a password reset link within a few minutes.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "submit": "Send reset link",
+      "submitting": "Sending…",
+      "backToSignIn": "← Back to sign in",
+      "unavailable": "Password reset is temporarily unavailable. Please contact us directly at {email}."
+    },
+    "resetPassword": {
+      "title": "Set new password",
+      "sub": "Choose a strong password for your account",
+      "invalidTitle": "Invalid link",
+      "invalidSub": "This password reset link is missing required parameters.",
+      "requestNew": "Request a new link",
+      "expiredError": "This link is invalid or has expired.",
+      "newPasswordLabel": "New password",
+      "confirmPasswordLabel": "Confirm password",
+      "newPasswordPlaceholder": "Min. 8 characters",
+      "confirmPasswordPlaceholder": "Repeat password",
+      "mismatchError": "Passwords do not match.",
+      "genericError": "Something went wrong. The link may have expired.",
+      "submit": "Update password",
+      "submitting": "Updating…"
+    }
+  },
+  "assessment": {
+    "instrument": "ADHD Performance Instrument",
+    "subtitle": "Your neurotype. Mapped precisely.",
+    "intro": "{count} questions · {dims} dimensions · One precision performance blueprint mapping when your ADHD brain operates at its ceiling — and what is currently preventing it.",
+    "statsQuestions": "Questions",
+    "statsDimensions": "Dimensions",
+    "statsDuration": "8 min",
+    "statsDurationLabel": "Duration",
+    "beginButton": "Begin Assessment",
+    "disclaimer": "Grounded in peer-reviewed research. Not a clinical diagnostic tool.",
+    "progressLabel": "Dimension",
+    "progressOf": "of",
+    "scaleMin": "Strongly disagree",
+    "scaleMax": "Strongly agree",
+    "back": "← Back",
+    "next": "Next →",
+    "seeResults": "See Results →",
+    "ariaClose": "Close assessment",
+    "ariaRate": "Rate {n} out of 5",
+    "dimensions": {
+      "arousal": "Arousal & Activation",
+      "divergent": "Divergent Output",
+      "hyperfocus": "Hyperfocus",
+      "volatility": "Volatility & Cost",
+      "environment": "Environment Design"
+    },
+    "questions": [
+      "I can reliably get myself into a productive state when I need to.",
+      "My energy levels are consistent throughout the day.",
+      "I need external pressure (deadlines, consequences) to start important tasks.",
+      "I know my peak performance windows and schedule my most important work in them.",
+      "I often feel mentally exhausted despite not having done much.",
+      "Caffeine or stimulants are essential for me to function normally.",
+      "I generate more ideas than most people around me.",
+      "My best ideas come at unexpected, inconvenient times.",
+      "I can effectively capture and develop my ideas into finished outputs.",
+      "People describe me as creative or unconventional in my thinking.",
+      "I often start new projects before finishing existing ones.",
+      "My creative output directly contributes to my professional success.",
+      "When I am deeply engaged, I lose track of time completely.",
+      "I can deliberately enter a state of deep focus when I choose to.",
+      "My hyperfocus episodes are productive rather than consuming.",
+      "I struggle to shift attention from one task to another when needed.",
+      "I have strategies to protect my deep work from interruption.",
+      "My best work happens in intense bursts rather than steady effort.",
+      "My mood can shift dramatically within a single day.",
+      "I make impulsive decisions I later regret.",
+      "I can manage my emotional reactions in professional settings.",
+      "Rejection or criticism affects me more intensely than it seems to affect others.",
+      "My performance variance frustrates the people around me.",
+      "I have reliable strategies for recovering from emotional lows.",
+      "My workspace is designed to support my focus and productivity.",
+      "I have clear boundaries between work and personal time.",
+      "The people around me understand how my brain works.",
+      "I regularly feel overwhelmed by my physical environment.",
+      "My daily routine supports my cognitive performance.",
+      "I have deliberately designed my life around how my brain works best."
+    ],
+    "verdicts": {
+      "deepFriction": {
+        "name": "Deep Friction",
+        "text": "Your ADHD profile is producing significant friction across multiple dimensions. The biological and structural interventions are clear — and so is the magnitude of what becomes available when they're addressed."
+      },
+      "managedTension": {
+        "name": "Managed Tension",
+        "text": "You have developed coping strategies, but the underlying tension between your neurotype and your environment is still producing real costs. The work is moving from coping to designing."
+      },
+      "asymmetricPerformance": {
+        "name": "Asymmetric Performance",
+        "text": "You have significant strengths and specific vulnerabilities. This is the profile most responsive to targeted intervention — because the foundation is already strong."
+      },
+      "optimisedNeurotype": {
+        "name": "Optimised Neurotype",
+        "text": "Your ADHD profile is largely working for you. The refinement available at this level is precision optimisation — fine-tuning the edges to extract the full potential of your neurotype."
+      }
+    },
+    "interpretations": {
+      "arousal": {
+        "low": "Your activation system is largely externally driven. You rely on urgency, novelty or crisis to get started. This is the most energy-expensive way to operate — and it's the pattern most responsive to biological intervention.",
+        "mid": "You have partial control over your activation but it's inconsistent. Some days you can self-start; others you can't. The variability itself is the signal — it points to biological fluctuation that can be stabilised.",
+        "high": "Your arousal system is well-regulated. You can reliably get yourself into a productive state. The remaining work is optimising your peak windows and reducing the energy cost of activation."
+      },
+      "divergent": {
+        "low": "Your creative output is either suppressed or not being captured effectively. ADHD brains generate enormous creative potential — if yours isn't visible, the environment is likely the bottleneck, not the brain.",
+        "mid": "You generate substantial creative output but struggle to convert it into finished work. The gap between ideation and execution is your highest-leverage intervention point.",
+        "high": "Your divergent thinking is a well-deployed asset. The work now is building systems that protect and channel this capacity so it compounds rather than scatters."
+      },
+      "hyperfocus": {
+        "low": "Hyperfocus is either rare or uncontrolled — happening to you rather than for you. Shifting to deliberately designed hyperfocus is the highest-leverage change available.",
+        "mid": "You experience hyperfocus regularly but can't always direct it. The work is building triggers, protection and exit strategies so you can deploy this capacity strategically.",
+        "high": "Hyperfocus is a well-understood, regularly deployed asset. The refinement now is building better protection for these states once they are activated."
+      },
+      "volatility": {
+        "low": "Your performance volatility is producing significant real-world costs in decisions, relationships and health. This requires biological and structural intervention — not discipline, but design.",
+        "mid": "Your volatility is manageable but costly in ways others absorb more than you see. The work is raising your baseline floor through biological stabilisation and structural support.",
+        "high": "You have reasonable control over your performance variation. The remaining work is building a more consistent baseline so the people around you can rely on which version of you shows up."
+      },
+      "environment": {
+        "low": "There is a large gap between the environment you currently work in and the one your brain needs. This is likely the single biggest drag on your performance — and the most fixable problem in your profile.",
+        "mid": "You understand your environmental needs partially but haven't fully designed around them. Deliberate redesign of your workspace, schedule and team structure will compound every other intervention.",
+        "high": "You have built an environment that works with your neurotype. The task now is protecting it as the complexity of your life and business increases."
+      }
+    },
+    "results": {
+      "startingPoint": "This is your starting point.",
+      "ctaSub": "A 30-minute discovery call with our clinical team translates these scores into a concrete plan — which dimensions to address first, what interventions are available, and what a {shortName} programme looks like for your specific profile.",
+      "ctaNoCommitment": "No commitment. Just clarity.",
+      "saveResults": "Save results + book a call →",
+      "retake": "Retake Assessment"
+    }
+  }
 }
