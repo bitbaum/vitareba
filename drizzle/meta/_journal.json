@@ -43,6 +43,13 @@
       "when": 1786789225427,
       "tag": "0005_panoramic_alex_power",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1786791880941,
+      "tag": "0006_modern_sugar_man",
+      "breakpoints": true
     }
   ]
 }

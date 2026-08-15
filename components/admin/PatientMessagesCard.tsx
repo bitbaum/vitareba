@@ -6,7 +6,9 @@ import { ADMIN_ROUTES } from "@/lib/config/routes";
 type Thread = {
   id: string;
   subject: string;
-  messages: { body: string; senderId: string; readAt: Date | string | null }[];
+  // senderId is null when the sender's account was deleted — the message text
+  // survives in the patient's record without an author.
+  messages: { body: string; senderId: string | null; readAt: Date | string | null }[];
 };
 
 export function PatientMessagesCard({ threads, patientId }: { threads: Thread[]; patientId: string }) {

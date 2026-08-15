@@ -89,7 +89,10 @@ export default function ThreadPage() {
 
       <div className={`${styles.card} ${msgStyles.msgScroll}`}>
         {thread.messages.map((msg) => {
-          const isAdmin = msg.sender.role === USER_ROLE.admin;
+          // A null sender means that account was deleted. In a thread the
+          // patient can still open, that can only be former staff — erasing
+          // the patient takes the whole thread with it.
+          const isAdmin = !msg.sender || msg.sender.role === USER_ROLE.admin;
           return (
             <div key={msg.id} className={isAdmin ? styles.msgRow : styles.msgRowEnd}>
               <div className={isAdmin ? styles.msgBubbleNeutral : styles.msgBubbleAccent}>

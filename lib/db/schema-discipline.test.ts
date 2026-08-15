@@ -23,14 +23,19 @@ const SCHEMA = readFileSync(join(process.cwd(), "lib/db/schema.ts"), "utf8");
  * user FAILS LOUDLY instead of quietly rewriting a clinical record.
  *
  * These are authorship of clinical content: who wrote the note, who assigned
- * the programme, who set the goal, who sent the message. A medical record has
- * to keep its author — anonymising it on staff departure destroys traceability,
- * and deleting the content destroys the patient's history. The correct
- * operation for a departing clinician is to DEACTIVATE the account, not delete
- * the row, and this FK is what enforces that.
+ * the programme, who set the goal. A medical record has to keep its author —
+ * anonymising it on staff departure destroys traceability, and deleting the
+ * content destroys the patient's history. The correct operation for a
+ * departing clinician is to DEACTIVATE the account, not delete the row, and
+ * this FK is what enforces that. None of these can be written by a patient,
+ * so none of them can block a patient's own erasure.
+ *
+ * thread_messages.sender_id looks like it belongs here and does NOT: a patient
+ * is a sender too, so leaving it policyless vetoed erasing the patient
+ * themselves. Membership in this list requires that only staff can write the
+ * column.
  */
 const RETAINED_AUTHORSHIP = new Set([
-  "sender_id",       // thread_messages — who wrote this message
   "admin_id",        // patient_notes — who recorded the clinical note
   "assigned_by",     // programme_assignments — who enrolled the patient
   "set_by_admin_id", // clinical_goals — who set the goal
