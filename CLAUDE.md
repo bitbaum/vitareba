@@ -202,6 +202,11 @@ Used in: `/admin/patients` list, `/api/cron/signals` (alerts admin on first `cri
 
 All routes under `/api/cron/*` require `Authorization: Bearer CRON_SECRET`. On the self-hosted box these are triggered by systemd timers / cron entries that curl each route with the bearer token. The table below is the single source of truth for the schedules — the box's timers mirror it:
 
+**All times are Zürich wall-clock** (`CLINIC_TIMEZONE`), not UTC — the box's
+timer units pin `Europe/Zurich` via a drop-in. They were plain UTC until
+2026-08-15, inherited from the old Vercel cron schedule, which delivered the
+"07:00" check-in reminder at 09:00 local.
+
 | Route | Schedule | Purpose |
 |-------|----------|---------|
 | `cron/emails` | Daily 08:00 | Process email queue (welcome, assessment, engagement sequences) |
@@ -209,6 +214,7 @@ All routes under `/api/cron/*` require `Authorization: Bearer CRON_SECRET`. On t
 | `cron/checkin-reminder` | Daily 07:00 | Remind patients to check in (skips opted-out + already-done) |
 | `cron/checkin-dip-alert` | Daily 09:00 | Alert admin on consecutive wellness dips |
 | `cron/weekly-digest` | Sunday 08:00 | Weekly summary email to patients |
+| `cron/orphaned-files` | Daily 03:00 | Delete stored files no document row points at (erasure completion) |
 
 ---
 
