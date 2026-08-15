@@ -9,7 +9,7 @@ The platform has two parts:
 1. **Public marketing site** — multilingual (de/en/fr/it), lands at `/de/`, primary CTA is the Inflection Edge self-assessment overlay
 2. **Patient portal + admin panel** — authenticated, database-backed, at `/dashboard` (patients) and `/admin` (Manuel)
 
-**Stack:** Next.js 16 (App Router, `standalone` output) · TypeScript strict · Tailwind v4 · self-hosted PostgreSQL (`pg` driver) · Drizzle ORM · NextAuth 5 · Resend email · self-hosted on the Hetzner box ("bitbaum") behind Caddy, served at `vitareba.ch`. Scheduled jobs run via systemd timers / cron on the box; documents are stored on local disk and served by Caddy under `/uploads/*`.
+**Stack:** Next.js 16 (App Router, `standalone` output) · TypeScript strict · Tailwind v4 · self-hosted PostgreSQL (`pg` driver) · Drizzle ORM · NextAuth 5 · Resend email · self-hosted on the Hetzner box ("bitbaum") behind Caddy, served at `vitareba.ch`. Scheduled jobs run via systemd timers / cron on the box; documents are stored on local disk and served only through an authenticated route.
 
 ---
 
@@ -227,7 +227,14 @@ Goals are set by admin per patient (`/api/admin/patients/[id]/goals`). Each goal
 ## Email System
 
 - **Provider:** Resend (`lib/email/index.ts`)
-- **From address:** `RESEND_FROM` env var. Use `onboarding@resend.dev` until `vitareba.ch` is DNS-verified in Resend dashboard.
+- **From address:** `RESEND_FROM` env var. It MUST use a domain that is
+  **verified** in Resend. `onboarding@resend.dev` is a sandbox sender that
+  delivers only to the Resend account owner — in production it silently
+  strands every patient (no welcome mail, no reset link, no notifications), so
+  `isEmailConfigured()` treats it as unconfigured when `NODE_ENV=production`.
+  Prod currently sends from the verified `fleetcrown.orangecat.ch` with a
+  "VitaReBa" display name; move to a `vitareba.ch` sender once that domain is
+  delegated and verified.
 - **Templates:** `lib/email/templates.ts` — all emails defined here, imported by cron routes and API routes
 - **Queue:** `emailQueue` table — sequences scheduled on assessment/registration, processed by `cron/emails`
 - **Immediate sends:** password reset, new message notification (fire-and-forget in API routes)
@@ -236,7 +243,9 @@ Goals are set by admin per patient (`/api/admin/patients/[id]/goals`). Each goal
 
 ## Document Storage
 
-Documents are stored on the box's local disk via `lib/storage.ts` (`putLocal`/`delLocal`), under `UPLOADS_DIR`, and served by Caddy under `/uploads/*`. The `documents.fileUrl` column stores the root-relative URL (`/uploads/<key>`). Upload via `/api/documents` (POST with FormData). `DocumentAddForm` handles the upload client-side.
+Documents are stored on the box's local disk via `lib/storage.ts` (`putLocal`/`readLocal`/`delLocal`), under `UPLOADS_DIR`. The `documents.fileUrl` column stores the root-relative key (`/uploads/<key>`). Upload via `/api/documents` (POST with FormData); `DocumentAddForm` handles the upload client-side.
+
+**Nothing serves `UPLOADS_DIR` to the public.** Patient documents are read back only through `GET /api/documents/[id]/file`, which requires a session and returns 404 (never 403) for a document that is not yours. Always link with `documentFileUrl(doc.id)` from `lib/config/routes.ts` — never `doc.fileUrl`, which is a storage location, not an authorised URL. `lib/storage-discipline.test.ts` fails CI if a component links it directly.
 
 ---
 

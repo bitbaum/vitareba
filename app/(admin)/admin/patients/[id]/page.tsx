@@ -23,7 +23,7 @@ import { SectionTabs } from "@/components/admin/SectionTabs";
 import { AdminProfileEditForm } from "@/components/admin/AdminProfileEditForm";
 import { formatDateShort, formatDateLong, formatDateMonthDay } from "@/lib/utils/format";
 import { USER_ROLE } from "@/lib/config/auth";
-import { ADMIN_ROUTES, PORTAL_ROUTES } from "@/lib/config/routes";
+import { ADMIN_ROUTES, PORTAL_ROUTES, documentFileUrl } from "@/lib/config/routes";
 import { computePatientSignal } from "@/lib/domain/signals";
 import { SIGNAL_LABELS, SIGNAL_CHECKIN_WINDOW_DAYS } from "@/lib/config/admin";
 
@@ -248,7 +248,7 @@ export default async function PatientDetailPage({
                               {doc.mimeType && ` · ${doc.mimeType}`}
                             </div>
                           </div>
-                          <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" className={styles.docLink}>
+                          <a href={documentFileUrl(doc.id)} target="_blank" rel="noopener noreferrer" className={styles.docLink}>
                             Open →
                           </a>
                         </div>
