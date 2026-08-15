@@ -29,6 +29,20 @@
       "when": 1786659353505,
       "tag": "0003_nasty_ultimo",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1786788994620,
+      "tag": "0004_big_squirrel_girl",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1786789225427,
+      "tag": "0005_panoramic_alex_power",
+      "breakpoints": true
     }
   ]
 }

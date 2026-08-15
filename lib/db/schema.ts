@@ -209,7 +209,9 @@ export const bookings = pgTable(
     preferredDate: varchar("preferred_date", { length: 50 }),
     // Which doctor the appointment is with. Null = legacy/clinic-wide rows;
     // the slot engine treats those as busy for EVERY clinician (conservative).
-    clinicianId: uuid("clinician_id").references(() => users.id),
+    // SET NULL: removing a clinician must not delete a patient's booking, and
+    // must not be blocked by it — the row degrades to a clinic-wide booking.
+    clinicianId: uuid("clinician_id").references(() => users.id, { onDelete: "set null" }),
     // Exact slot start for portal-scheduled appointments (null = manual request
     // without a fixed time). The partial unique index below makes double-
     // booking a clinician's slot impossible at the DB level — the API's
@@ -250,9 +252,14 @@ export const documents = pgTable("documents", {
   userId: uuid("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  // Provenance, not ownership. Nullable + SET NULL so the two deletions that
+  // must work both do: erasing the PATIENT removes the document via the
+  // userId cascade, while removing the UPLOADER (a clinician who leaves) must
+  // leave the patient's record intact rather than deleting their documents.
+  // With NO ACTION here, a patient who ever uploaded a file could not be
+  // deleted at all — which broke the erasure the product promises.
   uploadedBy: uuid("uploaded_by")
-    .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: "set null" }),
   title: text("title").notNull(),
   fileUrl: text("file_url").notNull(),
   mimeType: varchar("mime_type", { length: 100 }),
@@ -269,7 +276,9 @@ export const threads = pgTable("threads", {
   // Who the thread is addressed to. NULLABLE by necessity: threads opened
   // before multi-clinician care have no addressee, and a patient nobody treats
   // yet must still be able to reach the clinic (falls back to all admins).
-  clinicianId: uuid("clinician_id").references(() => users.id),
+  // SET NULL: if that clinician leaves, the patient's thread must survive and
+  // fall back to the clinic, not vanish or block the clinician's removal.
+  clinicianId: uuid("clinician_id").references(() => users.id, { onDelete: "set null" }),
   subject: text("subject").notNull(),
   createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
   lastMessageAt: timestamp("last_message_at", { mode: "date" }).notNull().defaultNow(),
