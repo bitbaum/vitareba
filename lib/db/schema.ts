@@ -19,6 +19,10 @@ import type { AdapterAccountType } from "next-auth/adapters";
 // ─── Enums ────────────────────────────────────────────────────────────────────
 
 export const roleEnum = pgEnum("role", ["patient", "admin"]);
+// What kind of thing is speaking in a thread. Descriptive only — never consulted
+// to decide who may read or write. An `ai` participant is deliberately NOT a
+// users row: giving the assistant an account is how a model ends up with a login.
+export const actorKindEnum = pgEnum("actor_kind", ["human", "ai", "system"]);
 export const bookingStatusEnum = pgEnum("booking_status", [
   "pending",
   "confirmed",
@@ -451,10 +455,56 @@ export const threadMessages = pgTable("thread_messages", {
   // survives, where keeping the text with an unknown author beats deleting a
   // patient's clinical history.
   senderId: uuid("sender_id").references(() => users.id, { onDelete: "set null" }),
+  // The author as an *actor*, which is a superset of "a user". Backfilled from
+  // sender_id. This is the SSOT for authorship going forward; sender_id is kept
+  // only for its FK erasure semantics and is dropped in a later, deliberate
+  // migration (dropping a column is destructive and aborts the deploy by design).
+  authorActorId: uuid("author_actor_id"),
+  authorKind: actorKindEnum("author_kind").notNull().default("human"),
+  // Set iff a model wrote this, so the clinical record can say so honestly.
+  generatedByModel: text("generated_by_model"),
   body: text("body").notNull(),
+  // DEPRECATED: read state belongs to a (person, thread) pair, not to a message.
+  // A flag here means the first reader clears the badge for everyone — invisible
+  // with two participants, wrong with three. Superseded by
+  // thread_participants.last_read_at; retained until the column can be dropped.
   readAt: timestamp("read_at", { mode: "date" }),
   createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
 });
+
+/**
+ * Who is in a thread — the SSOT for message authorization.
+ *
+ * Replaces "the patient owns it, and any admin may read it", which is correct
+ * only while the clinic has exactly one clinician. Access is now membership in
+ * this table; no role grants it.
+ */
+export const threadParticipants = pgTable(
+  "thread_participants",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    threadId: uuid("thread_id")
+      .notNull()
+      .references(() => threads.id, { onDelete: "cascade" }),
+    // Deliberately NOT a foreign key to users: an AI participant is an actor
+    // without an account, and forcing it to be a user row would give it one.
+    actorId: uuid("actor_id").notNull(),
+    kind: actorKindEnum("kind").notNull().default("human"),
+    // Domain label for the UI ('patient', 'clinician', 'assistant', 'observer').
+    // Never used to grant access.
+    role: text("role"),
+    joinedAt: timestamp("joined_at", { mode: "date" }).notNull().defaultNow(),
+    // Set when someone leaves: they keep what they saw, and receive nothing after.
+    leftAt: timestamp("left_at", { mode: "date" }),
+    // Earliest message this participant may read. Defaults to when they joined,
+    // so adding a second clinician does not silently disclose the backlog.
+    visibleFrom: timestamp("visible_from", { mode: "date" }).notNull().defaultNow(),
+    canWrite: boolean("can_write").notNull().default(true),
+    // Per-participant read high-water mark — one row per person, not per message.
+    lastReadAt: timestamp("last_read_at", { mode: "date" }),
+  },
+  (t) => [uniqueIndex("thread_participants_thread_actor_idx").on(t.threadId, t.actorId)]
+);
 
 // ─── Admin notes ──────────────────────────────────────────────────────────────
 
@@ -639,11 +689,21 @@ export const threadsRelations = relations(threads, ({ one, many }) => ({
     relationName: "clinician_threads",
   }),
   messages: many(threadMessages),
+  participants: many(threadParticipants),
 }));
 
 export const threadMessagesRelations = relations(threadMessages, ({ one }) => ({
   thread: one(threads, { fields: [threadMessages.threadId], references: [threads.id] }),
   sender: one(users, { fields: [threadMessages.senderId], references: [users.id] }),
+}));
+
+// No relation to users: actorId is intentionally not a user FK, so the join is
+// the caller's to make only for participants it knows are human.
+export const threadParticipantsRelations = relations(threadParticipants, ({ one }) => ({
+  thread: one(threads, {
+    fields: [threadParticipants.threadId],
+    references: [threads.id],
+  }),
 }));
 
 export const patientNotesRelations = relations(patientNotes, ({ one }) => ({

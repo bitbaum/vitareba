@@ -74,3 +74,24 @@
   max-height: 55vh;
   overflow-y: auto;
 }
+
+/* Who is taking part, shown above a thread once it is more than two people. */
+.participants {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: -0.5rem 0 1rem;
+}
+
+/* Marks a message written by a model. Deliberately legible rather than subtle:
+   a generated reply must never read as though the clinic wrote it. */
+.aiTag {
+  display: inline-block;
+  margin-left: 0.35rem;
+  padding: 0 0.35rem;
+  border: 1px solid var(--teal-30);
+  border-radius: var(--radius-xs);
+  background: var(--teal-8);
+  color: var(--teal);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+}

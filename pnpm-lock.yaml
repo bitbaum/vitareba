@@ -44,6 +44,9 @@ importers:
       resend:
         specifier: ^6.11.0
         version: 6.11.0
+      threadkit:
+        specifier: github:maonakamoto/threadkit
+        version: https://codeload.github.com/maonakamoto/threadkit/tar.gz/82723a5183575155f4c50991a858eeae6af9bfa9
       zod:
         specifier: ^4.3.6
         version: 4.3.6
@@ -3833,6 +3836,11 @@ packages:
     resolution: {integrity: sha512-SNiDnXyHSrxVcIOtVbULzcTmniUiwcV7Nwdyj1twVubeTmbjoa8p69KKDpfkdoOavuM4/GRm1+ykI8qqnavHoA==}
     engines: {node: '>=10'}
     hasBin: true
+
+  threadkit@https://codeload.github.com/maonakamoto/threadkit/tar.gz/82723a5183575155f4c50991a858eeae6af9bfa9:
+    resolution: {gitHosted: true, integrity: sha512-S3Y1J/eq/Eo7nT+gZY4r15+6LtP9Cva5Q2yfF1c+A955WywBFngJkHtWOVph1A40Uayl9tz12mnEi8ywYs/1Qg==, tarball: https://codeload.github.com/maonakamoto/threadkit/tar.gz/82723a5183575155f4c50991a858eeae6af9bfa9}
+    version: 0.1.0
+    engines: {node: '>=18'}
 
   tiny-invariant@1.3.3:
     resolution: {integrity: sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==}
@@ -7631,6 +7639,8 @@ snapshots:
       commander: 2.20.3
       source-map-support: 0.5.21
 
+  threadkit@https://codeload.github.com/maonakamoto/threadkit/tar.gz/82723a5183575155f4c50991a858eeae6af9bfa9: {}
+
   tiny-invariant@1.3.3: {}
 
   tinybench@2.9.0: {}
@@ -7849,7 +7859,7 @@ snapshots:
 
   webpack@5.108.4(esbuild@0.27.7):
     dependencies:
-      '@types/estree': 1.0.8
+      '@types/estree': 1.0.9
       '@types/json-schema': 7.0.15
       '@webassemblyjs/ast': 1.14.1
       '@webassemblyjs/wasm-edit': 1.14.1
@@ -7868,7 +7878,7 @@ snapshots:
       minimizer-webpack-plugin: 5.6.1(esbuild@0.27.7)(webpack@5.108.4(esbuild@0.27.7))
       neo-async: 2.6.2
       schema-utils: 4.3.3
-      tapable: 2.3.2
+      tapable: 2.3.3
       watchpack: 2.5.2
       webpack-sources: 3.5.1
     transitivePeerDependencies:

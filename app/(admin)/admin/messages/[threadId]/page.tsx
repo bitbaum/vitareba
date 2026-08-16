@@ -5,7 +5,6 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import styles from "../../../admin.module.css";
 import { formatDateTime } from "@/lib/utils/format";
-import { USER_ROLE } from "@/lib/config/auth";
 import { type ThreadDetailWithPatient } from "@/lib/config/messages";
 import { MESSAGE_BODY_MAX_LENGTH, MESSAGE_POLL_INTERVAL_MS } from "@/lib/config/portal";
 import { ADMIN_ROUTES } from "@/lib/config/routes";
@@ -88,25 +87,30 @@ export default function AdminThreadPage() {
       </div>
 
       <div className={`${styles.card} ${styles.msgList}`}>
-        {thread.messages.map((msg) => {
-          // A null sender means that account was deleted. Only staff accounts
-          // are deleted while a thread survives — erasing a patient removes
-          // the thread — so an authorless message is a former colleague's.
-          const isAdmin = !msg.sender || msg.sender.role === USER_ROLE.admin;
-          return (
-            <div key={msg.id} className={`${styles.msgRow} ${isAdmin ? styles.msgRowAdmin : styles.msgRowPatient}`}>
-              <div className={`${styles.msgBubble} ${isAdmin ? styles.msgBubbleAdmin : styles.msgBubblePatient}`}>
-                {msg.body}
-              </div>
-              <p className={styles.msgMeta}>
-                {isAdmin ? "You (Admin)" : (thread.patient.name ?? "Patient")}
-                {" · "}
-                {formatDateTime(msg.createdAt)}
-                {isAdmin && msg.readAt && <span className={styles.msgRead}> · Read</span>}
-              </p>
+        {thread.messages.map((msg) => (
+          // `mine` and the author label are resolved server-side: a thread can
+          // now hold a colleague or an assistant, and "admin or patient" no
+          // longer describes who is speaking.
+          <div
+            key={msg.id}
+            className={`${styles.msgRow} ${msg.mine ? styles.msgRowAdmin : styles.msgRowPatient}`}
+          >
+            <div
+              className={`${styles.msgBubble} ${msg.mine ? styles.msgBubbleAdmin : styles.msgBubblePatient}`}
+            >
+              {msg.body}
             </div>
-          );
-        })}
+            <p className={styles.msgMeta}>
+              {msg.mine ? "You" : msg.authorLabel}
+              {msg.authorKind === "ai" && (
+                <span title={msg.generatedByModel ?? undefined}> · AI</span>
+              )}
+              {" · "}
+              {formatDateTime(msg.createdAt)}
+              {msg.mine && msg.readByOthers && <span className={styles.msgRead}> · Read</span>}
+            </p>
+          </div>
+        ))}
         <div ref={bottomRef} />
       </div>
 

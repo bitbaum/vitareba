@@ -1,12 +1,10 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { db } from "@/lib/db";
-import { threads, threadMessages } from "@/lib/db/schema";
-import { desc } from "drizzle-orm";
 import Link from "next/link";
 import styles from "../../admin.module.css";
 import { formatDateShort } from "@/lib/utils/format";
-import { getAdminUnreadThreadIds } from "@/lib/domain/messages";
+import { listThreadsForActor } from "@/lib/domain/messages";
+import { serializeThreadList } from "@/lib/domain/messages-view";
 import { USER_ROLE } from "@/lib/config/auth";
 import { PORTAL_ROUTES, ADMIN_ROUTES } from "@/lib/config/routes";
 
@@ -14,25 +12,17 @@ export default async function AdminMessagesPage() {
   const session = await auth();
   if (!session || session.user.role !== USER_ROLE.admin) redirect(PORTAL_ROUTES.dashboard);
 
-  const [allThreads, unreadIds] = await Promise.all([
-    db.query.threads.findMany({
-      orderBy: [desc(threads.lastMessageAt)],
-      with: {
-        patient: { columns: { id: true, name: true, email: true } },
-        clinician: { columns: { id: true, name: true } },
-        messages: { orderBy: [desc(threadMessages.createdAt)], limit: 1 },
-      },
-    }),
-    getAdminUnreadThreadIds(),
-  ]);
+  // The threads this clinician is in — not every thread in the clinic. The
+  // previous query had no `where` at all, which was the same answer only while
+  // there was exactly one clinician.
+  const entries = await listThreadsForActor(session.user.id);
+  const allThreads = await serializeThreadList(entries);
 
-  const unreadCount = unreadIds.size;
+  const unreadCount = allThreads.filter((t) => t.unread > 0).length;
 
   // Unread threads first — they are the reason the clinician opened this page.
   // Stable sort keeps newest-first ordering within each group.
-  allThreads.sort(
-    (a, b) => Number(unreadIds.has(b.id)) - Number(unreadIds.has(a.id))
-  );
+  allThreads.sort((a, b) => Number(b.unread > 0) - Number(a.unread > 0));
 
   return (
     <div>
@@ -63,11 +53,17 @@ export default async function AdminMessagesPage() {
             </thead>
             <tbody>
               {allThreads.map((t) => {
-                const isUnread = unreadIds.has(t.id);
+                const isUnread = t.unread > 0;
                 return (
                   <tr key={t.id} className={styles.clickableRow}>
                     <td className={styles.tdDot}>
-                      {isUnread && <span className={styles.unreadDot} role="img" aria-label="Unread message from patient" />}
+                      {isUnread && (
+                        <span
+                          className={styles.unreadDot}
+                          role="img"
+                          aria-label={`${t.unread} unread message${t.unread === 1 ? "" : "s"}`}
+                        />
+                      )}
                     </td>
                     <td>
                       <div className={`${styles.cellName}${isUnread ? ` ${styles.unreadSubject}` : ""}`}>
@@ -84,17 +80,20 @@ export default async function AdminMessagesPage() {
                       )}
                     </td>
                     <td className={styles.tdMaxW}>
-                      {t.messages[0] ? (
-                        <span className={styles.msgPreview}>{t.messages[0].body}</span>
+                      {t.latest ? (
+                        <span className={styles.msgPreview}>
+                          {t.latest.authorLabel}: {t.latest.body}
+                        </span>
                       ) : (
                         <span className={styles.cellFaint}>—</span>
                       )}
                     </td>
-                    <td className={styles.cellNowrap}>
-                      {formatDateShort(t.lastMessageAt)}
-                    </td>
+                    <td className={styles.cellNowrap}>{formatDateShort(t.lastMessageAt)}</td>
                     <td>
-                      <Link href={`${ADMIN_ROUTES.messages}/${t.id}`} className={`${styles.cellLink} ${styles.stretchedLink}`}>
+                      <Link
+                        href={`${ADMIN_ROUTES.messages}/${t.id}`}
+                        className={`${styles.cellLink} ${styles.stretchedLink}`}
+                      >
                         {isUnread ? "Reply →" : "Open →"}
                       </Link>
                     </td>
