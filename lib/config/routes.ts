@@ -117,7 +117,7 @@ export const ADMIN_ROUTE_LABELS: Record<
   (typeof ADMIN_ROUTES)[keyof typeof ADMIN_ROUTES],
   string
 > = {
-  [ADMIN_ROUTES.root]:      "Admin",
+  [ADMIN_ROUTES.root]:      "Today",
   [ADMIN_ROUTES.patients]:  "Patients",
   [ADMIN_ROUTES.bookings]:  "Bookings",
   [ADMIN_ROUTES.messages]:  "Messages",
