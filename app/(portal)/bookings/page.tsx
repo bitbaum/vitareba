@@ -72,6 +72,7 @@ export default function BookingsPage() {
   >([]);
   const [clinicianId, setClinicianId] = useState<string | null>(null);
   const [careTeam, setCareTeam] = useState<string[]>([]);
+  const [selfId, setSelfId] = useState<string | null>(null);
   const [slotMinutes, setSlotMinutes] = useState(DEFAULT_SLOT_MINUTES);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
@@ -94,6 +95,7 @@ export default function BookingsPage() {
       setClinicians(data.clinicians ?? []);
       setClinicianId(data.clinicianId ?? null);
       setCareTeam(data.careTeam ?? []);
+      setSelfId(data.selfId ?? null);
       if (data.slotMinutes) setSlotMinutes(data.slotMinutes);
     } catch {
       // slot picker degrades to the manual request flow below
@@ -142,7 +144,10 @@ export default function BookingsPage() {
   // Same rule the server enforces (canPatientChooseClinician) — reflected here
   // so the button is honest before it is clicked, not a way to skip a round trip.
   const selectedClinicianClosed =
-    !!selectedClinician && !selectedClinician.acceptingPatients && !careTeam.includes(selectedClinician.id);
+    !!selectedClinician &&
+    !selectedClinician.acceptingPatients &&
+    !careTeam.includes(selectedClinician.id) &&
+    selectedClinician.id !== selfId;
 
   async function handleSlotBook() {
     if (!selectedSlot) return;
@@ -282,7 +287,11 @@ export default function BookingsPage() {
                     // room is useful on its own, and the clinic may take a
                     // patient by exception. Confirming a NEW booking with them
                     // is what the server (and the button below) refuses.
-                    const closedToMe = !c.acceptingPatients && !mine;
+                    // A dual-role clinician can always book themselves
+                    // regardless of their own intake setting — caught live:
+                    // without this exemption, George's own card read "not
+                    // accepting" against himself.
+                    const closedToMe = !c.acceptingPatients && !mine && c.id !== selfId;
                     return (
                       <button
                         key={c.id}

@@ -33,6 +33,7 @@ export async function GET(req: Request) {
         clinicians: [],
         clinicianId: null,
         careTeam: [],
+        selfId: guard.session.user.id,
       });
     }
 
@@ -52,6 +53,11 @@ export async function GET(req: Request) {
       })),
       clinicianId: clinician.id,
       careTeam,
+      // Lets the picker exempt "choosing yourself" from a closed-intake badge,
+      // the same self-rule canPatientChooseClinician always allows server-side.
+      // Caught live: without this, a dual-role clinician who closes their own
+      // intake sees their OWN card marked "not accepting" against themselves.
+      selfId: guard.session.user.id,
       slotMinutes: getAvailabilityForEmail(clinician.email).slotMinutes,
     });
   } catch (err) {
