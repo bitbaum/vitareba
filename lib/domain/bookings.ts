@@ -27,4 +27,11 @@ export const slotBookingSchema = z.object({
   bookingType: z.enum(BOOKING_TYPE_VALUES).default("consultation"),
   machineType: z.enum(MACHINE_TYPE_VALUES).nullable().optional(),
   notes: z.string().max(BOOKING_NOTES_MAX_LENGTH).optional(),
+  /**
+   * Who the appointment is FOR. Absent means the person booking it — which is
+   * the ordinary case and the only one a patient may use. An admin taking a
+   * booking over the phone names the patient here; the route enforces that
+   * permission, because a schema can describe a field but not who may send it.
+   */
+  patientId: z.string().uuid().optional(),
 });

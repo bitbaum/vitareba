@@ -48,12 +48,16 @@ import { DEFAULT_AVAILABILITY } from "@/lib/config/scheduling";
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
-const PATIENT_SESSION = { session: { user: { id: "user-1", role: "patient", email: "alice@example.com" } }, error: null };
+// Real UUIDs: "who is this booking for" is a uuid-validated field, so a
+// placeholder id would fail the schema and hide the permission check behind it.
+const PATIENT_ID_SELF  = "b1111111-1111-4111-8111-111111111111";
+const OTHER_PATIENT_ID = "c2222222-2222-4222-8222-222222222222";
+const PATIENT_SESSION = { session: { user: { id: PATIENT_ID_SELF, role: "patient", email: "alice@example.com" } }, error: null };
 const ADMIN_SESSION   = { session: { user: { id: "admin-1", role: "admin",   email: "admin@example.com" } }, error: null };
 const UNAUTH          = { session: null, error: new Response(null, { status: 401 }) };
 
 const BOOKING = {
-  id: "booking-1", userId: "user-1", status: "pending",
+  id: "booking-1", userId: PATIENT_ID_SELF, status: "pending",
   bookingType: "consultation", machineType: null,
   preferredDate: null, notes: null, createdAt: new Date("2026-05-07T00:00:00.000Z"),
 };
@@ -72,6 +76,12 @@ function setupInsert(returning: object[]) {
       returning: vi.fn().mockResolvedValue(returning),
     }),
   });
+}
+
+/** The row the route actually tried to write — what it inserted, not what it returned. */
+function insertedValues(): Record<string, unknown> {
+  const values = mockInsert.mock.results[0]?.value?.values;
+  return values?.mock?.calls?.[0]?.[0] ?? {};
 }
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
@@ -234,6 +244,96 @@ describe("POST /api/bookings (patient, slot)", () => {
     const body = await res.json();
     expect(body.code).toBe("slot_taken");
   });
+
+  // ── The cell this matrix was missing ──────────────────────────────────────
+  //
+  // Slot bookings were only ever tested with a patient session, and admin
+  // bookings only ever with a patientId. Nothing exercised "an admin picks a
+  // time for themselves" — which is the ordinary case at a practice whose
+  // clinicians are their own patients, and which returned 400 for months while
+  // every test stayed green. Absence is what a test suite is worst at seeing.
+  it("books a slot for an admin booking their OWN appointment", async () => {
+    mockRequireSession.mockResolvedValue(ADMIN_SESSION);
+    const res = await POST(slotReq(NOW_SLOT.toISOString()));
+    expect(res.status).toBe(201);
+    // Assert the ROW THE ROUTE WROTE, not the row the mock was told to return.
+    // Checking the response body only proves the fixture is what the fixture
+    // says it is — a 201 carrying a fake "confirmed" hid this very bug once,
+    // because falling through to the request handler also answers 201.
+    expect(insertedValues()).toMatchObject({
+      userId: ADMIN_SESSION.session.user.id,
+      clinicianId: CLINICIAN_ID,
+      scheduledAt: NOW_SLOT,
+      status: "confirmed",
+    });
+  });
+
+  it("gives an admin's own slot booking a real time, not a request without one", async () => {
+    // The precise shape of the regression: a slot body handled by the plain
+    // request branch inserts successfully and answers 201, with no scheduledAt
+    // and no clinician. It looks like it worked and books nothing.
+    mockRequireSession.mockResolvedValue(ADMIN_SESSION);
+    await POST(slotReq(NOW_SLOT.toISOString()));
+    const row = insertedValues();
+    expect(row.scheduledAt, "booked without a time").toBeInstanceOf(Date);
+    expect(row.clinicianId, "booked with nobody").toBe(CLINICIAN_ID);
+  });
+
+  it("lets an admin book a slot on a named patient's behalf", async () => {
+    // Taking a booking over the phone is a real thing a clinic does.
+    mockRequireSession.mockResolvedValue(ADMIN_SESSION);
+    const req = new Request("http://test/api/bookings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        slot: NOW_SLOT.toISOString(),
+        clinicianId: CLINICIAN_ID,
+        patientId: OTHER_PATIENT_ID,
+      }),
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(201);
+    expect(insertedValues()).toMatchObject({
+      userId: OTHER_PATIENT_ID,
+      clinicianId: CLINICIAN_ID,
+      scheduledAt: NOW_SLOT,
+    });
+  });
+
+  it("refuses to let a patient book a slot in someone else's name", async () => {
+    // The permission that role is actually for. Without this check, "who it is
+    // for" being a parameter would let anyone book against any account.
+    mockRequireSession.mockResolvedValue(PATIENT_SESSION);
+    const req = new Request("http://test/api/bookings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        slot: NOW_SLOT.toISOString(),
+        clinicianId: CLINICIAN_ID,
+        patientId: OTHER_PATIENT_ID,
+      }),
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(400);
+    expect(mockInsert).not.toHaveBeenCalled();
+  });
+
+  it("still lets a patient send their own id explicitly", async () => {
+    // Harmless and honest: it names themselves. Rejecting it would be a trap
+    // for any client that fills the field in for every request.
+    mockRequireSession.mockResolvedValue(PATIENT_SESSION);
+    const req = new Request("http://test/api/bookings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        slot: NOW_SLOT.toISOString(),
+        clinicianId: CLINICIAN_ID,
+        patientId: PATIENT_SESSION.session.user.id,
+      }),
+    });
+    expect((await POST(req)).status).toBe(201);
+    expect(insertedValues()).toMatchObject({ userId: PATIENT_ID_SELF, scheduledAt: NOW_SLOT });
+  });
 });
 
 describe("POST /api/bookings (admin)", () => {
@@ -246,17 +346,33 @@ describe("POST /api/bookings (admin)", () => {
     mockGetAdminEmails.mockReset();
     mockRunAfterResponse.mockReset();
     mockSendEmail.mockResolvedValue(undefined);
+    mockGetAdminEmails.mockReturnValue([]);
     setupInsert([{ ...BOOKING, userId: PATIENT_ID }]);
   });
 
-  it("returns 400 when patientId is missing", async () => {
+  it("treats an admin request with no patientId as a booking for themselves", async () => {
+    // This asserted 400 before, and the 400 was the bug: it meant a clinician
+    // could not request their own appointment, at a practice where clinicians
+    // are patients by design. Naming nobody means naming yourself.
     mockRequireSession.mockResolvedValue(ADMIN_SESSION);
     const res = await POST(new Request("https://example.com/api/bookings", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ bookingType: "consultation" }), // missing patientId
+      body: JSON.stringify({ bookingType: "consultation" }),
+    }));
+    expect(res.status).toBe(201);
+    expect(insertedValues()).toMatchObject({ userId: ADMIN_SESSION.session.user.id });
+  });
+
+  it("refuses a patient who names someone else, without a fixed time", async () => {
+    mockRequireSession.mockResolvedValue(PATIENT_SESSION);
+    const res = await POST(new Request("https://example.com/api/bookings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ patientId: PATIENT_ID, bookingType: "consultation" }),
     }));
     expect(res.status).toBe(400);
+    expect(mockInsert).not.toHaveBeenCalled();
   });
 
   it("returns 500 when the DB insert throws", async () => {
