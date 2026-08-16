@@ -356,10 +356,43 @@
   margin: 0 0 0.35rem;
 }
 
-.bookingRequested {
-  font-size: 0.7rem;
+/* WHEN, first and largest. The card used to read
+   "Consultation · Mon 17 Aug, 17:00 · George" as one flat sentence, so the only
+   thing a patient opens this page to find — when — had the same weight as the
+   word "Consultation". */
+.bookingWhen {
+  font-family: var(--font-cormorant), serif;
+  font-weight: 300;
+  font-size: 1.5rem;
+  line-height: 1.15;
+  color: var(--ink);
+  margin: 0 0 0.2rem;
+}
+
+.bookingWhenPending {
+  composes: bookingWhen;
+  color: var(--muted);
+}
+
+/* What it is and who it is with — the second question, not the first. */
+.bookingWith {
+  font-size: 0.85rem;
+  color: var(--ink2);
+  margin: 0 0 0.15rem;
+}
+
+.bookingWhere {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.bookingNote {
+  font-size: 0.78rem;
   color: var(--muted);
   margin: 0.5rem 0 0;
+  max-width: 34rem;
+  line-height: 1.5;
 }
 
 .bookingActions {

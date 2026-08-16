@@ -14,13 +14,14 @@ import {
   type BookingType,
   type MachineType,
 } from "@/lib/config/booking-status";
-import { formatDateLong, formatDateNumeric, formatSlotDay, formatSlotTime, slotParts } from "@/lib/utils/format";
+import { formatAppointment, formatDateLong, formatSlotDay, formatSlotTime, slotParts } from "@/lib/utils/format";
 import { COMPANY } from "@/lib/config/company";
 import { DAY_PARTS, DEFAULT_AVAILABILITY } from "@/lib/config/scheduling";
 import { BOOKING_SUCCESS_MS, BOOKING_NOTES_MAX_LENGTH } from "@/lib/config/portal";
 import { LoadingState } from "@/components/LoadingState";
 import { BookingActions, type ActionableBooking } from "@/components/clinical/BookingActions";
 import { CANCELLATION_POLICY } from "@/lib/config/cancellation";
+import { CLINIC_LOCATION } from "@/lib/domain/booking-calendar";
 
 // Shown until the server reports the selected clinician's real slot length.
 const DEFAULT_SLOT_MINUTES = DEFAULT_AVAILABILITY.slotMinutes;
@@ -249,7 +250,8 @@ export default function BookingsPage() {
         </p>
         {movingBooking && (
           <p className={styles.formHint}>
-            Choosing a time moves your existing appointment — you will not end up with two.{" "}
+            Choosing a time moves your existing appointment — you will not end up with two.
+            You can pick a different clinician above as well.{" "}
             <button type="button" className={styles.btnText} onClick={() => setMovingBooking(null)}>
               Keep the current time
             </button>
@@ -523,19 +525,28 @@ export default function BookingsPage() {
             return (
               <div key={b.id} className={styles.card}>
                 <div className={bookingStyles.bookingItem}>
+                  {/* WHEN → WHAT/WHO → WHERE. It used to be one sentence
+                      concatenating all three, with "Requested 16/08/2026"
+                      underneath — a date nobody has ever needed, in a third
+                      format, directly below the one that matters. */}
                   <div className={bookingStyles.bookingItemInfo}>
-                    <p className={bookingStyles.bookingItemDate}>
+                    {b.scheduledAt ? (
+                      <p className={bookingStyles.bookingWhen}>{formatAppointment(b.scheduledAt)}</p>
+                    ) : (
+                      <p className={bookingStyles.bookingWhenPending}>
+                        {b.preferredDate
+                          ? `You asked for ${formatDateLong(b.preferredDate)}`
+                          : "No time agreed yet"}
+                      </p>
+                    )}
+                    <p className={bookingStyles.bookingWith}>
                       {machineLabel ? `${typeLabel} — ${machineLabel}` : typeLabel}
-                      {b.scheduledAt
-                        ? ` · ${formatSlotDay(b.scheduledAt)}, ${formatSlotTime(b.scheduledAt)}${b.clinician?.name ? ` · ${b.clinician.name}` : ""}`
-                        : b.preferredDate
-                          ? ` · Preferred: ${formatDateLong(b.preferredDate)}`
-                          : ""}
+                      {b.clinician?.name ? ` with ${b.clinician.name}` : ""}
                     </p>
-                    {b.notes && <p className={styles.meta}>{b.notes}</p>}
-                    <p className={bookingStyles.bookingRequested}>
-                      Requested {formatDateNumeric(b.createdAt)}
-                    </p>
+                    {b.scheduledAt && (
+                      <p className={bookingStyles.bookingWhere}>{CLINIC_LOCATION}</p>
+                    )}
+                    {b.notes && <p className={bookingStyles.bookingNote}>{b.notes}</p>}
                   </div>
                   <div className={bookingStyles.bookingActions}>
                     <span className={`${styles.pill} ${s.badgeClass}`}>
@@ -546,12 +557,24 @@ export default function BookingsPage() {
                         was stuck with it. The control now decides for itself,
                         from the same rule the API enforces. */}
                     <BookingActions
-                      booking={{ id: b.id, status: b.status, scheduledAt: b.scheduledAt }}
+                      booking={{
+                        id: b.id,
+                        status: b.status,
+                        scheduledAt: b.scheduledAt,
+                        clinicianId: b.clinician?.id ?? null,
+                        createdAt: b.createdAt,
+                      }}
                       onChanged={load}
                       onMove={(target) => {
                         setMovingBooking(target);
                         setSelectedSlot(null);
                         setSlotSuccess(null);
+                        // Otherwise "Move" on a George appointment could open
+                        // Manuel's calendar, and silently hand the patient to a
+                        // different doctor the moment they pick a time.
+                        if (target.clinicianId && target.clinicianId !== clinicianId) {
+                          selectClinician(target.clinicianId);
+                        }
                         if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
                       }}
                     />

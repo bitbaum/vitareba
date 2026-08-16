@@ -17,6 +17,11 @@ export type BookingTiming = {
   status: BookingStatus;
   /** Null for a date-only request that has no agreed time yet. */
   scheduledAt: Date | null;
+  /**
+   * When the appointment was booked. Needed to answer whether the patient ever
+   * HAD the notice they are being judged against — see `hadTheChance` below.
+   */
+  createdAt?: Date | null;
 };
 
 export type ChangeVerdict =
@@ -32,8 +37,31 @@ export function hoursOfNotice(scheduledAt: Date | null, now: Date): number | nul
   return (scheduledAt.getTime() - now.getTime()) / HOUR_MS;
 }
 
+/**
+ * Could this patient ever have given the notice we are about to judge them on?
+ *
+ * Slots are bookable from `leadTimeHours` ahead — 12 by default — while the
+ * notice window is 24. So an appointment booked for tomorrow evening is ALREADY
+ * inside the cancellation window at the moment it is created: the patient books
+ * it and is immediately told that cancelling would be recorded as late. They
+ * were never offered a way to do better.
+ *
+ * A rule that marks someone down for a choice the software never gave them is
+ * not a policy, it is a bug wearing one. So "late" additionally requires that
+ * the booking existed for long enough to have been cancelled in time.
+ */
+function hadTheChance(
+  scheduledAt: Date | null,
+  createdAt: Date | null | undefined,
+  noticeHours: number
+): boolean {
+  if (!scheduledAt || !createdAt) return true; // Nothing to excuse them with.
+  const leadAtBooking = (scheduledAt.getTime() - createdAt.getTime()) / HOUR_MS;
+  return leadAtBooking >= noticeHours;
+}
+
 function assess(
-  { status, scheduledAt }: BookingTiming,
+  { status, scheduledAt, createdAt }: BookingTiming,
   now: Date,
   noticeHours: number,
   verb: string
@@ -51,9 +79,12 @@ function assess(
   }
 
   const notice = hoursOfNotice(scheduledAt, now);
-  // No agreed time means no notice window to be inside. A date-only request is
-  // always freely withdrawable.
-  return { allowed: true, late: notice !== null && notice < noticeHours, hoursNotice: notice };
+  // No agreed time means no notice window to be inside — a date-only request is
+  // always freely withdrawable — and neither is it late if the appointment was
+  // never bookable with more notice than this in the first place.
+  const inWindow = notice !== null && notice < noticeHours;
+  const late = inWindow && hadTheChance(scheduledAt, createdAt, noticeHours);
+  return { allowed: true, late, hoursNotice: notice };
 }
 
 export function assessCancellation(booking: BookingTiming, now: Date): ChangeVerdict {
