@@ -15,6 +15,12 @@ export const COMPANY = {
    * `sentenceCase()` where it starts a sentence.
    */
   clinicianFallback: "your clinician",
+  /**
+   * How an AI participant is named in a thread. A product label, not a care
+   * relationship — it never implies anyone treats the patient, and it must stay
+   * visibly non-human so a generated reply is never mistaken for the clinic's.
+   */
+  assistantName: "VitaReBa Assistant",
   partnerBrand: "Surf Your Life",
   /**
    * The clinic's own address, not the founder's coaching brand. Patient mail

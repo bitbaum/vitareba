@@ -10,7 +10,7 @@ import { NavBreadcrumb } from "@/components/portal/NavBreadcrumb";
 import { db } from "@/lib/db";
 import { users, bookings, profiles } from "@/lib/db/schema";
 import { eq, inArray, count } from "drizzle-orm";
-import { getAdminUnreadThreadCount } from "@/lib/domain/messages";
+import { getUnreadThreadCount } from "@/lib/domain/messages";
 import { USER_ROLE } from "@/lib/config/auth";
 import { BOOKING_STATUS } from "@/lib/config/booking-status";
 import { PATIENT_SIGNAL } from "@/lib/config/admin";
@@ -31,7 +31,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       where: eq(users.id, session.user.id),
       columns: { name: true },
     }),
-    getAdminUnreadThreadCount(),
+    getUnreadThreadCount(session.user.id),
     db.select({ value: count() }).from(bookings).where(eq(bookings.status, BOOKING_STATUS.pending)).then((r) => r[0]?.value ?? 0),
     // Count patients whose stored signal is critical or attention — fast single-table read
     db.select({ value: count() }).from(profiles).where(inArray(profiles.lastKnownSignal, [PATIENT_SIGNAL.critical, PATIENT_SIGNAL.attention])).then((r) => r[0]?.value ?? 0),

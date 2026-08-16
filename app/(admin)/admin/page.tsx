@@ -29,7 +29,7 @@ export default async function AdminTodayPage() {
 
   let inbox;
   try {
-    inbox = await loadClinicalInbox();
+    inbox = await loadClinicalInbox(session.user.id);
   } catch (err) {
     // A clinician staring at a spinner does not know whether the day is quiet or
     // the page is broken. Say which.

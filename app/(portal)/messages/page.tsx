@@ -200,8 +200,10 @@ export default function MessagesPage() {
       ) : (
         <div className={styles.listStack}>
           {threads.map((t) => {
-            const lastMsg = t.messages[0];
-            const isUnread = !!lastMsg && lastMsg.senderId !== t.patient.id && lastMsg.readAt === null;
+            const lastMsg = t.latest;
+            // Unread is now this reader's own count, computed server-side —
+            // not inferred from a flag on the message that anyone could clear.
+            const isUnread = t.unread > 0;
             return (
               <Link key={t.id} href={`${PORTAL_ROUTES.messages}/${t.id}`} className={msgStyles.threadLink}>
                 <div className={styles.card}>

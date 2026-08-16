@@ -2,19 +2,22 @@ export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { eq, desc } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { requireSession } from "@/lib/auth/guards";
 import { db } from "@/lib/db";
-import { threads, threadMessages, users } from "@/lib/db/schema";
+import { threads, users } from "@/lib/db/schema";
 import { MESSAGE_SUBJECT_MAX_LENGTH, MESSAGE_BODY_MAX_LENGTH } from "@/lib/config/portal";
 import { USER_ROLE } from "@/lib/config/auth";
-import { sendEmail } from "@/lib/email";
-import { newMessageEmail } from "@/lib/email/templates";
-import { COMPANY, PORTAL_URL, getAdminEmails } from "@/lib/config/company";
-import { ADMIN_ROUTES, PORTAL_ROUTES } from "@/lib/config/routes";
+import { PARTICIPANT_ROLE } from "@/lib/config/messages";
 import { runAfterResponse } from "@/lib/utils/post-response";
 import { serviceUnavailable, badRequest } from "@/lib/utils/api-response";
-import { displayName } from "@/lib/utils/format";
+import {
+  addParticipant,
+  listThreadsForActor,
+  postMessage,
+} from "@/lib/domain/messages";
+import { serializeThreadList } from "@/lib/domain/messages-view";
+import { notifyThreadParticipants } from "@/lib/domain/message-notifications";
 import {
   getClinicianById,
   getPrimaryClinicianId,
@@ -31,51 +34,40 @@ const createSchema = z.object({
 export async function GET() {
   const guard = await requireSession();
   if (guard.error) return guard.error;
-  const { session } = guard;
+  const actorId = guard.session.user.id;
 
-  const where =
-    session.user.role === USER_ROLE.admin
-      ? undefined
-      : eq(threads.patientId, session.user.id);
-
-  let results;
+  // No role branch and no unfiltered query: you get the threads you are in.
+  // The previous version ran `where: undefined` for admins, which returned
+  // every thread in the clinic — right while there was one clinician, and a
+  // disclosure the moment there were two.
   try {
-    results = await db.query.threads.findMany({
-      where,
-      orderBy: [desc(threads.lastMessageAt)],
-      with: {
-        patient: { columns: { id: true, name: true, email: true } },
-        clinician: { columns: { id: true, name: true } },
-        messages: { orderBy: [desc(threadMessages.createdAt)], limit: 1 },
-      },
+    const entries = await listThreadsForActor(actorId);
+    return NextResponse.json({
+      success: true,
+      data: await serializeThreadList(entries),
     });
   } catch (err) {
     console.error("[api/messages] GET failed:", err);
     return serviceUnavailable();
   }
-
-  return NextResponse.json({ success: true, data: results });
 }
 
 export async function POST(req: Request) {
   const guard = await requireSession();
   if (guard.error) return guard.error;
   const { session } = guard;
+  const actorId = session.user.id;
+  const isAdmin = session.user.role === USER_ROLE.admin;
 
-  const body = await req.json();
-  const parsed = createSchema.safeParse(body);
+  const parsed = createSchema.safeParse(await req.json());
   if (!parsed.success) {
     return NextResponse.json({ success: false, error: "Invalid data" }, { status: 400 });
   }
 
-  const patientId =
-    session.user.role === USER_ROLE.admin && parsed.data.patientId
-      ? parsed.data.patientId
-      : session.user.id;
+  const patientId = isAdmin && parsed.data.patientId ? parsed.data.patientId : actorId;
 
   // Who the thread is addressed to: the explicit choice when given, otherwise
-  // the patient's primary clinician. Stays null when nobody treats them yet —
-  // those threads fall back to the admin mailbox, as they always did.
+  // the patient's primary clinician. Null when nobody treats them yet.
   let clinician: ClinicianContact | null = null;
   try {
     if (parsed.data.clinicianId) {
@@ -96,60 +88,64 @@ export async function POST(req: Request) {
       .insert(threads)
       .values({ patientId, clinicianId: clinician?.id ?? null, subject: parsed.data.subject })
       .returning();
-    await db.insert(threadMessages).values({
+
+    await addParticipant({
       threadId: thread.id,
-      senderId: session.user.id,
-      body: parsed.data.body,
+      actorId: patientId,
+      role: PARTICIPANT_ROLE.patient,
     });
+
+    if (clinician) {
+      await addParticipant({
+        threadId: thread.id,
+        actorId: clinician.id,
+        role: PARTICIPANT_ROLE.clinician,
+      });
+    } else {
+      // Nobody treats this patient yet. The thread used to fall back to the
+      // whole admin mailbox, so the clinic could still answer — participants
+      // must reproduce that, or the patient writes into a void.
+      const admins = await db.query.users.findMany({
+        where: eq(users.role, USER_ROLE.admin),
+        columns: { id: true },
+      });
+      for (const a of admins) {
+        await addParticipant({
+          threadId: thread.id,
+          actorId: a.id,
+          role: PARTICIPANT_ROLE.clinician,
+        });
+      }
+    }
+
+    // The author must be able to speak in the thread they just opened — an
+    // admin writing on behalf of a patient treated by someone else would
+    // otherwise be refused by their own endpoint.
+    await addParticipant({
+      threadId: thread.id,
+      actorId,
+      role: isAdmin ? PARTICIPANT_ROLE.clinician : PARTICIPANT_ROLE.patient,
+    });
+
+    const posted = await postMessage({
+      threadId: thread.id,
+      actorId,
+      body: parsed.data.body,
+      senderId: actorId,
+    });
+    if (!posted.ok) throw new Error(`first message rejected: ${posted.reason}`);
   } catch (err) {
     console.error("[api/messages] thread creation failed:", err);
-    return NextResponse.json({ success: false, error: "Failed to send message — please try again" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "Failed to send message — please try again" },
+      { status: 500 }
+    );
   }
 
-  // Schedule notification work after the response so it is not dropped when the
-  // request lifecycle ends.
-  // An addressed thread reaches THAT clinician; only an unaddressed one falls
-  // back to the whole admin mailbox.
-  const clinicianName = clinician
-    ? displayName(clinician.name, clinician.email)
-    : COMPANY.clinicianFallback;
-  const inboundRecipients = clinician ? [clinician.email] : getAdminEmails();
-  if (session.user.role === USER_ROLE.admin) {
-    runAfterResponse(async () => {
-      const patient = await db.query.users.findFirst({
-        where: eq(users.id, patientId),
-        columns: { name: true, email: true },
-      });
-      if (!patient?.email) return;
-      await sendEmail({
-        to: patient.email,
-        subject: `New message: ${parsed.data.subject} — ${COMPANY.shortName}`,
-        html: newMessageEmail({
-          recipientName: displayName(patient.name, patient.email),
-          senderName: clinicianName,
-          subject: parsed.data.subject,
-          portalUrl: `${PORTAL_URL}${PORTAL_ROUTES.messages}/${thread.id}`,
-        }),
-      });
-    }, "[api/messages] patient notification failed:");
-  } else if (inboundRecipients.length > 0) {
-    runAfterResponse(async () => {
-      const patient = await db.query.users.findFirst({
-        where: eq(users.id, session.user.id),
-        columns: { name: true, email: true },
-      });
-      await sendEmail({
-        to: inboundRecipients,
-        subject: `New message from ${displayName(patient?.name, patient?.email)}: ${parsed.data.subject}`,
-        html: newMessageEmail({
-          recipientName: clinicianName,
-          senderName: displayName(patient?.name, patient?.email),
-          subject: parsed.data.subject,
-          portalUrl: `${PORTAL_URL}${ADMIN_ROUTES.messages}/${thread.id}`,
-        }),
-      });
-    }, "[api/messages] admin notification failed:");
-  }
+  runAfterResponse(
+    () => notifyThreadParticipants(thread.id, actorId),
+    "[api/messages] notification failed:"
+  );
 
   return NextResponse.json({ success: true, data: thread }, { status: 201 });
 }

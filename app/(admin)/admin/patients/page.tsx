@@ -20,7 +20,7 @@ import { PROGRAMME_CONFIG, PHASE_CONFIG } from "@/lib/config/programmes";
 import { formatDateISO, relativeDate } from "@/lib/utils/format";
 import { USER_ROLE } from "@/lib/config/auth";
 import { PORTAL_ROUTES, ADMIN_ROUTES } from "@/lib/config/routes";
-import { getAdminUnreadPatientIds, getAdminUnreadThreadCount } from "@/lib/domain/messages";
+import { getUnreadPatientIds, getUnreadThreadCount } from "@/lib/domain/messages";
 
 
 function StatCard({
@@ -77,8 +77,8 @@ export default async function PatientsPage() {
       },
     },
   }),
-    getAdminUnreadPatientIds(),
-    getAdminUnreadThreadCount(),
+    getUnreadPatientIds(session.user.id),
+    getUnreadThreadCount(session.user.id),
   ]);
 
   // Compute signal for each patient, then sort by severity then urgency

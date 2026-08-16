@@ -5,4 +5,11 @@ allowBuilds:
   '@tailwindcss/oxide': true
   esbuild: true
   sharp: true
+  # Installed from git until it is published to npm, at which point this entry
+  # and the git URL in package.json both go away. Its `prepare` script is the
+  # TypeScript build, so without this the package arrives with no dist/.
+  # pnpm requires the fully resolved URL for git deps — a bare name is ignored —
+  # so the commit is pinned here as well as in the lockfile. Bumping threadkit
+  # means updating this hash too; the install fails loudly if you forget.
+  threadkit@https://codeload.github.com/maonakamoto/threadkit/tar.gz/82723a5183575155f4c50991a858eeae6af9bfa9: true
   unrs-resolver: true

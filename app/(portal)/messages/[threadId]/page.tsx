@@ -6,8 +6,6 @@ import Link from "next/link";
 import styles from "../../portal.module.css";
 import msgStyles from "../messages.module.css";
 import { formatDateTime } from "@/lib/utils/format";
-import { USER_ROLE } from "@/lib/config/auth";
-import { COMPANY } from "@/lib/config/company";
 import { MESSAGE_POLL_INTERVAL_MS, MESSAGE_BODY_MAX_LENGTH } from "@/lib/config/portal";
 import { PORTAL_ROUTES } from "@/lib/config/routes";
 import { type ThreadDetail } from "@/lib/config/messages";
@@ -87,24 +85,42 @@ export default function ThreadPage() {
       </Link>
       <h1 className={styles.pageTitle}>{thread.subject}</h1>
 
+      {/* Who is in the room. Shown once a conversation stops being just you and
+          your clinician — a patient should never have to guess that a colleague
+          or an assistant can read what they write. */}
+      {(thread.participants.length > 2 ||
+        thread.participants.some((p) => p.kind === "ai")) && (
+        <p className={msgStyles.participants}>
+          In this conversation:{" "}
+          {thread.participants
+            .filter((p) => !p.hasLeft)
+            .map((p) => p.label)
+            .join(" · ")}
+        </p>
+      )}
+
       <div className={`${styles.card} ${msgStyles.msgScroll}`}>
-        {thread.messages.map((msg) => {
-          // A null sender means that account was deleted. In a thread the
-          // patient can still open, that can only be former staff — erasing
-          // the patient takes the whole thread with it.
-          const isAdmin = !msg.sender || msg.sender.role === USER_ROLE.admin;
-          return (
-            <div key={msg.id} className={isAdmin ? styles.msgRow : styles.msgRowEnd}>
-              <div className={isAdmin ? styles.msgBubbleNeutral : styles.msgBubbleAccent}>
-                {msg.body}
-              </div>
-              <p className={styles.msgMeta}>
-                {isAdmin ? `${COMPANY.shortName} team` : "You"} · {formatDateTime(msg.createdAt)}
-                {!isAdmin && msg.readAt && <span className={styles.msgRead}> · Read</span>}
-              </p>
+        {thread.messages.map((msg) => (
+          // Who wrote this is resolved server-side: with more than two people in
+          // a thread the client can no longer infer it from a role.
+          <div key={msg.id} className={msg.mine ? styles.msgRowEnd : styles.msgRow}>
+            <div className={msg.mine ? styles.msgBubbleAccent : styles.msgBubbleNeutral}>
+              {msg.body}
             </div>
-          );
-        })}
+            <p className={styles.msgMeta}>
+              {msg.mine ? "You" : msg.authorLabel}
+              {msg.authorKind === "ai" && (
+                <span className={msgStyles.aiTag} title={msg.generatedByModel ?? undefined}>
+                  AI
+                </span>
+              )}{" "}
+              · {formatDateTime(msg.createdAt)}
+              {msg.mine && msg.readByOthers && (
+                <span className={styles.msgRead}> · Read</span>
+              )}
+            </p>
+          </div>
+        ))}
         <div ref={bottomRef} />
       </div>
 

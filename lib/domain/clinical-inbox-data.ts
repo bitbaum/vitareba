@@ -23,7 +23,12 @@ import { RECENT_ASSESSMENTS_LIMIT } from "@/lib/config/portal";
 /** Only markers with a recognised action threshold can ever raise an alert. */
 const ALERTING_KINDS = MEASUREMENT_DEFS.filter((d) => d.alert).map((d) => d.key);
 
-export async function loadClinicalInbox(now = new Date()): Promise<ClinicalInbox> {
+export async function loadClinicalInbox(
+  /** Whose inbox this is. "Awaiting reply" is answered per clinician, because
+   * with a care team two clinicians genuinely have different answers. */
+  actorId: string,
+  now = new Date()
+): Promise<ClinicalInbox> {
   const cutoff = new Date(now.getTime() - RESULT_REVIEW_WINDOW_DAYS * DAY_MS);
 
   const [patientRows, measurementRows, threadRows] = await Promise.all([
@@ -56,7 +61,7 @@ export async function loadClinicalInbox(now = new Date()): Promise<ClinicalInbox
           orderBy: [desc(measurements.measuredAt)],
           columns: { patientId: true, kind: true, value: true, measuredAt: true },
         }),
-    getThreadsAwaitingReply(),
+    getThreadsAwaitingReply(actorId),
   ]);
 
   return buildClinicalInbox({

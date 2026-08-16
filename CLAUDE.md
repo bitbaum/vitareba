@@ -118,7 +118,7 @@ messages/                 → Translation files: de.json, en.json, fr.json, it.j
 
 ## Database Schema (Drizzle + self-hosted PostgreSQL)
 
-Tables: `users`, `accounts`, `sessions`, `verificationTokens` (NextAuth), `profiles`, `dailyCheckins` (unique on user_id+date), `assessmentResults`, `bookings`, `documents`, `threads`, `threadMessages` (with `readAt` for unread tracking), `patientNotes`, `programmeAssignments`, `clinicalGoals`, `emailQueue`
+Tables: `users`, `accounts`, `sessions`, `verificationTokens` (NextAuth), `profiles`, `dailyCheckins` (unique on user_id+date), `assessmentResults`, `bookings`, `documents`, `threads`, `threadMessages`, `threadParticipants`, `patientNotes`, `programmeAssignments`, `clinicalGoals`, `emailQueue`
 
 **Migrations (versioned, auto-applied):** after editing `lib/db/schema.ts`, run
 `pnpm db:generate` and COMMIT the new `drizzle/*.sql` — the deploy schema step
@@ -153,6 +153,8 @@ granted automatically, and `/api/health` asserts the property directly
 | Availability / slot rules (per clinician email) | `lib/config/scheduling.ts` | Any component or route |
 | Regulatory blocks (laws, attribution, beneficiaries) | `lib/config/regulation.ts` | Any component or route |
 | DB schema | `lib/db/schema.ts` | Separate type files |
+| Who may read a thread | `thread_participants` (via `threadkit`) | A role check, or `threads.patient_id` |
+| Unread state | `thread_participants.last_read_at` | A flag on the message row |
 | Portal route paths | `lib/config/routes.ts` PORTAL_ROUTES | Hardcoded strings |
 | Auth pages routing | `proxy.ts` (derives from PORTAL_ROUTES) | Scattered guards |
 
