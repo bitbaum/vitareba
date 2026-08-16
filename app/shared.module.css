@@ -691,6 +691,205 @@
   text-decoration: underline;
 }
 
+/* ─── Clinical measurements ──────────────────────────────────────────────── */
+
+.mCategory {
+  margin-bottom: 1.75rem;
+}
+
+.mCategoryTitle {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 0.6rem;
+}
+
+.mRow {
+  display: grid;
+  grid-template-columns: minmax(9rem, 1.6fr) minmax(6rem, auto) minmax(5rem, auto) minmax(6rem, 1fr) auto;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+  width: 100%;
+  text-align: left;
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+.mRow:hover,
+.mRow:focus-visible {
+  background: var(--teal-6);
+  outline: none;
+}
+
+.mLabel {
+  font-size: 0.88rem;
+  color: var(--ink);
+}
+
+/* A measured number is the thing the eye should land on first. */
+.mValue {
+  font-family: var(--font-cormorant), serif;
+  font-weight: 300;
+  font-size: 1.35rem;
+  line-height: 1;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.mUnit {
+  font-family: var(--font-dm-sans), sans-serif;
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-left: 0.3rem;
+}
+
+.mRange {
+  font-size: 0.75rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.mDate {
+  font-size: 0.72rem;
+  color: var(--muted);
+  white-space: nowrap;
+  text-align: right;
+}
+
+/* Status is carried by a word as well as a colour — colour alone excludes
+   anyone who cannot distinguish these two, on a page about their health. */
+.mStatus {
+  composes: pill;
+}
+
+.mStatusWithin {
+  composes: mStatus;
+  color: var(--teal);
+  background: var(--teal-10);
+}
+
+.mStatusOut {
+  composes: mStatus;
+  color: var(--warn);
+  background: var(--warn-10);
+}
+
+.mStatusAlert {
+  composes: mStatus;
+  color: var(--danger);
+  background: var(--danger-10);
+}
+
+.mStatusUnrated {
+  composes: mStatus;
+  color: var(--muted);
+  background: var(--muted-10);
+}
+
+.mTrend {
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.mTrendImproving { color: var(--teal); }
+.mTrendWorsening { color: var(--warn); }
+.mTrendSteady { color: var(--muted); }
+
+.mDetail {
+  padding: 0.9rem 0 1.1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.mDetailNote {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0 0 0.6rem;
+  max-width: 46rem;
+  line-height: 1.55;
+}
+
+.mHistoryRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.3rem 0;
+  font-size: 0.8rem;
+}
+
+.mHistoryMeta {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.mAlertBanner {
+  border: 1px solid var(--danger);
+  background: var(--danger-10);
+  border-radius: var(--radius-lg);
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 1.25rem;
+}
+
+.mAlertTitle {
+  font-size: 0.8rem;
+  color: var(--danger);
+  margin: 0 0 0.35rem;
+  letter-spacing: 0.04em;
+}
+
+.mAlertItem {
+  font-size: 0.82rem;
+  color: var(--ink);
+  margin: 0;
+}
+
+.mEntryGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr auto;
+  gap: 0.6rem;
+  align-items: end;
+  margin-bottom: 0.6rem;
+}
+
+.mToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.mDerived {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding: 0.9rem 1.1rem;
+  background: var(--off);
+  border-radius: var(--radius-lg);
+  margin-bottom: 1.5rem;
+}
+
+.mDerivedItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.mDerivedLabel {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
 /* ─── Responsive (all media rules at file end) ───────────────────────────── */
 
 @media (max-width: 767px) {
@@ -720,5 +919,22 @@
 
   .msgBubble {
     max-width: 88%;
+  }
+
+  /* The five-column reading line collapses to label-over-value: a clinical
+     table that scrolls sideways on a phone is a table nobody reads on a phone. */
+  .mRow {
+    grid-template-columns: 1fr auto;
+    gap: 0.25rem 0.75rem;
+  }
+
+  .mRange,
+  .mDate {
+    grid-column: 1 / -1;
+    text-align: left;
+  }
+
+  .mEntryGrid {
+    grid-template-columns: 1fr;
   }
 }

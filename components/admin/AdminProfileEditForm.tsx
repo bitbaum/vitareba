@@ -16,11 +16,17 @@ import {
   PROFILE_DOB_MAX_LENGTH,
 } from "@/lib/config/portal";
 import type { ExerciseFrequency } from "@/lib/config/portal";
+import {
+  BIOLOGICAL_SEX_LABELS,
+  BIOLOGICAL_SEX_VALUES,
+  type BiologicalSex,
+} from "@/lib/config/measurements";
 
 type ProfileFields = {
   name: string;
   phone: string;
   dateOfBirth: string;
+  biologicalSex: BiologicalSex | "";
   city: string;
   occupation: string;
   mainConcern: string;
@@ -38,6 +44,7 @@ type InitialProfile = {
   name?: string | null;
   phone?: string | null;
   dateOfBirth?: string | null;
+  biologicalSex?: string | null;
   city?: string | null;
   occupation?: string | null;
   mainConcern?: string | null;
@@ -56,6 +63,7 @@ function fromInitial(init: InitialProfile): ProfileFields {
     name: init.name ?? "",
     phone: init.phone ?? "",
     dateOfBirth: init.dateOfBirth ?? "",
+    biologicalSex: (init.biologicalSex as BiologicalSex | null) ?? "",
     city: init.city ?? "",
     occupation: init.occupation ?? "",
     mainConcern: init.mainConcern ?? "",
@@ -98,6 +106,7 @@ export function AdminProfileEditForm({
         body: JSON.stringify({
           ...form,
           name: form.name.trim() || undefined,
+          biologicalSex: form.biologicalSex === "" ? null : form.biologicalSex,
           sleepHoursAvg: form.sleepHoursAvg === "" ? null : Number(form.sleepHoursAvg),
           exerciseFrequency: form.exerciseFrequency === "" ? null : form.exerciseFrequency,
         }),
@@ -128,6 +137,18 @@ export function AdminProfileEditForm({
         <div>
           <label className={styles.assignLabel} htmlFor="ap-dob">Date of birth</label>
           <input id="ap-dob" className={styles.assignField} type="date" value={form.dateOfBirth} onChange={set("dateOfBirth")} maxLength={PROFILE_DOB_MAX_LENGTH} />
+        </div>
+        <div>
+          {/* Recorded for reference intervals only — ferritin, testosterone,
+              haemoglobin and creatinine are read against different ranges, and
+              a single range mislabels real patients. */}
+          <label className={styles.assignLabel} htmlFor="ap-sex">Sex (for reference ranges)</label>
+          <select id="ap-sex" className={styles.assignField} value={form.biologicalSex} onChange={set("biologicalSex")}>
+            <option value="">Not recorded</option>
+            {BIOLOGICAL_SEX_VALUES.map((v) => (
+              <option key={v} value={v}>{BIOLOGICAL_SEX_LABELS[v]}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label className={styles.assignLabel} htmlFor="ap-phone">Phone</label>

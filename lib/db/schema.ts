@@ -8,8 +8,10 @@ import {
   boolean,
   timestamp,
   jsonb,
+  numeric,
   primaryKey,
   uniqueIndex,
+  index,
 } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
 import type { AdapterAccountType } from "next-auth/adapters";
@@ -51,6 +53,11 @@ export const emailQueueStatusEnum = pgEnum("email_queue_status", [
 export const bookingTypeEnum = pgEnum("booking_type", [
   "consultation",
   "machine",
+]);
+export const biologicalSexEnum = pgEnum("biological_sex", [
+  "female",
+  "male",
+  "unspecified",
 ]);
 export const machineTypeEnum = pgEnum("machine_type", [
   "h2_therapy",
@@ -132,6 +139,12 @@ export const profiles = pgTable("profiles", {
   // Contact & basics
   phone: varchar("phone", { length: 50 }),
   dateOfBirth: varchar("date_of_birth", { length: 20 }),
+  // Recorded for ONE purpose: picking the right reference interval for ferritin,
+  // haemoglobin, testosterone, creatinine, waist and the transaminases, which
+  // genuinely differ. Not an identity field, never displayed as one, and
+  // "unspecified" is a real answer — the UI then says the interval is not
+  // sex-specific instead of guessing. See lib/config/measurements.ts.
+  biologicalSex: biologicalSexEnum("biological_sex"),
   city: varchar("city", { length: 100 }),
   occupation: varchar("occupation", { length: 150 }),
   // Clinical context
@@ -180,6 +193,54 @@ export const dailyCheckins = pgTable(
     createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
   },
   (t) => [uniqueIndex("daily_checkins_user_date_idx").on(t.userId, t.date)]
+);
+
+// ─── Clinical measurements ────────────────────────────────────────────────────
+
+/**
+ * One measured number, at one point in time. Labs, vitals and wearable readings
+ * all land here — the thing a clinician actually watches is a value moving, and
+ * a value can only move if it is stored as a value rather than as a PDF.
+ *
+ * `kind` is a varchar, not a pgEnum, on purpose: lib/config/measurements.ts is
+ * the single source of truth for which markers exist, and a new marker must not
+ * require a migration. The API validates `kind` against that config, and
+ * lib/config/measurements.test.ts keeps the two honest.
+ *
+ * The UNIT IS NOT STORED — it belongs to the kind, and storing it would create a
+ * second truth that could disagree with the config. The rule that makes this
+ * safe: a kind's unit is immutable. Reporting a marker in a different unit means
+ * adding a new kind, never editing an existing one, or every historical value
+ * silently changes meaning.
+ */
+export const measurements = pgTable(
+  "measurements",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    patientId: uuid("patient_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    kind: varchar("kind", { length: 50 }).notNull(),
+    // numeric, not float: a lab value is a decimal quantity, and 1.7 must come
+    // back as 1.7. mode "number" keeps arithmetic (deltas, averages) in JS.
+    value: numeric("value", { precision: 12, scale: 4, mode: "number" }).notNull(),
+    // WHEN THE SAMPLE WAS TAKEN — not when someone typed it in. A lab report
+    // entered three weeks late must sit at its own date on the chart, or the
+    // trend is a fiction. createdAt records the typing.
+    measuredAt: timestamp("measured_at", { mode: "date" }).notNull(),
+    source: varchar("source", { length: 20 }).notNull(),
+    // Provenance, not ownership — same reasoning as documents.uploadedBy and
+    // thread_messages.senderId. A PATIENT records their own vitals, so NO ACTION
+    // here would veto erasing almost every patient. SET NULL keeps the value in
+    // the record when the clinician who entered it leaves.
+    recordedBy: uuid("recorded_by").references(() => users.id, { onDelete: "set null" }),
+    note: text("note"),
+    createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
+  },
+  (t) => [
+    // Every read is "this patient, this marker, newest first".
+    index("measurements_patient_kind_idx").on(t.patientId, t.kind, t.measuredAt),
+  ]
 );
 
 // ─── Assessments ──────────────────────────────────────────────────────────────
@@ -405,6 +466,8 @@ export const usersRelations = relations(users, ({ one, many }) => ({
     relationName: "patient_programme",
   }),
   clinicalGoals: many(clinicalGoals, { relationName: "patient_goals" }),
+  measurements: many(measurements, { relationName: "patient_measurements" }),
+  recordedMeasurements: many(measurements, { relationName: "recorded_measurements" }),
   emailQueue: many(emailQueue),
   assessmentLeads: many(assessmentLeads),
 }));
@@ -528,6 +591,23 @@ export const clinicalGoalsRelations = relations(clinicalGoals, ({ one }) => ({
     fields: [clinicalGoals.setByAdminId],
     references: [users.id],
     relationName: "admin_goals",
+  }),
+}));
+
+// measurements ↔ users is doubly connected (subject + recorder), so both sides
+// carry an explicit relationName — without it Drizzle throws "multiple
+// relations" at runtime and the page 500s. lib/db/relations.test.ts plans every
+// relation in CI so that failure never reaches a patient.
+export const measurementsRelations = relations(measurements, ({ one }) => ({
+  patient: one(users, {
+    fields: [measurements.patientId],
+    references: [users.id],
+    relationName: "patient_measurements",
+  }),
+  recordedByUser: one(users, {
+    fields: [measurements.recordedBy],
+    references: [users.id],
+    relationName: "recorded_measurements",
   }),
 }));
 
