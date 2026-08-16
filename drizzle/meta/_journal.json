@@ -50,6 +50,13 @@
       "when": 1786791880941,
       "tag": "0006_modern_sugar_man",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1786865852891,
+      "tag": "0007_odd_lockjaw",
+      "breakpoints": true
     }
   ]
 }

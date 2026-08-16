@@ -1,5 +1,4 @@
 import { db } from "@/lib/db";
-import { documents } from "@/lib/db/schema";
 import { listLocal, delLocal, isLocalUrl } from "@/lib/storage";
 
 export type CronOrphanedFilesResult =

@@ -6,12 +6,17 @@ import {
   PROFILE_NAME_MAX_LENGTH, PROFILE_PHONE_MAX_LENGTH, PROFILE_DOB_MAX_LENGTH,
   PROFILE_CITY_MAX_LENGTH, PROFILE_OCCUPATION_MAX_LENGTH, PROFILE_REFERRAL_SOURCE_MAX_LENGTH,
 } from "@/lib/config/portal";
+import { BIOLOGICAL_SEX_VALUES } from "@/lib/config/measurements";
 
 /** Validates an incoming profile PATCH body — all fields optional, none required. */
 export const profileUpdateSchema = z.object({
   name: z.string().min(1).max(PROFILE_NAME_MAX_LENGTH).optional(),
   phone: z.string().max(PROFILE_PHONE_MAX_LENGTH).optional(),
   dateOfBirth: z.string().max(PROFILE_DOB_MAX_LENGTH).optional(),
+  // Recorded only to pick the right reference interval for ferritin, testosterone,
+  // haemoglobin and the rest — see lib/config/measurements.ts. Nullable because
+  // declining to answer must stay possible, and the ranges then say so.
+  biologicalSex: z.enum(BIOLOGICAL_SEX_VALUES).nullable().optional(),
   city: z.string().max(PROFILE_CITY_MAX_LENGTH).optional(),
   occupation: z.string().max(PROFILE_OCCUPATION_MAX_LENGTH).optional(),
   mainConcern: z.string().max(PATIENT_NOTE_MAX_LENGTH).optional(),

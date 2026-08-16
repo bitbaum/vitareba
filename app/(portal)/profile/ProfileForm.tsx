@@ -19,6 +19,11 @@ import {
   PROFILE_REFERRAL_SOURCE_MAX_LENGTH,
 } from "@/lib/config/portal";
 import type { ExerciseFrequency } from "@/lib/config/portal";
+import {
+  BIOLOGICAL_SEX_LABELS,
+  BIOLOGICAL_SEX_VALUES,
+  type BiologicalSex,
+} from "@/lib/config/measurements";
 import { computeProfileCompleteness } from "@/lib/domain/profile";
 import { COMPANY } from "@/lib/config/company";
 import { formatDateLong } from "@/lib/utils/format";
@@ -33,6 +38,7 @@ type ProfileApiData = {
   // Profile fields (from profiles table)
   phone?: string | null;
   dateOfBirth?: string | null;
+  biologicalSex?: string | null;
   city?: string | null;
   occupation?: string | null;
   mainConcern?: string | null;
@@ -52,6 +58,7 @@ type ProfileData = {
   name: string;
   phone: string;
   dateOfBirth: string;
+  biologicalSex: BiologicalSex | "";
   city: string;
   occupation: string;
   mainConcern: string;
@@ -71,6 +78,7 @@ const EMPTY_FORM: ProfileData = {
   name: "",
   phone: "",
   dateOfBirth: "",
+  biologicalSex: "",
   city: "",
   occupation: "",
   mainConcern: "",
@@ -158,6 +166,7 @@ export function ProfileForm({ clinician = COMPANY.clinicianFallback }: { clinici
         name: data.name ?? "",
         phone: data.phone ?? "",
         dateOfBirth: data.dateOfBirth ?? "",
+        biologicalSex: (data.biologicalSex as BiologicalSex | null) ?? "",
         city: data.city ?? "",
         occupation: data.occupation ?? "",
         mainConcern: data.mainConcern ?? "",
@@ -193,6 +202,7 @@ export function ProfileForm({ clinician = COMPANY.clinicianFallback }: { clinici
           ...form,
           // Don't send empty name — Zod requires min(1) and we shouldn't clear an existing name accidentally
           name: form.name.trim() || undefined,
+          biologicalSex: form.biologicalSex === "" ? null : form.biologicalSex,
           sleepHoursAvg: form.sleepHoursAvg === "" ? null : Number(form.sleepHoursAvg),
           exerciseFrequency: form.exerciseFrequency === "" ? null : form.exerciseFrequency,
         }),
@@ -259,6 +269,18 @@ export function ProfileForm({ clinician = COMPANY.clinicianFallback }: { clinici
             <div className={authStyles.field}>
               <label className={authStyles.label} htmlFor="dob">Date of birth</label>
               <input id="dob" className={authStyles.input} type="date" value={form.dateOfBirth} onChange={set("dateOfBirth")} />
+            </div>
+            <div className={authStyles.field}>
+              {/* Asked for one reason only, and the label says so: several blood
+                  results are read against different ranges for women and men,
+                  and we would rather ask than guess wrong about your health. */}
+              <label className={authStyles.label} htmlFor="sex">Sex — used for lab reference ranges</label>
+              <select id="sex" className={authStyles.input} value={form.biologicalSex} onChange={set("biologicalSex")}>
+                <option value="">Not recorded</option>
+                {BIOLOGICAL_SEX_VALUES.map((v) => (
+                  <option key={v} value={v}>{BIOLOGICAL_SEX_LABELS[v]}</option>
+                ))}
+              </select>
             </div>
             <div className={authStyles.field}>
               <label className={authStyles.label} htmlFor="phone">Phone</label>

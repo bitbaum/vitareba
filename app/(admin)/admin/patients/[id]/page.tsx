@@ -19,6 +19,7 @@ import { PatientMessagesCard } from "@/components/admin/PatientMessagesCard";
 import { PatientGoalsCard } from "@/components/admin/PatientGoalsCard";
 import { CareTeamCard } from "@/components/admin/CareTeamCard";
 import { AiBriefCard } from "@/components/admin/AiBriefCard";
+import { MeasurementsPanel } from "@/components/clinical/MeasurementsPanel";
 import { SectionTabs } from "@/components/admin/SectionTabs";
 import { AdminProfileEditForm } from "@/components/admin/AdminProfileEditForm";
 import { formatDateShort, formatDateLong, formatDateMonthDay } from "@/lib/utils/format";
@@ -216,6 +217,16 @@ export default async function PatientDetailPage({
                   />
                 </div>
               </>
+            ),
+          },
+          {
+            id: "results",
+            label: "Labs & vitals",
+            content: (
+              <div className={styles.cardWithTopMargin}>
+                <p className={styles.cardLabel}>Measured results</p>
+                <MeasurementsPanel patientId={patient.id} />
+              </div>
             ),
           },
           {
