@@ -166,6 +166,103 @@ export function bookingCancelledAdminEmail({
   `);
 }
 
+// ─── Booking: moved to a new time ─────────────────────────────────────────────
+
+export function bookingRescheduledEmail({
+  patientName,
+  sessionLabel,
+  fromLabel,
+  toLabel,
+  portalUrl,
+}: {
+  patientName: string;
+  sessionLabel: string;
+  fromLabel: string;
+  toLabel: string;
+  portalUrl: string;
+}) {
+  patientName = escapeHtml(patientName);
+  sessionLabel = escapeHtml(sessionLabel);
+  fromLabel = escapeHtml(fromLabel);
+  toLabel = escapeHtml(toLabel);
+
+  return layout(`
+    <p>Hi ${patientName},</p>
+    <p>Your <strong>${sessionLabel}</strong> has been moved.</p>
+    <div class="divider"></div>
+    <p class="meta"><strong>Was:</strong> ${fromLabel}</p>
+    <p class="meta"><strong>Now:</strong> ${toLabel}</p>
+    <div class="divider"></div>
+    <p>The calendar invite attached to this email replaces the old one — opening it will update the entry rather than add a second.</p>
+    <p><a class="btn" href="${portalUrl}">View your bookings</a></p>
+  `);
+}
+
+// ─── Booking: cancelled appointment, with the policy stated ──────────────────
+
+export function bookingAppointmentCancelledEmail({
+  patientName,
+  sessionLabel,
+  whenLabel,
+  late,
+  policyDetail,
+  portalUrl,
+}: {
+  patientName: string;
+  sessionLabel: string;
+  whenLabel: string;
+  late: boolean;
+  policyDetail: string;
+  portalUrl: string;
+}) {
+  patientName = escapeHtml(patientName);
+  sessionLabel = escapeHtml(sessionLabel);
+  whenLabel = escapeHtml(whenLabel);
+  policyDetail = escapeHtml(policyDetail);
+
+  return layout(`
+    <p>Hi ${patientName},</p>
+    <p>Your <strong>${sessionLabel}</strong> on ${whenLabel} has been cancelled, and the slot is free again.</p>
+    ${
+      late
+        ? `<div class="divider"></div><p class="meta">This was a late cancellation. There is no charge — it is recorded so your clinician has the full picture.</p>`
+        : ""
+    }
+    <div class="divider"></div>
+    <p class="meta">${policyDetail}</p>
+    <p><a class="btn" href="${portalUrl}">Book another time</a></p>
+  `);
+}
+
+// ─── Booking: appointment change, to the clinician ───────────────────────────
+
+export function bookingChangedClinicianEmail({
+  patientName,
+  patientEmail,
+  headline,
+  detailLines,
+  adminUrl,
+}: {
+  patientName: string;
+  patientEmail: string;
+  headline: string;
+  detailLines: string[];
+  adminUrl: string;
+}) {
+  patientName = escapeHtml(patientName);
+  patientEmail = escapeHtml(patientEmail);
+  headline = escapeHtml(headline);
+
+  return layout(`
+    <p>${headline}</p>
+    <div class="divider"></div>
+    <p class="meta"><strong>Patient:</strong> ${patientName} (${patientEmail})</p>
+    ${detailLines.map((l) => `<p class="meta">${escapeHtml(l)}</p>`).join("")}
+    <div class="divider"></div>
+    <p><a class="btn" href="${adminUrl}">View patient →</a></p>
+  `);
+}
+
 // ─── Password reset ────────────────────────────────────────────────────────────
 
 export function passwordResetEmail({

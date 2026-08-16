@@ -279,6 +279,33 @@ export const bookings = pgTable(
     // conflict re-check can race, this cannot.
     scheduledAt: timestamp("scheduled_at", { mode: "date" }),
     notes: text("notes"),
+    /**
+     * Calendar version. A subscribed calendar only applies an update when
+     * SEQUENCE grows, so every change that alters the appointment — confirming,
+     * moving, cancelling — increments this. It used to be derived from the
+     * status, which meant RESCHEDULING was invisible: the time changed, the
+     * status did not, the sequence did not, and the patient's calendar kept
+     * showing the old slot forever.
+     */
+    revision: integer("revision").notNull().default(0),
+    /** The time this appointment was moved FROM, kept so the record shows it moved. */
+    rescheduledFrom: timestamp("rescheduled_from", { mode: "date" }),
+    cancelledAt: timestamp("cancelled_at", { mode: "date" }),
+    // Who cancelled — a patient withdrawing and a clinic cancelling are
+    // different events that must not look identical in the record. SET NULL for
+    // the same reason as every other authorship column here: removing a
+    // clinician must never delete or block a patient's booking history.
+    cancelledBy: uuid("cancelled_by").references(() => users.id, { onDelete: "set null" }),
+    cancellationReason: text("cancellation_reason"),
+    /**
+     * Whether this cancellation fell inside the notice window.
+     *
+     * STORED, not derived, and deliberately so: it is a judgement made at one
+     * moment against the policy in force at that moment. Re-deriving it later
+     * against a changed notice window would silently rewrite whether a patient
+     * did the right thing two years ago.
+     */
+    lateCancellation: boolean("late_cancellation").notNull().default(false),
     createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
   },
   (t) => [

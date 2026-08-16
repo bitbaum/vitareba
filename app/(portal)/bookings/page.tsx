@@ -5,7 +5,6 @@ import styles from "../portal.module.css";
 import bookingStyles from "./bookings.module.css";
 import authStyles from "../../forms.module.css";
 import {
-  BOOKING_STATUS,
   BOOKING_STATUS_CONFIG,
   BOOKING_TYPE_CONFIG,
   BOOKING_TYPE_VALUES,
@@ -20,6 +19,8 @@ import { COMPANY } from "@/lib/config/company";
 import { DAY_PARTS, DEFAULT_AVAILABILITY } from "@/lib/config/scheduling";
 import { BOOKING_SUCCESS_MS, BOOKING_NOTES_MAX_LENGTH } from "@/lib/config/portal";
 import { LoadingState } from "@/components/LoadingState";
+import { BookingActions, type ActionableBooking } from "@/components/clinical/BookingActions";
+import { CANCELLATION_POLICY } from "@/lib/config/cancellation";
 
 // Shown until the server reports the selected clinician's real slot length.
 const DEFAULT_SLOT_MINUTES = DEFAULT_AVAILABILITY.slotMinutes;
@@ -45,7 +46,6 @@ export default function BookingsPage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState("");
-  const [cancellingId, setCancellingId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoadError(false);
@@ -75,6 +75,10 @@ export default function BookingsPage() {
   const [slotBooking, setSlotBooking] = useState(false);
   const [slotError, setSlotError] = useState("");
   const [slotSuccess, setSlotSuccess] = useState<string | null>(null);
+  // When set, the picker is moving an existing appointment rather than making a
+  // new one. Same picker, same slots, same conflict rules — a second "reschedule"
+  // screen would be a second implementation of the thing that just started working.
+  const [movingBooking, setMovingBooking] = useState<ActionableBooking | null>(null);
 
   const loadSlots = useCallback(async (forClinician?: string | null) => {
     try {
@@ -137,11 +141,19 @@ export default function BookingsPage() {
     setSlotBooking(true);
     setSlotError("");
     try {
-      const res = await fetch("/api/bookings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slot: selectedSlot, clinicianId }),
-      });
+      // Moving an appointment PATCHes the one that exists; booking a new one
+      // POSTs. Both end at the same engine re-check and the same unique index.
+      const res = movingBooking
+        ? await fetch(`/api/bookings/${movingBooking.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ slot: selectedSlot, clinicianId }),
+          })
+        : await fetch("/api/bookings", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ slot: selectedSlot, clinicianId }),
+          });
       const data = await res.json();
       if (!res.ok || !data.success) {
         setSlotError(
@@ -155,6 +167,7 @@ export default function BookingsPage() {
       }
       const doc = clinicians.find((c) => c.id === clinicianId);
       setSlotSuccess(`${formatSlotDay(selectedSlot)}, ${formatSlotTime(selectedSlot)}${doc ? ` with ${doc.name}` : ""}`);
+      setMovingBooking(null);
       setSelectedSlot(null);
       loadSlots(clinicianId);
       load();
@@ -207,16 +220,6 @@ export default function BookingsPage() {
     }
   }
 
-  async function handleCancel(bookingId: string) {
-    setCancellingId(bookingId);
-    try {
-      await fetch(`/api/bookings/${bookingId}`, { method: "DELETE" });
-      load();
-    } finally {
-      setCancellingId(null);
-    }
-  }
-
   return (
     <div>
       <div className={styles.pageHeader}>
@@ -233,7 +236,17 @@ export default function BookingsPage() {
 
       {/* Native slot picker — conflict-free, instantly confirmed */}
       <div className={`${styles.card} ${styles.cardGap}`}>
-        <p className={styles.cardTitle}>Book an appointment</p>
+        <p className={styles.cardTitle}>
+          {movingBooking ? "Move your appointment" : "Book an appointment"}
+        </p>
+        {movingBooking && (
+          <p className={styles.formHint}>
+            Choosing a time moves your existing appointment — you will not end up with two.{" "}
+            <button type="button" className={styles.btnText} onClick={() => setMovingBooking(null)}>
+              Keep the current time
+            </button>
+          </p>
+        )}
         {slotsLoading ? (
           <LoadingState lines={2} />
         ) : (
@@ -346,6 +359,7 @@ export default function BookingsPage() {
                       {slotMinutes} min with {clinicianLabel} · Zürich time
                       {selectedSlot ? " · calendar invite included" : ""}
                     </p>
+                    <p className={bookingStyles.confirmMeta}>{CANCELLATION_POLICY.summary}</p>
                   </div>
                   <button
                     type="button"
@@ -353,7 +367,13 @@ export default function BookingsPage() {
                     onClick={handleSlotBook}
                     disabled={!selectedSlot || slotBooking}
                   >
-                    {slotBooking ? "Booking…" : "Confirm appointment"}
+                    {slotBooking
+                      ? movingBooking
+                        ? "Moving…"
+                        : "Booking…"
+                      : movingBooking
+                        ? "Move to this time"
+                        : "Confirm appointment"}
                   </button>
                 </div>
               </>
@@ -365,7 +385,7 @@ export default function BookingsPage() {
 
       {slotSuccess && (
         <div className={bookingStyles.successBanner}>
-          <p className={bookingStyles.bannerTitle}>Appointment confirmed</p>
+          <p className={bookingStyles.bannerTitle}>Appointment booked</p>
           <p>{slotSuccess}. A confirmation email is on its way — manage or cancel it below.</p>
         </div>
       )}
@@ -511,16 +531,20 @@ export default function BookingsPage() {
                     <span className={`${styles.pill} ${s.badgeClass}`}>
                       {s.label}
                     </span>
-                    {b.status === BOOKING_STATUS.pending && (
-                      <button
-                        type="button"
-                        className={bookingStyles.cancelBookingBtn}
-                        onClick={() => handleCancel(b.id)}
-                        disabled={cancellingId === b.id}
-                      >
-                        {cancellingId === b.id ? "Cancelling…" : "Cancel"}
-                      </button>
-                    )}
+                    {/* Was gated to `pending`, which is a status no booked
+                        appointment ever has — every patient who picked a time
+                        was stuck with it. The control now decides for itself,
+                        from the same rule the API enforces. */}
+                    <BookingActions
+                      booking={{ id: b.id, status: b.status, scheduledAt: b.scheduledAt }}
+                      onChanged={load}
+                      onMove={(target) => {
+                        setMovingBooking(target);
+                        setSelectedSlot(null);
+                        setSlotSuccess(null);
+                        if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                    />
                   </div>
                 </div>
               </div>

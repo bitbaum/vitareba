@@ -8,6 +8,7 @@ import {
   BOOKING_TYPE_CONFIG, MACHINE_TYPE_CONFIG,
   type BookingRowWithUser, type BookingStatus,
 } from "@/lib/config/booking-status";
+import { BookingActions } from "@/components/clinical/BookingActions";
 import { formatDateShort, formatDateNumeric, formatSlotDay, formatSlotTime } from "@/lib/utils/format";
 import { ADMIN_ROUTES } from "@/lib/config/routes";
 import { LoadingState } from "@/components/LoadingState";
@@ -174,6 +175,14 @@ export default function AdminBookingsPage() {
                       <span className={`${styles.badge} ${s.badgeClass}`}>
                         {s.label}
                       </span>
+                      {/* A late cancellation is clinical information, not just
+                          accounting — a pattern of them is worth a conversation. */}
+                      {b.lateCancellation && (
+                        <span className={styles.signalReason}>Late cancellation</span>
+                      )}
+                      {b.cancellationReason && (
+                        <span className={styles.signalReason}>{b.cancellationReason}</span>
+                      )}
                     </td>
                     <td>
                       <div className={styles.actionGroup}>
@@ -199,17 +208,14 @@ export default function AdminBookingsPage() {
                             Attended
                           </button>
                         )}
-                        {b.status !== BOOKING_STATUS.cancelled && b.status !== BOOKING_STATUS.attended && (
-                          <button
-                            type="button"
-                            onClick={() => updateStatus(b.id, BOOKING_STATUS.cancelled)}
-                            disabled={isUpdating}
-                            aria-label={`Cancel booking for ${b.user.name ?? b.user.email}`}
-                            className={styles.actionBtnCancel}
-                          >
-                            Cancel
-                          </button>
-                        )}
+                        {/* The same control the patient uses, so a cancellation
+                            leaves one shape of record whichever side made it —
+                            with a reason, and with the notice window recorded. */}
+                        <BookingActions
+                          booking={{ id: b.id, status: b.status, scheduledAt: b.scheduledAt }}
+                          onChanged={load}
+                          actorLabel="clinic"
+                        />
                       </div>
                     </td>
                   </tr>
