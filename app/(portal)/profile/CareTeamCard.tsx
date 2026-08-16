@@ -92,7 +92,12 @@ export function CareTeamCard({ selfId }: { selfId: string }) {
           const isSelf = c.id === selfId;
           // Closed intake only stops a NEW choice — an existing member keeps
           // full access to Remove, exactly as before this feature existed.
-          const closedToMe = !c.acceptingPatients && !isMine;
+          // A dual-role clinician can ALWAYS choose themselves regardless of
+          // their own intake setting (canPatientChooseClinician's self-rule) —
+          // caught live: without this, George's own card showed "not
+          // accepting" against himself the moment he closed his own intake,
+          // even though the server would have let the choice through.
+          const closedToMe = !c.acceptingPatients && !isMine && !isSelf;
           return (
             <div
               key={c.id}
