@@ -393,6 +393,36 @@
   margin-bottom: 1rem;
 }
 
+/* ─── Checkbox / toggle row ───────────────────────────────────────────────── */
+/* Was defined once, in the portal only (AI-consent toggle). Moved here so a
+   second toggle — a clinician's own "accepting new patients" — is the SAME
+   visual pattern instead of a second definition drifting from the first. */
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--ink2);
+  cursor: pointer;
+}
+
+.checkboxInput {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--teal);
+}
+
+.checkboxHint {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin: 0.5rem 0 1rem;
+}
+
+.checkboxHint:last-child {
+  margin-bottom: 0;
+}
+
 .formActions {
   display: flex;
   gap: 0.75rem;

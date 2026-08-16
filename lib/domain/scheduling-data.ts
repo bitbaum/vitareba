@@ -12,15 +12,36 @@ import { getAvailabilityForEmail, type ClinicianAvailability } from "@/lib/confi
 import { generateSlots, slotBusyInterval, type BusyInterval } from "./scheduling";
 import { getExternalBusy } from "./calendar-sync";
 
-export type Clinician = { id: string; name: string | null; email: string };
+export type Clinician = {
+  id: string;
+  name: string | null;
+  email: string;
+  acceptingPatients: boolean;
+};
 
-/** All bookable doctors, stable order. */
+/**
+ * All bookable doctors, stable order.
+ *
+ * A second definition of "the clinician roster" from getClinicianRoster() in
+ * lib/domain/care-team.ts — this one keeps `email` (the availability engine
+ * needs it) and orders by account creation (the slot picker's default order),
+ * neither of which the care-team picker needs. Not yet worth merging into one
+ * function with two callers asking different questions; if a third caller
+ * needs its own shape, that is the rule-of-three signal to actually unify them.
+ */
 export async function getClinicians(): Promise<Clinician[]> {
-  return db.query.users.findMany({
+  const rows = await db.query.users.findMany({
     where: eq(users.isClinician, true),
     columns: { id: true, name: true, email: true },
     orderBy: [asc(users.createdAt)],
+    with: { profile: { columns: { acceptingPatients: true } } },
   });
+  return rows.map((r) => ({
+    id: r.id,
+    name: r.name,
+    email: r.email,
+    acceptingPatients: r.profile?.acceptingPatients ?? true,
+  }));
 }
 
 /**

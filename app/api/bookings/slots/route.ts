@@ -44,8 +44,12 @@ export async function GET(req: Request) {
     return NextResponse.json({
       success: true,
       data: slots.map((s) => s.toISOString()),
-      // Roster is name+id only — emails stay server-side
-      clinicians: clinicians.map((c) => ({ id: c.id, name: c.name ?? "Clinician" })),
+      // Roster is name+id+status only — emails stay server-side
+      clinicians: clinicians.map((c) => ({
+        id: c.id,
+        name: c.name ?? "Clinician",
+        acceptingPatients: c.acceptingPatients,
+      })),
       clinicianId: clinician.id,
       careTeam,
       slotMinutes: getAvailabilityForEmail(clinician.email).slotMinutes,

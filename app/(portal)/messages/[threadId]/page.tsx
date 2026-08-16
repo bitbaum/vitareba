@@ -19,6 +19,8 @@ export default function ThreadPage() {
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState("");
+  const [asking, setAsking] = useState(false);
+  const [assistantNote, setAssistantNote] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const load = useCallback(async () => {
@@ -43,6 +45,42 @@ export default function ThreadPage() {
   }, [load]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [thread?.messages.length]);
+
+  // The assistant only ever speaks when asked, and posts into the SAME thread
+  // your clinician reads — brainstorming together means everyone sees the same
+  // reply, not a private lookup only you can see.
+  async function handleAskAssistant() {
+    setAsking(true);
+    setAssistantNote("");
+    try {
+      const res = await fetch(`/api/messages/${threadId}/assistant`, { method: "POST" });
+      const data = await res.json().catch(() => null);
+
+      if (res.status === 451) {
+        // The legal gate, not a failure — say which one so it is actionable
+        // rather than a dead end.
+        setAssistantNote(
+          data?.code === "no_consent"
+            ? "Turn on AI in your profile's privacy settings to bring the assistant into this thread."
+            : "No AI provider is configured for this deployment."
+        );
+        return;
+      }
+      if (!res.ok) {
+        setAssistantNote("The assistant could not be reached. Please try again.");
+        return;
+      }
+      if (data?.data?.posted === false) {
+        setAssistantNote("The assistant had nothing to add.");
+        return;
+      }
+      load();
+    } catch {
+      setAssistantNote("The assistant could not be reached. Please try again.");
+    } finally {
+      setAsking(false);
+    }
+  }
 
   async function handleSend(e: React.FormEvent) {
     e.preventDefault();
@@ -135,11 +173,26 @@ export default function ThreadPage() {
             placeholder="Type a message…"
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(e); } }}
           />
-          <button type="submit" className={styles.sendBtn} disabled={sending || !body.trim()}>
-            {sending ? "Sending…" : "Send"}
-          </button>
+          <div className={msgStyles.composeActions}>
+            {/* Brainstorming together: the assistant reads this same thread and
+                replies into it, so your clinician sees exactly what it said —
+                not a private chat only you have access to. */}
+            <button
+              type="button"
+              className={msgStyles.assistantBtn}
+              onClick={handleAskAssistant}
+              disabled={asking}
+              title="Brings the assistant into this conversation. Your clinician sees its reply too."
+            >
+              {asking ? "Asking…" : "Ask assistant"}
+            </button>
+            <button type="submit" className={styles.sendBtn} disabled={sending || !body.trim()}>
+              {sending ? "Sending…" : "Send"}
+            </button>
+          </div>
         </form>
         {sendError && <p className={styles.formErrorTop}>{sendError}</p>}
+        {assistantNote && <p className={msgStyles.assistantNote}>{assistantNote}</p>}
       </div>
     </div>
   );

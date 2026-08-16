@@ -52,6 +52,7 @@ import { assessCancellation, assessReschedule } from "@/lib/domain/cancellation"
 import { getAvailabilityForEmail } from "@/lib/config/scheduling";
 import { isBookableSlot } from "@/lib/domain/scheduling";
 import { getBusyIntervals } from "@/lib/domain/scheduling-data";
+import { canPatientChooseClinician } from "@/lib/domain/care-team";
 import { buildIcsInvite } from "@/lib/domain/ics";
 import { bookingIcsEvent } from "@/lib/domain/booking-calendar";
 import { runAfterResponse } from "@/lib/utils/post-response";
@@ -111,7 +112,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
   // Moving an appointment — decided by the body carrying a new time, not by role.
   if (typeof (body as Record<string, unknown>)?.slot === "string") {
-    return reschedule(body, booking, session);
+    return reschedule(body, booking, session, isAdmin);
   }
 
   // Recording what happened is a clinical act, not a patient preference.
@@ -240,7 +241,8 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
 async function reschedule(
   body: unknown,
   booking: BookingRow,
-  session: { user: { id: string; role?: string | null } }
+  session: { user: { id: string; role?: string | null } },
+  isAdmin: boolean
 ): Promise<NextResponse> {
   const parsed = reschedulePatchSchema.safeParse(body);
   if (!parsed.success) return badRequest("Invalid time");
@@ -268,6 +270,22 @@ async function reschedule(
     return serviceUnavailable();
   }
   if (!clinician) return badRequest("Unknown clinician");
+
+  // Only relevant when this actually SWITCHES doctor — moving a time with the
+  // same clinician is not "choosing" anyone. Staff may override, same as a new
+  // booking: an admin picking up the phone is the exception being made, not a
+  // patient finding a workaround.
+  if (!isAdmin && clinicianId !== booking.clinicianId) {
+    try {
+      const eligible = await canPatientChooseClinician(booking.userId, clinicianId);
+      if (!eligible.ok) {
+        return NextResponse.json({ success: false, error: eligible.error }, { status: 409 });
+      }
+    } catch (err) {
+      console.error("[api/bookings/id] eligibility check failed:", err);
+      return serviceUnavailable();
+    }
+  }
 
   const rules = getAvailabilityForEmail(clinician.email);
   try {

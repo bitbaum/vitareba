@@ -1,0 +1,1 @@
+ALTER TABLE "profiles" ADD COLUMN "accepting_patients" boolean DEFAULT true NOT NULL;
