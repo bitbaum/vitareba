@@ -43,10 +43,20 @@ export async function GET(req: Request) {
     return NextResponse.json({ success: true, data: { url: null } });
   }
 
-  const origin = new URL(req.url).origin || PORTAL_URL;
-
+  // PORTAL_URL, never the request's own URL.
+  //
+  // This app sits behind Caddy, which proxies to 127.0.0.1:4011 — so `req.url`
+  // is the INTERNAL address, and `new URL(req.url).origin` handed every
+  // clinician a subscription link to https://localhost:4011. Pasted into Google
+  // or Apple Calendar it resolves to nothing, on their machine, silently. The
+  // old `|| PORTAL_URL` fallback never fired, because "https://localhost:4011"
+  // is a perfectly non-empty string.
+  //
+  // Deliberately NOT X-Forwarded-Host either: that is attacker-controlled input,
+  // and this link carries a calendar token. PORTAL_URL is configured, is already
+  // the SSOT for every link in every email, and cannot be set by a request.
   return NextResponse.json({
     success: true,
-    data: { url: `${origin}/api/calendar/${id}/${token}.ics` },
+    data: { url: `${PORTAL_URL}/api/calendar/${id}/${token}.ics` },
   });
 }
