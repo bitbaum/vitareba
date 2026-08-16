@@ -1793,9 +1793,119 @@
   flex: 1;
 }
 
+/* ─── Clinical inbox (the Today screen) ──────────────────────────────────── */
+
+.inboxSection {
+  margin-bottom: 2rem;
+}
+
+.inboxHeader {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin-bottom: 0.7rem;
+}
+
+.inboxTitle {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+/* Tone is the whole design of this screen: a section that shouts must be one
+   the reader can trust, so only two of the five are allowed to. */
+.inboxTitleUrgent { composes: inboxTitle; color: var(--danger); }
+.inboxTitleAttention { composes: inboxTitle; color: var(--warn); }
+.inboxTitleRoutine { composes: inboxTitle; color: var(--muted); }
+
+.inboxCount {
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.inboxEmpty {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin: 0;
+  padding: 0.4rem 0;
+}
+
+.inboxItem {
+  display: grid;
+  grid-template-columns: minmax(8rem, 1fr) 3fr auto;
+  align-items: baseline;
+  gap: 0.4rem 1.2rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  color: inherit;
+}
+
+.inboxItem:hover,
+.inboxItem:focus-visible {
+  background: var(--teal-6);
+  outline: none;
+}
+
+.inboxPatient {
+  font-size: 0.88rem;
+  color: var(--ink);
+}
+
+.inboxHeadline {
+  font-size: 0.85rem;
+  color: var(--ink);
+}
+
+.inboxDetail {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin: 0.15rem 0 0;
+  line-height: 1.45;
+}
+
+.inboxWhen {
+  font-size: 0.72rem;
+  color: var(--muted);
+  white-space: nowrap;
+  text-align: right;
+}
+
+/* The state worth designing for: an empty inbox is the goal, not a bug. */
+.inboxClear {
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.inboxClearTitle {
+  font-family: var(--font-cormorant), serif;
+  font-weight: 300;
+  font-size: 1.8rem;
+  color: var(--ink);
+  margin: 0 0 0.4rem;
+}
+
+.inboxClearBody {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0;
+}
+
 /* ─── Mobile responsive ──────────────────────────────────────────────────── */
 
 @media (max-width: 767px) {
+  /* The inbox reads as patient-then-what on a phone; three columns would
+     shrink the headline to two words per line. */
+  .inboxItem {
+    grid-template-columns: 1fr auto;
+  }
+
+  .inboxHeadline {
+    grid-column: 1 / -1;
+  }
+
   /* Stack sidebar above main content */
   .shell {
     display: flex;

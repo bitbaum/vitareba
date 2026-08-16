@@ -13,6 +13,9 @@ type NavItem = {
 };
 
 const NAV_ITEMS: NavItem[] = [
+  // First, and unbadged on purpose: the page whose job is to tell you what is
+  // waiting does not also need a number shouting the same thing at it.
+  { href: ADMIN_ROUTES.root,      label: "Today" },
   { href: ADMIN_ROUTES.patients,  label: "Patients",  badgeKey: "patients" },
   { href: ADMIN_ROUTES.bookings,  label: "Bookings",  badgeKey: "bookings" },
   { href: ADMIN_ROUTES.messages,  label: "Messages",  badgeKey: "messages" },
@@ -21,6 +24,9 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 function isActive(pathname: string, href: string): boolean {
+  // The root is a page, not a prefix. Without this exception every admin URL
+  // starts with "/admin/" and "Today" would light up on all of them.
+  if (href === ADMIN_ROUTES.root) return pathname === href;
   return pathname === href || pathname.startsWith(href + "/");
 }
 

@@ -1,9 +1,8 @@
 import { z } from "zod";
 import { MESSAGE_BODY_MAX_LENGTH } from "@/lib/config/portal";
 import { db } from "@/lib/db";
-import { threads, threadMessages, users } from "@/lib/db/schema";
+import { threads, threadMessages } from "@/lib/db/schema";
 import { eq, and, isNull, ne, inArray } from "drizzle-orm";
-import { USER_ROLE } from "@/lib/config/auth";
 
 /** Validates a message reply body (used for both patient and admin replies) */
 export const replySchema = z.object({
@@ -52,24 +51,57 @@ export async function getAdminUnreadThreadCount(): Promise<number> {
  * Used by the admin messages list to show per-thread unread indicators.
  */
 export async function getAdminUnreadThreadIds(): Promise<Set<string>> {
-  const patients = await db.query.users.findMany({
-    where: eq(users.role, USER_ROLE.patient),
-    columns: { id: true },
+  // "Sent by the patient" is the thread's OWN patient, not "anyone with
+  // role=patient". A clinician who is also somebody's patient (which is how this
+  // practice works by design) has role=admin, so the role test dropped their
+  // messages from the badge entirely — the count silently undercounted exactly
+  // the dual-role people the care_team model exists to support. Same rule as
+  // getAdminUnreadPatientIds below; one definition, not two.
+  const unread = await db
+    .selectDistinct({ threadId: threadMessages.threadId })
+    .from(threadMessages)
+    .innerJoin(threads, eq(threadMessages.threadId, threads.id))
+    .where(and(eq(threadMessages.senderId, threads.patientId), isNull(threadMessages.readAt)));
+
+  return new Set(unread.map((r) => r.threadId));
+}
+
+/**
+ * Threads whose newest message came from the patient — someone is sitting there
+ * waiting for an answer.
+ *
+ * Deliberately NOT the same question as "unread". A message can be read and
+ * still unanswered, and from the patient's side those are identical: they wrote
+ * to their doctor and nothing came back. The inbox is built on this, the badge
+ * on unread.
+ */
+export async function getThreadsAwaitingReply(): Promise<
+  { id: string; patientId: string; subject: string; lastMessageAt: Date }[]
+> {
+  const rows = await db.query.threads.findMany({
+    with: {
+      messages: {
+        orderBy: (m, { desc }) => [desc(m.createdAt)],
+        limit: 1,
+        columns: { senderId: true, createdAt: true },
+      },
+    },
+    columns: { id: true, patientId: true, subject: true, lastMessageAt: true },
   });
 
-  if (patients.length === 0) return new Set();
-
-  const patientIds = patients.map((p) => p.id);
-
-  const unread = await db.query.threadMessages.findMany({
-    where: and(
-      inArray(threadMessages.senderId, patientIds),
-      isNull(threadMessages.readAt)
-    ),
-    columns: { threadId: true },
-  });
-
-  return new Set(unread.map((m) => m.threadId));
+  return rows
+    .filter((t) => {
+      const newest = t.messages[0];
+      // A thread with no messages is waiting on nobody. A message whose sender
+      // was deleted (senderId null) is not evidence the patient wrote last.
+      return Boolean(newest?.senderId) && newest.senderId === t.patientId;
+    })
+    .map(({ id, patientId, subject, lastMessageAt }) => ({
+      id,
+      patientId,
+      subject,
+      lastMessageAt,
+    }));
 }
 
 /**
