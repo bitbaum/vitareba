@@ -10,6 +10,7 @@ import {
   PORTAL_ROUTE_SHORT_LABELS,
   PORTAL_NAV_GROUPS,
   PORTAL_BOTTOM_NAV,
+  type PortalRoute,
 } from "@/lib/config/routes";
 
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
@@ -89,22 +90,49 @@ const IcoProfile = () => (
   </svg>
 );
 
-// Icon per route — presentation-only mapping; nav STRUCTURE lives in
-// lib/config/routes.ts (PORTAL_NAV_GROUPS / PORTAL_BOTTOM_NAV).
-const ROUTE_ICONS: Record<string, React.ComponentType> = {
+const IcoLabs = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6.5 1.5v4.2L2.8 12a1.5 1.5 0 0 0 1.3 2.3h7.8a1.5 1.5 0 0 0 1.3-2.3L9.5 5.7V1.5"/>
+    <line x1="5.5" y1="1.5" x2="10.5" y2="1.5"/>
+    <line x1="4.4" y1="9.5" x2="11.6" y2="9.5"/>
+  </svg>
+);
+
+/**
+ * Icon per route — presentation only; nav STRUCTURE lives in
+ * lib/config/routes.ts (PORTAL_NAV_GROUPS / PORTAL_BOTTOM_NAV).
+ *
+ * KEYED BY PortalRoute, NOT string, and that is the whole point. It was
+ * `Record<string, ComponentType>`, which accepts any key and therefore promises
+ * a component for keys it does not have. Adding /labs to the nav compiled
+ * perfectly, looked up an icon that was not there, and rendered `<undefined />`
+ * — which React answers with "Element type is invalid". PortalNav is in the
+ * portal LAYOUT, so that one missing entry took down every page in the patient
+ * portal at once: dashboard, check-in, messages, bookings, all of it.
+ *
+ * With an exhaustive Record the same mistake is a compile error, and CI catches
+ * it before anyone's portal does.
+ */
+const ROUTE_ICONS: Record<PortalRoute, React.ComponentType> = {
   [PORTAL_ROUTES.dashboard]:   IcoDashboard,
   [PORTAL_ROUTES.checkin]:     IcoCheckin,
   [PORTAL_ROUTES.assessment]:  IcoAssessment,
   [PORTAL_ROUTES.assessments]: IcoResults,
+  [PORTAL_ROUTES.labs]:        IcoLabs,
   [PORTAL_ROUTES.goals]:       IcoGoals,
   [PORTAL_ROUTES.bookings]:    IcoBookings,
   [PORTAL_ROUTES.messages]:    IcoMessages,
   [PORTAL_ROUTES.documents]:   IcoDocuments,
   [PORTAL_ROUTES.profile]:     IcoProfile,
+  [PORTAL_ROUTES.regulation]:  IcoDocuments,
 };
 
-// Routes that carry a live badge count
-const ROUTE_BADGE_KEYS: Record<string, "messages" | "goals"> = {
+/**
+ * Routes that carry a live badge count. Genuinely PARTIAL — most routes have no
+ * badge — and typed as Partial so that is a stated fact rather than the same
+ * loose `string` key that hid the missing icon.
+ */
+const ROUTE_BADGE_KEYS: Partial<Record<PortalRoute, "messages" | "goals">> = {
   [PORTAL_ROUTES.messages]: "messages",
   [PORTAL_ROUTES.goals]:    "goals",
 };
@@ -125,7 +153,7 @@ function useBadges({ unreadMessages = 0, newGoals = 0 }: BadgeProps) {
   return { pathname, badges: { messages: unreadMessages, goals: goalsOnPage ? 0 : newGoals } };
 }
 
-function badgeCount(href: string, badges: { messages: number; goals: number }): number {
+function badgeCount(href: PortalRoute, badges: { messages: number; goals: number }): number {
   const key = ROUTE_BADGE_KEYS[href];
   return key ? badges[key] : 0;
 }
