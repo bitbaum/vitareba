@@ -120,6 +120,10 @@
   composes: cardMb from "../shared.module.css";
 }
 
+.checkboxRow { composes: checkboxRow from "../shared.module.css"; }
+.checkboxInput { composes: checkboxInput from "../shared.module.css"; }
+.checkboxHint { composes: checkboxHint from "../shared.module.css"; }
+
 .table {
   width: 100%;
   border-collapse: collapse;

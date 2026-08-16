@@ -4,7 +4,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const {
   mockRequireSession,
   mockBookingFindMany,
+  mockBookingFindFirst,
   mockUserFindFirst,
+  mockCareTeamFindFirst,
   mockInsert,
   mockSendEmail,
   mockGetAdminEmails,
@@ -13,7 +15,9 @@ const {
 } = vi.hoisted(() => ({
   mockRequireSession: vi.fn(),
   mockBookingFindMany: vi.fn(),
+  mockBookingFindFirst: vi.fn(),
   mockUserFindFirst: vi.fn(),
+  mockCareTeamFindFirst: vi.fn(),
   mockInsert: vi.fn(),
   mockSendEmail: vi.fn(),
   mockGetAdminEmails: vi.fn(),
@@ -29,8 +33,9 @@ vi.mock("@/lib/auth/guards", () => ({ requireSession: mockRequireSession }));
 vi.mock("@/lib/db", () => ({
   db: {
     query: {
-      bookings: { findMany: mockBookingFindMany },
+      bookings: { findMany: mockBookingFindMany, findFirst: mockBookingFindFirst },
       users:    { findFirst: mockUserFindFirst },
+      careTeam: { findFirst: mockCareTeamFindFirst },
       calendarBusy: { findMany: mockCalendarBusyFindMany },
     },
     insert: mockInsert,
@@ -370,6 +375,58 @@ describe("POST /api/bookings (patient, slot)", () => {
     });
     expect((await POST(req)).status).toBe(201);
     expect(insertedValues()).toMatchObject({ userId: PATIENT_ID_SELF, scheduledAt: NOW_SLOT });
+  });
+
+  // ── Closed intake ──────────────────────────────────────────────────────────
+  //
+  // Same rule the care-team picker enforces (canPatientChooseClinician), now
+  // exercised through the OTHER door a patient can "choose" a doctor from: a
+  // brand new booking. If only the care-team endpoint enforced this, a patient
+  // could bypass a closed clinician entirely by booking a slot directly without
+  // ever adding them to their care team.
+  describe("a clinician who has closed intake", () => {
+    const CLOSED_CLINICIAN = { ...CLINICIAN, profile: { acceptingPatients: false } };
+
+    beforeEach(() => {
+      mockUserFindFirst.mockResolvedValue(CLOSED_CLINICIAN);
+      mockCareTeamFindFirst.mockReset();
+      mockBookingFindFirst.mockReset();
+    });
+
+    it("refuses a brand new patient with 409, by name", async () => {
+      mockRequireSession.mockResolvedValue(PATIENT_SESSION);
+      mockCareTeamFindFirst.mockResolvedValue(undefined);
+      mockBookingFindFirst.mockResolvedValue(undefined);
+      const res = await POST(slotReq(NOW_SLOT.toISOString()));
+      expect(res.status).toBe(409);
+      const body = await res.json();
+      expect(body.error).toContain("not accepting new patients");
+      expect(mockInsert).not.toHaveBeenCalled();
+    });
+
+    it("still allows an existing care-team member to book", async () => {
+      mockRequireSession.mockResolvedValue(PATIENT_SESSION);
+      mockCareTeamFindFirst.mockResolvedValue({ patientId: PATIENT_ID_SELF });
+      const res = await POST(slotReq(NOW_SLOT.toISOString()));
+      expect(res.status).toBe(201);
+    });
+
+    it("still allows a patient with any prior booking history, even without care-team membership", async () => {
+      mockRequireSession.mockResolvedValue(PATIENT_SESSION);
+      mockCareTeamFindFirst.mockResolvedValue(undefined);
+      mockBookingFindFirst.mockResolvedValue({ id: "earlier-booking" });
+      const res = await POST(slotReq(NOW_SLOT.toISOString()));
+      expect(res.status).toBe(201);
+    });
+
+    it("lets staff book on a patient's behalf regardless of intake status", async () => {
+      // The clinic picking up the phone is the exception being made — not a
+      // patient finding a workaround.
+      mockRequireSession.mockResolvedValue(ADMIN_SESSION);
+      const res = await POST(slotReq(NOW_SLOT.toISOString()));
+      expect(res.status).toBe(201);
+      expect(mockCareTeamFindFirst).not.toHaveBeenCalled();
+    });
   });
 });
 

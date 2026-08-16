@@ -14,6 +14,7 @@ import { bookingCreateSchema, adminBookingCreateSchema, slotBookingSchema } from
 import { getAvailabilityForEmail } from "@/lib/config/scheduling";
 import { isBookableSlot } from "@/lib/domain/scheduling";
 import { getBusyIntervals } from "@/lib/domain/scheduling-data";
+import { canPatientChooseClinician } from "@/lib/domain/care-team";
 import { buildIcsInvite } from "@/lib/domain/ics";
 import { bookingIcsEvent } from "@/lib/domain/booking-calendar";
 
@@ -215,6 +216,24 @@ async function bookSlot(
     }
     if (!clinician) {
       return NextResponse.json({ success: false, error: "Unknown clinician" }, { status: 400 });
+    }
+
+    // A patient starting a NEW relationship with a clinician who has closed
+    // intake is refused here — the same rule the care-team picker enforces, so
+    // "not accepting" means the same thing whichever door a patient tries.
+    // Staff booking on a patient's behalf may override: a clinician can always
+    // choose to make an exception, and that choice is the admin picking up the
+    // phone, not a patient finding a workaround.
+    if (!isAdmin) {
+      try {
+        const eligible = await canPatientChooseClinician(patientId, clinician.id);
+        if (!eligible.ok) {
+          return NextResponse.json({ success: false, error: eligible.error }, { status: 409 });
+        }
+      } catch (err) {
+        console.error("[api/bookings] eligibility check failed:", err);
+        return serviceUnavailable();
+      }
     }
 
     // Engine re-check: the slot must still be one we'd offer right now

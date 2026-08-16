@@ -67,7 +67,9 @@ export default function BookingsPage() {
   // ── Slot picker state ──────────────────────────────────────────────────────
   const [slots, setSlots] = useState<string[]>([]);
   const [slotsLoading, setSlotsLoading] = useState(true);
-  const [clinicians, setClinicians] = useState<{ id: string; name: string | null }[]>([]);
+  const [clinicians, setClinicians] = useState<
+    { id: string; name: string | null; acceptingPatients: boolean }[]
+  >([]);
   const [clinicianId, setClinicianId] = useState<string | null>(null);
   const [careTeam, setCareTeam] = useState<string[]>([]);
   const [slotMinutes, setSlotMinutes] = useState(DEFAULT_SLOT_MINUTES);
@@ -137,6 +139,10 @@ export default function BookingsPage() {
 
   const selectedClinician = clinicians.find((c) => c.id === clinicianId) ?? null;
   const clinicianLabel = selectedClinician?.name ?? "your clinician";
+  // Same rule the server enforces (canPatientChooseClinician) — reflected here
+  // so the button is honest before it is clicked, not a way to skip a round trip.
+  const selectedClinicianClosed =
+    !!selectedClinician && !selectedClinician.acceptingPatients && !careTeam.includes(selectedClinician.id);
 
   async function handleSlotBook() {
     if (!selectedSlot) return;
@@ -161,7 +167,11 @@ export default function BookingsPage() {
         setSlotError(
           data.code === "slot_taken"
             ? "That slot was just taken — the list has been refreshed, please pick another."
-            : "Booking failed. Please try again."
+            // The server is the authority here, not just the disabled button
+            // above — a doctor can close intake between page load and click,
+            // and that message ("not accepting new patients right now") is
+            // more useful than a generic failure.
+            : (data.error ?? "Booking failed. Please try again.")
         );
         loadSlots(clinicianId);
         setSelectedSlot(null);
@@ -268,13 +278,18 @@ export default function BookingsPage() {
                   {clinicians.map((c) => {
                     const active = c.id === clinicianId;
                     const mine = careTeam.includes(c.id);
+                    // Still browsable — seeing when a closed doctor would have
+                    // room is useful on its own, and the clinic may take a
+                    // patient by exception. Confirming a NEW booking with them
+                    // is what the server (and the button below) refuses.
+                    const closedToMe = !c.acceptingPatients && !mine;
                     return (
                       <button
                         key={c.id}
                         type="button"
                         role="radio"
                         aria-checked={active}
-                        className={`${bookingStyles.clinicianCard}${active ? ` ${bookingStyles.clinicianCardActive}` : ""}`}
+                        className={`${bookingStyles.clinicianCard}${active ? ` ${bookingStyles.clinicianCardActive}` : ""}${closedToMe ? ` ${bookingStyles.clinicianCardClosed}` : ""}`}
                         onClick={() => selectClinician(c.id)}
                       >
                         <span className={bookingStyles.clinicianAvatar} aria-hidden="true">
@@ -284,13 +299,18 @@ export default function BookingsPage() {
                           <span className={bookingStyles.clinicianName}>
                             {c.name ?? "Clinician"}
                             {mine && <span className={bookingStyles.clinicianBadge}>Your clinician</span>}
+                            {closedToMe && (
+                              <span className={bookingStyles.clinicianBadgeWarn}>Not accepting new patients</span>
+                            )}
                           </span>
                           <span className={bookingStyles.clinicianMeta}>
-                            {active
-                              ? dayKeys.length > 0
-                                ? `Next free: ${dayKeys[0]}`
-                                : "No open times right now"
-                              : "See available times"}
+                            {closedToMe
+                              ? "Viewing only — contact the clinic to book"
+                              : active
+                                ? dayKeys.length > 0
+                                  ? `Next free: ${dayKeys[0]}`
+                                  : "No open times right now"
+                                : "See available times"}
                           </span>
                         </span>
                       </button>
@@ -375,15 +395,17 @@ export default function BookingsPage() {
                     type="button"
                     className={`${styles.btnPrimary} ${bookingStyles.confirmBtn}`}
                     onClick={handleSlotBook}
-                    disabled={!selectedSlot || slotBooking}
+                    disabled={!selectedSlot || slotBooking || selectedClinicianClosed}
                   >
-                    {slotBooking
-                      ? movingBooking
-                        ? "Moving…"
-                        : "Booking…"
-                      : movingBooking
-                        ? "Move to this time"
-                        : "Confirm appointment"}
+                    {selectedClinicianClosed
+                      ? "Not accepting new patients"
+                      : slotBooking
+                        ? movingBooking
+                          ? "Moving…"
+                          : "Booking…"
+                        : movingBooking
+                          ? "Move to this time"
+                          : "Confirm appointment"}
                   </button>
                 </div>
               </>

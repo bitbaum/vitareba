@@ -10,21 +10,39 @@
 
 import { and, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { careTeam, users } from "@/lib/db/schema";
+import { bookings, careTeam, profiles } from "@/lib/db/schema";
 
-export type Clinician = { id: string; name: string | null };
+export type Clinician = { id: string; name: string | null; acceptingPatients: boolean };
 
 /** A clinician plus the address to notify them at (users.email is NOT NULL). */
 export type ClinicianContact = Clinician & { email: string };
 
 export type CareTeamResult = { ok: true } | { ok: false; error: string };
 
-/** Every account marked as a clinician — the pool a patient can choose from. */
+/**
+ * Every account marked as a clinician — the pool a patient can choose from.
+ *
+ * A clinician is NEVER hidden here for being closed to new patients — hiding a
+ * person reads as the clinic disowning them, and an existing patient must still
+ * be able to find their own doctor. `acceptingPatients` is carried so the UI can
+ * say so and steer NEW choices elsewhere; enforcement lives at the point a
+ * patient actually chooses (canPatientChooseClinician), not at listing time.
+ */
 export async function getClinicianRoster(): Promise<Clinician[]> {
-  return db.query.users.findMany({
-    where: eq(users.isClinician, true),
+  const rows = await db.query.users.findMany({
+    where: (u, { eq }) => eq(u.isClinician, true),
     columns: { id: true, name: true },
+    with: { profile: { columns: { acceptingPatients: true } } },
   });
+  // A clinician with no profile row yet (the column lives on `profiles`,
+  // created lazily on first save) reads as accepting — the same default the
+  // column itself carries, kept honest rather than silently becoming `false`
+  // through the missing relation.
+  return rows.map((r) => ({
+    id: r.id,
+    name: r.name,
+    acceptingPatients: r.profile?.acceptingPatients ?? true,
+  }));
 }
 
 /**
@@ -35,10 +53,17 @@ export async function getClinicianRoster(): Promise<Clinician[]> {
  */
 export async function getClinicianById(id: string): Promise<ClinicianContact | null> {
   const row = await db.query.users.findFirst({
-    where: and(eq(users.id, id), eq(users.isClinician, true)),
+    where: (u, { and, eq }) => and(eq(u.id, id), eq(u.isClinician, true)),
     columns: { id: true, name: true, email: true },
+    with: { profile: { columns: { acceptingPatients: true } } },
   });
-  return row ?? null;
+  if (!row) return null;
+  return {
+    id: row.id,
+    name: row.name,
+    email: row.email,
+    acceptingPatients: row.profile?.acceptingPatients ?? true,
+  };
 }
 
 /**
@@ -88,4 +113,75 @@ export async function removeCareTeamMember(
     .delete(careTeam)
     .where(and(eq(careTeam.patientId, patientId), eq(careTeam.clinicianId, clinicianId)));
   return { ok: true };
+}
+
+/**
+ * May this patient start (or continue) a relationship with this clinician?
+ *
+ * THE ONE PLACE this is decided — the care-team picker and a new slot booking
+ * both call it, so "not accepting" means the same thing everywhere instead of
+ * being enforced once and forgotten elsewhere.
+ *
+ *   • Choosing yourself is always allowed — a dual-role clinician must be able
+ *     to walk their own patient path regardless of their own intake setting.
+ *   • An EXISTING relationship is always allowed to continue. Closing intake
+ *     protects a calendar from new patients; it must never look like being
+ *     dropped by a doctor mid-treatment. "Existing" is deliberately wider than
+ *     care-team membership: a patient who has ever had ANY booking with this
+ *     clinician (even one still pending) already has a relationship, and a
+ *     patient who has not yet completed their own care-team pick should not be
+ *     blocked from confirming the very consultation that would create it.
+ *   • Otherwise it comes down to whether the clinician is accepting.
+ */
+export async function canPatientChooseClinician(
+  patientId: string,
+  clinicianId: string
+): Promise<CareTeamResult> {
+  if (patientId === clinicianId) return { ok: true };
+
+  const clinician = await getClinicianById(clinicianId);
+  if (!clinician) return { ok: false, error: "Unknown clinician" };
+  if (clinician.acceptingPatients) return { ok: true };
+
+  const existing = await db.query.careTeam.findFirst({
+    where: and(eq(careTeam.patientId, patientId), eq(careTeam.clinicianId, clinicianId)),
+    columns: { patientId: true },
+  });
+  if (existing) return { ok: true };
+
+  const priorBooking = await db.query.bookings.findFirst({
+    where: and(eq(bookings.userId, patientId), eq(bookings.clinicianId, clinicianId)),
+    columns: { id: true },
+  });
+  if (priorBooking) return { ok: true };
+
+  return {
+    ok: false,
+    error: `${clinician.name ?? "This clinician"} is not accepting new patients right now.`,
+  };
+}
+
+/** Whether this clinician is currently taking on new patients. Missing profile reads as accepting. */
+export async function isAcceptingPatients(clinicianId: string): Promise<boolean> {
+  const row = await db.query.profiles.findFirst({
+    where: eq(profiles.userId, clinicianId),
+    columns: { acceptingPatients: true },
+  });
+  return row?.acceptingPatients ?? true;
+}
+
+/**
+ * Self-service only: a clinician sets their OWN status. Upserts the profile
+ * row rather than assuming one exists — profiles are created lazily, and a
+ * clinician who has never touched their profile still needs to be able to
+ * close intake on day one.
+ */
+export async function setAcceptingPatients(clinicianId: string, accepting: boolean): Promise<void> {
+  await db
+    .insert(profiles)
+    .values({ userId: clinicianId, acceptingPatients: accepting })
+    .onConflictDoUpdate({
+      target: profiles.userId,
+      set: { acceptingPatients: accepting, updatedAt: new Date() },
+    });
 }

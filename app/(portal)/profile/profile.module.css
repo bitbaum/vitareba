@@ -139,26 +139,9 @@
 
 /* ─── Email preferences ───────────────────────────────────────────────────── */
 
-.checkboxRow {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 0.85rem;
-  color: var(--ink2);
-  cursor: pointer;
-}
-
-.checkboxInput {
-  width: 1rem;
-  height: 1rem;
-  accent-color: var(--teal);
-}
-
-.checkboxHint {
-  font-size: 0.75rem;
-  color: var(--muted);
-  margin: 0.5rem 0 1rem;
-}
+.checkboxRow { composes: checkboxRow from "../../shared.module.css"; }
+.checkboxInput { composes: checkboxInput from "../../shared.module.css"; }
+.checkboxHint { composes: checkboxHint from "../../shared.module.css"; }
 
 .checkboxHint:last-child {
   margin-bottom: 0;
@@ -179,6 +162,25 @@
 
 .pwSubmitBtn {
   align-self: flex-start;
+}
+
+/* ─── Care team — same visual language as the booking picker's clinician
+   cards, composed rather than redefined, so "your doctor" reads as one
+   consistent idea whether you are choosing them or booking with them. ─────── */
+
+.clinicianRow { composes: clinicianRow from "../bookings/bookings.module.css"; }
+.clinicianCard { composes: clinicianCard from "../bookings/bookings.module.css"; cursor: default; }
+.clinicianCardActive { composes: clinicianCardActive from "../bookings/bookings.module.css"; }
+.clinicianAvatar { composes: clinicianAvatar from "../bookings/bookings.module.css"; }
+.clinicianText { composes: clinicianText from "../bookings/bookings.module.css"; }
+.clinicianName { composes: clinicianName from "../bookings/bookings.module.css"; }
+.clinicianMeta { composes: clinicianMeta from "../bookings/bookings.module.css"; }
+.clinicianBadge { composes: clinicianBadge from "../bookings/bookings.module.css"; }
+.clinicianBadgeWarn { composes: clinicianBadgeWarn from "../bookings/bookings.module.css"; }
+
+.clinicianAction {
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 /* ─── Mobile ──────────────────────────────────────────────────────────────── */

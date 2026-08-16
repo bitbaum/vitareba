@@ -6,6 +6,7 @@ import { requireSession } from "@/lib/auth/guards";
 import { badRequest, serviceUnavailable } from "@/lib/utils/api-response";
 import {
   addCareTeamMember,
+  canPatientChooseClinician,
   getCareTeamIds,
   getClinicianRoster,
   removeCareTeamMember,
@@ -39,6 +40,12 @@ export async function POST(req: Request) {
   if (!parsed.success) return badRequest("Invalid data");
 
   try {
+    // Closed intake is enforced HERE, at the moment of choosing — never by
+    // hiding the clinician from the roster (an existing patient must still be
+    // able to find their own doctor in the same list).
+    const eligible = await canPatientChooseClinician(guard.session.user.id, parsed.data.clinicianId);
+    if (!eligible.ok) return badRequest(eligible.error);
+
     const result = await addCareTeamMember(parsed.data.clinicianId, guard.session.user.id);
     if (!result.ok) return badRequest(result.error);
   } catch (err) {

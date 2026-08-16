@@ -165,6 +165,15 @@ export const profiles = pgTable("profiles", {
   notes: text("notes"),
   digestOptOut: boolean("digest_opt_out").notNull().default(false),
   reminderOptOut: boolean("reminder_opt_out").notNull().default(false),
+  // Meaningful only when users.isClinician is true — whether this clinician is
+  // taking on NEW patients right now. Self-service: a clinician sets their own,
+  // nobody sets it for them. Defaults true so a fresh clinician account is
+  // bookable immediately, and a patient with no profile row yet (the column
+  // lives on `profiles`, which is created lazily) still reads as accepting.
+  // Never hides a clinician from a patient who already has a relationship with
+  // them — closing intake protects a calendar from NEW patients, not existing
+  // ones mid-treatment.
+  acceptingPatients: boolean("accepting_patients").notNull().default(true),
   // Signal tracking (updated by cron/signals, used to detect critical transitions)
   lastKnownSignal: varchar("last_known_signal", { length: 20 }),
   criticalAlertSentAt: timestamp("critical_alert_sent_at", { mode: "date" }),

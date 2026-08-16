@@ -107,6 +107,26 @@
   vertical-align: middle;
 }
 
+/* "Closed to new patients", never "unavailable" or hidden — the clinician is
+   still a real choice for anyone who already has a relationship with them.
+   Warn-toned, not danger-toned: this is a normal state a busy practice is in,
+   not a fault. */
+.clinicianBadgeWarn {
+  composes: clinicianBadge;
+  background: var(--warn-10);
+  color: var(--warn);
+}
+
+.clinicianCardClosed {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.clinicianCardClosed:hover,
+.clinicianCardClosed:focus-visible {
+  border-color: var(--border);
+}
+
 /* ── Which day: scroll-snapped date rail ── */
 
 .dateRail {
