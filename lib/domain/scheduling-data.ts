@@ -10,6 +10,7 @@ import { bookings, users } from "@/lib/db/schema";
 import { BOOKING_STATUS } from "@/lib/config/booking-status";
 import { getAvailabilityForEmail, type ClinicianAvailability } from "@/lib/config/scheduling";
 import { generateSlots, slotBusyInterval, type BusyInterval } from "./scheduling";
+import { getExternalBusy } from "./calendar-sync";
 
 export type Clinician = { id: string; name: string | null; email: string };
 
@@ -23,25 +24,41 @@ export async function getClinicians(): Promise<Clinician[]> {
 }
 
 /**
- * Active (pending/confirmed) scheduled appointments from `now` on that block
- * this clinician. Legacy rows without a clinician block EVERY clinician —
- * conservative, no double-booking risk.
+ * Everything that blocks this clinician's slots from `now` on.
+ *
+ * TWO SOURCES, and both are necessary:
+ *
+ *  1. VitaReBa's own appointments. Legacy rows without a clinician block EVERY
+ *     clinician — conservative, and never a double booking.
+ *  2. The clinician's real calendar, read from cache. Without this the engine
+ *     cheerfully offers a patient the hour their doctor is at a school concert,
+ *     which is the failure the whole subscription feature exists to prevent.
+ *
+ * External busy time is used AS IS, without the appointment buffer. The buffer
+ * is time the clinic reserves after its own consultations for notes and
+ * overruns; a dentist appointment in someone's private calendar already has
+ * whatever margin they gave it, and padding it would quietly delete two further
+ * bookable slots around every event in their life.
  */
 export async function getBusyIntervals(
   now: Date,
   clinicianId: string,
   rules: ClinicianAvailability
 ): Promise<BusyInterval[]> {
-  const rows = await db.query.bookings.findMany({
-    where: and(
-      inArray(bookings.status, [BOOKING_STATUS.pending, BOOKING_STATUS.confirmed]),
-      isNotNull(bookings.scheduledAt),
-      gte(bookings.scheduledAt, now),
-      or(eq(bookings.clinicianId, clinicianId), isNull(bookings.clinicianId))
-    ),
-    columns: { scheduledAt: true },
-  });
-  return rows.map((r) => slotBusyInterval(r.scheduledAt!, rules));
+  const [rows, external] = await Promise.all([
+    db.query.bookings.findMany({
+      where: and(
+        inArray(bookings.status, [BOOKING_STATUS.pending, BOOKING_STATUS.confirmed]),
+        isNotNull(bookings.scheduledAt),
+        gte(bookings.scheduledAt, now),
+        or(eq(bookings.clinicianId, clinicianId), isNull(bookings.clinicianId))
+      ),
+      columns: { scheduledAt: true },
+    }),
+    getExternalBusy([clinicianId], now),
+  ]);
+
+  return [...rows.map((r) => slotBusyInterval(r.scheduledAt!, rules)), ...external];
 }
 
 /** Slots currently offered for one clinician. */

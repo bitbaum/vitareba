@@ -64,6 +64,13 @@
       "when": 1786877809109,
       "tag": "0008_peaceful_wendell_vaughn",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1786882150803,
+      "tag": "0009_flippant_scorpion",
+      "breakpoints": true
     }
   ]
 }

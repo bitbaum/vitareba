@@ -13,6 +13,7 @@ import { formatDateShort, formatDateNumeric, formatSlotDay, formatSlotTime } fro
 import { ADMIN_ROUTES } from "@/lib/config/routes";
 import { LoadingState } from "@/components/LoadingState";
 import { CalendarSubscribeCard } from "@/components/admin/CalendarSubscribeCard";
+import { CalendarSubscriptions } from "@/components/admin/CalendarSubscriptions";
 
 
 // "upcoming" answers the clinician's daily question — who am I seeing next? —
@@ -91,6 +92,13 @@ export default function AdminBookingsPage() {
       </p>
 
       <CalendarSubscribeCard />
+
+      {/* The other direction: your calendar blocking slots here, rather than
+          this clinic's appointments appearing in your calendar. */}
+      <div className={styles.cardMb}>
+        <p className={styles.cardLabel}>Your calendars block slots here</p>
+        <CalendarSubscriptions />
+      </div>
 
       <div className={styles.filterBar}>
         {FILTER_OPTIONS.map((f) => (

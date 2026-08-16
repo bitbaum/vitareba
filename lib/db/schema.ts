@@ -333,6 +333,72 @@ export const careTeam = pgTable(
   (t) => [primaryKey({ columns: [t.clinicianId, t.patientId] })]
 );
 
+// ─── External calendars ───────────────────────────────────────────────────────
+
+/**
+ * A clinician's own calendar, subscribed to read-only.
+ *
+ * Every calendar app publishes a private "secret address in iCal format" URL.
+ * Pointing at one is how a school run, a conference or a dentist stops this
+ * platform from offering that hour to a patient — with no OAuth application, no
+ * vendor to depend on, and nothing to pay. It works identically for Google,
+ * Apple, Outlook and anything else that speaks iCalendar.
+ *
+ * READ-ONLY BY CONSTRUCTION. Nothing here can write to anyone's calendar.
+ * VitaReBa appointments travel the other way, through the .ics invites already
+ * attached to confirmation emails.
+ */
+export const clinicianCalendars = pgTable("clinician_calendars", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  clinicianId: uuid("clinician_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  /** What the clinician calls it — "Personal", "Hospital rota". */
+  label: text("label").notNull(),
+  /**
+   * THE SECRET URL. Anyone holding it can read that person's whole calendar, so
+   * it is never returned to the browser (the API answers with a masked form) and
+   * never logged. Stored rather than hashed because fetching needs the original;
+   * the protection is that it leaves the database only to be fetched.
+   */
+  icsUrl: text("ics_url").notNull(),
+  active: boolean("active").notNull().default(true),
+  lastFetchedAt: timestamp("last_fetched_at", { mode: "date" }),
+  /** Why the last fetch failed, in words, so a broken feed is visible not silent. */
+  lastError: text("last_error"),
+  /** Busy intervals found at the last successful fetch. */
+  lastEventCount: integer("last_event_count"),
+  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
+});
+
+/**
+ * Busy time read from an external calendar, cached.
+ *
+ * Cached rather than fetched during slot generation, for two reasons that both
+ * matter: a network call on every page load makes the picker slow, and a
+ * calendar host that is down or rate-limiting would otherwise make the clinic
+ * look completely free. A stale cache offers one slot that is actually taken;
+ * no cache at all offers EVERY slot that is actually taken.
+ */
+export const calendarBusy = pgTable(
+  "calendar_busy",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    calendarId: uuid("calendar_id")
+      .notNull()
+      .references(() => clinicianCalendars.id, { onDelete: "cascade" }),
+    // Denormalised from the calendar so slot generation never has to join.
+    clinicianId: uuid("clinician_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    // Times only. No title, no guests, no description — the clinic needs to know
+    // that an hour is taken, never what its doctor is doing in it.
+    startsAt: timestamp("starts_at", { mode: "date" }).notNull(),
+    endsAt: timestamp("ends_at", { mode: "date" }).notNull(),
+  },
+  (t) => [index("calendar_busy_clinician_idx").on(t.clinicianId, t.startsAt)]
+);
+
 // ─── Documents ────────────────────────────────────────────────────────────────
 
 export const documents = pgTable("documents", {
@@ -494,6 +560,8 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   }),
   clinicalGoals: many(clinicalGoals, { relationName: "patient_goals" }),
   measurements: many(measurements, { relationName: "patient_measurements" }),
+  calendars: many(clinicianCalendars, { relationName: "clinician_calendars" }),
+  calendarBusy: many(calendarBusy, { relationName: "clinician_busy" }),
   recordedMeasurements: many(measurements, { relationName: "recorded_measurements" }),
   emailQueue: many(emailQueue),
   assessmentLeads: many(assessmentLeads),
@@ -635,6 +703,27 @@ export const measurementsRelations = relations(measurements, ({ one }) => ({
     fields: [measurements.recordedBy],
     references: [users.id],
     relationName: "recorded_measurements",
+  }),
+}));
+
+export const clinicianCalendarsRelations = relations(clinicianCalendars, ({ one, many }) => ({
+  clinician: one(users, {
+    fields: [clinicianCalendars.clinicianId],
+    references: [users.id],
+    relationName: "clinician_calendars",
+  }),
+  busy: many(calendarBusy),
+}));
+
+export const calendarBusyRelations = relations(calendarBusy, ({ one }) => ({
+  calendar: one(clinicianCalendars, {
+    fields: [calendarBusy.calendarId],
+    references: [clinicianCalendars.id],
+  }),
+  clinician: one(users, {
+    fields: [calendarBusy.clinicianId],
+    references: [users.id],
+    relationName: "clinician_busy",
   }),
 }));
 
