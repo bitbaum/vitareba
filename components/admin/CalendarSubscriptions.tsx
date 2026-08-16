@@ -101,7 +101,12 @@ export function CalendarSubscriptions({ clinicianId }: { clinicianId?: string })
       // is how a clinician ends up double-booked believing they are protected.
       setNotice(
         body?.data?.synced
-          ? `Connected — ${body.data.intervals} busy period${body.data.intervals === 1 ? "" : "s"} are now blocking slots.`
+          ? body.data.intervals === 0
+            // Zero is a real and correct answer — holiday calendars mark every
+            // event as free time. Without saying so, a working subscription
+            // looks broken and gets deleted.
+            ? "Connected — but nothing in it blocks time. Calendars of holidays or birthdays mark their entries as free, so they never take a slot."
+            : `Connected — ${body.data.intervals} busy period${body.data.intervals === 1 ? "" : "s"} are now blocking slots.`
           : `Saved, but the first read failed: ${body?.data?.error ?? "unknown reason"}`
       );
       await load();

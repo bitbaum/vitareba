@@ -13,6 +13,7 @@ export const PORTAL_ROUTES = {
   checkin:     "/checkin",
   assessment:  "/assessment",
   assessments: "/assessments",
+  labs:        "/labs",
   goals:       "/goals",
   bookings:    "/bookings",
   messages:    "/messages",
@@ -41,6 +42,7 @@ export const PORTAL_ROUTE_LABELS: Record<
   [PORTAL_ROUTES.checkin]:     "Daily Check-in",
   [PORTAL_ROUTES.assessment]:  "Assessment",
   [PORTAL_ROUTES.assessments]: "My Results",
+  [PORTAL_ROUTES.labs]:        "Labs & Vitals",
   [PORTAL_ROUTES.goals]:       "My Goals",
   [PORTAL_ROUTES.bookings]:    "Bookings",
   [PORTAL_ROUTES.messages]:    "Messages",
@@ -60,7 +62,7 @@ export const PORTAL_NAV_GROUPS: {
   routes: (typeof PORTAL_ROUTES)[keyof typeof PORTAL_ROUTES][];
 }[] = [
   { label: null,      routes: [PORTAL_ROUTES.dashboard] },
-  { label: "Track",   routes: [PORTAL_ROUTES.checkin, PORTAL_ROUTES.assessment, PORTAL_ROUTES.assessments, PORTAL_ROUTES.goals] },
+  { label: "Track",   routes: [PORTAL_ROUTES.checkin, PORTAL_ROUTES.assessment, PORTAL_ROUTES.assessments, PORTAL_ROUTES.labs, PORTAL_ROUTES.goals] },
   { label: "Care",    routes: [PORTAL_ROUTES.bookings, PORTAL_ROUTES.messages, PORTAL_ROUTES.documents] },
   { label: "Account", routes: [PORTAL_ROUTES.profile] },
 ];
@@ -79,6 +81,7 @@ export const PORTAL_ROUTE_SHORT_LABELS: Partial<
 > = {
   [PORTAL_ROUTES.dashboard]: "Home",
   [PORTAL_ROUTES.checkin]:   "Check-in",
+  [PORTAL_ROUTES.labs]:      "Labs",
 };
 
 /**
