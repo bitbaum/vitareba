@@ -18,6 +18,8 @@ export default function AdminThreadPage() {
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState("");
+  const [asking, setAsking] = useState(false);
+  const [assistantNote, setAssistantNote] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const load = useCallback(async () => {
@@ -42,6 +44,46 @@ export default function AdminThreadPage() {
   }, [load]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [thread?.messages.length]);
+
+  // The assistant only ever speaks when asked. Its reply is posted into the
+  // thread and is visible to the patient, tagged as AI — so this is a decision
+  // about their conversation, not a private lookup.
+  async function handleAskAssistant() {
+    setAsking(true);
+    setAssistantNote("");
+    try {
+      const res = await fetch(`/api/messages/${threadId}/assistant`, { method: "POST" });
+      const data = await res.json().catch(() => null);
+
+      if (res.status === 451) {
+        // The legal gate, not a failure. Say which one so it is actionable.
+        setAssistantNote(
+          data?.code === "no_consent"
+            ? "This patient has not consented to AI processing of their data."
+            : "No AI provider is configured for this deployment."
+        );
+        return;
+      }
+      if (!res.ok) {
+        setAssistantNote("The assistant could not be reached. Please try again.");
+        return;
+      }
+      if (data?.data?.posted === false) {
+        setAssistantNote("The assistant had nothing to add.");
+        return;
+      }
+      if (data?.data?.dpaWarning) {
+        setAssistantNote(
+          "Reply posted. Note: this provider is not yet covered by a signed data-processing agreement."
+        );
+      }
+      load();
+    } catch {
+      setAssistantNote("The assistant could not be reached. Please try again.");
+    } finally {
+      setAsking(false);
+    }
+  }
 
   async function handleSend(e: React.FormEvent) {
     e.preventDefault();
@@ -128,8 +170,18 @@ export default function AdminThreadPage() {
           <button type="submit" className={styles.sendBtn} disabled={sending || !body.trim()}>
             {sending ? "Sending…" : "Send"}
           </button>
+          <button
+            type="button"
+            className={styles.assistantBtn}
+            onClick={handleAskAssistant}
+            disabled={asking}
+            title="Posts an AI reply into this thread. The patient sees it, labelled as AI."
+          >
+            {asking ? "Asking…" : "Ask assistant"}
+          </button>
         </form>
         {sendError && <p className={styles.formError}>{sendError}</p>}
+        {assistantNote && <p className={styles.assistantNote}>{assistantNote}</p>}
       </div>
     </div>
   );

@@ -13,6 +13,16 @@ export type ParticipantRole = (typeof PARTICIPANT_ROLE)[keyof typeof PARTICIPANT
 export type ActorKind = "human" | "ai" | "system";
 
 /**
+ * The assistant's actor id.
+ *
+ * A fixed UUID rather than a users row: thread_participants.actor_id is
+ * deliberately not a foreign key to users, so the assistant can take part in a
+ * conversation without owning an account that could be logged into. The zeroed
+ * prefix makes it obvious in the database that this is not a person.
+ */
+export const ASSISTANT_ACTOR_ID = "00000000-0000-4000-8000-000000000a51";
+
+/**
  * The clinician a thread is addressed to. Null for threads opened before
  * multi-clinician care, or by a patient nobody treats yet — the UI must say
  * something neutral rather than naming a clinician who isn't involved.
