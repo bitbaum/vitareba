@@ -7,6 +7,7 @@ import { serviceUnavailable, badRequest } from "@/lib/utils/api-response";
 import { UUID_RE } from "@/lib/utils/validate";
 import { db } from "@/lib/db";
 import { users, assessmentResults, bookings, documents, threads, threadMessages } from "@/lib/db/schema";
+import { toAdminPatientView } from "@/lib/db/user-view";
 
 export async function GET(
   _req: Request,
@@ -45,5 +46,5 @@ export async function GET(
 
   if (!patient) return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
 
-  return NextResponse.json({ success: true, data: patient });
+  return NextResponse.json({ success: true, data: toAdminPatientView(patient) });
 }

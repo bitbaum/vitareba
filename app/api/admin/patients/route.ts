@@ -7,6 +7,7 @@ import { serviceUnavailable } from "@/lib/utils/api-response";
 import { db } from "@/lib/db";
 import { patientScope } from "@/lib/domain/patients";
 import { assessmentResults, users } from "@/lib/db/schema";
+import { toAdminPatientView } from "@/lib/db/user-view";
 
 export async function GET() {
   const guard = await requireAdmin();
@@ -30,5 +31,5 @@ export async function GET() {
     return serviceUnavailable();
   }
 
-  return NextResponse.json({ success: true, data: patients });
+  return NextResponse.json({ success: true, data: patients.map(toAdminPatientView) });
 }
