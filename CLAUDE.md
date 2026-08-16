@@ -9,7 +9,8 @@ The platform has two parts:
 1. **Public marketing site** — multilingual (de/en/fr/it), lands at `/de/`, primary CTA is the Inflection Edge self-assessment overlay
 2. **Patient portal + admin panel** — authenticated, database-backed, at `/dashboard` (patients) and `/admin` (Manuel)
 
-**Stack:** Next.js 16 (App Router, `standalone` output) · TypeScript strict · Tailwind v4 · self-hosted PostgreSQL (`pg` driver) · Drizzle ORM · NextAuth 5 · Resend email · self-hosted on the Hetzner box ("bitbaum") behind Caddy, served at `vitareba.ch`. Scheduled jobs run via systemd timers / cron on the box; documents are stored on local disk and served only through an authenticated route.
+**Stack:** Next.js 16 (App Router, `standalone` output) · TypeScript strict · Tailwind v4 · self-hosted PostgreSQL (`pg` driver) · Drizzle ORM · NextAuth 5 · Resend email · self-hosted on the Hetzner box ("bitbaum") behind Caddy, served at `vitareba.orangecat.ch` (`vitareba.ch` is the intended
+public domain but is not pointed yet — do not probe it). Scheduled jobs run via systemd timers / cron on the box; documents are stored on local disk and served only through an authenticated route.
 
 ---
 
@@ -324,8 +325,12 @@ gates plus `build` on every push and PR to `main`.
 Deployment is a pull-and-restart on the box, not a managed platform push. After `git push`, the box pulls the new commit, runs `pnpm build` (Next.js `standalone` output), and the systemd service is restarted. Verify the site is live before reporting done:
 
 ```bash
-# Confirm the app responds after a deploy/restart
-curl -sS -o /dev/null -w '%{http_code}\n' https://vitareba.ch/de
+# Confirm the app responds after a deploy/restart.
+# Use the host it is actually served on. `vitareba.ch` has no DNS record yet
+# (see the sender note under Email), so probing it fails with "could not
+# resolve host" — which reads exactly like an outage and is not one.
+curl -sS -o /dev/null -w '%{http_code}\n' https://vitareba.orangecat.ch/de
+curl -sS https://vitareba.orangecat.ch/api/health   # {"ok":true,"schemaCheck":"passed"}
 ```
 
 If it fails: check the service logs on the box (`journalctl -u <vitareba-service> -n 100`), fix, `pnpm build`, push again. Full migration/runbook: `fleetcrown/docs/infrastructure/hetzner-migration.md`.
