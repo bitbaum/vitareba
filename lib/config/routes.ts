@@ -30,6 +30,15 @@ export const PORTAL_ROUTES = {
 export const documentFileUrl = (id: string): string => `/api/documents/${id}/file`;
 
 /**
+ * Every portal path, as a union. Anything that must have an entry PER ROUTE —
+ * a label, an icon — keys off this so a new route without one is a compile
+ * error. A `Record<string, …>` promises a value for keys it does not have, and
+ * a nav icon looked up that way renders `<undefined />`, which takes down the
+ * whole portal layout.
+ */
+export type PortalRoute = (typeof PORTAL_ROUTES)[keyof typeof PORTAL_ROUTES];
+
+/**
  * Display label for every portal route — consumed by PortalNav AND
  * NavBreadcrumb. Keyed off PORTAL_ROUTES so a new route without a label is a
  * type error, not a silently blank breadcrumb.
