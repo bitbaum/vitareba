@@ -60,7 +60,9 @@
 
 .btnOutline {
   border: 1px solid var(--teal-30);
-  color: var(--teal);
+  /* Teal-as-text on the dark band — see --teal-on-dark. Plain --teal is
+     3.50:1 here; this is 5.01:1. */
+  color: var(--teal-on-dark);
   background: none;
   padding: 0.8rem 2rem;
   font-size: 0.68rem;
