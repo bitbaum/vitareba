@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import styles from "../portal.module.css";
 import bookingStyles from "./bookings.module.css";
 import authStyles from "../../forms.module.css";
@@ -79,6 +79,7 @@ export default function BookingsPage() {
   // new one. Same picker, same slots, same conflict rules — a second "reschedule"
   // screen would be a second implementation of the thing that just started working.
   const [movingBooking, setMovingBooking] = useState<ActionableBooking | null>(null);
+  const confirmationRef = useRef<HTMLDivElement | null>(null);
 
   const loadSlots = useCallback(async (forClinician?: string | null) => {
     try {
@@ -171,6 +172,13 @@ export default function BookingsPage() {
       setSelectedSlot(null);
       loadSlots(clinicianId);
       load();
+      // Take them to the confirmation. It renders BELOW the picker, so on a
+      // laptop the only visible effect of pressing Confirm was a time quietly
+      // vanishing from the list — which reads as a failure, not a booking.
+      // The banner and the new appointment are the answer; show them.
+      requestAnimationFrame(() => {
+        confirmationRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
     } catch {
       setSlotError("Booking failed. Please try again.");
     } finally {
@@ -382,6 +390,8 @@ export default function BookingsPage() {
           </>
         )}
       </div>
+
+      <div ref={confirmationRef} />
 
       {slotSuccess && (
         <div className={bookingStyles.successBanner}>

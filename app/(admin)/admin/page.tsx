@@ -74,8 +74,14 @@ export default async function AdminTodayPage() {
 }
 
 function Section({ section }: { section: InboxSection }) {
-  const titleClass =
-    section.tone === "urgent"
+  // A section with nothing in it is answered, so it stops shouting. Red text
+  // over the words "no result is outside the range that can wait" is a
+  // contradiction, and a screen where the alarming colour is present on a quiet
+  // morning is a screen whose alarming colour means nothing.
+  const empty = section.items.length === 0;
+  const titleClass = empty
+    ? styles.inboxTitleRoutine
+    : section.tone === "urgent"
       ? styles.inboxTitleUrgent
       : section.tone === "attention"
         ? styles.inboxTitleAttention

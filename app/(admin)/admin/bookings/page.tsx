@@ -134,7 +134,7 @@ export default function AdminBookingsPage() {
               <tr>
                 <th>Patient</th>
                 <th>Type</th>
-                <th>Preferred date</th>
+                <th>When</th>
                 <th>Notes</th>
                 <th>Requested</th>
                 <th>Status</th>
