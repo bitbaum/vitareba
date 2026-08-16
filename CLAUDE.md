@@ -127,6 +127,16 @@ prod automatically on every deploy (additive-only, transactional; destructive
 diffs abort the deploy for a human). `pnpm db:push` is for local dev DBs only —
 never push schema to prod by hand.
 
+**A new table is owned by `postgres`, not by the app.** Migrations are applied
+on the box by the superuser, so the app's own role is granted nothing on a table
+it does not own: the table exists, the connection works, and every query against
+it fails with "permission denied". CI cannot see this — CI has its own database
+where the test user owns everything. Two features have shipped broken this way.
+Prod now carries `ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO vitareba`, so new tables are
+granted automatically, and `/api/health` asserts the property directly
+(`lib/db/schema-usable.ts`) so a deploy that loses it goes red instead of quiet.
+
 ---
 
 ## SSOT — Where Each Thing Lives
