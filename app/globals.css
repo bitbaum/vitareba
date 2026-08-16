@@ -9,6 +9,13 @@
   --faint: #c4c0b8;
   --teal: #2a7a8a;
   --teal-dark: #1e6672;
+  /* Teal as TEXT on a dark surface. --teal is tuned to carry white on top of
+     it (4.94:1) and is a good fill; the same colour AS text on the dark page
+     is only 3.50:1, below the 4.5 AA floor — which is what made the outlined
+     "DISCOVERY CALL BUCHEN" CTA hard to read. Lightening --teal itself would
+     have fixed the text and broken the fill, dropping white-on-teal to
+     3.45:1. Two roles, two tokens. 5.01:1 on the dark page. */
+  --teal-on-dark: #3796a8;
   --gold: #b8960a;
   --off: #f8f7f4;
   --light: #f1ede7;
