@@ -36,28 +36,52 @@ export type SchemaProblem = { table: string; problem: string };
  * distinct answer for that case and should not have it disguised as a
  * permission problem.
  */
-export async function findUnusableTables(): Promise<SchemaProblem[]> {
-  const names = appTableNames();
-  if (names.length === 0) return [];
-
-  // One statement for the whole schema. CASE evaluates its branches in order,
-  // so the missing-table check always runs before any privilege check — asking
-  // has_table_privilege about a table that does not exist raises instead of
-  // answering false.
+/**
+ * The statement, built but not run — so a test can compile it through Drizzle's
+ * own dialect and inspect what the driver will actually send.
+ *
+ * That separation exists because of how the first version of this failed. The
+ * SQL was verified by hand in psql, where it was perfectly valid, and shipped.
+ * Through Drizzle it was not the same statement: interpolating a JS array
+ * expands to a comma-separated parameter LIST, so `unnest(${names}::text[])`
+ * reached Postgres as `unnest(($1,$2,…)::text[])` — a record cast to an array,
+ * rejected outright. Health went red on a working site.
+ *
+ * A hand-written equivalent is not a test of the query the client sends.
+ */
+export function unusableTablesQuery(names: readonly string[]) {
+  // CASE evaluates its branches in order, so the missing-table check always runs
+  // before any privilege check — asking has_table_privilege about a table that
+  // does not exist raises rather than answering false.
   const privilegeChecks = REQUIRED_PRIVILEGES.map(
     (verb) =>
       sql`when not has_table_privilege(current_user, 'public.' || quote_ident(n), ${verb}) then ${`no ${verb.toLowerCase()} privilege`}`
   );
 
-  const result = await db.execute<{ n: string; problem: string | null }>(sql`
+  // Each name is its own bound parameter inside a real array constructor.
+  const nameArray = sql.join(
+    names.map((n) => sql`${n}`),
+    sql`, `
+  );
+
+  return sql`
     select n,
       case
         when to_regclass('public.' || quote_ident(n)) is null then 'table missing'
         ${sql.join(privilegeChecks, sql` `)}
         else null
       end as problem
-    from unnest(${names}::text[]) as n
-  `);
+    from unnest(array[${nameArray}]::text[]) as n
+  `;
+}
+
+export async function findUnusableTables(): Promise<SchemaProblem[]> {
+  const names = appTableNames();
+  if (names.length === 0) return [];
+
+  const result = await db.execute<{ n: string; problem: string | null }>(
+    unusableTablesQuery(names)
+  );
 
   // node-postgres hands back a QueryResult; some drivers hand back the rows.
   // Accept either rather than depend on which one is wired up today.

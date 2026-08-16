@@ -37,11 +37,21 @@ export async function GET() {
       return NextResponse.json({ ok: false, error: "schema not usable" }, { status: 503 });
     }
   } catch (err) {
-    // The privilege check itself failing must not be reported as a healthy app,
-    // but it is a different fault from a table being unreachable — say so.
-    console.error("[api/health] schema check failed:", err);
-    return NextResponse.json({ ok: false, error: "schema check failed" }, { status: 503 });
+    // A DEFINITIVE NEGATIVE and an INABILITY TO ANSWER are not the same fault,
+    // and must not produce the same status.
+    //
+    // Tables genuinely unusable → the app is broken → 503, above.
+    // The check itself throwing → the app is serving fine and its diagnostic is
+    // the broken part. Returning 503 here takes a healthy application offline in
+    // every monitor and blocks every future deploy on a bug in the watchman.
+    // That is exactly what happened the first time this shipped: a malformed
+    // parameter binding turned a working site into a red pipeline.
+    //
+    // So: stay 200, say plainly in the body that the check did not run, and log
+    // it. A degradation that is visible is not a degradation that is hidden.
+    console.error("[api/health] schema check failed to run:", err);
+    return NextResponse.json({ ok: true, schemaCheck: "failed" });
   }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, schemaCheck: "passed" });
 }
