@@ -9,6 +9,7 @@ const {
   mockSendEmail,
   mockGetAdminEmails,
   mockRunAfterResponse,
+  mockCalendarBusyFindMany,
 } = vi.hoisted(() => ({
   mockRequireSession: vi.fn(),
   mockBookingFindMany: vi.fn(),
@@ -19,6 +20,8 @@ const {
   // Capture only — tests invoke the callback explicitly via mock.calls to
   // avoid floating-Promise races (the route calls runAfterResponse without await).
   mockRunAfterResponse: vi.fn(),
+  // The slot engine now also consults each clinician's subscribed calendar.
+  mockCalendarBusyFindMany: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/guards", () => ({ requireSession: mockRequireSession }));
@@ -28,6 +31,7 @@ vi.mock("@/lib/db", () => ({
     query: {
       bookings: { findMany: mockBookingFindMany },
       users:    { findFirst: mockUserFindFirst },
+      calendarBusy: { findMany: mockCalendarBusyFindMany },
     },
     insert: mockInsert,
   },
@@ -196,7 +200,8 @@ describe("POST /api/bookings (patient, slot)", () => {
     mockUserFindFirst.mockReset();
     mockGetAdminEmails.mockReturnValue([]);
     mockUserFindFirst.mockResolvedValue(CLINICIAN); // clinician lookup
-    mockBookingFindMany.mockResolvedValue([]); // no busy intervals
+    mockBookingFindMany.mockResolvedValue([]); // no booked appointments
+    mockCalendarBusyFindMany.mockResolvedValue([]); // no external calendar events
     setupInsert([{ ...BOOKING, status: "confirmed", scheduledAt: NOW_SLOT }]);
   });
 
@@ -243,6 +248,38 @@ describe("POST /api/bookings (patient, slot)", () => {
     expect(res.status).toBe(409);
     const body = await res.json();
     expect(body.code).toBe("slot_taken");
+  });
+
+  // ── The external calendar ─────────────────────────────────────────────────
+  //
+  // The entire promise of subscribing a clinician's calendar is this one
+  // behaviour: an hour they are busy in their own calendar cannot be booked
+  // here. Everything else in that feature — the parser, the fetcher, the cron —
+  // exists only to make this assertion true.
+  it("refuses a slot the clinician's own calendar says is taken", async () => {
+    mockRequireSession.mockResolvedValue(PATIENT_SESSION);
+    mockCalendarBusyFindMany.mockResolvedValue([
+      {
+        startsAt: NOW_SLOT,
+        endsAt: new Date(NOW_SLOT.getTime() + 60 * 60_000),
+      },
+    ]);
+    const res = await POST(slotReq(NOW_SLOT.toISOString()));
+    expect(res.status).toBe(409);
+    expect((await res.json()).code).toBe("slot_taken");
+    expect(mockInsert).not.toHaveBeenCalled();
+  });
+
+  it("still offers a slot the external calendar does not cover", async () => {
+    // The other half: blocking everything would also pass the test above.
+    mockRequireSession.mockResolvedValue(PATIENT_SESSION);
+    mockCalendarBusyFindMany.mockResolvedValue([
+      {
+        startsAt: new Date(NOW_SLOT.getTime() + 5 * 24 * 60 * 60_000),
+        endsAt: new Date(NOW_SLOT.getTime() + 5 * 24 * 60 * 60_000 + 60 * 60_000),
+      },
+    ]);
+    expect((await POST(slotReq(NOW_SLOT.toISOString()))).status).toBe(201);
   });
 
   // ── The cell this matrix was missing ──────────────────────────────────────

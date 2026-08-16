@@ -225,6 +225,7 @@ timer units pin `Europe/Zurich` via a drop-in. They were plain UTC until
 | `cron/checkin-dip-alert` | Daily 09:00 | Alert admin on consecutive wellness dips |
 | `cron/weekly-digest` | Sunday 08:00 | Weekly summary email to patients |
 | `cron/orphaned-files` | Daily 03:00 | Delete stored files no document row points at (erasure completion) |
+| `cron/calendar-sync` | Every 15 min | Re-read each clinician's subscribed calendar so their real commitments block slots |
 
 ---
 
