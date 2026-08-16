@@ -22,11 +22,7 @@
 
 import { useEffect, useState } from "react";
 import shared from "@/app/shared.module.css";
-import {
-  CANCELLATION_NOTICE_HOURS,
-  CANCELLATION_POLICY,
-  CANCELLATION_REASON_MAX,
-} from "@/lib/config/cancellation";
+import { CANCELLATION_POLICY, CANCELLATION_REASON_MAX } from "@/lib/config/cancellation";
 import { assessCancellation, assessReschedule, describeNotice } from "@/lib/domain/cancellation";
 import type { BookingStatus } from "@/lib/config/booking-status";
 
@@ -35,6 +31,10 @@ export type ActionableBooking = {
   status: BookingStatus;
   /** ISO string as it arrives from the API. */
   scheduledAt: string | null;
+  /** Needed so "Move" opens on the clinician the appointment is actually with. */
+  clinicianId?: string | null;
+  /** When it was booked — decides whether a late cancellation was ever avoidable. */
+  createdAt?: string | null;
 };
 
 export function BookingActions({
@@ -66,6 +66,7 @@ export function BookingActions({
   const timing = {
     status: booking.status,
     scheduledAt: booking.scheduledAt ? new Date(booking.scheduledAt) : null,
+    createdAt: booking.createdAt ? new Date(booking.createdAt) : null,
   };
   const cancel = assessCancellation(timing, now);
   const move = assessReschedule(timing, now);
@@ -152,12 +153,6 @@ export function BookingActions({
         <button type="button" className={shared.btnText} onClick={() => setConfirming(true)}>
           Cancel
         </button>
-      )}
-      {/* Said before they click, not after — the point is that nothing here is a surprise. */}
-      {late && (
-        <span className={shared.formHint}>
-          Less than {CANCELLATION_NOTICE_HOURS}h away · cancelling now is recorded as late
-        </span>
       )}
     </div>
   );

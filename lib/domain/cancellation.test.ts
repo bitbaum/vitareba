@@ -20,8 +20,16 @@ import { HOUR_MS } from "@/lib/utils/format";
 const NOW = new Date("2026-06-15T09:00:00Z");
 const inHours = (h: number) => new Date(NOW.getTime() + h * HOUR_MS);
 
-const at = (scheduledAt: Date | null, status = "confirmed") =>
-  ({ status, scheduledAt }) as Parameters<typeof assessCancellation>[0];
+/**
+ * `createdAt` defaults to long before the appointment, i.e. the patient had
+ * every chance to give notice. Tests that care about the short-lead case say so.
+ */
+const at = (scheduledAt: Date | null, status = "confirmed", createdAt?: Date | null) =>
+  ({
+    status,
+    scheduledAt,
+    createdAt: createdAt === undefined ? new Date(NOW.getTime() - 30 * 24 * HOUR_MS) : createdAt,
+  }) as Parameters<typeof assessCancellation>[0];
 
 describe("cancelling is always possible while the appointment is still ahead", () => {
   it("allows a cancellation with plenty of notice", () => {
@@ -50,6 +58,44 @@ describe("cancelling is always possible while the appointment is still ahead", (
   it("never calls a date-only request late", () => {
     const v = assessCancellation(at(null, "pending"), NOW);
     expect(v).toMatchObject({ allowed: true, late: false, hoursNotice: null });
+  });
+});
+
+describe("late means the patient could have done better", () => {
+  // The rule that was incoherent on the live site. Slots open 12 hours ahead
+  // while the notice window is 24, so an appointment booked for tomorrow
+  // evening is ALREADY inside the window at the moment it is created — the
+  // patient booked it and was told immediately that cancelling would be
+  // recorded as late. They were never offered a way to do better.
+  it("does not mark a short-lead booking late", () => {
+    const scheduled = inHours(13);
+    const bookedJustNow = new Date(NOW.getTime() - 5 * 60_000);
+    const v = assessCancellation(at(scheduled, "confirmed", bookedJustNow), NOW);
+    expect(v).toMatchObject({ allowed: true, late: false });
+  });
+
+  it("still marks late a booking that HAD the notice and used it up", () => {
+    const scheduled = inHours(3);
+    const bookedWeeksAgo = new Date(NOW.getTime() - 21 * 24 * HOUR_MS);
+    const v = assessCancellation(at(scheduled, "confirmed", bookedWeeksAgo), NOW);
+    expect(v).toMatchObject({ allowed: true, late: true });
+  });
+
+  it("marks late when the lead was exactly the notice window", () => {
+    // Booked with precisely 24 hours' lead: they did have the chance.
+    const scheduled = inHours(2);
+    const booked = new Date(scheduled.getTime() - CANCELLATION_NOTICE_HOURS * HOUR_MS);
+    expect(assessCancellation(at(scheduled, "confirmed", booked), NOW)).toMatchObject({
+      late: true,
+    });
+  });
+
+  it("falls back to marking late when we do not know when it was booked", () => {
+    // Absent evidence that they could not have done better, the plain rule
+    // applies — the excuse must be earned, not assumed.
+    expect(assessCancellation(at(inHours(2), "confirmed", null), NOW)).toMatchObject({
+      late: true,
+    });
   });
 });
 

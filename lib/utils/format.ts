@@ -79,6 +79,26 @@ export function formatSlotTime(date: Date | string): string {
   return SLOT_TIME.format(typeof date === "string" ? new Date(date) : date);
 }
 
+/**
+ * "Mon 17 Aug, 17:00" — THE way to write an appointment, everywhere.
+ *
+ * There were three. The dashboard said "17 August 2026", the bookings list said
+ * "Mon 17 Aug, 17:00", and the line under it said "16/08/2026" — three formats
+ * on two screens describing the same kind of thing, which makes a product feel
+ * assembled rather than designed.
+ *
+ * Two things are load-bearing here and neither is cosmetic:
+ *   • THE TIME IS PART OF IT. An appointment without a time is not an
+ *     appointment, and the dashboard was omitting it.
+ *   • CLINIC TIMEZONE, always. The general date helpers format in the runtime's
+ *     zone, which on the box is UTC — so a 00:30 Zürich appointment renders on
+ *     the previous day. Wrong day, to a patient, about a medical appointment.
+ */
+export function formatAppointment(date: Date | string): string {
+  const d = typeof date === "string" ? new Date(date) : date;
+  return `${formatSlotDay(d)}, ${formatSlotTime(d)}`;
+}
+
 const SLOT_PARTS = new Intl.DateTimeFormat(LOCALE, {
   timeZone: CLINIC_TIMEZONE,
   weekday: "short",

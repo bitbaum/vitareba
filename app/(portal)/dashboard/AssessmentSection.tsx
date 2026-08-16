@@ -3,14 +3,32 @@ import shared from "../portal.module.css";
 import styles from "./dashboard.module.css";
 import { DIMENSIONS, getVerdict, scoreClass, type AssessmentRow } from "@/lib/assessment/data";
 import { PORTAL_ROUTES } from "@/lib/config/routes";
-import { BOOKING_STATUS_CONFIG, type BookingRow } from "@/lib/config/booking-status";
-import { formatDateLong } from "@/lib/utils/format";
+import { BOOKING_STATUS_CONFIG, type BookingStatus } from "@/lib/config/booking-status";
+import { formatAppointment, formatDateLong } from "@/lib/utils/format";
 import { COMPANY } from "@/lib/config/company";
 
 interface AssessmentSectionProps {
   latestAssessment: AssessmentRow | null | undefined;
   previousAssessment?: AssessmentRow | null;
-  latestBooking: Pick<BookingRow, "status" | "preferredDate"> | null | undefined;
+  /**
+   * Includes scheduledAt DELIBERATELY. This was Pick<"status" | "preferredDate">,
+   * so the card could not see the appointment's actual time even when one
+   * existed — it rendered "17 August 2026" for a 17:00 consultation, and no type
+   * error was possible because the field simply was not in scope.
+   *
+   * Written out rather than Pick<BookingRow>: BookingRow is the SERIALISED API
+   * shape where dates are strings, and this component is fed a database row
+   * where they are Dates. Borrowing the wrong one is how the mismatch hid.
+   */
+  latestBooking:
+    | {
+        status: BookingStatus;
+        preferredDate: string | null;
+        scheduledAt: Date | string | null;
+        clinician?: { name: string | null } | null;
+      }
+    | null
+    | undefined;
   threadCount: number;
   unreadMessageCount?: number;
   /** Resolved from care_team by the page — never a name from config. */
@@ -111,9 +129,16 @@ export function AssessmentSection({
                   </span>
                 );
               })()}
-              {latestBooking.preferredDate && (
-                <p className={styles.bookingDate}>{formatDateLong(latestBooking.preferredDate)}</p>
-              )}
+              {latestBooking.scheduledAt ? (
+                <p className={styles.bookingDate}>
+                  {formatAppointment(latestBooking.scheduledAt)}
+                  {latestBooking.clinician?.name ? ` · ${latestBooking.clinician.name}` : ""}
+                </p>
+              ) : latestBooking.preferredDate ? (
+                <p className={styles.bookingDate}>
+                  You asked for {formatDateLong(latestBooking.preferredDate)}
+                </p>
+              ) : null}
               <Link href={PORTAL_ROUTES.bookings} className={styles.cardLink}>
                 View bookings →
               </Link>

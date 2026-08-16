@@ -10,7 +10,7 @@ import {
   profiles,
   clinicalGoals,
 } from "@/lib/db/schema";
-import { eq, desc, and, isNull, gte, inArray, count } from "drizzle-orm";
+import { eq, asc, desc, and, isNull, gte, inArray, count } from "drizzle-orm";
 import { BOOKING_STATUS } from "@/lib/config/booking-status";
 import shared from "../portal.module.css";
 import styles from "./dashboard.module.css";
@@ -68,7 +68,11 @@ export default async function DashboardPage() {
         eq(bookings.userId, session.user.id),
         inArray(bookings.status, [BOOKING_STATUS.pending, BOOKING_STATUS.confirmed])
       ),
-      orderBy: [desc(bookings.createdAt)],
+      // Soonest APPOINTMENT first, not most recently created. A patient with a
+      // consultation on Monday and a request typed yesterday was shown the
+      // request — "your next appointment" pointing at the one without a time.
+      orderBy: [asc(bookings.scheduledAt), desc(bookings.createdAt)],
+      with: { clinician: { columns: { id: true, name: true } } },
     }),
     db.select({ value: count() }).from(threads).where(eq(threads.patientId, session.user.id)).then((r) => r[0]?.value ?? 0),
     getUnreadThreadCount(session.user.id),
