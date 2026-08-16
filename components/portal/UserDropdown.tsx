@@ -64,7 +64,7 @@ export function UserDropdown({ name, email, role, context = "portal" }: Props) {
           </div>
           <div className={styles.items}>
             {role === USER_ROLE.admin && context === "portal" && (
-              <Link href={ADMIN_ROUTES.patients} className={styles.item} onClick={() => setOpen(false)}>
+              <Link href={ADMIN_ROUTES.root} className={styles.item} onClick={() => setOpen(false)}>
                 Clinician area ↗
               </Link>
             )}

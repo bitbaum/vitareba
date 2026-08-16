@@ -64,8 +64,10 @@ export default async function PortalLayout({ children }: { children: React.React
           <Logo variant="bright" />
         </Link>
         <PortalNav unreadMessages={unreadMessages} hasTodayCheckin={hasTodayCheckin} newGoals={newGoalsCount} />
+        {/* Lands on Today, not the patient list. The list answers "how is
+            everyone"; the first question on arriving is "what needs me". */}
         {session.user.role === USER_ROLE.admin && (
-          <Link href={ADMIN_ROUTES.patients} className={styles.roleSwitch}>
+          <Link href={ADMIN_ROUTES.root} className={styles.roleSwitch}>
             Clinician area →
           </Link>
         )}

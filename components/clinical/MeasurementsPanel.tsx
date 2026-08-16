@@ -584,7 +584,10 @@ function sexCaveat(sex: BiologicalSex | null, byKind: Map<string, unknown>): str
     (d) => (d.refFemale || d.refMale) && byKind.has(d.key)
   ).length;
   if (affected === 0) return "";
-  return ` ${affected} of them are read against a sex-specific interval that is not set.`;
+  // "1 of them are" reads as a bug to the clinician who spots it, and quietly
+  // costs credibility on a page full of numbers.
+  const verb = affected === 1 ? "is" : "are";
+  return ` ${affected} of them ${verb} read against a sex-specific interval that is not set.`;
 }
 
 /**
