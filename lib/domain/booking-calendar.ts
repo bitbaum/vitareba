@@ -6,7 +6,7 @@
  */
 
 import { COMPANY, PORTAL_URL } from "@/lib/config/company";
-import { ICS_SEQUENCE_BY_STATUS, BOOKING_STATUS, type BookingStatus } from "@/lib/config/booking-status";
+import { icsSequence, BOOKING_STATUS, type BookingStatus } from "@/lib/config/booking-status";
 import { PORTAL_ROUTES } from "@/lib/config/routes";
 import type { IcsEvent } from "@/lib/domain/ics";
 
@@ -21,6 +21,8 @@ export type BookingCalendarInput = {
   clinician: Person;
   sessionLabel: string;
   createdAt: Date;
+  /** bookings.revision — bumped on every change that alters the appointment. */
+  revision?: number;
 };
 
 export const CLINIC_LOCATION = `${COMPANY.address.street}, ${COMPANY.address.zip} ${COMPANY.address.city}`;
@@ -47,7 +49,7 @@ export function bookingIcsEvent(input: BookingCalendarInput): IcsEvent {
       { name: patientName, email: input.patient.email },
       { name: clinicianName, email: input.clinician.email },
     ],
-    sequence: ICS_SEQUENCE_BY_STATUS[input.status],
+    sequence: icsSequence(input.status, input.revision ?? 0),
     cancelled: input.status === BOOKING_STATUS.cancelled,
     now: input.createdAt,
   };

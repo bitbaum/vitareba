@@ -13,10 +13,17 @@ export const BOOKING_STATUS = {
 } as const satisfies Record<BookingStatus, BookingStatus>;
 
 /**
- * Calendar SEQUENCE per status. Subscribed calendars only apply an update when
- * SEQUENCE grows, and bookings carry no updatedAt column — status progression
- * is therefore the version counter (a cancellation must outrank every earlier
- * state or the appointment never disappears from the clinician's calendar).
+ * Calendar SEQUENCE floor per status.
+ *
+ * A subscribed calendar only applies an update when SEQUENCE grows. This table
+ * used to BE the sequence, which made rescheduling invisible: moving an
+ * appointment changes the time but not the status, so the sequence never grew
+ * and the old slot stayed in the patient's calendar forever.
+ *
+ * bookings.revision is now the counter, incremented on every change that alters
+ * the appointment. This table survives as a FLOOR so rows written before the
+ * counter existed — which may already have been published at a status-derived
+ * sequence — can never appear to go backwards.
  */
 export const ICS_SEQUENCE_BY_STATUS: Record<BookingStatus, number> = {
   pending: 0,
@@ -24,6 +31,14 @@ export const ICS_SEQUENCE_BY_STATUS: Record<BookingStatus, number> = {
   attended: 2,
   cancelled: 3,
 };
+
+/**
+ * The SEQUENCE to publish: whichever is greater, the row's revision counter or
+ * the floor its status already implied.
+ */
+export function icsSequence(status: BookingStatus, revision: number): number {
+  return Math.max(ICS_SEQUENCE_BY_STATUS[status], revision);
+}
 
 /** Canonical booking type values */
 export const BOOKING_TYPE_VALUES = ["consultation", "machine"] as const;
@@ -63,6 +78,10 @@ export type BookingRow = {
   clinician: { id: string; name: string | null } | null;
   notes: string | null;
   createdAt: string;
+  /** Set when the appointment was cancelled inside the notice window. */
+  lateCancellation?: boolean;
+  /** What the person cancelling said, if anything. */
+  cancellationReason?: string | null;
 };
 
 /** BookingRow extended with joined user data (admin-only endpoints) */
