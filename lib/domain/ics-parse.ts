@@ -27,6 +27,14 @@
  *  • Free time — TRANSP:TRANSPARENT and STATUS:CANCELLED mean the organiser is
  *    NOT busy. Honouring them is what keeps "out of office, available" from
  *    blocking a week.
+ *
+ * A WHOLE FEED CAN CORRECTLY YIELD NOTHING, and it looks exactly like a broken
+ * parser. Google's public holiday calendars mark every single event
+ * TRANSP:TRANSPARENT — holidays are informational and are not supposed to block
+ * anyone's diary — so subscribing one and seeing zero busy periods is the right
+ * answer, not a bug. Verified against the real Swiss holiday feed: 160 KB, every
+ * VEVENT transparent, zero intervals; strip the TRANSP lines from the same bytes
+ * and the parser finds them all. Do not "fix" this by ignoring TRANSP.
  */
 
 import { CLINIC_TIMEZONE } from "@/lib/config/company";

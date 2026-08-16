@@ -11,6 +11,7 @@ import { type ThreadListItem, type ThreadClinician } from "@/lib/config/messages
 import { MESSAGE_SUBJECT_MAX_LENGTH, MESSAGE_BODY_MAX_LENGTH } from "@/lib/config/portal";
 import { PORTAL_ROUTES } from "@/lib/config/routes";
 import { LoadingState } from "@/components/LoadingState";
+import { SafetyNotice } from "@/components/clinical/SafetyNotice";
 
 type Clinician = NonNullable<ThreadClinician>;
 
@@ -232,6 +233,11 @@ export default function MessagesPage() {
           })}
         </div>
       )}
+
+      {/* The page a patient in distress is most likely to be on. Saying plainly
+          that nobody is watching this inbox at 2am is not a disclaimer — it is
+          the difference between waiting for a reply and calling 144. */}
+      <SafetyNotice variant="message" />
     </div>
   );
 }
