@@ -1,7 +1,7 @@
 /* ─── Profile — hero card, completeness, preference deltas ────────────────── */
 
 .heroCard {
-  background: linear-gradient(200deg, var(--ink2) -40%, var(--ink) 45%);
+  background: var(--gradient-ink);
   border-radius: var(--radius-2xl);
   padding: 2rem;
   display: flex;

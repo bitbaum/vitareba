@@ -5,6 +5,7 @@ import Link from "next/link";
 import styles from "../portal.module.css";
 import checkinStyles from "./checkin.module.css";
 import { CheckinTrendChart } from "@/components/portal/CheckinTrendChart";
+import { PortalPageHeader } from "@/components/portal/PortalPageHeader";
 import { CHECKIN_SCALE_MIN, CHECKIN_SCALE_MAX, SAVED_FEEDBACK_MS, SAVING_LABEL, SAVED_LABEL, CHECKIN_METRICS, CHECKIN_NOTES_MAX_LENGTH, CHECKIN_DISPLAY_DAYS, type MetricKey } from "@/lib/config/portal";
 import { PORTAL_ROUTES } from "@/lib/config/routes";
 import { formatDateISO, formatDateMonthDay, sentenceCase } from "@/lib/utils/format";
@@ -122,10 +123,10 @@ export function CheckinForm({ clinician }: { clinician: string }) {
 
   return (
     <div>
-      <h1 className={styles.pageTitle}>
-        Daily <em>Check-in</em>
-      </h1>
-      <p className={styles.pageSub}>Track your wellbeing — takes 30 seconds</p>
+      <PortalPageHeader
+        title={<>Daily <em>Check-in</em></>}
+        subtitle="Track your wellbeing — takes 30 seconds"
+      />
 
       <div className={checkinStyles.layout}>
         {/* Post-save success panel */}

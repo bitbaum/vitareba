@@ -4,37 +4,20 @@ import { Suspense, useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import styles from "../portal.module.css";
 import bookingStyles from "./bookings.module.css";
-import authStyles from "../../forms.module.css";
-import {
-  BOOKING_STATUS_CONFIG,
-  BOOKING_TYPE_CONFIG,
-  BOOKING_TYPE_VALUES,
-  MACHINE_TYPE_CONFIG,
-  MACHINE_TYPE_VALUES,
-  type BookingRow,
-  type BookingType,
-  type MachineType,
-} from "@/lib/config/booking-status";
-import { formatAppointment, formatDateLong, formatSlotDay, formatSlotTime, slotParts } from "@/lib/utils/format";
-import { COMPANY } from "@/lib/config/company";
+import { type BookingRow, type BookingType, type MachineType } from "@/lib/config/booking-status";
+import { formatSlotDay, formatSlotTime, slotParts } from "@/lib/utils/format";
 import { DAY_PARTS, DEFAULT_AVAILABILITY } from "@/lib/config/scheduling";
-import { BOOKING_SUCCESS_MS, BOOKING_NOTES_MAX_LENGTH } from "@/lib/config/portal";
+import { BOOKING_SUCCESS_MS } from "@/lib/config/portal";
 import { LoadingState } from "@/components/LoadingState";
-import { BookingActions, type ActionableBooking } from "@/components/clinical/BookingActions";
+import { PortalPageHeader } from "@/components/portal/PortalPageHeader";
+import { type ActionableBooking } from "@/components/clinical/BookingActions";
 import { CANCELLATION_POLICY } from "@/lib/config/cancellation";
-import { CLINIC_LOCATION } from "@/lib/domain/booking-calendar";
+import { ClinicianPicker } from "./ClinicianPicker";
+import { RequestBookingForm } from "./RequestBookingForm";
+import { BookingHistoryList } from "./BookingHistoryList";
 
 // Shown until the server reports the selected clinician's real slot length.
 const DEFAULT_SLOT_MINUTES = DEFAULT_AVAILABILITY.slotMinutes;
-
-/** Two-letter monogram for the clinician avatar; falls back to a neutral mark. */
-function initials(name: string | null): string {
-  const parts = (name ?? "").trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return "··";
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-}
-
 
 function BookingsView() {
   // Deep link from the Care Team page: "Book" on a specific clinician loads
@@ -253,17 +236,15 @@ function BookingsView() {
 
   return (
     <div>
-      <div className={styles.pageHeader}>
-        <div>
-          <h1 className={styles.pageTitle}>
-            My <em>Bookings</em>
-          </h1>
-          <p className={styles.pageSub}>Consultation requests and appointments</p>
-        </div>
-        <button type="button" className={styles.btnPrimary} onClick={() => setShowForm(!showForm)}>
-          + Request booking
-        </button>
-      </div>
+      <PortalPageHeader
+        title={<>My <em>Bookings</em></>}
+        subtitle="Consultation requests and appointments"
+        action={
+          <button type="button" className={styles.btnPrimary} onClick={() => setShowForm(!showForm)}>
+            + Request booking
+          </button>
+        }
+      />
 
       {/* Native slot picker — conflict-free, instantly confirmed */}
       <div className={`${styles.card} ${styles.cardGap}`}>
@@ -283,58 +264,14 @@ function BookingsView() {
           <LoadingState lines={2} />
         ) : (
           <>
-            {clinicians.length > 0 && (
-              <div className={bookingStyles.pickerStep}>
-                <p className={bookingStyles.stepLabel}>1 · Who you&apos;d like to see</p>
-                <div className={bookingStyles.clinicianRow} role="radiogroup" aria-label="Choose your clinician">
-                  {clinicians.map((c) => {
-                    const active = c.id === clinicianId;
-                    const mine = careTeam.includes(c.id);
-                    // Still browsable — seeing when a closed doctor would have
-                    // room is useful on its own, and the clinic may take a
-                    // patient by exception. Confirming a NEW booking with them
-                    // is what the server (and the button below) refuses.
-                    // A dual-role clinician can always book themselves
-                    // regardless of their own intake setting — caught live:
-                    // without this exemption, George's own card read "not
-                    // accepting" against himself.
-                    const closedToMe = !c.acceptingPatients && !mine && c.id !== selfId;
-                    return (
-                      <button
-                        key={c.id}
-                        type="button"
-                        role="radio"
-                        aria-checked={active}
-                        className={`${bookingStyles.clinicianCard}${active ? ` ${bookingStyles.clinicianCardActive}` : ""}${closedToMe ? ` ${bookingStyles.clinicianCardClosed}` : ""}`}
-                        onClick={() => selectClinician(c.id)}
-                      >
-                        <span className={bookingStyles.clinicianAvatar} aria-hidden="true">
-                          {initials(c.name)}
-                        </span>
-                        <span className={bookingStyles.clinicianText}>
-                          <span className={bookingStyles.clinicianName}>
-                            {c.name ?? "Clinician"}
-                            {mine && <span className={bookingStyles.clinicianBadge}>Your clinician</span>}
-                            {closedToMe && (
-                              <span className={bookingStyles.clinicianBadgeWarn}>Not accepting new patients</span>
-                            )}
-                          </span>
-                          <span className={bookingStyles.clinicianMeta}>
-                            {closedToMe
-                              ? "Viewing only — contact the clinic to book"
-                              : active
-                                ? dayKeys.length > 0
-                                  ? `Next free: ${dayKeys[0]}`
-                                  : "No open times right now"
-                                : "See available times"}
-                          </span>
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+            <ClinicianPicker
+              clinicians={clinicians}
+              clinicianId={clinicianId}
+              careTeam={careTeam}
+              selfId={selfId}
+              nextFreeDay={dayKeys.length > 0 ? dayKeys[0] : null}
+              onSelect={selectClinician}
+            />
 
             {dayKeys.length === 0 ? (
               <p className={styles.meta}>
@@ -448,181 +385,44 @@ function BookingsView() {
       )}
 
       {showForm && (
-        <div className={`${styles.card} ${styles.cardGap}`}>
-          <p className={styles.cardTitle}>Request a booking</p>
-          <p className={styles.formHint}>
-            Use this when none of the times above work. A clinician reviews every request personally —
-            include anything that helps them prepare; your Inflection Edge scores are already on file.
-          </p>
-          <form onSubmit={handleSubmit} className={styles.formStack}>
-            {/* Booking type */}
-            <div className={authStyles.field}>
-              <label className={authStyles.label}>Type</label>
-              <div className={bookingStyles.typeToggle}>
-                {BOOKING_TYPE_VALUES.map((t) => (
-                  <button
-                    key={t}
-                    type="button"
-                    className={`${bookingStyles.typeBtn}${bookingType === t ? ` ${bookingStyles.typeBtnActive}` : ""}`}
-                    onClick={() => { setBookingType(t); setMachineType(""); }}
-                  >
-                    {BOOKING_TYPE_CONFIG[t].label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Machine type — only shown for technology sessions */}
-            {bookingType === "machine" && (
-              <div className={authStyles.field}>
-                <label className={authStyles.label} htmlFor="machineType">Technology</label>
-                <select
-                  id="machineType"
-                  className={authStyles.input}
-                  value={machineType}
-                  onChange={(e) => setMachineType(e.target.value as MachineType | "")}
-                  required
-                >
-                  <option value="">Select technology…</option>
-                  {MACHINE_TYPE_VALUES.map((m) => (
-                    <option key={m} value={m}>{MACHINE_TYPE_CONFIG[m].label}</option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-            <div className={authStyles.field}>
-              <label className={authStyles.label} htmlFor="date">Preferred date (optional)</label>
-              <input id="date" className={authStyles.input} type="date" value={preferredDate} onChange={(e) => setPreferredDate(e.target.value)} />
-            </div>
-            <div className={authStyles.field}>
-              <label className={authStyles.label} htmlFor="notes">
-                {bookingType === "machine" ? "Anything to prepare?" : "What would you like to focus on?"}
-              </label>
-              <textarea
-                id="notes"
-                className={styles.formTextarea}
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                maxLength={BOOKING_NOTES_MAX_LENGTH}
-                placeholder={
-                  bookingType === "machine"
-                    ? "e.g. First session, looking to try PEMF for focus…"
-                    : "e.g. I want to understand my ADHD diagnosis and what a programme could look like for me…"
-                }
-              />
-            </div>
-            {submitError && <p className={styles.formError}>{submitError}</p>}
-            <div className={styles.formActions}>
-              <button
-                type="submit"
-                className={`${styles.btnPrimary} ${styles.formActionPrimary}`}
-                disabled={submitting || (bookingType === "machine" && !machineType)}
-              >
-                {submitting ? "Submitting…" : "Submit request"}
-              </button>
-              <button type="button" onClick={() => { setShowForm(false); resetForm(); }} className={styles.cancelBtn}>
-                Cancel
-              </button>
-            </div>
-          </form>
-        </div>
+        <RequestBookingForm
+          bookingType={bookingType}
+          onBookingTypeChange={setBookingType}
+          machineType={machineType}
+          onMachineTypeChange={setMachineType}
+          preferredDate={preferredDate}
+          onPreferredDateChange={setPreferredDate}
+          notes={notes}
+          onNotesChange={setNotes}
+          submitting={submitting}
+          submitError={submitError}
+          onSubmit={handleSubmit}
+          onCancel={() => { setShowForm(false); resetForm(); }}
+        />
       )}
 
-      {loading ? (
-        <LoadingState />
-      ) : loadError ? (
-        <div className={styles.card}>
-          <div className={styles.emptyState}>
-            Could not load bookings.{" "}
-            <button type="button" onClick={load} className={styles.retryBtn}>
-              Retry
-            </button>
-          </div>
-        </div>
-      ) : bookings.length === 0 ? (
-        <div className={styles.card}>
-          <div className={styles.emptyState}>
-            <p className={styles.emptyTitle}>No bookings yet</p>
-            <p>A discovery call is the fastest way to find out if {COMPANY.shortName} is right for you — {slotMinutes} minutes with {clinicianLabel} to look at your Inflection Edge results and map out a programme.</p>
-            <button
-              type="button"
-              className={styles.emptyAction}
-              onClick={() => setShowForm(true)}
-            >
-              Request a booking →
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className={styles.listStack}>
-          {bookings.map((b) => {
-            const s = BOOKING_STATUS_CONFIG[b.status] ?? BOOKING_STATUS_CONFIG.pending;
-            const typeLabel = BOOKING_TYPE_CONFIG[b.bookingType]?.label ?? b.bookingType;
-            const machineLabel = b.machineType ? MACHINE_TYPE_CONFIG[b.machineType]?.label : null;
-            return (
-              <div key={b.id} className={styles.card}>
-                <div className={bookingStyles.bookingItem}>
-                  {/* WHEN → WHAT/WHO → WHERE. It used to be one sentence
-                      concatenating all three, with "Requested 16/08/2026"
-                      underneath — a date nobody has ever needed, in a third
-                      format, directly below the one that matters. */}
-                  <div className={bookingStyles.bookingItemInfo}>
-                    {b.scheduledAt ? (
-                      <p className={bookingStyles.bookingWhen}>{formatAppointment(b.scheduledAt)}</p>
-                    ) : (
-                      <p className={bookingStyles.bookingWhenPending}>
-                        {b.preferredDate
-                          ? `You asked for ${formatDateLong(b.preferredDate)}`
-                          : "No time agreed yet"}
-                      </p>
-                    )}
-                    <p className={bookingStyles.bookingWith}>
-                      {machineLabel ? `${typeLabel} — ${machineLabel}` : typeLabel}
-                      {b.clinician?.name ? ` with ${b.clinician.name}` : ""}
-                    </p>
-                    {b.scheduledAt && (
-                      <p className={bookingStyles.bookingWhere}>{CLINIC_LOCATION}</p>
-                    )}
-                    {b.notes && <p className={bookingStyles.bookingNote}>{b.notes}</p>}
-                  </div>
-                  <div className={bookingStyles.bookingActions}>
-                    <span className={`${styles.pill} ${s.badgeClass}`}>
-                      {s.label}
-                    </span>
-                    {/* Was gated to `pending`, which is a status no booked
-                        appointment ever has — every patient who picked a time
-                        was stuck with it. The control now decides for itself,
-                        from the same rule the API enforces. */}
-                    <BookingActions
-                      booking={{
-                        id: b.id,
-                        status: b.status,
-                        scheduledAt: b.scheduledAt,
-                        clinicianId: b.clinician?.id ?? null,
-                        createdAt: b.createdAt,
-                      }}
-                      onChanged={load}
-                      onMove={(target) => {
-                        setMovingBooking(target);
-                        setSelectedSlot(null);
-                        setSlotSuccess(null);
-                        // Otherwise "Move" on a George appointment could open
-                        // Manuel's calendar, and silently hand the patient to a
-                        // different doctor the moment they pick a time.
-                        if (target.clinicianId && target.clinicianId !== clinicianId) {
-                          selectClinician(target.clinicianId);
-                        }
-                        if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+      <BookingHistoryList
+        loading={loading}
+        loadError={loadError}
+        onRetry={load}
+        bookings={bookings}
+        clinicianLabel={clinicianLabel}
+        slotMinutes={slotMinutes}
+        onRequestBooking={() => setShowForm(true)}
+        onChanged={load}
+        onMove={(target) => {
+          setMovingBooking(target);
+          setSelectedSlot(null);
+          setSlotSuccess(null);
+          // Otherwise "Move" on a George appointment could open Manuel's
+          // calendar, and silently hand the patient to a different doctor
+          // the moment they pick a time.
+          if (target.clinicianId && target.clinicianId !== clinicianId) {
+            selectClinician(target.clinicianId);
+          }
+          if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
+      />
     </div>
   );
 }

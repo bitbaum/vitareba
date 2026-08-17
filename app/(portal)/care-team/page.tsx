@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth";
-import styles from "../portal.module.css";
+import { PortalPageHeader } from "@/components/portal/PortalPageHeader";
 import { CareTeamPanel } from "./CareTeamPanel";
 
 export default async function CareTeamPage() {
@@ -7,13 +7,10 @@ export default async function CareTeamPage() {
 
   return (
     <div>
-      <h1 className={styles.pageTitle}>
-        My <em>Care Team</em>
-      </h1>
-      <p className={styles.pageSub}>
-        Who treats you, and how to reach them. Choose a clinician, switch to
-        another, message them directly, or book your next appointment.
-      </p>
+      <PortalPageHeader
+        title={<>My <em>Care Team</em></>}
+        subtitle="Who treats you, and how to reach them. Choose a clinician, switch to another, message them directly, or book your next appointment."
+      />
       <CareTeamPanel selfId={session?.user?.id ?? ""} />
     </div>
   );

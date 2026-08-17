@@ -12,7 +12,6 @@ import {
 } from "@/lib/db/schema";
 import { eq, asc, desc, and, isNull, gte, inArray, count } from "drizzle-orm";
 import { BOOKING_STATUS } from "@/lib/config/booking-status";
-import shared from "../portal.module.css";
 import styles from "./dashboard.module.css";
 import { RECENT_ASSESSMENTS_LIMIT, DASHBOARD_TREND_DAYS, CHECKIN_HISTORY_DAYS } from "@/lib/config/portal";
 import { COMPANY } from "@/lib/config/company";
@@ -28,6 +27,7 @@ import { clinicianLabelFor } from "@/lib/domain/clinician-label";
 import { getUnreadThreadCount } from "@/lib/domain/messages";
 import { computeNextStep } from "@/lib/domain/next-step";
 import { DAY_MS } from "@/lib/utils/format";
+import { PortalPageHeader } from "@/components/portal/PortalPageHeader";
 import { PendingAssessmentSaver } from "./PendingAssessmentSaver";
 import { CheckinMiniTrend } from "./CheckinMiniTrend";
 import { NextStepCard } from "./NextStepCard";
@@ -141,10 +141,10 @@ export default async function DashboardPage() {
   return (
     <div>
       <PendingAssessmentSaver />
-      <h1 className={shared.pageTitle}>
-        {isNewPatient ? "Welcome" : "Welcome back"}, <em>{firstName}</em>
-      </h1>
-      <p className={shared.pageSub}>Your {COMPANY.shortName} patient portal</p>
+      <PortalPageHeader
+        title={<>{isNewPatient ? "Welcome" : "Welcome back"}, <em>{firstName}</em></>}
+        subtitle={`Your ${COMPANY.shortName} patient portal`}
+      />
 
       <div className={styles.dashStack}>
         <NextStepCard step={nextStep} />

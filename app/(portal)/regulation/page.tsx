@@ -1,5 +1,6 @@
 import styles from "../portal.module.css";
 import regStyles from "./regulation.module.css";
+import { PortalPageHeader } from "@/components/portal/PortalPageHeader";
 import { REGULATORY_BLOCKS } from "@/lib/config/regulation";
 
 export const metadata = { title: "Regulatory ledger" };
@@ -12,10 +13,10 @@ export const metadata = { title: "Regulatory ledger" };
 export default function RegulationPage() {
   return (
     <div>
-      <h1 className={styles.pageTitle}>
-        Switched off <em>by law</em>
-      </h1>
-      <p className={styles.pageSub}>The regulatory ledger of this product</p>
+      <PortalPageHeader
+        title={<>Switched off <em>by law</em></>}
+        subtitle="The regulatory ledger of this product"
+      />
 
       <p className={regStyles.intro}>
         Some things this portal could do for you today are disabled — not because we didn&apos;t

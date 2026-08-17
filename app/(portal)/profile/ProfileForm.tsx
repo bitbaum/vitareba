@@ -8,26 +8,20 @@ import {
   SAVED_FEEDBACK_MS,
   SAVING_LABEL,
   SAVED_LABEL,
-  EXERCISE_FREQUENCY_OPTIONS,
-  SLEEP_HOURS_MIN,
-  SLEEP_HOURS_MAX,
   PATIENT_NOTE_MAX_LENGTH,
-  PROFILE_NAME_MAX_LENGTH,
-  PROFILE_PHONE_MAX_LENGTH,
-  PROFILE_CITY_MAX_LENGTH,
-  PROFILE_OCCUPATION_MAX_LENGTH,
   PROFILE_REFERRAL_SOURCE_MAX_LENGTH,
 } from "@/lib/config/portal";
 import type { ExerciseFrequency } from "@/lib/config/portal";
-import {
-  BIOLOGICAL_SEX_LABELS,
-  BIOLOGICAL_SEX_VALUES,
-  type BiologicalSex,
-} from "@/lib/config/measurements";
+import type { BiologicalSex } from "@/lib/config/measurements";
 import { computeProfileCompleteness } from "@/lib/domain/profile";
 import { COMPANY } from "@/lib/config/company";
 import { formatDateLong } from "@/lib/utils/format";
 import { LoadingState } from "@/components/LoadingState";
+import type { ProfileData } from "./profile-types";
+import { PersonalFields } from "./PersonalFields";
+import { ClinicalContextFields } from "./ClinicalContextFields";
+import { LifestyleFields } from "./LifestyleFields";
+import { EmailPreferencesFields } from "./EmailPreferencesFields";
 
 type ProfileApiData = {
   // User fields (from users table — always fresh, never stale JWT)
@@ -52,26 +46,6 @@ type ProfileApiData = {
   notes?: string | null;
   digestOptOut?: boolean;
   reminderOptOut?: boolean;
-};
-
-type ProfileData = {
-  name: string;
-  phone: string;
-  dateOfBirth: string;
-  biologicalSex: BiologicalSex | "";
-  city: string;
-  occupation: string;
-  mainConcern: string;
-  goals: string;
-  diagnosisHistory: string;
-  currentMedications: string;
-  currentSupplements: string;
-  sleepHoursAvg: number | "";
-  exerciseFrequency: ExerciseFrequency | "";
-  referralSource: string;
-  notes: string;
-  digestOptOut: boolean;
-  reminderOptOut: boolean;
 };
 
 const EMPTY_FORM: ProfileData = {
@@ -258,100 +232,9 @@ export function ProfileForm({ clinician = COMPANY.clinicianFallback }: { clinici
 
       <form onSubmit={handleSubmit} className={profileStyles.form}>
 
-        {/* ── Personal ──────────────────────────────────────────────── */}
-        <div className={styles.card}>
-          <p className={styles.cardTitle}>Personal</p>
-          <div className={profileStyles.fieldGrid}>
-            <div className={authStyles.field}>
-              <label className={authStyles.label} htmlFor="name">Full name</label>
-              <input id="name" className={authStyles.input} value={form.name} onChange={set("name")} maxLength={PROFILE_NAME_MAX_LENGTH} />
-            </div>
-            <div className={authStyles.field}>
-              <label className={authStyles.label} htmlFor="dob">Date of birth</label>
-              <input id="dob" className={authStyles.input} type="date" value={form.dateOfBirth} onChange={set("dateOfBirth")} />
-            </div>
-            <div className={authStyles.field}>
-              {/* Asked for one reason only, and the label says so: several blood
-                  results are read against different ranges for women and men,
-                  and we would rather ask than guess wrong about your health. */}
-              <label className={authStyles.label} htmlFor="sex">Sex — used for lab reference ranges</label>
-              <select id="sex" className={authStyles.input} value={form.biologicalSex} onChange={set("biologicalSex")}>
-                <option value="">Not recorded</option>
-                {BIOLOGICAL_SEX_VALUES.map((v) => (
-                  <option key={v} value={v}>{BIOLOGICAL_SEX_LABELS[v]}</option>
-                ))}
-              </select>
-            </div>
-            <div className={authStyles.field}>
-              <label className={authStyles.label} htmlFor="phone">Phone</label>
-              <input id="phone" className={authStyles.input} type="tel" value={form.phone} onChange={set("phone")} maxLength={PROFILE_PHONE_MAX_LENGTH} placeholder="+41 79 000 00 00" />
-            </div>
-            <div className={authStyles.field}>
-              <label className={authStyles.label} htmlFor="city">City</label>
-              <input id="city" className={authStyles.input} value={form.city} onChange={set("city")} maxLength={PROFILE_CITY_MAX_LENGTH} placeholder="Zürich" />
-            </div>
-            <div className={authStyles.field}>
-              <label className={authStyles.label} htmlFor="occupation">Occupation</label>
-              <input id="occupation" className={authStyles.input} value={form.occupation} onChange={set("occupation")} maxLength={PROFILE_OCCUPATION_MAX_LENGTH} placeholder="Founder, engineer, executive…" />
-            </div>
-          </div>
-        </div>
-
-        {/* ── Clinical context ──────────────────────────────────────── */}
-        <div className={styles.card}>
-          <p className={styles.cardTitle}>Clinical context</p>
-          <div className={profileStyles.fieldStack}>
-            <div className={authStyles.field}>
-              <label className={authStyles.label} htmlFor="concern">Main concern</label>
-              <textarea id="concern" className={styles.formTextarea} value={form.mainConcern} onChange={set("mainConcern")} maxLength={PATIENT_NOTE_MAX_LENGTH} placeholder={`What brings you to ${COMPANY.shortName}?`} />
-            </div>
-            <div className={authStyles.field}>
-              <label className={authStyles.label} htmlFor="goals">Goals</label>
-              <textarea id="goals" className={styles.formTextarea} value={form.goals} onChange={set("goals")} maxLength={PATIENT_NOTE_MAX_LENGTH} placeholder="What would success look like in 6 months?" />
-            </div>
-            <div className={authStyles.field}>
-              <label className={authStyles.label} htmlFor="diagnosis">Diagnosis history</label>
-              <textarea id="diagnosis" className={styles.formTextarea} value={form.diagnosisHistory} onChange={set("diagnosisHistory")} maxLength={PATIENT_NOTE_MAX_LENGTH} placeholder="Any prior diagnoses (ADHD, anxiety, depression, etc.)" />
-            </div>
-            <div className={authStyles.field}>
-              <label className={authStyles.label} htmlFor="meds">Current medications</label>
-              <textarea id="meds" className={styles.formTextarea} value={form.currentMedications} onChange={set("currentMedications")} maxLength={PATIENT_NOTE_MAX_LENGTH} placeholder="Name, dose, frequency — or 'none'" />
-            </div>
-            <div className={authStyles.field}>
-              <label className={authStyles.label} htmlFor="supps">Current supplements</label>
-              <textarea id="supps" className={styles.formTextarea} value={form.currentSupplements} onChange={set("currentSupplements")} maxLength={PATIENT_NOTE_MAX_LENGTH} placeholder="Omega-3, magnesium, creatine…" />
-            </div>
-          </div>
-        </div>
-
-        {/* ── Lifestyle baseline ────────────────────────────────────── */}
-        <div className={styles.card}>
-          <p className={styles.cardTitle}>Lifestyle baseline</p>
-          <div className={profileStyles.fieldGrid}>
-            <div className={authStyles.field}>
-              <label className={authStyles.label} htmlFor="sleep">Average sleep (hours/night)</label>
-              <input
-                id="sleep"
-                className={authStyles.input}
-                type="number"
-                min={SLEEP_HOURS_MIN}
-                max={SLEEP_HOURS_MAX}
-                value={form.sleepHoursAvg}
-                onChange={set("sleepHoursAvg")}
-                placeholder="7"
-              />
-            </div>
-            <div className={authStyles.field}>
-              <label className={authStyles.label} htmlFor="exercise">Exercise frequency</label>
-              <select id="exercise" className={authStyles.input} value={form.exerciseFrequency} onChange={set("exerciseFrequency")}>
-                <option value="">Select…</option>
-                {EXERCISE_FREQUENCY_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
+        <PersonalFields form={form} set={set} />
+        <ClinicalContextFields form={form} set={set} />
+        <LifestyleFields form={form} set={set} />
 
         {/* ── Notes ────────────────────────────────────────────────── */}
         <div className={styles.card}>
@@ -377,34 +260,12 @@ export function ProfileForm({ clinician = COMPANY.clinicianFallback }: { clinici
           </div>
         </div>
 
-        {/* ── Email preferences ─────────────────────────────────────── */}
-        <div className={styles.card} id="email-preferences">
-          <p className={styles.cardTitle}>Email preferences</p>
-          <label className={profileStyles.checkboxRow}>
-            <input
-              type="checkbox"
-              className={profileStyles.checkboxInput}
-              checked={form.digestOptOut}
-              onChange={(e) => setForm((prev) => ({ ...prev, digestOptOut: e.target.checked }))}
-            />
-            Opt out of weekly summary emails
-          </label>
-          <p className={profileStyles.checkboxHint}>
-            Weekly summaries include your check-in averages, latest score, and booking status. Uncheck to receive them.
-          </p>
-          <label className={profileStyles.checkboxRow}>
-            <input
-              type="checkbox"
-              className={profileStyles.checkboxInput}
-              checked={form.reminderOptOut}
-              onChange={(e) => setForm((prev) => ({ ...prev, reminderOptOut: e.target.checked }))}
-            />
-            Opt out of daily check-in reminder emails
-          </label>
-          <p className={profileStyles.checkboxHint}>
-            Reminders are sent on days you haven&apos;t logged a check-in yet. Uncheck to receive them.
-          </p>
-        </div>
+        <EmailPreferencesFields
+          digestOptOut={form.digestOptOut}
+          onDigestOptOutChange={(checked) => setForm((prev) => ({ ...prev, digestOptOut: checked }))}
+          reminderOptOut={form.reminderOptOut}
+          onReminderOptOutChange={(checked) => setForm((prev) => ({ ...prev, reminderOptOut: checked }))}
+        />
 
         {saveError && <p className={styles.formError}>{saveError}</p>}
         <button type="submit" className={`${styles.btnPrimary} ${styles.btnBlock}`} disabled={saving}>

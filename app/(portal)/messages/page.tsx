@@ -13,6 +13,7 @@ import { MESSAGE_SUBJECT_MAX_LENGTH, MESSAGE_BODY_MAX_LENGTH } from "@/lib/confi
 import { PORTAL_ROUTES } from "@/lib/config/routes";
 import { LoadingState } from "@/components/LoadingState";
 import { SafetyNotice } from "@/components/clinical/SafetyNotice";
+import { PortalPageHeader } from "@/components/portal/PortalPageHeader";
 
 type Clinician = NonNullable<ThreadClinician>;
 
@@ -114,19 +115,15 @@ function MessagesView() {
 
   return (
     <div>
-      <div className={styles.pageHeader}>
-        <div>
-          <h1 className={styles.pageTitle}>
-            My <em>Messages</em>
-          </h1>
-          <p className={styles.pageSub}>
-            Direct line to {selectedName ?? UNKNOWN_CLINICIAN} — secure and asynchronous
-          </p>
-        </div>
-        <button type="button" className={styles.btnPrimary} onClick={() => setShowForm(!showForm)}>
-          + New message
-        </button>
-      </div>
+      <PortalPageHeader
+        title={<>My <em>Messages</em></>}
+        subtitle={`Direct line to ${selectedName ?? UNKNOWN_CLINICIAN} — secure and asynchronous`}
+        action={
+          <button type="button" className={styles.btnPrimary} onClick={() => setShowForm(!showForm)}>
+            + New message
+          </button>
+        }
+      />
 
       {showForm && (
         <div className={`${styles.card} ${styles.cardGap}`}>

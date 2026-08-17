@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import styles from "../portal.module.css";
 import { MeasurementsPanel } from "@/components/clinical/MeasurementsPanel";
 import { SafetyNotice } from "@/components/clinical/SafetyNotice";
+import { PortalPageHeader } from "@/components/portal/PortalPageHeader";
 import { PORTAL_ROUTES } from "@/lib/config/routes";
 import Link from "next/link";
 
@@ -29,14 +30,10 @@ export default async function LabsPage() {
 
   return (
     <div>
-      <h1 className={styles.pageTitle}>
-        Labs &amp; <em>Vitals</em>
-      </h1>
-      <p className={styles.pageSub}>
-        Everything measured about you, and which way it is moving. Blood pressure, weight,
-        sleep and anything else you track yourself can be added here — your clinician sees it
-        the moment you save it.
-      </p>
+      <PortalPageHeader
+        title={<>Labs &amp; <em>Vitals</em></>}
+        subtitle="Everything measured about you, and which way it is moving. Blood pressure, weight, sleep and anything else you track yourself can be added here — your clinician sees it the moment you save it."
+      />
 
       <MeasurementsPanel />
 

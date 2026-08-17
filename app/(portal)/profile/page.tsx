@@ -2,6 +2,7 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import styles from "../portal.module.css";
 import profileStyles from "./profile.module.css";
+import { PortalPageHeader } from "@/components/portal/PortalPageHeader";
 import { ProfileForm } from "./ProfileForm";
 import { PasswordForm } from "./PasswordForm";
 import { PrivacyCard } from "./PrivacyCard";
@@ -17,14 +18,10 @@ export default async function ProfilePage() {
 
   return (
     <div className={profileStyles.layout}>
-      <div>
-        <h1 className={styles.pageTitle}>
-          My <em>Profile</em>
-        </h1>
-        <p className={styles.pageSub}>
-          The more you share, the more tailored your support can be.
-        </p>
-      </div>
+      <PortalPageHeader
+        title={<>My <em>Profile</em></>}
+        subtitle="The more you share, the more tailored your support can be."
+      />
       <ProfileForm clinician={clinician} />
       {/* Choosing, switching, messaging and booking a clinician all live on
           one dedicated page now — this used to be its own full picker here,
