@@ -106,13 +106,12 @@ const ROUTE_ICONS: Record<AdminRoute, React.ComponentType> = {
   [ADMIN_ROUTES.profile]:      IcoProfile,
 };
 
-type BadgeKey = "messages" | "bookings" | "patients" | "applications";
+type BadgeKey = "messages" | "bookings" | "patients";
 
 const ROUTE_BADGE_KEYS: Partial<Record<AdminRoute, BadgeKey>> = {
-  [ADMIN_ROUTES.messages]:     "messages",
-  [ADMIN_ROUTES.bookings]:     "bookings",
-  [ADMIN_ROUTES.patients]:     "patients",
-  [ADMIN_ROUTES.applications]: "applications",
+  [ADMIN_ROUTES.messages]: "messages",
+  [ADMIN_ROUTES.bookings]: "bookings",
+  [ADMIN_ROUTES.patients]: "patients",
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -128,7 +127,6 @@ export type AdminBadgeProps = {
   unreadMessages?: number;
   newBookings?: number;
   urgentPatients?: number;
-  pendingApplications?: number;
 };
 
 function badgeCount(href: AdminRoute, badges: Record<BadgeKey, number>): number {
@@ -144,7 +142,6 @@ function useBadges(props: AdminBadgeProps) {
       messages: props.unreadMessages ?? 0,
       bookings: props.newBookings ?? 0,
       patients: props.urgentPatients ?? 0,
-      applications: props.pendingApplications ?? 0,
     },
   };
 }

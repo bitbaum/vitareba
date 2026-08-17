@@ -9,7 +9,7 @@ import { AdminNav, AdminBottomNav } from "@/components/admin/AdminNav";
 import { NavBreadcrumb } from "@/components/portal/NavBreadcrumb";
 import { NotificationBell } from "@/components/shared/NotificationBell";
 import { db } from "@/lib/db";
-import { users, bookings, profiles, clinicianApplications } from "@/lib/db/schema";
+import { users, bookings, profiles } from "@/lib/db/schema";
 import { eq, inArray, count, and, gt } from "drizzle-orm";
 import { getUnreadThreadCount } from "@/lib/domain/messages";
 import { getUnreadCount } from "@/lib/domain/notifications";
@@ -35,25 +35,23 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     }),
     db.query.profiles.findFirst({
       where: eq(profiles.userId, session.user.id),
-      columns: { bookingsSeenAt: true, patientsSeenAt: true, applicationsSeenAt: true },
+      columns: { bookingsSeenAt: true, patientsSeenAt: true },
     }),
     getUnreadThreadCount(session.user.id),
     getUnreadCount(session.user.id),
   ]);
 
-  // Four different badge semantics, documented once at ADMIN_NAV_GROUPS in
-  // lib/config/routes.ts — messages is per-thread read state; bookings,
-  // patients and applications are all "new since I last looked", the same
-  // seen-at pattern the patient portal already uses for goalsSeenAt. Patients
-  // and applications used to be live state counts with no seen-at gate — a
-  // badge that never cleared even after everything flagged had been reviewed.
+  // Three badge semantics, documented once at ADMIN_NAV_GROUPS in
+  // lib/config/routes.ts — messages is per-thread read state; bookings and
+  // patients are both "new since I last looked", the same seen-at pattern
+  // the patient portal already uses for goalsSeenAt. Clinicians carries no
+  // badge: staff are added directly by an owner, not reviewed from a queue.
   const bookingsSeenAt = adminProfile?.bookingsSeenAt ?? null;
   const patientsSeenAt = adminProfile?.patientsSeenAt ?? null;
-  const applicationsSeenAt = adminProfile?.applicationsSeenAt ?? null;
   const activeStatuses = [BOOKING_STATUS.pending, BOOKING_STATUS.confirmed];
   const urgentSignals = [PATIENT_SIGNAL.critical, PATIENT_SIGNAL.attention];
 
-  const [newBookings, urgentPatients, pendingApplications] = await Promise.all([
+  const [newBookings, urgentPatients] = await Promise.all([
     db
       .select({ value: count() })
       .from(bookings)
@@ -72,15 +70,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           : inArray(profiles.lastKnownSignal, urgentSignals)
       )
       .then((r) => r[0]?.value ?? 0),
-    db
-      .select({ value: count() })
-      .from(clinicianApplications)
-      .where(
-        applicationsSeenAt
-          ? and(eq(clinicianApplications.status, "pending"), gt(clinicianApplications.createdAt, applicationsSeenAt))
-          : eq(clinicianApplications.status, "pending")
-      )
-      .then((r) => r[0]?.value ?? 0),
   ]);
 
   const name = dbUser?.name ?? "";
@@ -97,7 +86,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           unreadMessages={unreadMessages}
           newBookings={newBookings}
           urgentPatients={urgentPatients}
-          pendingApplications={pendingApplications}
         />
         <Link href={PORTAL_ROUTES.dashboard} className={styles.roleSwitch}>
           ← Patient portal
@@ -117,7 +105,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         unreadMessages={unreadMessages}
         newBookings={newBookings}
         urgentPatients={urgentPatients}
-        pendingApplications={pendingApplications}
       />
     </div>
   );

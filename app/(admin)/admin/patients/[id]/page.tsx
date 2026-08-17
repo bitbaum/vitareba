@@ -121,6 +121,7 @@ export default async function PatientDetailPage({
       {/* Progressive disclosure — the record is grouped by the question the
           clinician is answering, not dumped as one endless column. */}
       <SectionTabs
+        ariaLabel="Patient record sections"
         sections={[
           {
             id: "overview",

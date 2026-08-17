@@ -418,6 +418,21 @@
   margin-bottom: 1rem;
 }
 
+.whereToFind {
+  margin-top: 1.25rem;
+}
+
+.whereToFindSummary {
+  composes: sectionLabel;
+  cursor: pointer;
+  width: fit-content;
+  margin-bottom: 0;
+}
+
+.whereToFind[open] .whereToFindSummary {
+  margin-bottom: 0.75rem;
+}
+
 /* Bar chart rows */
 .barRow {
   display: flex;

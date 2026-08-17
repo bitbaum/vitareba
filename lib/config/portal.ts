@@ -165,12 +165,6 @@ export const CLINICIAN_TITLE_MAX_LENGTH = 150; // matches clinician_profiles.tit
 export const CLINICIAN_SPECIALTY_MAX_LENGTH = 60;
 export const CLINICIAN_SPECIALTIES_MAX_COUNT = 12;
 
-/** "Apply to become a clinician" message max length (Zod schema + form textarea) */
-export const CLINICIAN_APPLICATION_MESSAGE_MAX_LENGTH = 2_000;
-/** Admin's note back to the applicant on approve/decline */
-export const CLINICIAN_APPLICATION_REVIEW_NOTE_MAX_LENGTH = 1_000;
-
-
 /** Clinical goal row as returned by the goals API (dates are strings) */
 export type GoalRow = {
   id: string;
