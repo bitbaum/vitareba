@@ -19,7 +19,7 @@ export default function Logo({ variant = "dark", tagline, small }: LogoProps) {
 
   return (
     <div className={classes}>
-      Vita<span className={styles.accent}>Re</span>Ba
+      Vita
       {tagline && <span> · {tagline}</span>}
     </div>
   );

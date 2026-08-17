@@ -5,10 +5,6 @@
   color: var(--ink);
 }
 
-.accent {
-  color: var(--teal);
-}
-
 .light {
   color: var(--white-30);
 }
