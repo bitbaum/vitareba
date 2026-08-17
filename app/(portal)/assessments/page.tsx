@@ -10,6 +10,7 @@ import { formatDateLong, formatDateMonthDay, sentenceCase } from "@/lib/utils/fo
 import { clinicianLabelFor } from "@/lib/domain/clinician-label";
 import styles from "../portal.module.css";
 import assessStyles from "./assessments.module.css";
+import { PortalPageHeader } from "@/components/portal/PortalPageHeader";
 import { AssessmentTrendChartWrapper } from "./AssessmentTrendChartWrapper";
 
 export default async function AssessmentsPage({
@@ -39,10 +40,10 @@ export default async function AssessmentsPage({
 
   return (
     <div>
-      <h1 className={styles.pageTitle}>
-        My <em>Results</em>
-      </h1>
-      <p className={styles.pageSub}>Your Inflection Edge assessment history</p>
+      <PortalPageHeader
+        title={<>My <em>Results</em></>}
+        subtitle="Your Inflection Edge assessment history"
+      />
 
       {/* Trend chart — only shown when there are 2+ assessments */}
       {results.length >= 2 && (

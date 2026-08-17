@@ -26,6 +26,12 @@
   --white: #ffffff;
   --footer-bg: #111118;
 
+  /* Ink surface gradient — the one dark-card treatment used across the portal
+     sidebar and profile hero. Was hardcoded identically in two files; a
+     third dark surface (portal.module.css / dashboard.module.css) uses flat
+     --ink instead, which is a deliberate lighter-weight variant, not drift. */
+  --gradient-ink: linear-gradient(200deg, var(--ink2) -40%, var(--ink) 45%);
+
   /* Layout */
   --section-pad-y: 6rem;
   --section-pad-x: 3rem;

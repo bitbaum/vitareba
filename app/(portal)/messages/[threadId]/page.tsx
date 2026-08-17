@@ -10,6 +10,7 @@ import { MESSAGE_POLL_INTERVAL_MS, MESSAGE_BODY_MAX_LENGTH } from "@/lib/config/
 import { PORTAL_ROUTES } from "@/lib/config/routes";
 import { type ThreadDetail } from "@/lib/config/messages";
 import { LoadingState } from "@/components/LoadingState";
+import { PortalPageHeader } from "@/components/portal/PortalPageHeader";
 
 export default function ThreadPage() {
   const params = useParams();
@@ -121,7 +122,7 @@ export default function ThreadPage() {
       <Link href={PORTAL_ROUTES.messages} className={styles.backLink}>
         ← Back to messages
       </Link>
-      <h1 className={styles.pageTitle}>{thread.subject}</h1>
+      <PortalPageHeader title={thread.subject} />
 
       {/* Who is in the room. Shown once a conversation stops being just you and
           your clinician — a patient should never have to guess that a colleague

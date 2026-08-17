@@ -15,6 +15,13 @@
 .pageSub { composes: pageSub from "../shared.module.css"; }
 .pageHeader { composes: pageHeader from "../shared.module.css"; }
 
+.darkBanner { composes: darkBanner from "../shared.module.css"; }
+.darkBannerEyebrow { composes: darkBannerEyebrow from "../shared.module.css"; }
+.darkBannerTitle { composes: darkBannerTitle from "../shared.module.css"; }
+.darkBannerBody { composes: darkBannerBody from "../shared.module.css"; }
+.darkBannerLinkPrimary { composes: darkBannerLinkPrimary from "../shared.module.css"; }
+.darkBannerLinkMuted { composes: darkBannerLinkMuted from "../shared.module.css"; }
+
 .card { composes: card from "../shared.module.css"; }
 .cardMb { composes: cardMb from "../shared.module.css"; }
 .cardGap { composes: cardGap from "../shared.module.css"; }
@@ -103,7 +110,7 @@
 }
 
 .sidebar {
-  background: linear-gradient(200deg, var(--ink2) -40%, var(--ink) 45%);
+  background: var(--gradient-ink);
   color: var(--white);
   display: flex;
   flex-direction: column;

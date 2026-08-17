@@ -8,11 +8,7 @@
 
 /* ─── Hero card (dark, assessment result or CTA) ────────────────────────── */
 
-.heroCard {
-  background: var(--ink);
-  border-radius: var(--radius-xl);
-  padding: 2rem;
-}
+.heroCard { composes: darkBanner from "../../shared.module.css"; }
 
 .heroCardHead {
   display: flex;
@@ -21,28 +17,9 @@
   margin-bottom: 0.75rem;
 }
 
-.heroEyebrow {
-  font-size: 0.72rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--white-55);
-  margin-bottom: 0.4rem;
-}
-
-.heroTitle {
-  font-family: var(--font-cormorant), serif;
-  font-size: 1.8rem;
-  font-weight: 300;
-  color: var(--white);
-  line-height: 1.1;
-}
-
-.heroBody {
-  font-size: 0.85rem;
-  color: var(--faint);
-  line-height: 1.75;
-  max-width: 540px;
-}
+.heroEyebrow { composes: darkBannerEyebrow from "../../shared.module.css"; }
+.heroTitle { composes: darkBannerTitle from "../../shared.module.css"; }
+.heroBody { composes: darkBannerBody from "../../shared.module.css"; }
 
 .heroLinks {
   margin-top: 1.25rem;
@@ -51,19 +28,8 @@
   flex-wrap: wrap;
 }
 
-.heroLinkPrimary {
-  font-size: 0.75rem;
-  color: var(--teal);
-  text-decoration: none;
-  letter-spacing: 0.06em;
-}
-
-.heroLinkMuted {
-  font-size: 0.75rem;
-  color: var(--white-58);
-  text-decoration: none;
-  letter-spacing: 0.06em;
-}
+.heroLinkPrimary { composes: darkBannerLinkPrimary from "../../shared.module.css"; }
+.heroLinkMuted { composes: darkBannerLinkMuted from "../../shared.module.css"; }
 
 /* ─── Score block ────────────────────────────────────────────────────────── */
 

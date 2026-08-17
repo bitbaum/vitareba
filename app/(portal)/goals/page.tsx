@@ -5,6 +5,7 @@ import { eq, asc } from "drizzle-orm";
 import Link from "next/link";
 import styles from "../portal.module.css";
 import goalStyles from "./goals.module.css";
+import { PortalPageHeader } from "@/components/portal/PortalPageHeader";
 import { PORTAL_ROUTES } from "@/lib/config/routes";
 import { computeGoalProgress, goalProgressLabel } from "@/lib/domain/goals";
 import { CHECKIN_METRICS, ASSESSMENT_GOAL_METRIC_KEY, ASSESSMENT_GOAL_METRIC_LABEL, goalMetricAutoUpdateNote } from "@/lib/config/portal";
@@ -22,7 +23,8 @@ export default async function GoalsPage() {
   if (!session) return null;
 
   const now = new Date();
-  let goals: Awaited<ReturnType<typeof db.query.clinicalGoals.findMany>>;
+  let goals: Awaited<ReturnType<typeof db.query.clinicalGoals.findMany>> = [];
+  let loadError = false;
   try {
     // Mark goals as seen in parallel with fetching them — clears the nav badge
     [goals] = await Promise.all([
@@ -36,12 +38,7 @@ export default async function GoalsPage() {
         .catch(() => {/* non-critical — badge simply stays until next visit */}),
     ]);
   } catch {
-    return (
-      <div>
-        <h1 className={styles.pageTitle}>My Goals</h1>
-        <p className={styles.pageSub}>Couldn&apos;t load your goals right now — please refresh.</p>
-      </div>
-    );
+    loadError = true;
   }
 
   const active = goals.filter((g) => !g.completedAt);
@@ -49,12 +46,16 @@ export default async function GoalsPage() {
 
   return (
     <div>
-      <h1 className={styles.pageTitle}>My Goals</h1>
-      <p className={styles.pageSub}>
-        Clinical goals set by your clinician — updated as you progress.
-      </p>
+      <PortalPageHeader
+        title={<>My <em>Goals</em></>}
+        subtitle="Clinical goals set by your clinician — updated as you progress."
+      />
 
-      {goals.length === 0 ? (
+      {loadError ? (
+        <div className={`${styles.card} ${styles.emptyState}`}>
+          Couldn&apos;t load your goals right now — please refresh.
+        </div>
+      ) : goals.length === 0 ? (
         <div className={`${styles.card} ${styles.emptyState}`}>
           <p className={styles.emptyTitle}>No goals set yet</p>
           <p className={styles.emptyBody}>
