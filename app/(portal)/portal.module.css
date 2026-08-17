@@ -7,6 +7,7 @@
 
 .mainWrap { composes: mainWrap from "../shared.module.css"; }
 .header { composes: header from "../shared.module.css"; }
+.headerActions { composes: headerActions from "../shared.module.css"; }
 .main { composes: main from "../shared.module.css"; }
 .roleSwitch { composes: roleSwitch from "../shared.module.css"; }
 

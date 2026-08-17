@@ -147,6 +147,23 @@ export function relativeDate(dateStr: string, now: Date): string {
 }
 
 /**
+ * "3m ago" / "2h ago" / "5d ago" — timestamp-level relative time, not the
+ * calendar-day granularity of `relativeDate`. For the notification bell,
+ * where "just now" vs. "20 minutes ago" is the whole point of the list.
+ */
+export function formatRelativeTime(date: Date, now: Date): string {
+  const diffMs = now.getTime() - date.getTime();
+  const minutes = Math.floor(diffMs / (60 * 1000));
+  if (minutes < 1) return "Just now";
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d ago`;
+  return formatDateShort(date);
+}
+
+/**
  * Returns the patient's display name: their name if set, otherwise the
  * local part of their email address, otherwise the fallback string.
  * Used wherever a human-readable name is needed for emails and alerts.

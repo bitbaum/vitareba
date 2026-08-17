@@ -23,22 +23,29 @@ const {
   mockRequireSession,
   mockBookingFindFirst,
   mockUserFindFirst,
+  mockUserFindMany,
   mockUpdate,
   mockSendEmail,
   mockGetAdminEmails,
   mockRunAfterResponse,
   mockGetBusyIntervals,
   mockGetClinicianAvailability,
+  mockCreateNotification,
+  mockCreateNotificationForMany,
 } = vi.hoisted(() => ({
   mockRequireSession: vi.fn(),
   mockBookingFindFirst: vi.fn(),
   mockUserFindFirst: vi.fn(),
+  // Admin-role lookup for in-app notification fan-out — defaults to none.
+  mockUserFindMany: vi.fn().mockResolvedValue([]),
   mockUpdate: vi.fn(),
   mockSendEmail: vi.fn(),
   mockGetAdminEmails: vi.fn(),
   mockRunAfterResponse: vi.fn(),
   mockGetBusyIntervals: vi.fn(),
   mockGetClinicianAvailability: vi.fn(),
+  mockCreateNotification: vi.fn(),
+  mockCreateNotificationForMany: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/guards", () => ({ requireSession: mockRequireSession }));
@@ -47,10 +54,15 @@ vi.mock("@/lib/db", () => ({
   db: {
     query: {
       bookings: { findFirst: mockBookingFindFirst },
-      users: { findFirst: mockUserFindFirst },
+      users: { findFirst: mockUserFindFirst, findMany: mockUserFindMany },
     },
     update: mockUpdate,
   },
+}));
+
+vi.mock("@/lib/domain/notifications", () => ({
+  createNotification: mockCreateNotification,
+  createNotificationForMany: mockCreateNotificationForMany,
 }));
 
 vi.mock("@/lib/email/index", () => ({ sendEmail: mockSendEmail }));

@@ -6,6 +6,7 @@ const {
   mockBookingFindMany,
   mockBookingFindFirst,
   mockUserFindFirst,
+  mockUserFindMany,
   mockCareTeamFindFirst,
   mockInsert,
   mockSendEmail,
@@ -13,11 +14,15 @@ const {
   mockRunAfterResponse,
   mockCalendarBusyFindMany,
   mockClinicianProfileFindFirst,
+  mockCreateNotification,
+  mockCreateNotificationForMany,
 } = vi.hoisted(() => ({
   mockRequireSession: vi.fn(),
   mockBookingFindMany: vi.fn(),
   mockBookingFindFirst: vi.fn(),
   mockUserFindFirst: vi.fn(),
+  // Admin-role lookup for in-app notification fan-out — defaults to none.
+  mockUserFindMany: vi.fn().mockResolvedValue([]),
   mockCareTeamFindFirst: vi.fn(),
   mockInsert: vi.fn(),
   mockSendEmail: vi.fn(),
@@ -29,6 +34,8 @@ const {
   mockCalendarBusyFindMany: vi.fn(),
   // Availability rules — a clinician with no row uses DEFAULT_AVAILABILITY.
   mockClinicianProfileFindFirst: vi.fn(),
+  mockCreateNotification: vi.fn(),
+  mockCreateNotificationForMany: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/guards", () => ({ requireSession: mockRequireSession }));
@@ -37,13 +44,18 @@ vi.mock("@/lib/db", () => ({
   db: {
     query: {
       bookings: { findMany: mockBookingFindMany, findFirst: mockBookingFindFirst },
-      users:    { findFirst: mockUserFindFirst },
+      users:    { findFirst: mockUserFindFirst, findMany: mockUserFindMany },
       careTeam: { findFirst: mockCareTeamFindFirst },
       calendarBusy: { findMany: mockCalendarBusyFindMany },
       clinicianProfiles: { findFirst: mockClinicianProfileFindFirst },
     },
     insert: mockInsert,
   },
+}));
+
+vi.mock("@/lib/domain/notifications", () => ({
+  createNotification: mockCreateNotification,
+  createNotificationForMany: mockCreateNotificationForMany,
 }));
 
 vi.mock("@/lib/email/index", () => ({ sendEmail: mockSendEmail }));

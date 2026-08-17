@@ -40,6 +40,14 @@
   flex-shrink: 0;
 }
 
+/* Groups the notification bell + user dropdown on the right of .header —
+   shared by both portal and admin, which is the point: one definition. */
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .main {
   padding: 2.5rem;
   flex: 1;

@@ -10,9 +10,11 @@ import { PATIENT_SIGNAL, CHECKIN_GOAL_METRICS, SIGNAL_CHECKIN_WINDOW_DAYS, type 
 import { ASSESSMENT_GOAL_METRIC_KEY, GOAL_PROGRESS_COMPLETE_PCT } from "@/lib/config/portal";
 import { USER_ROLE } from "@/lib/config/auth";
 import { PORTAL_URL, getAdminEmails } from "@/lib/config/company";
-import { ADMIN_ROUTES } from "@/lib/config/routes";
+import { ADMIN_ROUTES, PORTAL_ROUTES } from "@/lib/config/routes";
 import { displayName } from "@/lib/utils/format";
 import { clinicianLabelFor } from "@/lib/domain/clinician-label";
+import { createNotification, createNotificationForMany } from "@/lib/domain/notifications";
+import { NOTIFICATION_TYPE } from "@/lib/config/notifications";
 
 export type CronSignalsResult =
   | { success: true; alerts: number; goalsCompleted: number; checked: number }
@@ -47,6 +49,19 @@ export async function runCronSignals(now: Date = new Date()): Promise<CronSignal
   } catch (err) {
     console.error("[cron/signals] DB read failed:", err);
     return { success: false, error: "Database unavailable" };
+  }
+
+  // Non-critical: a failed admin lookup should degrade to "no in-app fan-out
+  // this run", not fail the whole signals job.
+  let adminUserIds: string[] = [];
+  try {
+    const adminUsers = await db.query.users.findMany({
+      where: eq(users.role, USER_ROLE.admin),
+      columns: { id: true },
+    });
+    adminUserIds = adminUsers.map((a) => a.id);
+  } catch (err) {
+    console.error("[cron/signals] admin lookup failed:", err);
   }
 
   let alerts = 0;
@@ -112,6 +127,14 @@ export async function runCronSignals(now: Date = new Date()): Promise<CronSignal
           alerts++;
         }
       }
+      notificationWrites.push(
+        createNotificationForMany(adminUserIds, {
+          type: NOTIFICATION_TYPE.criticalSignal,
+          title: `Critical patient: ${patientName}`,
+          body: reason,
+          href: `${ADMIN_ROUTES.patients}/${patient.id}`,
+        })
+      );
     }
 
     const latestAssessment = patient.assessmentResults[0];
@@ -159,6 +182,13 @@ export async function runCronSignals(now: Date = new Date()): Promise<CronSignal
               )
             );
           }
+          notificationWrites.push(
+            createNotificationForMany(adminUserIds, {
+              type: NOTIFICATION_TYPE.goalAchieved,
+              title: `Goal achieved: ${patientName} — ${goal.title}`,
+              href: `${ADMIN_ROUTES.patients}/${patient.id}`,
+            })
+          );
           if (patient.email) {
             notificationWrites.push(
               sendEmail({
@@ -175,6 +205,14 @@ export async function runCronSignals(now: Date = new Date()): Promise<CronSignal
               )
             );
           }
+          notificationWrites.push(
+            createNotification({
+              userId: patient.id,
+              type: NOTIFICATION_TYPE.goalAchieved,
+              title: `Goal achieved: ${goal.title}`,
+              href: PORTAL_ROUTES.goals,
+            })
+          );
         }
       }
     }
@@ -182,8 +220,11 @@ export async function runCronSignals(now: Date = new Date()): Promise<CronSignal
     if (signal !== previousSignal) {
       dbWrites.push(
         db.insert(profiles)
-          .values({ userId: patient.id, lastKnownSignal: signal })
-          .onConflictDoUpdate({ target: profiles.userId, set: { lastKnownSignal: signal } })
+          .values({ userId: patient.id, lastKnownSignal: signal, lastKnownSignalAt: now })
+          .onConflictDoUpdate({
+            target: profiles.userId,
+            set: { lastKnownSignal: signal, lastKnownSignalAt: now },
+          })
       );
     }
   }

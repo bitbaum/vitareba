@@ -3,13 +3,29 @@ import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
 import { clinicalGoals, profiles } from "@/lib/db/schema";
 import { ASSESSMENT_GOAL_METRIC_KEY } from "@/lib/config/portal";
 
-const { mockFindMany, mockUpdate, mockInsert, mockSendEmail, mockGetAdminEmails, mockRequireCron } = vi.hoisted(() => ({
+const {
+  mockFindMany,
+  mockUpdate,
+  mockInsert,
+  mockSendEmail,
+  mockGetAdminEmails,
+  mockRequireCron,
+  mockCreateNotification,
+  mockCreateNotificationForMany,
+} = vi.hoisted(() => ({
   mockFindMany: vi.fn(),
   mockUpdate: vi.fn(),
   mockInsert: vi.fn(),
   mockSendEmail: vi.fn(),
   mockGetAdminEmails: vi.fn(),
   mockRequireCron: vi.fn(),
+  mockCreateNotification: vi.fn(),
+  mockCreateNotificationForMany: vi.fn(),
+}));
+
+vi.mock("@/lib/domain/notifications", () => ({
+  createNotification: mockCreateNotification,
+  createNotificationForMany: mockCreateNotificationForMany,
 }));
 
 vi.mock("@/lib/db", () => ({
@@ -54,6 +70,8 @@ describe("cron/signals route", () => {
     mockSendEmail.mockReset();
     mockGetAdminEmails.mockReset();
     mockRequireCron.mockReset();
+    mockCreateNotification.mockReset().mockResolvedValue(undefined);
+    mockCreateNotificationForMany.mockReset().mockResolvedValue(undefined);
 
     mockRequireCron.mockReturnValue(null);
     mockGetAdminEmails.mockReturnValue([]);

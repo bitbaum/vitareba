@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import styles from "./UserDropdown.module.css";
 import { USER_ROLE, type UserRole } from "@/lib/config/auth";
 import { ADMIN_ROUTES, PORTAL_ROUTES } from "@/lib/config/routes";
+import { EMERGENCY_CONTACTS } from "@/lib/config/company";
+import { useClickOutside } from "@/lib/hooks/useClickOutside";
 
 interface Props {
   name: string;
@@ -28,21 +30,7 @@ function initials(name: string, email: string): string {
 export function UserDropdown({ name, email, role, context = "portal" }: Props) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function onMouseDown(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    }
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
-    }
-    document.addEventListener("mousedown", onMouseDown);
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", onMouseDown);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, []);
+  useClickOutside(ref, () => setOpen(false));
 
   return (
     <div ref={ref} className={styles.root}>
@@ -79,6 +67,17 @@ export function UserDropdown({ name, email, role, context = "portal" }: Props) {
             <Link href={PORTAL_ROUTES.profile} className={styles.item} onClick={() => setOpen(false)}>
               Profile settings
             </Link>
+          </div>
+          {/* Persistent, not collapsible — reachable from any authed screen,
+              which was the actual gap: EMERGENCY_CONTACTS existed but was
+              never wired into either shell's chrome. */}
+          <div className={styles.emergency}>
+            <p className={styles.emergencyLabel}>In an emergency</p>
+            {EMERGENCY_CONTACTS.map((c) => (
+              <p key={`${c.region}-${c.number}`} className={styles.emergencyLine}>
+                {c.number} <span className={styles.emergencyRegion}>· {c.label}</span>
+              </p>
+            ))}
           </div>
           <div className={styles.footer}>
             <button

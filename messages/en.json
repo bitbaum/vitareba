@@ -450,7 +450,10 @@
     "ctaSecondary": "Book a Discovery Call"
   },
   "footer": {
-    "legal": "All psychedelic therapies within Swiss regulatory frameworks"
+    "legal": "All psychedelic therapies within Swiss regulatory frameworks",
+    "exploreHeading": "Explore",
+    "accountHeading": "Account",
+    "emergencyLabel": "In an emergency"
   },
   "auth": {
     "login": {

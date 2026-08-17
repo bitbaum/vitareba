@@ -3,12 +3,22 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { clinicalGoals, profiles } from "@/lib/db/schema";
 import { ASSESSMENT_GOAL_METRIC_KEY } from "@/lib/config/portal";
 
-const { mockFindMany, mockUpdate, mockInsert, mockSendEmail, mockGetAdminEmails } = vi.hoisted(() => ({
+const {
+  mockFindMany,
+  mockUpdate,
+  mockInsert,
+  mockSendEmail,
+  mockGetAdminEmails,
+  mockCreateNotification,
+  mockCreateNotificationForMany,
+} = vi.hoisted(() => ({
   mockFindMany: vi.fn(),
   mockUpdate: vi.fn(),
   mockInsert: vi.fn(),
   mockSendEmail: vi.fn(),
   mockGetAdminEmails: vi.fn(),
+  mockCreateNotification: vi.fn(),
+  mockCreateNotificationForMany: vi.fn(),
 }));
 
 vi.mock("@/lib/db", () => ({
@@ -20,6 +30,14 @@ vi.mock("@/lib/db", () => ({
 }));
 
 vi.mock("@/lib/email/index", () => ({ sendEmail: mockSendEmail }));
+
+// The in-app companion to every email in this file — asserted on separately
+// (or not at all) so these tests keep testing email/DB behavior, not a 3rd
+// concern. See lib/domain/notifications.test.ts for the module itself.
+vi.mock("@/lib/domain/notifications", () => ({
+  createNotification: mockCreateNotification,
+  createNotificationForMany: mockCreateNotificationForMany,
+}));
 
 vi.mock("@/lib/config/company", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/config/company")>();
@@ -75,6 +93,8 @@ describe("runCronSignals", () => {
     mockGetAdminEmails.mockReset();
     mockGetAdminEmails.mockReturnValue(["admin@example.com"]);
     mockSendEmail.mockResolvedValue(undefined);
+    mockCreateNotification.mockReset().mockResolvedValue(undefined);
+    mockCreateNotificationForMany.mockReset().mockResolvedValue(undefined);
     mockUpdate.mockImplementation(() => ({
       set: vi.fn(() => ({ where: vi.fn().mockResolvedValue({}) })),
     }));

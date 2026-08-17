@@ -15,9 +15,12 @@ import { users } from "@/lib/db/schema";
 import { sendEmail } from "@/lib/email";
 import { newDocumentEmail, patientDocumentUploadedEmail } from "@/lib/email/templates";
 import { PORTAL_URL, COMPANY, getAdminEmails } from "@/lib/config/company";
-import { ADMIN_ROUTES } from "@/lib/config/routes";
+import { ADMIN_ROUTES, PORTAL_ROUTES } from "@/lib/config/routes";
+import { USER_ROLE } from "@/lib/config/auth";
 import { getCareTeamIds } from "@/lib/domain/care-team";
 import { displayName } from "@/lib/utils/format";
+import { createNotification, createNotificationForMany } from "@/lib/domain/notifications";
+import { NOTIFICATION_TYPE } from "@/lib/config/notifications";
 
 export async function notifyDocumentAdded({
   patientId,
@@ -54,6 +57,12 @@ export async function notifyDocumentAdded({
           : COMPANY.clinicianFallback,
       }),
     });
+    await createNotification({
+      userId: patientId,
+      type: NOTIFICATION_TYPE.documentUploaded,
+      title: `New document shared: ${title}`,
+      href: PORTAL_ROUTES.documents,
+    });
     return;
   }
 
@@ -70,17 +79,33 @@ export async function notifyDocumentAdded({
     .map((c) => c.email)
     .filter((email): email is string => Boolean(email));
   const recipients = careTeamEmails.length > 0 ? careTeamEmails : getAdminEmails();
-  if (recipients.length === 0) return;
-
   const patientLabel = displayName(patient?.name, patient?.email, "A patient");
 
-  await sendEmail({
-    to: recipients,
-    subject: `${patientLabel} uploaded a document: ${title}`,
-    html: patientDocumentUploadedEmail({
-      patientName: patientLabel,
-      title,
-      adminUrl: `${PORTAL_URL}${ADMIN_ROUTES.patients}/${patientId}`,
-    }),
+  if (recipients.length > 0) {
+    await sendEmail({
+      to: recipients,
+      subject: `${patientLabel} uploaded a document: ${title}`,
+      html: patientDocumentUploadedEmail({
+        patientName: patientLabel,
+        title,
+        adminUrl: `${PORTAL_URL}${ADMIN_ROUTES.patients}/${patientId}`,
+      }),
+    });
+  }
+
+  // In-app recipients mirror the email fallback: care team, or every admin
+  // when nobody is on it yet — but as userIds, since notifications need a FK.
+  let recipientIds = careTeamIds;
+  if (recipientIds.length === 0) {
+    const admins = await db.query.users.findMany({
+      where: eq(users.role, USER_ROLE.admin),
+      columns: { id: true },
+    });
+    recipientIds = admins.map((a) => a.id);
+  }
+  await createNotificationForMany(recipientIds, {
+    type: NOTIFICATION_TYPE.documentUploaded,
+    title: `${patientLabel} uploaded a document: ${title}`,
+    href: `${ADMIN_ROUTES.patients}/${patientId}`,
   });
 }

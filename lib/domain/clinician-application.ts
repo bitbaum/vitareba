@@ -13,6 +13,9 @@ import {
   CLINICIAN_APPLICATION_MESSAGE_MAX_LENGTH,
   CLINICIAN_APPLICATION_REVIEW_NOTE_MAX_LENGTH,
 } from "@/lib/config/portal";
+import { PORTAL_ROUTES } from "@/lib/config/routes";
+import { createNotification } from "@/lib/domain/notifications";
+import { NOTIFICATION_TYPE } from "@/lib/config/notifications";
 
 export const submitApplicationSchema = z.object({
   message: z.string().trim().min(1).max(CLINICIAN_APPLICATION_MESSAGE_MAX_LENGTH),
@@ -91,6 +94,16 @@ export async function approveApplication(
       .where(eq(clinicianApplications.id, applicationId));
   });
 
+  // No email exists on this path today (pre-existing gap, not fixed here) —
+  // the in-app notification is still worth writing, since the applicant is a
+  // users row and can see it in their own portal bell.
+  await createNotification({
+    userId: application.userId,
+    type: NOTIFICATION_TYPE.applicationDecision,
+    title: "Your clinician application was approved",
+    href: PORTAL_ROUTES.profile,
+  });
+
   return { ok: true, id: applicationId };
 }
 
@@ -106,6 +119,14 @@ export async function declineApplication(
     .update(clinicianApplications)
     .set({ status: "declined", reviewedBy: adminId, reviewedAt: new Date(), reviewNote: note })
     .where(eq(clinicianApplications.id, applicationId));
+
+  await createNotification({
+    userId: application.userId,
+    type: NOTIFICATION_TYPE.applicationDecision,
+    title: "Your clinician application was declined",
+    body: note ?? undefined,
+    href: PORTAL_ROUTES.profile,
+  });
 
   return { ok: true, id: applicationId };
 }

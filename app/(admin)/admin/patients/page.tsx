@@ -21,6 +21,7 @@ import { formatDateISO, relativeDate } from "@/lib/utils/format";
 import { USER_ROLE } from "@/lib/config/auth";
 import { PORTAL_ROUTES, ADMIN_ROUTES } from "@/lib/config/routes";
 import { getUnreadPatientIds, getUnreadThreadCount } from "@/lib/domain/messages";
+import { MarkSeen } from "@/components/admin/MarkSeen";
 
 
 function StatCard({
@@ -121,6 +122,7 @@ export default async function PatientsPage() {
 
   return (
     <div>
+      <MarkSeen navKey="patients" />
       <h1 className={styles.pageTitle}>
         <em>Patients</em>
       </h1>

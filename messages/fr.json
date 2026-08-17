@@ -450,7 +450,10 @@
     "ctaSecondary": "Réserver un appel découverte"
   },
   "footer": {
-    "legal": "Toutes les thérapies psychédéliques dans le cadre réglementaire suisse"
+    "legal": "Toutes les thérapies psychédéliques dans le cadre réglementaire suisse",
+    "exploreHeading": "Explorer",
+    "accountHeading": "Compte",
+    "emergencyLabel": "En cas d'urgence"
   },
   "auth": {
     "login": {

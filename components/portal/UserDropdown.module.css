@@ -40,7 +40,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
-  z-index: var(--z-overlay);
+  z-index: var(--z-dropdown);
   overflow: hidden;
 }
 
@@ -87,6 +87,33 @@
   background: var(--off);
   color: var(--ink);
   outline: none;
+}
+
+.emergency {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--danger-10);
+}
+
+.emergencyLabel {
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--danger);
+  margin: 0 0 0.3rem;
+}
+
+.emergencyLine {
+  font-size: 0.78rem;
+  color: var(--ink);
+  margin: 0.1rem 0;
+  font-weight: 500;
+}
+
+.emergencyRegion {
+  color: var(--muted);
+  font-weight: 400;
 }
 
 .footer {

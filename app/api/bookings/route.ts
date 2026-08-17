@@ -22,6 +22,18 @@ import { BOOKING_STATUS, BOOKING_TYPE_CONFIG, MACHINE_TYPE_CONFIG } from "@/lib/
 import { runAfterResponse } from "@/lib/utils/post-response";
 import { serviceUnavailable } from "@/lib/utils/api-response";
 import { displayName, formatDateISO, formatSlotDay, formatSlotTime } from "@/lib/utils/format";
+import { createNotification, createNotificationForMany } from "@/lib/domain/notifications";
+import { NOTIFICATION_TYPE } from "@/lib/config/notifications";
+
+/** In-app recipients for "a booking happened" — DB admin-role users, not the
+ *  env-driven ADMIN_EMAILS list (that's for email; notifications need a userId). */
+async function getAdminUserIds(): Promise<string[]> {
+  const rows = await db.query.users.findMany({
+    where: eq(users.role, USER_ROLE.admin),
+    columns: { id: true },
+  });
+  return rows.map((r) => r.id);
+}
 
 export async function GET() {
   const guard = await requireSession();
@@ -119,6 +131,12 @@ export async function POST(req: Request) {
           portalUrl: `${PORTAL_URL}${PORTAL_ROUTES.bookings}`,
         }),
       });
+      await createNotification({
+        userId: patientId,
+        type: NOTIFICATION_TYPE.bookingConfirmed,
+        title: `Your ${sessionLabel.toLowerCase()} is confirmed`,
+        href: PORTAL_ROUTES.bookings,
+      });
     }, "[api/bookings] patient confirmation email failed:");
 
     return NextResponse.json({ success: true, data: booking }, { status: 201 });
@@ -165,6 +183,12 @@ export async function POST(req: Request) {
           preferredDate: parsed.data.preferredDate,
           adminUrl: `${PORTAL_URL}${ADMIN_ROUTES.patients}/${session.user.id}`,
         }),
+      });
+      const adminIds = await getAdminUserIds();
+      await createNotificationForMany(adminIds, {
+        type: NOTIFICATION_TYPE.bookingRequested,
+        title: `New ${bookingTypeLabel.toLowerCase()} request — ${displayName(patient?.name, patient?.email, "Unknown")}`,
+        href: `${ADMIN_ROUTES.patients}/${session.user.id}`,
       });
     }, "[api/bookings] admin booking request email failed:");
   }
@@ -325,6 +349,12 @@ async function bookSlot(
           attachments,
         });
       }
+      await createNotification({
+        userId: patientId,
+        type: NOTIFICATION_TYPE.bookingConfirmed,
+        title: `Confirmed: ${sessionLabel.toLowerCase()} on ${slotLabel}`,
+        href: PORTAL_ROUTES.bookings,
+      });
 
       // Notify the clinician whose calendar this lands in — not just whoever
       // happens to be in ADMIN_EMAILS. Admins still get it (clinic oversight),
@@ -348,6 +378,12 @@ async function bookSlot(
           attachments,
         });
       }
+      const adminIds = await getAdminUserIds();
+      await createNotificationForMany(Array.from(new Set([clinician.id, ...adminIds])), {
+        type: NOTIFICATION_TYPE.bookingConfirmed,
+        title: `New appointment: ${slotLabel} — ${displayName(patient?.name, patient?.email, "Unknown")}`,
+        href: `${ADMIN_ROUTES.patients}/${patientId}`,
+      });
     }, "[api/bookings] slot booking emails failed:");
 
     return NextResponse.json({ success: true, data: booking }, { status: 201 });
