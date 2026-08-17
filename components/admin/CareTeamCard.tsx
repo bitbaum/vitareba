@@ -59,7 +59,10 @@ export function CareTeamCard({
                 {isMember && <span className={styles.badge} data-signal="active">Treating</span>}
                 <button
                   type="button"
-                  className={styles.headerBtn}
+                  // Add and remove are not the same weight of action — both
+                  // rendering as the same bold primary button gave neither
+                  // any visual signal of which one changes a patient's care.
+                  className={isMember ? styles.removeBtn : styles.headerBtn}
                   disabled={busy === c.id}
                   onClick={() => toggle(c.id, isMember)}
                 >

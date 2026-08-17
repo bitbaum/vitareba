@@ -32,6 +32,12 @@ export function PatientBookingsCard({ bookings }: { bookings: PatientBooking[] }
                         ? ` · ${formatDateLong(b.preferredDate)}`
                         : ""}
                   </div>
+                  {/* Which clinician — silently dropped before despite the type
+                      already carrying it. Invisible with one doctor; with two,
+                      an admin reading this list had no way to tell them apart. */}
+                  {b.clinician?.name && (
+                    <div className={styles.bookingNotes}>with {b.clinician.name}</div>
+                  )}
                   {b.notes && <div className={styles.bookingNotes}>{b.notes}</div>}
                 </div>
                 <span className={`${styles.badge} ${s.badgeClass}`}>

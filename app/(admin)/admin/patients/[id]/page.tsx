@@ -43,7 +43,10 @@ export default async function PatientDetailPage({
     with: {
       profile: true,
       assessmentResults: { orderBy: [desc(assessmentResults.completedAt)] },
-      bookings: { orderBy: [desc(bookings.createdAt)] },
+      bookings: {
+        orderBy: [desc(bookings.createdAt)],
+        with: { clinician: { columns: { id: true, name: true } } },
+      },
       documents: { orderBy: [desc(documents.createdAt)] },
       threads: {
         orderBy: [desc(threads.lastMessageAt)],

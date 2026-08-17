@@ -1,5 +1,6 @@
 import styles from "@/app/(admin)/admin.module.css";
 import { EXERCISE_FREQUENCY_OPTIONS } from "@/lib/config/portal";
+import { formatDateLong } from "@/lib/utils/format";
 
 type Profile = {
   phone?: string | null;
@@ -20,6 +21,15 @@ type Profile = {
 function getExerciseLabel(value: string | null | undefined): string {
   if (!value) return "—";
   return EXERCISE_FREQUENCY_OPTIONS.find((o) => o.value === value)?.label ?? value;
+}
+
+/** dateOfBirth is a bare "YYYY-MM-DD" string — was rendered raw. Appending a
+ * time anchors it to local midnight rather than UTC midnight, the same fix
+ * already applied to check-in dates on this page, so the displayed day never
+ * shifts by one depending on the server's timezone. */
+function formatBirthDate(value: string | null | undefined): string | null {
+  if (!value) return null;
+  return formatDateLong(`${value}T00:00:00`);
 }
 
 function ProfileRow({ label, value }: { label: string; value?: string | null }) {
@@ -43,7 +53,7 @@ export function PatientProfileCard({ profile }: { profile: Profile | null | unde
       <table className={styles.profileTable}>
         <tbody>
           <ProfileRow label="Phone" value={pr?.phone} />
-          <ProfileRow label="Date of birth" value={pr?.dateOfBirth} />
+          <ProfileRow label="Date of birth" value={formatBirthDate(pr?.dateOfBirth)} />
           <ProfileRow label="City" value={pr?.city} />
           <ProfileRow label="Occupation" value={pr?.occupation} />
         </tbody>
