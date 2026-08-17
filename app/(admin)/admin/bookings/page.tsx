@@ -12,9 +12,6 @@ import { BookingActions } from "@/components/clinical/BookingActions";
 import { formatDateShort, formatDateNumeric, formatSlotDay, formatSlotTime } from "@/lib/utils/format";
 import { ADMIN_ROUTES } from "@/lib/config/routes";
 import { LoadingState } from "@/components/LoadingState";
-import { CalendarSubscribeCard } from "@/components/admin/CalendarSubscribeCard";
-import { AcceptingPatientsToggle } from "@/components/admin/AcceptingPatientsToggle";
-import { CalendarSubscriptions } from "@/components/admin/CalendarSubscriptions";
 
 
 // "upcoming" answers the clinician's daily question — who am I seeing next? —
@@ -92,16 +89,13 @@ export default function AdminBookingsPage() {
             : `No upcoming appointments · ${bookings.length} total · ${pendingCount} pending`}
       </p>
 
-      <AcceptingPatientsToggle />
-
-      <CalendarSubscribeCard />
-
-      {/* The other direction: your calendar blocking slots here, rather than
-          this clinic's appointments appearing in your calendar. */}
-      <div className={styles.cardMb}>
-        <p className={styles.cardLabel}>Your calendars block slots here</p>
-        <CalendarSubscriptions />
-      </div>
+      {/* Accepting-patients, working hours and calendar sync moved to My
+          Profile — settings, not booking management, and buried here they
+          went unused: nobody had connected a real calendar. */}
+      <p className={styles.pageSub}>
+        Working hours, intake and calendar sync now live on{" "}
+        <Link href={ADMIN_ROUTES.profile} className={styles.cellLink}>My Profile →</Link>
+      </p>
 
       <div className={styles.filterBar}>
         {FILTER_OPTIONS.map((f) => (

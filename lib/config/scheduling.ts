@@ -1,15 +1,21 @@
 /**
- * Scheduling — SSOT for clinician availability.
+ * Scheduling — SSOT for the DEFAULT clinician availability rules.
  *
  * Multi-clinician: every doctor (users.isClinician) gets bookable slots from
- * these rules minus their own booked appointments (per-clinician partial
- * unique index on bookings makes double-booking impossible). Rules are keyed
- * by the clinician's account email — adding or changing a doctor's hours is
- * an edit to THIS file only; anyone without an entry gets DEFAULT_AVAILABILITY.
+ * their own rules (lib/domain/clinician-profile.ts, self-service, DB-backed)
+ * minus their own booked appointments (per-clinician partial unique index on
+ * bookings makes double-booking impossible) and their real external calendar
+ * busy time (lib/domain/calendar-sync.ts).
+ *
+ * DEFAULT_AVAILABILITY is what a clinician with no settings row yet gets —
+ * every clinician starts here and edits their own real hours from their
+ * clinician settings page. It used to also hold hand-authored per-email
+ * overrides; one clinician's entry there was explicitly a placeholder
+ * ("evenings-and-Friday product-testing window"), so every patient booking
+ * against it was offered fake times a developer typed into source, not real
+ * availability. Removed — real per-clinician hours now live in the database.
  *
  * All times are wall-clock in CLINIC_TIMEZONE (lib/config/company.ts).
- * External calendar free/busy (CalDAV / Google) plugs into the engine's
- * busy-interval input later — no changes here.
  */
 
 export type WeeklyHours = Record<number, [string, string][]>;
@@ -46,23 +52,6 @@ export const DEFAULT_AVAILABILITY: ClinicianAvailability = {
   maxPerDay: 6,
 };
 
-/** Per-clinician overrides, keyed by account email (lowercase). */
-export const CLINICIAN_AVAILABILITY: Record<string, Partial<ClinicianAvailability>> = {
-  "manuel@surfyourlife.org": {},
-  // George — evenings-and-Friday product-testing window
-  "butaeff@gmail.com": {
-    weeklyHours: {
-      1: [["17:00", "19:00"]],
-      2: [["17:00", "19:00"]],
-      3: [["17:00", "19:00"]],
-      4: [["17:00", "19:00"]],
-      5: [["09:00", "12:00"]],
-      6: [],
-      7: [],
-    },
-  },
-};
-
 /**
  * How a day's slots are grouped in the picker. A patient scans "an afternoon
  * next week", not a flat list of 14 times — the boundaries are clinic wall
@@ -76,14 +65,20 @@ export const DAY_PARTS = [
 
 export type DayPartId = (typeof DAY_PARTS)[number]["id"];
 
+/** ISO weekday (1=Mon…7=Sun) → display name — the weekly-hours editor's row labels. */
+export const ISO_WEEKDAY_LABELS: Record<number, string> = {
+  1: "Monday",
+  2: "Tuesday",
+  3: "Wednesday",
+  4: "Thursday",
+  5: "Friday",
+  6: "Saturday",
+  7: "Sunday",
+};
+
 /**
  * How much history the subscribable calendar feed carries. Long enough that a
  * client re-syncing after a break still sees (and can delete) recently
  * cancelled appointments; short enough that the feed stays small forever.
  */
 export const CALENDAR_FEED_PAST_DAYS = 60;
-
-export function getAvailabilityForEmail(email: string | null | undefined): ClinicianAvailability {
-  const override = email ? CLINICIAN_AVAILABILITY[email.toLowerCase()] : undefined;
-  return { ...DEFAULT_AVAILABILITY, ...override };
-}

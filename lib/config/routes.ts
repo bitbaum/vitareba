@@ -118,12 +118,14 @@ export const PUBLIC_API_PREFIXES = [
 ] as const satisfies readonly string[];
 
 export const ADMIN_ROUTES = {
-  root:      "/admin",
-  patients:  "/admin/patients",
-  bookings:  "/admin/bookings",
-  messages:  "/admin/messages",
-  documents: "/admin/documents",
-  reports:   "/admin/reports",
+  root:         "/admin",
+  patients:     "/admin/patients",
+  bookings:     "/admin/bookings",
+  messages:     "/admin/messages",
+  documents:    "/admin/documents",
+  reports:      "/admin/reports",
+  profile:      "/admin/profile",
+  applications: "/admin/applications",
 } as const satisfies Record<string, string>;
 
 /** Display label per admin route — consumed by NavBreadcrumb (same contract as PORTAL_ROUTE_LABELS). */
@@ -131,12 +133,14 @@ export const ADMIN_ROUTE_LABELS: Record<
   (typeof ADMIN_ROUTES)[keyof typeof ADMIN_ROUTES],
   string
 > = {
-  [ADMIN_ROUTES.root]:      "Today",
-  [ADMIN_ROUTES.patients]:  "Patients",
-  [ADMIN_ROUTES.bookings]:  "Bookings",
-  [ADMIN_ROUTES.messages]:  "Messages",
-  [ADMIN_ROUTES.documents]: "Documents",
-  [ADMIN_ROUTES.reports]:   "Reports",
+  [ADMIN_ROUTES.root]:         "Today",
+  [ADMIN_ROUTES.patients]:     "Patients",
+  [ADMIN_ROUTES.bookings]:     "Bookings",
+  [ADMIN_ROUTES.messages]:     "Messages",
+  [ADMIN_ROUTES.documents]:    "Documents",
+  [ADMIN_ROUTES.reports]:      "Reports",
+  [ADMIN_ROUTES.profile]:      "My Profile",
+  [ADMIN_ROUTES.applications]: "Clinician Applications",
 };
 
 /**

@@ -11,7 +11,7 @@ import { PORTAL_URL, COMPANY, getAdminEmails } from "@/lib/config/company";
 import { ADMIN_ROUTES, PORTAL_ROUTES } from "@/lib/config/routes";
 import { USER_ROLE } from "@/lib/config/auth";
 import { bookingCreateSchema, adminBookingCreateSchema, slotBookingSchema } from "@/lib/domain/bookings";
-import { getAvailabilityForEmail } from "@/lib/config/scheduling";
+import { getClinicianAvailability } from "@/lib/domain/clinician-profile";
 import { isBookableSlot } from "@/lib/domain/scheduling";
 import { getBusyIntervals } from "@/lib/domain/scheduling-data";
 import { canPatientChooseClinician } from "@/lib/domain/care-team";
@@ -237,7 +237,7 @@ async function bookSlot(
     }
 
     // Engine re-check: the slot must still be one we'd offer right now
-    const rules = getAvailabilityForEmail(clinician.email);
+    const rules = await getClinicianAvailability(clinician.id);
     try {
       const busy = await getBusyIntervals(now, clinician.id, rules);
       if (!isBookableSlot(slot, { now, rules, busy })) {

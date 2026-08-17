@@ -49,7 +49,7 @@ import {
 import { USER_ROLE } from "@/lib/config/auth";
 import { CANCELLATION_POLICY, CANCELLATION_REASON_MAX } from "@/lib/config/cancellation";
 import { assessCancellation, assessReschedule } from "@/lib/domain/cancellation";
-import { getAvailabilityForEmail } from "@/lib/config/scheduling";
+import { getClinicianAvailability } from "@/lib/domain/clinician-profile";
 import { isBookableSlot } from "@/lib/domain/scheduling";
 import { getBusyIntervals } from "@/lib/domain/scheduling-data";
 import { canPatientChooseClinician } from "@/lib/domain/care-team";
@@ -287,7 +287,7 @@ async function reschedule(
     }
   }
 
-  const rules = getAvailabilityForEmail(clinician.email);
+  const rules = await getClinicianAvailability(clinician.id);
   try {
     const busy = await getBusyIntervals(now, clinician.id, rules);
     // The appointment's OWN current slot must not block its move — otherwise
@@ -475,7 +475,7 @@ function announceCancellation(booking: BookingRow, actorId: string, reason: stri
 
     let attachments;
     if (booking.scheduledAt && patient?.email && clinician?.email) {
-      const rules = getAvailabilityForEmail(clinician.email);
+      const rules = await getClinicianAvailability(booking.clinicianId!);
       const invite = buildIcsInvite(
         bookingIcsEvent({
           bookingId: booking.id,

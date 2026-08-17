@@ -8,7 +8,8 @@ import { and, asc, eq, gte, inArray, isNotNull, isNull, or } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { bookings, users } from "@/lib/db/schema";
 import { BOOKING_STATUS } from "@/lib/config/booking-status";
-import { getAvailabilityForEmail, type ClinicianAvailability } from "@/lib/config/scheduling";
+import { type ClinicianAvailability } from "@/lib/config/scheduling";
+import { getClinicianAvailability } from "./clinician-profile";
 import { generateSlots, slotBusyInterval, type BusyInterval } from "./scheduling";
 import { getExternalBusy } from "./calendar-sync";
 
@@ -84,7 +85,7 @@ export async function getBusyIntervals(
 
 /** Slots currently offered for one clinician. */
 export async function getAvailableSlots(now: Date, clinician: Clinician): Promise<Date[]> {
-  const rules = getAvailabilityForEmail(clinician.email);
+  const rules = await getClinicianAvailability(clinician.id);
   const busy = await getBusyIntervals(now, clinician.id, rules);
   return generateSlots({ now, rules, busy });
 }

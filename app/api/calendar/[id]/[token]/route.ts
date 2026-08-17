@@ -10,7 +10,8 @@ import {
   type BookingType,
 } from "@/lib/config/booking-status";
 import { COMPANY } from "@/lib/config/company";
-import { CALENDAR_FEED_PAST_DAYS, getAvailabilityForEmail } from "@/lib/config/scheduling";
+import { CALENDAR_FEED_PAST_DAYS } from "@/lib/config/scheduling";
+import { getClinicianAvailability } from "@/lib/domain/clinician-profile";
 import { buildIcsFeed, type IcsEvent } from "@/lib/domain/ics";
 import { bookingIcsEvent } from "@/lib/domain/booking-calendar";
 import { verifyCalendarToken } from "@/lib/domain/calendar-token";
@@ -75,7 +76,7 @@ export async function GET(_req: Request, { params }: RouteContext) {
     return new Response("Calendar temporarily unavailable", { status: 503 });
   }
 
-  const slotMinutes = getAvailabilityForEmail(clinician.email).slotMinutes;
+  const slotMinutes = (await getClinicianAvailability(id)).slotMinutes;
 
   const clinicianContact = clinician;
   const events: IcsEvent[] = rows

@@ -28,6 +28,7 @@ const {
   mockGetAdminEmails,
   mockRunAfterResponse,
   mockGetBusyIntervals,
+  mockGetClinicianAvailability,
 } = vi.hoisted(() => ({
   mockRequireSession: vi.fn(),
   mockBookingFindFirst: vi.fn(),
@@ -37,6 +38,7 @@ const {
   mockGetAdminEmails: vi.fn(),
   mockRunAfterResponse: vi.fn(),
   mockGetBusyIntervals: vi.fn(),
+  mockGetClinicianAvailability: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/guards", () => ({ requireSession: mockRequireSession }));
@@ -53,6 +55,7 @@ vi.mock("@/lib/db", () => ({
 
 vi.mock("@/lib/email/index", () => ({ sendEmail: mockSendEmail }));
 vi.mock("@/lib/domain/scheduling-data", () => ({ getBusyIntervals: mockGetBusyIntervals }));
+vi.mock("@/lib/domain/clinician-profile", () => ({ getClinicianAvailability: mockGetClinicianAvailability }));
 
 vi.mock("@/lib/config/company", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/config/company")>();
@@ -136,6 +139,7 @@ beforeEach(() => {
   mockSendEmail.mockResolvedValue(undefined);
   mockUserFindFirst.mockResolvedValue(CLINICIAN);
   mockGetBusyIntervals.mockResolvedValue([]);
+  mockGetClinicianAvailability.mockResolvedValue(DEFAULT_AVAILABILITY);
   mockBookingFindFirst.mockResolvedValue(booking());
   setupUpdate([booking()]);
 });

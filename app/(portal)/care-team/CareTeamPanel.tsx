@@ -134,7 +134,9 @@ export function CareTeamPanel({ selfId }: { selfId: string }) {
             <div className={styles.clinicianBody}>
               <span className={styles.clinicianText}>
                 <span className={styles.clinicianName}>
-                  {c.name ?? "Clinician"}
+                  <Link href={`${PORTAL_ROUTES.careTeam}/${c.id}`} className={styles.clinicianNameLink}>
+                    {c.name ?? "Clinician"}
+                  </Link>
                   {isSelf && " (you)"}
                   {closedToMe && (
                     <span className={styles.clinicianBadgeWarn}>Not accepting new patients</span>

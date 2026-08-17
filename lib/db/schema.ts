@@ -70,6 +70,11 @@ export const machineTypeEnum = pgEnum("machine_type", [
   "infrared",
   "hrv_biofeedback",
 ]);
+export const clinicianApplicationStatusEnum = pgEnum("clinician_application_status", [
+  "pending",
+  "approved",
+  "declined",
+]);
 
 // ─── Auth tables (required by NextAuth DrizzleAdapter) ───────────────────────
 
@@ -334,6 +339,57 @@ export const bookings = pgTable(
       .where(sql`${t.status} IN ('pending', 'confirmed') AND ${t.scheduledAt} IS NOT NULL`),
   ]
 );
+
+// ─── Clinician profile & availability ──────────────────────────────────────────
+// A clinician's own settings: who they are (shown to patients) and when they
+// actually work (drives the slot engine — lib/domain/scheduling.ts). Replaces
+// a hardcoded per-email object in lib/config/scheduling.ts that a developer had
+// to edit in source to change; one clinician's "hours" there were explicitly a
+// placeholder ("evenings-and-Friday product-testing window"), not real
+// availability, and every patient booking against it was offered fake times.
+//
+// Row is OPTIONAL per clinician: absence means "use DEFAULT_AVAILABILITY",
+// exactly as the old per-email override map defaulted an unlisted clinician —
+// same fallback contract, now self-service instead of a source edit.
+
+export const clinicianProfiles = pgTable("clinician_profiles", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .unique()
+    .references(() => users.id, { onDelete: "cascade" }),
+  bio: text("bio"),
+  title: varchar("title", { length: 150 }), // e.g. "MD, General Practitioner"
+  specialties: jsonb("specialties").notNull().default([]), // string[]
+  /** ISO weekday (1=Mon…7=Sun) → working windows [start,end) as "HH:MM". Mirrors ClinicianAvailability.weeklyHours. */
+  weeklyHours: jsonb("weekly_hours"),
+  slotMinutes: integer("slot_minutes"),
+  bufferMinutes: integer("buffer_minutes"),
+  leadTimeHours: integer("lead_time_hours"),
+  horizonDays: integer("horizon_days"),
+  maxPerDay: integer("max_per_day"),
+  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).notNull().defaultNow(),
+});
+
+// ─── Clinician applications ─────────────────────────────────────────────────────
+// Becoming a clinician is not a signup checkbox. Every account starts as a
+// patient; this is the audit trail of who asked to treat patients, why, and
+// who at the clinic said yes or no — kept separate from clinicianProfiles so
+// re-applying after a decline doesn't fight over one row's status field.
+
+export const clinicianApplications = pgTable("clinician_applications", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  message: text("message").notNull(), // credentials / why they should treat patients
+  status: clinicianApplicationStatusEnum("status").notNull().default("pending"),
+  reviewNote: text("review_note"), // admin's reason, shown back to the applicant
+  reviewedBy: uuid("reviewed_by").references(() => users.id),
+  reviewedAt: timestamp("reviewed_at", { mode: "date" }),
+  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
+});
 
 // ─── Care team ────────────────────────────────────────────────────────────────
 // Who treats whom. Symmetric pairs are allowed (Manuel treats George, George
@@ -631,6 +687,18 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   recordedMeasurements: many(measurements, { relationName: "recorded_measurements" }),
   emailQueue: many(emailQueue),
   assessmentLeads: many(assessmentLeads),
+  clinicianProfile: one(clinicianProfiles, { fields: [users.id], references: [clinicianProfiles.userId] }),
+  clinicianApplications: many(clinicianApplications, { relationName: "applicant" }),
+  reviewedApplications: many(clinicianApplications, { relationName: "reviewer" }),
+}));
+
+export const clinicianProfilesRelations = relations(clinicianProfiles, ({ one }) => ({
+  user: one(users, { fields: [clinicianProfiles.userId], references: [users.id] }),
+}));
+
+export const clinicianApplicationsRelations = relations(clinicianApplications, ({ one }) => ({
+  user: one(users, { fields: [clinicianApplications.userId], references: [users.id], relationName: "applicant" }),
+  reviewer: one(users, { fields: [clinicianApplications.reviewedBy], references: [users.id], relationName: "reviewer" }),
 }));
 
 // Reverse relation for users.assessmentResults `many`. Without it Drizzle's

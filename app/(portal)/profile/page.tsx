@@ -1,20 +1,27 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { users } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 import styles from "../portal.module.css";
 import profileStyles from "./profile.module.css";
 import { PortalPageHeader } from "@/components/portal/PortalPageHeader";
 import { ProfileForm } from "./ProfileForm";
 import { PasswordForm } from "./PasswordForm";
 import { PrivacyCard } from "./PrivacyCard";
+import { ClinicianApplicationCard } from "./ClinicianApplicationCard";
 import { clinicianLabelFor } from "@/lib/domain/clinician-label";
 import { COMPANY } from "@/lib/config/company";
 import { PORTAL_ROUTES } from "@/lib/config/routes";
 
 export default async function ProfilePage() {
   const session = await auth();
-  const clinician = session?.user?.id
-    ? await clinicianLabelFor(session.user.id)
-    : COMPANY.clinicianFallback;
+  const [clinician, dbUser] = await Promise.all([
+    session?.user?.id ? clinicianLabelFor(session.user.id) : Promise.resolve(COMPANY.clinicianFallback),
+    session?.user?.id
+      ? db.query.users.findFirst({ where: eq(users.id, session.user.id), columns: { isClinician: true } })
+      : Promise.resolve(undefined),
+  ]);
 
   return (
     <div className={profileStyles.layout}>
@@ -37,6 +44,7 @@ export default async function ProfilePage() {
           Manage my care team →
         </Link>
       </div>
+      <ClinicianApplicationCard isClinician={dbUser?.isClinician ?? false} />
       <PrivacyCard />
       <PasswordForm />
     </div>

@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { requireSession } from "@/lib/auth/guards";
 import { getAvailableSlots, getClinicians } from "@/lib/domain/scheduling-data";
 import { getCareTeamIds } from "@/lib/domain/care-team";
-import { getAvailabilityForEmail } from "@/lib/config/scheduling";
+import { getClinicianAvailability } from "@/lib/domain/clinician-profile";
 import { serviceUnavailable } from "@/lib/utils/api-response";
 
 /**
@@ -40,7 +40,10 @@ export async function GET(req: Request) {
     const requested = new URL(req.url).searchParams.get("clinicianId");
     const mine = clinicians.find((c) => careTeam.includes(c.id));
     const clinician = clinicians.find((c) => c.id === requested) ?? mine ?? clinicians[0];
-    const slots = await getAvailableSlots(new Date(), clinician);
+    const [slots, availability] = await Promise.all([
+      getAvailableSlots(new Date(), clinician),
+      getClinicianAvailability(clinician.id),
+    ]);
 
     return NextResponse.json({
       success: true,
@@ -58,7 +61,7 @@ export async function GET(req: Request) {
       // Caught live: without this, a dual-role clinician who closes their own
       // intake sees their OWN card marked "not accepting" against themselves.
       selfId: guard.session.user.id,
-      slotMinutes: getAvailabilityForEmail(clinician.email).slotMinutes,
+      slotMinutes: availability.slotMinutes,
     });
   } catch (err) {
     console.error("[api/bookings/slots] failed:", err);
