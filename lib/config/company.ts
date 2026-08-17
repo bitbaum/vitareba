@@ -1,6 +1,6 @@
 export const COMPANY = {
-  name: "VitaReBa GmbH",
-  shortName: "VitaReBa",
+  name: "Vita GmbH",
+  shortName: "Vita",
   /**
    * How to refer to a patient's doctor when we do NOT know who it is — before
    * a care team exists, or in copy addressed to no one in particular.
@@ -20,7 +20,7 @@ export const COMPANY = {
    * relationship — it never implies anyone treats the patient, and it must stay
    * visibly non-human so a generated reply is never mistaken for the clinic's.
    */
-  assistantName: "VitaReBa Assistant",
+  assistantName: "Vita Assistant",
   partnerBrand: "Surf Your Life",
   /**
    * The clinic's own address, not the founder's coaching brand. Patient mail

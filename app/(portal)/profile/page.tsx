@@ -1,12 +1,13 @@
+import Link from "next/link";
 import { auth } from "@/lib/auth";
 import styles from "../portal.module.css";
 import profileStyles from "./profile.module.css";
 import { ProfileForm } from "./ProfileForm";
 import { PasswordForm } from "./PasswordForm";
 import { PrivacyCard } from "./PrivacyCard";
-import { CareTeamCard } from "./CareTeamCard";
 import { clinicianLabelFor } from "@/lib/domain/clinician-label";
 import { COMPANY } from "@/lib/config/company";
+import { PORTAL_ROUTES } from "@/lib/config/routes";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -25,7 +26,20 @@ export default async function ProfilePage() {
         </p>
       </div>
       <ProfileForm clinician={clinician} />
-      <CareTeamCard selfId={session?.user?.id ?? ""} />
+      {/* Choosing, switching, messaging and booking a clinician all live on
+          one dedicated page now — this used to be its own full picker here,
+          which meant the same "who treats me" feature had two homes to keep
+          in sync. */}
+      <div className={`${styles.card} ${styles.cardGap}`}>
+        <p className={styles.cardTitle}>My care team</p>
+        <p className={styles.formHint}>
+          Currently: {clinician}. Choose a clinician, switch to another, or
+          message and book with them directly.
+        </p>
+        <Link href={PORTAL_ROUTES.careTeam} className={styles.btnSecondary}>
+          Manage my care team →
+        </Link>
+      </div>
       <PrivacyCard />
       <PasswordForm />
     </div>

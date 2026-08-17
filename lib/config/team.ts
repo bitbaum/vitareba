@@ -16,8 +16,8 @@
  * asserting one for a real person on a medical site is not ours to make.
  */
 export const TEAM_MEMBERS = [
-  { key: "manuel",   initials: "MR", name: "Manuel Riegner" },
-  { key: "montagna", initials: "JM", name: "Jonas Montagna" },
+  { key: "manuel", initials: "MR", name: "Manuel Riegner" },
+  { key: "george",  initials: "GE", name: "George" },
 ] as const;
 
 export type TeamMemberKey = (typeof TEAM_MEMBERS)[number]["key"];

@@ -49,7 +49,7 @@ export async function getClinicians(): Promise<Clinician[]> {
  *
  * TWO SOURCES, and both are necessary:
  *
- *  1. VitaReBa's own appointments. Legacy rows without a clinician block EVERY
+ *  1. Vita's own appointments. Legacy rows without a clinician block EVERY
  *     clinician — conservative, and never a double booking.
  *  2. The clinician's real calendar, read from cache. Without this the engine
  *     cheerfully offers a patient the hour their doctor is at a school concert,

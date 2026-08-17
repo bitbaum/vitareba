@@ -113,7 +113,7 @@ describe("MACHINE_TYPE_CONFIG integrity", () => {
     expect(configKeys).toEqual(valuesKeys);
   });
 
-  it("covers all five VitaReBa technology machines", () => {
+  it("covers all five Vita technology machines", () => {
     const set = new Set(MACHINE_TYPE_VALUES);
     expect(set.has("h2_therapy")).toBe(true);
     expect(set.has("ihht")).toBe(true);

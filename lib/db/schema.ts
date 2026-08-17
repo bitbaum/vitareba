@@ -266,6 +266,13 @@ export const assessmentResults = pgTable("assessment_results", {
   scores: jsonb("scores").notNull(),
   overallScore: integer("overall_score").notNull(),
   completedAt: timestamp("completed_at", { mode: "date" }).notNull().defaultNow(),
+  /**
+   * Which instrument produced this result. Only one exists today (the
+   * Inflection Edge — lib/assessment/data.ts) so every existing row defaults
+   * here unchanged. A second assessment is then an additive value on this
+   * column, not a breaking migration or a second results table.
+   */
+  assessmentType: text("assessment_type").notNull().default("inflection_edge"),
 });
 
 // ─── Bookings ─────────────────────────────────────────────────────────────────
@@ -358,7 +365,7 @@ export const careTeam = pgTable(
  * Apple, Outlook and anything else that speaks iCalendar.
  *
  * READ-ONLY BY CONSTRUCTION. Nothing here can write to anyone's calendar.
- * VitaReBa appointments travel the other way, through the .ics invites already
+ * Vita appointments travel the other way, through the .ics invites already
  * attached to confirmation emails.
  */
 export const clinicianCalendars = pgTable("clinician_calendars", {

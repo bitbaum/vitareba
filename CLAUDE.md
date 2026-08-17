@@ -1,9 +1,9 @@
 @~/.claude/CLAUDE.md
 @AGENTS.md
 
-# VitaReBa — Project Standards
+# Vita — Project Standards
 
-**What this is:** Clinical patient management platform for VitaReBa GmbH — a metabolic psychiatry & systemic longevity clinic in Zürich, founded by Manuel (also founder of Surf Your Life). Flagship programme is ADHD diagnosis and optimisation for high performers.
+**What this is:** Clinical patient management platform for Vita GmbH — a metabolic psychiatry & systemic longevity clinic in Zürich, founded by Manuel (also founder of Surf Your Life). Flagship programme is ADHD diagnosis and optimisation for high performers.
 
 The platform has two parts:
 1. **Public marketing site** — multilingual (de/en/fr/it), lands at `/de/`, primary CTA is the Inflection Edge self-assessment overlay
@@ -16,7 +16,7 @@ public domain but is not pointed yet — do not probe it). Scheduled jobs run vi
 
 ## Mission
 
-**Who:** Manuel Schabus, metabolic psychiatry clinician at VitaReBa Zürich, and his high-performer ADHD patients.
+**Who:** Manuel Schabus, metabolic psychiatry clinician at Vita Zürich, and his high-performer ADHD patients.
 **Problem:** Patients need frictionless daily data collection so their biology is visible; Manuel needs instant clarity on which patients need attention — and the marketing site must let curious visitors experience the Inflection Edge *before* hitting an auth wall.
 **Success:** Manuel opens the admin and knows — without calling anyone — exactly who needs attention today. Patients check in daily because the portal shows them it matters. Visitors complete the Inflection Edge without being asked to register first, then convert because the results made them want to.
 
@@ -253,7 +253,7 @@ Goals are set by admin per patient (`/api/admin/patients/[id]/goals`). Each goal
   strands every patient (no welcome mail, no reset link, no notifications), so
   `isEmailConfigured()` treats it as unconfigured when `NODE_ENV=production`.
   Prod currently sends from the verified `fleetcrown.orangecat.ch` with a
-  "VitaReBa" display name; move to a `vitareba.ch` sender once that domain is
+  "Vita" display name; move to a `vitareba.ch` sender once that domain is
   delegated and verified.
 - **Templates:** `lib/email/templates.ts` — all emails defined here, imported by cron routes and API routes
 - **Queue:** `emailQueue` table — sequences scheduled on assessment/registration, processed by `cron/emails`
@@ -290,9 +290,9 @@ lib/assessment/data.ts
 
 ## Connection to Surf Your Life
 
-VitaReBa and Surf Your Life are separate brands — same founder, different platforms.
+Vita and Surf Your Life are separate brands — same founder, different platforms.
 
-| | VitaReBa | Surf Your Life |
+| | Vita | Surf Your Life |
 |---|---|---|
 | Domain | Clinical / medical | Coaching / transformation |
 | Audience | ADHD high performers, longevity patients | Burnout recovery, general wellbeing |

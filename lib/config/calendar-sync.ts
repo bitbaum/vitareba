@@ -1,14 +1,14 @@
 /**
  * SSOT for external calendar subscription.
  *
- * The shape of this feature is one decision: VitaReBa READS a calendar and never
+ * The shape of this feature is one decision: Vita READS a calendar and never
  * writes one. A clinician pastes the private "secret address in iCal format"
  * URL their calendar app already publishes, and their real life starts blocking
  * slots. No OAuth application to register, no vendor to depend on, nothing to
  * pay, and it works the same for Google, Apple, Outlook and Nextcloud.
  *
  * The cost of that choice is honest and worth stating: changes take up to one
- * refresh interval to appear, and VitaReBa cannot put its own appointments into
+ * refresh interval to appear, and Vita cannot put its own appointments into
  * the clinician's calendar. The second is already solved the other way — every
  * confirmation email carries an .ics invite, and there is a subscribable feed.
  */

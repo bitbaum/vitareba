@@ -15,6 +15,7 @@ export const PORTAL_ROUTES = {
   assessments: "/assessments",
   labs:        "/labs",
   goals:       "/goals",
+  careTeam:    "/care-team",
   bookings:    "/bookings",
   messages:    "/messages",
   documents:   "/documents",
@@ -53,6 +54,7 @@ export const PORTAL_ROUTE_LABELS: Record<
   [PORTAL_ROUTES.assessments]: "My Results",
   [PORTAL_ROUTES.labs]:        "Labs & Vitals",
   [PORTAL_ROUTES.goals]:       "My Goals",
+  [PORTAL_ROUTES.careTeam]:    "Care Team",
   [PORTAL_ROUTES.bookings]:    "Bookings",
   [PORTAL_ROUTES.messages]:    "Messages",
   [PORTAL_ROUTES.documents]:   "Documents",
@@ -72,7 +74,7 @@ export const PORTAL_NAV_GROUPS: {
 }[] = [
   { label: null,      routes: [PORTAL_ROUTES.dashboard] },
   { label: "Track",   routes: [PORTAL_ROUTES.checkin, PORTAL_ROUTES.assessment, PORTAL_ROUTES.assessments, PORTAL_ROUTES.labs, PORTAL_ROUTES.goals] },
-  { label: "Care",    routes: [PORTAL_ROUTES.bookings, PORTAL_ROUTES.messages, PORTAL_ROUTES.documents] },
+  { label: "Care",    routes: [PORTAL_ROUTES.careTeam, PORTAL_ROUTES.bookings, PORTAL_ROUTES.messages, PORTAL_ROUTES.documents] },
   { label: "Account", routes: [PORTAL_ROUTES.profile] },
 ];
 

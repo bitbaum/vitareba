@@ -94,7 +94,7 @@ function wrapCalendar(inner: string[], extraHeaders: string[] = []): string {
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//VitaReBa//Patient Portal//EN",
+    "PRODID:-//Vita//Patient Portal//EN",
     "CALSCALE:GREGORIAN",
     ...extraHeaders,
     ...inner,

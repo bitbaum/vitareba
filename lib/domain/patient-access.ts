@@ -44,7 +44,7 @@ export type AccessViewer = { id: string; role?: string | null };
  * Resolves what this viewer may do with this patient's record.
  *
  * Order matters, and not in the obvious way: care-team membership is checked
- * even for a viewer looking at their own record, because VitaReBa's clinicians
+ * even for a viewer looking at their own record, because Vita's clinicians
  * are their own patients by design — a clinician on their own care team must be
  * able to enter their own laboratory results, and a plain "it's you, so you're
  * just a patient" shortcut would silently take that away.

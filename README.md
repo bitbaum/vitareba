@@ -1,8 +1,8 @@
-# VitaReBa
+# Vita
 
-Clinical patient management platform for **VitaReBa GmbH** — a metabolic psychiatry and systemic longevity clinic in Zürich. The platform has two parts:
+Clinical patient management platform for **Vita GmbH** — a metabolic psychiatry and systemic longevity clinic in Zürich. The platform has two parts:
 
-1. **Public marketing site** — multilingual (de/en/fr/it), with the *Inflection Edge* self-assessment overlay as the primary CTA.
+1. **Public marketing site** — multilingual (de/en/fr), with the *Inflection Edge* self-assessment overlay as the primary CTA.
 2. **Patient portal + admin panel** — authenticated and database-backed: patients at `/dashboard`, the clinician at `/admin`.
 
 ## Stack

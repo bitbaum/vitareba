@@ -135,6 +135,7 @@ export default function Nav() {
         <a href="#longevity" className={styles.navLink}>{t("longevity")}</a>
         <a href="#pricing"   className={styles.navLink}>{t("pricing")}</a>
         <a href="#team"      className={styles.navLink}>{t("team")}</a>
+        <Link href="/blog"   className={styles.navLink}>{t("blog")}</Link>
       </div>
 
       <div className={styles.navActions}>
@@ -179,6 +180,9 @@ export default function Nav() {
                 {label}
               </a>
             ))}
+            <Link href="/blog" className={styles.mobileMenuLink} onClick={closeMenu}>
+              {t("blog")}
+            </Link>
           </div>
           <div className={styles.mobileMenuActions}>
             {session ? (

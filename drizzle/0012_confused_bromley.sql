@@ -1,0 +1,1 @@
+ALTER TABLE "assessment_results" ADD COLUMN "assessment_type" text DEFAULT 'inflection_edge' NOT NULL;

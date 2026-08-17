@@ -15,6 +15,7 @@
     "longevity": "Longevity",
     "pricing": "Preise",
     "team": "Team",
+    "blog": "Blog",
     "signIn": "Anmelden",
     "dashboard": "Dashboard",
     "cta": "Inflection Edge starten",
@@ -75,7 +76,7 @@
     "eyebrow": "Die Zahlen, über die niemand spricht",
     "heading": "ADHD ist nicht nur ein Leistungsproblem.",
     "headingEm": "Es ist ein Longevity-Problem.",
-    "body": "Dies sind keine blossen kognitiven Herausforderungen. Unbehandeltes ADHD treibt metabolische Dysfunktion, beschleunigtes zelluläres Altern, chronische Entzündungen und eine schlechte Selbstregulation genau der Gesundheitsverhaltensweisen voran, die bestimmen, wie lange und wie gut Sie leben. Deshalb müssen metabolische Psychiatrie und Longevity-Medizin zusammenarbeiten — und deshalb existiert VitaReBa.",
+    "body": "Dies sind keine blossen kognitiven Herausforderungen. Unbehandeltes ADHD treibt metabolische Dysfunktion, beschleunigtes zelluläres Altern, chronische Entzündungen und eine schlechte Selbstregulation genau der Gesundheitsverhaltensweisen voran, die bestimmen, wie lange und wie gut Sie leben. Deshalb müssen metabolische Psychiatrie und Longevity-Medizin zusammenarbeiten — und deshalb existiert Vita.",
     "stats": [
       {
         "number": "13",
@@ -195,7 +196,7 @@
       {
         "sub": "Biologische Ebene",
         "title": "Vollständiges Metabolisches Workup",
-        "text": "Die Untersuchung, die VitaReBa auszeichnet. Wir untersuchen die biologischen Systeme, die Ihr Erscheinungsbild antreiben — Darm-Hirn-Achse, Neurotransmitter, mitochondriale Funktion, Hormone, Mikronährstoffe, Toxine, HRV, zirkadianer Rhythmus und mehr.",
+        "text": "Die Untersuchung, die Vita auszeichnet. Wir untersuchen die biologischen Systeme, die Ihr Erscheinungsbild antreiben — Darm-Hirn-Achse, Neurotransmitter, mitochondriale Funktion, Hormone, Mikronährstoffe, Toxine, HRV, zirkadianer Rhythmus und mehr.",
         "tags": [
           "Gut · Brain Axis",
           "Mitochondrial",
@@ -217,7 +218,7 @@
       },
       {
         "sub": "Longevity-Medizin",
-        "title": "VitaReBa Technologie-Protokoll",
+        "title": "Vita Technologie-Protokoll",
         "text": "ADHD reduziert die Lebenserwartung um bis zu 13 Jahre. Unsere Longevity-Medizintechnologien adressieren dies direkt — mitochondriale Gesundheit, Nervensystemregeneration, zelluläre Longevity und die biologischen Grundlagen nachhaltiger kognitiver Leistung.",
         "tags": [
           "H₂ Therapy",
@@ -405,7 +406,7 @@
           "Alles aus Edge Diagnostic",
           "90-Tage Surf Your Life Coaching",
           "SYL Clock Vollmapping",
-          "VitaReBa Technologie-Protokoll",
+          "Vita Technologie-Protokoll",
           "Home Harmony Umgebungsaudit",
           "Psychedelische Therapiebewertung"
         ]
@@ -432,10 +433,10 @@
     "members": {
       "manuel": {
         "role": "Arzt und Facharzt für Allgemeinmedizin",
-        "bio": "Architekt des VitaReBa-Programmsystems. Autor der Surf-Your-Life-Methodik, des Threshold-Protokolls, des Rhythmus-Checks und der Inflection Clock. Klinische Leitung für die Integration von metabolischer Psychiatrie, PSI-Theorie und systemischer Verhaltensänderung."
+        "bio": "Architekt des Vita-Programmsystems. Autor der Surf-Your-Life-Methodik, des Threshold-Protokolls, des Rhythmus-Checks und der Inflection Clock. Klinische Leitung für die Integration von metabolischer Psychiatrie, PSI-Theorie und systemischer Verhaltensänderung."
       },
-      "montagna": {
-        "role": "Mitgründer"
+      "george": {
+        "role": "Chief Engineer"
       }
     },
     "lead": "Eine in der Schweiz registrierte medizinische Einrichtung — keine Coaching-Marke im Arztkittel. Biologie, Psychiatrie und integrative Arbeit unter einem klinischen Dach."

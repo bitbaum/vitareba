@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import styles from "../portal.module.css";
 import authStyles from "../../forms.module.css";
 import msgStyles from "./messages.module.css";
@@ -19,7 +20,13 @@ type Clinician = NonNullable<ThreadClinician>;
 const UNKNOWN_CLINICIAN = "your clinician";
 const UNKNOWN_RECIPIENT = `the ${COMPANY.shortName} team`;
 
-export default function MessagesPage() {
+function MessagesView() {
+  // Deep link from the Care Team page: "Message" on a specific clinician
+  // opens the compose form pre-addressed to them, instead of landing on
+  // whichever recipient the picker would have defaulted to.
+  const searchParams = useSearchParams();
+  const to = searchParams.get("to");
+
   const [threads, setThreads] = useState<ThreadListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
@@ -61,15 +68,20 @@ export default function MessagesPage() {
         const mine: string[] = data?.mine ?? [];
         const own = roster.filter((c) => mine.includes(c.id));
         setHasCareTeam(own.length > 0);
-        const options = own.length > 0 ? own : roster;
+        // A deep-linked recipient may not be on the care team yet (e.g.
+        // messaging a clinician before choosing them) — show the full roster
+        // rather than a narrowed list that silently excludes who was asked for.
+        const options = to ? roster : own.length > 0 ? own : roster;
         setRecipients(options);
+        const requested = to && roster.some((c) => c.id === to) ? to : null;
         // First care-team member = the primary clinician the server would pick.
-        setRecipientId(options[0]?.id ?? "");
+        setRecipientId(requested ?? options[0]?.id ?? "");
+        if (requested) setShowForm(true);
       } catch {
         // leave the picker empty; the thread simply goes to the clinic mailbox
       }
     })();
-  }, []);
+  }, [to]);
 
   const selected = recipients.find((c) => c.id === recipientId) ?? null;
   const selectedName = selected?.name ?? null;
@@ -239,5 +251,13 @@ export default function MessagesPage() {
           the difference between waiting for a reply and calling 144. */}
       <SafetyNotice variant="message" />
     </div>
+  );
+}
+
+export default function MessagesPage() {
+  return (
+    <Suspense>
+      <MessagesView />
+    </Suspense>
   );
 }
