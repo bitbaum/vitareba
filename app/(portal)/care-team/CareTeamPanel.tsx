@@ -160,7 +160,7 @@ export function CareTeamPanel({ selfId }: { selfId: string }) {
                 </Link>
                 <button
                   type="button"
-                  className={isMine ? portalStyles.cancelBtn : portalStyles.btnSecondary}
+                  className={portalStyles.btnSecondary}
                   onClick={() => toggle(c.id, isMine)}
                   disabled={busyId === c.id || (closedToMe && !isMine)}
                   title={closedToMe ? "This clinician is not taking new patients right now." : undefined}
