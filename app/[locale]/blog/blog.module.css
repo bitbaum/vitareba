@@ -1,0 +1,111 @@
+/* ─── Blog — list + post, same marketing typography as the rest of the site ── */
+
+.hero {
+  padding: 7rem 3rem 3rem;
+  text-align: center;
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: 1.75rem;
+  padding-bottom: 5rem;
+}
+
+.card {
+  display: block;
+  padding: 2rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--white);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.card:hover,
+.card:focus-visible {
+  border-color: var(--teal);
+  box-shadow: var(--shadow-sm);
+  outline: none;
+}
+
+.cardDate {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin: 0 0 0.75rem;
+}
+
+.cardTitle {
+  font-family: var(--font-cormorant), serif;
+  font-weight: 300;
+  font-size: 1.5rem;
+  color: var(--ink);
+  margin: 0 0 0.6rem;
+  line-height: 1.2;
+}
+
+.cardExcerpt {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ─── Post ────────────────────────────────────────────────────────────────── */
+
+.postWrap {
+  padding: 7rem 3rem 6rem;
+}
+
+.postInner {
+  max-width: 42rem;
+  margin: 0 auto;
+}
+
+.back {
+  display: inline-block;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-bottom: 2rem;
+}
+
+.back:hover {
+  color: var(--teal);
+}
+
+.postDate {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin: 0 0 0.75rem;
+}
+
+.postTitle {
+  font-family: var(--font-cormorant), serif;
+  font-weight: 300;
+  font-size: 2.4rem;
+  color: var(--ink);
+  margin: 0 0 2.5rem;
+  line-height: 1.15;
+}
+
+.postBody p {
+  font-size: 1.02rem;
+  line-height: 1.85;
+  color: var(--ink2);
+  margin: 0 0 1.5rem;
+}
+
+@media (max-width: 767px) {
+  .hero,
+  .postWrap {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+
+  .postTitle {
+    font-size: 1.8rem;
+  }
+}

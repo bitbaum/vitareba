@@ -15,6 +15,7 @@
     "longevity": "Longevity",
     "pricing": "Pricing",
     "team": "Team",
+    "blog": "Blog",
     "signIn": "Sign in",
     "dashboard": "Dashboard",
     "cta": "Take the Inflection Edge",
@@ -75,7 +76,7 @@
     "eyebrow": "The Numbers No One Talks About",
     "heading": "ADHD is not just a performance issue.",
     "headingEm": "It's a longevity issue.",
-    "body": "These are not just cognitive challenges. Untreated ADHD drives metabolic dysfunction, accelerated cellular aging, chronic inflammation, and poor self-regulation of the exact health behaviours that determine how long and how well you live. This is why metabolic psychiatry and longevity medicine must work together — and why VitaReBa exists.",
+    "body": "These are not just cognitive challenges. Untreated ADHD drives metabolic dysfunction, accelerated cellular aging, chronic inflammation, and poor self-regulation of the exact health behaviours that determine how long and how well you live. This is why metabolic psychiatry and longevity medicine must work together — and why Vita exists.",
     "stats": [
       {
         "number": "13",
@@ -195,7 +196,7 @@
       {
         "sub": "Biological Layer",
         "title": "Full Metabolic Workup",
-        "text": "The assessment that sets VitaReBa apart. We examine the biological systems driving your presentation — gut-brain axis, neurotransmitters, mitochondrial function, hormones, micronutrients, toxins, HRV, circadian rhythm and more.",
+        "text": "The assessment that sets Vita apart. We examine the biological systems driving your presentation — gut-brain axis, neurotransmitters, mitochondrial function, hormones, micronutrients, toxins, HRV, circadian rhythm and more.",
         "tags": [
           "Gut · Brain Axis",
           "Mitochondrial",
@@ -217,7 +218,7 @@
       },
       {
         "sub": "Longevity Medicine",
-        "title": "VitaReBa Technology Protocol",
+        "title": "Vita Technology Protocol",
         "text": "ADHD reduces life expectancy by up to 13 years. Our longevity medicine technologies directly address this — mitochondrial health, nervous system recovery, cellular longevity, and the biological foundations of sustained cognitive performance.",
         "tags": [
           "H₂ Therapy",
@@ -405,7 +406,7 @@
           "Everything in Edge Diagnostic",
           "90-day Surf Your Life coaching",
           "SYL Clock full mapping",
-          "VitaReBa technology protocol",
+          "Vita technology protocol",
           "Home Harmony environment audit",
           "Psychedelic therapy assessment"
         ]
@@ -432,10 +433,10 @@
     "members": {
       "manuel": {
         "role": "MD and General Practitioner",
-        "bio": "Architect of the VitaReBa programme system. Author of the Surf Your Life methodology, the Threshold Protocol, the Rhythm Check and the Inflection Clock. Clinical lead for the integration of metabolic psychiatry, PSI Theory, and systemic behaviour change."
+        "bio": "Architect of the Vita programme system. Author of the Surf Your Life methodology, the Threshold Protocol, the Rhythm Check and the Inflection Clock. Clinical lead for the integration of metabolic psychiatry, PSI Theory, and systemic behaviour change."
       },
-      "montagna": {
-        "role": "Co-founder"
+      "george": {
+        "role": "Chief Engineer"
       }
     },
     "lead": "A Swiss-registered medical entity — not a coaching brand wearing medical clothes. Biology, psychiatry, and the integrative work all under the same clinical roof."

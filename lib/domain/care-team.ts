@@ -4,7 +4,7 @@
  * booking/messaging flows that need "my clinician" as a default.
  *
  * Self-pairs (a clinician on their own care team) are ALLOWED by design:
- * VitaReBa's clinicians are dual-role (they are patients in this product too)
+ * Vita's clinicians are dual-role (they are patients in this product too)
  * and need to walk their own patient path to see what patients see.
  */
 

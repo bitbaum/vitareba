@@ -164,25 +164,6 @@
   align-self: flex-start;
 }
 
-/* ─── Care team — same visual language as the booking picker's clinician
-   cards, composed rather than redefined, so "your doctor" reads as one
-   consistent idea whether you are choosing them or booking with them. ─────── */
-
-.clinicianRow { composes: clinicianRow from "../bookings/bookings.module.css"; }
-.clinicianCard { composes: clinicianCard from "../bookings/bookings.module.css"; cursor: default; }
-.clinicianCardActive { composes: clinicianCardActive from "../bookings/bookings.module.css"; }
-.clinicianAvatar { composes: clinicianAvatar from "../bookings/bookings.module.css"; }
-.clinicianText { composes: clinicianText from "../bookings/bookings.module.css"; }
-.clinicianName { composes: clinicianName from "../bookings/bookings.module.css"; }
-.clinicianMeta { composes: clinicianMeta from "../bookings/bookings.module.css"; }
-.clinicianBadge { composes: clinicianBadge from "../bookings/bookings.module.css"; }
-.clinicianBadgeWarn { composes: clinicianBadgeWarn from "../bookings/bookings.module.css"; }
-
-.clinicianAction {
-  margin-left: auto;
-  flex-shrink: 0;
-}
-
 /* ─── Mobile ──────────────────────────────────────────────────────────────── */
 
 @media (max-width: 767px) {

@@ -75,7 +75,7 @@ describe("runCronWeeklyDigest", () => {
     expect(mockSendEmail).toHaveBeenCalledWith(
       expect.objectContaining({
         to: "alice@example.com",
-        subject: "Your VitaReBa weekly summary",
+        subject: "Your Vita weekly summary",
       })
     );
   });

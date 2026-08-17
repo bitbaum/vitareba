@@ -3,7 +3,7 @@
  *
  * Every calendar app publishes a private "secret address in iCal format" URL.
  * Pointing at one is how a clinician's real life — a school run, a conference,
- * a dentist — stops VitaReBa from offering that hour to a patient, with no
+ * a dentist — stops Vita from offering that hour to a patient, with no
  * OAuth application, no vendor lock, and nothing to pay. It is read-only by
  * construction: this file can block a slot and can never write to anyone's
  * calendar.

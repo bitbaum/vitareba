@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { Suspense, useState, useEffect, useCallback, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import styles from "../portal.module.css";
 import bookingStyles from "./bookings.module.css";
 import authStyles from "../../forms.module.css";
@@ -35,7 +36,13 @@ function initials(name: string | null): string {
 }
 
 
-export default function BookingsPage() {
+function BookingsView() {
+  // Deep link from the Care Team page: "Book" on a specific clinician loads
+  // their slots on mount, instead of the picker's default (the patient's own
+  // clinician, or the first on the roster).
+  const searchParams = useSearchParams();
+  const initialClinicianId = searchParams.get("clinicianId");
+
   const [bookings, setBookings] = useState<BookingRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
@@ -104,7 +111,7 @@ export default function BookingsPage() {
     }
   }, []);
 
-  useEffect(() => { loadSlots(); }, [loadSlots]);
+  useEffect(() => { loadSlots(initialClinicianId); }, [loadSlots, initialClinicianId]);
 
   function selectClinician(id: string) {
     if (id === clinicianId) return;
@@ -617,5 +624,13 @@ export default function BookingsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function BookingsPage() {
+  return (
+    <Suspense>
+      <BookingsView />
+    </Suspense>
   );
 }

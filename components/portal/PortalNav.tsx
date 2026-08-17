@@ -98,6 +98,15 @@ const IcoLabs = () => (
   </svg>
 );
 
+const IcoCareTeam = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="5.5" cy="5" r="2.25"/>
+    <path d="M1.5 14c0-2.5 1.8-4.5 4-4.5s4 2 4 4.5"/>
+    <circle cx="11.5" cy="4.5" r="1.75"/>
+    <path d="M9.5 9.2c1.9.15 3.5 1.9 3.5 4.3"/>
+  </svg>
+);
+
 /**
  * Icon per route — presentation only; nav STRUCTURE lives in
  * lib/config/routes.ts (PORTAL_NAV_GROUPS / PORTAL_BOTTOM_NAV).
@@ -120,6 +129,7 @@ const ROUTE_ICONS: Record<PortalRoute, React.ComponentType> = {
   [PORTAL_ROUTES.assessments]: IcoResults,
   [PORTAL_ROUTES.labs]:        IcoLabs,
   [PORTAL_ROUTES.goals]:       IcoGoals,
+  [PORTAL_ROUTES.careTeam]:    IcoCareTeam,
   [PORTAL_ROUTES.bookings]:    IcoBookings,
   [PORTAL_ROUTES.messages]:    IcoMessages,
   [PORTAL_ROUTES.documents]:   IcoDocuments,
