@@ -138,10 +138,9 @@ export function CalendarSubscriptions({ clinicianId }: { clinicianId?: string })
   return (
     <div>
       <p className={shared.formHint}>
-        Point this at a calendar you already keep, and anything in it stops patients being
-        offered that time. It is read-only — nothing here can change your calendar — and it
-        refreshes about every {CALENDAR_REFRESH_MINUTES} minutes. Only the times are stored:
-        never the titles, guests or notes.
+        Point this at a calendar you already keep — read-only, refreshed every{" "}
+        {CALENDAR_REFRESH_MINUTES} minutes. Only free/busy times are stored, never titles,
+        guests or notes.
       </p>
 
       {rows.length > 0 && (
@@ -198,9 +197,8 @@ export function CalendarSubscriptions({ clinicianId }: { clinicianId?: string })
           <p className={shared.formHint}>
             {/* Say what is true. It is NOT encrypted at rest, and telling a
                 clinician it is would be a security claim we cannot keep. */}
-            Treat this like a password — anyone holding it can read the whole calendar. After
-            you save it, it is never sent back to the browser and never shown again; it leaves
-            the database only to fetch your free/busy times.
+            Treat this like a password. Once saved it&apos;s never shown again — only used to
+            fetch your free/busy times.
           </p>
         </div>
 
@@ -214,12 +212,17 @@ export function CalendarSubscriptions({ clinicianId }: { clinicianId?: string })
         </div>
       </form>
 
-      <p className={styles.sectionLabel}>Where to find it</p>
-      {WHERE_TO_FIND_IT.map((w) => (
-        <p key={w.app} className={shared.docMeta}>
-          <strong>{w.app}:</strong> {w.path}
-        </p>
-      ))}
+      {/* Closed by default — the exact menu path per provider matters (a
+          feature nobody can find the input for is a feature that doesn't
+          exist), but doesn't need to sit permanently open on the page. */}
+      <details className={styles.whereToFind}>
+        <summary className={styles.whereToFindSummary}>Where to find it</summary>
+        {WHERE_TO_FIND_IT.map((w) => (
+          <p key={w.app} className={shared.docMeta}>
+            <strong>{w.app}:</strong> {w.path}
+          </p>
+        ))}
+      </details>
     </div>
   );
 }

@@ -140,7 +140,7 @@ export const ADMIN_ROUTE_LABELS: Record<
   [ADMIN_ROUTES.documents]:    "Documents",
   [ADMIN_ROUTES.reports]:      "Reports",
   [ADMIN_ROUTES.profile]:      "My Profile",
-  [ADMIN_ROUTES.applications]: "Clinician Applications",
+  [ADMIN_ROUTES.applications]: "Clinicians",
 };
 
 /**
@@ -155,32 +155,33 @@ export type AdminRoute = (typeof ADMIN_ROUTES)[keyof typeof ADMIN_ROUTES];
  * app/(admin)/layout.tsx both read this structure and each badge means
  * something different:
  *
- *   - messages:     per-thread read state (getUnreadThreadCount) — never "stale"
- *   - bookings:     seen-at gated — profiles.bookingsSeenAt, active bookings created since
- *   - patients:     seen-at gated — profiles.patientsSeenAt, patients whose signal
- *                   changed (profiles.lastKnownSignalAt) since last look
- *   - applications: seen-at gated — profiles.applicationsSeenAt, pending applications
- *                   created since last look
+ *   - messages:  per-thread read state (getUnreadThreadCount) — never "stale"
+ *   - bookings:  seen-at gated — profiles.bookingsSeenAt, active bookings created since
+ *   - patients:  seen-at gated — profiles.patientsSeenAt, patients whose signal
+ *                changed (profiles.lastKnownSignalAt) since last look
  *
- * Patients and applications used to be live state counts with no seen-at gate
- * — a badge that never clears even after everything flagged has been
- * reviewed, which trains a clinician to ignore it. Both now follow the exact
- * pattern bookings already established.
+ * Patients used to be a live state count with no seen-at gate — a badge that
+ * never cleared even after everything flagged had been reviewed, which
+ * trains a clinician to ignore it. It now follows the exact pattern bookings
+ * already established. Clinicians (ADMIN_ROUTES.applications) carries no
+ * badge — there is no "pending queue" any more, since staff are added
+ * directly by an owner rather than reviewed from a public application.
  */
 export const ADMIN_NAV_GROUPS: {
   label: string | null;
   routes: AdminRoute[];
 }[] = [
   { label: null,        routes: [ADMIN_ROUTES.root] },
-  // An application is a not-yet-patient in the clinician's mental model —
-  // grouped with Patients so it reads as part of the patient pipeline, not an
-  // unrelated admin chore.
-  { label: "Patients",  routes: [ADMIN_ROUTES.patients, ADMIN_ROUTES.applications] },
+  { label: "Patients",  routes: [ADMIN_ROUTES.patients] },
   // The three channels of ongoing interaction with an existing patient —
   // deliberately the same shape as the portal's own "Care" group, so the same
   // relationship reads the same way from either side.
   { label: "Care",      routes: [ADMIN_ROUTES.bookings, ADMIN_ROUTES.messages, ADMIN_ROUTES.documents] },
-  { label: "Practice",  routes: [ADMIN_ROUTES.reports] },
+  // Practice-governance concerns, not day-to-day clinical work — deliberately
+  // separated from the Patients/Care groups a working clinician actually
+  // lives in. Who is staff (Clinicians) is an owner decision, not something
+  // that belongs mixed into a doctor's patient pipeline.
+  { label: "Practice",  routes: [ADMIN_ROUTES.reports, ADMIN_ROUTES.applications] },
   { label: "Account",   routes: [ADMIN_ROUTES.profile] },
 ];
 

@@ -1,18 +1,17 @@
 import styles from "../../admin.module.css";
-import { ClinicianApplicationsQueue } from "@/components/admin/ClinicianApplicationsQueue";
-import { MarkSeen } from "@/components/admin/MarkSeen";
+import { ClinicianManager } from "@/components/admin/ClinicianManager";
 
-export default function AdminApplicationsPage() {
+export default function AdminCliniciansPage() {
   return (
     <div>
-      <MarkSeen navKey="applications" />
       <h1 className={styles.pageTitle}>
-        Clinician <em>Applications</em>
+        <em>Clinicians</em>
       </h1>
       <p className={styles.pageSub}>
-        Every account starts as a patient. Review who has asked to treat patients here, and why.
+        Every account starts as a patient. Add someone directly, by email, to give them a
+        clinician&apos;s tools — there is no public way to apply.
       </p>
-      <ClinicianApplicationsQueue />
+      <ClinicianManager />
     </div>
   );
 }

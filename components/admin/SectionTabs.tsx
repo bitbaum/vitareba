@@ -10,7 +10,13 @@ export type Section = { id: string; label: string; content: ReactNode };
  * mounted (hidden) so form state survives switching. The active tab is
  * mirrored into the URL hash so refresh / share keeps the open section.
  */
-export function SectionTabs({ sections }: { sections: Section[] }) {
+export function SectionTabs({
+  sections,
+  ariaLabel = "Section tabs",
+}: {
+  sections: Section[];
+  ariaLabel?: string;
+}) {
   const [active, setActive] = useState(sections[0]?.id);
 
   useEffect(() => {
@@ -25,7 +31,7 @@ export function SectionTabs({ sections }: { sections: Section[] }) {
 
   return (
     <div>
-      <div className={styles.filterBar} role="tablist" aria-label="Patient record sections">
+      <div className={styles.filterBar} role="tablist" aria-label={ariaLabel}>
         {sections.map((s) => (
           <button
             key={s.id}
