@@ -57,6 +57,24 @@ import { buildIcsInvite } from "@/lib/domain/ics";
 import { bookingIcsEvent } from "@/lib/domain/booking-calendar";
 import { runAfterResponse } from "@/lib/utils/post-response";
 import { displayName, formatSlotDay, formatSlotTime, formatDateISO } from "@/lib/utils/format";
+import { createNotification, createNotificationForMany } from "@/lib/domain/notifications";
+import { NOTIFICATION_TYPE } from "@/lib/config/notifications";
+
+/** Same DB admin-role lookup as api/bookings — env ADMIN_EMAILS is for email,
+ *  notifications need an actual userId. */
+async function getAdminUserIds(): Promise<string[]> {
+  const rows = await db.query.users.findMany({
+    where: eq(users.role, USER_ROLE.admin),
+    columns: { id: true },
+  });
+  return rows.map((r) => r.id);
+}
+
+/** clinicRecipients but as userIds, for the in-app side of a clinic-facing email. */
+async function clinicRecipientIds(clinicianId?: string | null): Promise<string[]> {
+  const adminIds = await getAdminUserIds();
+  return Array.from(new Set([clinicianId, ...adminIds].filter((id): id is string => Boolean(id))));
+}
 
 const statusPatchSchema = z.object({ status: z.enum(BOOKING_STATUS_VALUES) });
 
@@ -383,6 +401,12 @@ async function reschedule(
         attachments,
       });
     }
+    await createNotification({
+      userId: updated.userId,
+      type: NOTIFICATION_TYPE.bookingConfirmed,
+      title: `Moved: ${sessionLabel.toLowerCase()} is now ${toLabel}`,
+      href: PORTAL_ROUTES.bookings,
+    });
 
     const recipients = clinicRecipients(clinician?.email);
     if (recipients.length > 0) {
@@ -401,6 +425,11 @@ async function reschedule(
         attachments,
       });
     }
+    await createNotificationForMany(await clinicRecipientIds(clinician?.id), {
+      type: NOTIFICATION_TYPE.bookingConfirmed,
+      title: `Appointment moved to ${toLabel} — ${displayName(patient?.name, patient?.email, "Unknown")}`,
+      href: `${ADMIN_ROUTES.patients}/${updated.userId}`,
+    });
   }, "[api/bookings/id] reschedule emails failed:");
 
   return NextResponse.json({ success: true, data: updated });
@@ -433,6 +462,13 @@ function notifyPatient(
   ) => Promise<{ subject: string; html: string }>
 ) {
   runAfterResponse(async () => {
+    const sessionLabel = labelFor(booking);
+    await createNotification({
+      userId: booking.userId,
+      type: NOTIFICATION_TYPE.bookingConfirmed,
+      title: `Your ${sessionLabel.toLowerCase()} is confirmed`,
+      href: PORTAL_ROUTES.bookings,
+    });
     const patient = await db.query.users.findFirst({
       where: eq(users.id, booking.userId),
       columns: { name: true, email: true },
@@ -440,7 +476,7 @@ function notifyPatient(
     if (!patient?.email) return;
     const { subject, html } = await build(
       { name: patient.name, email: patient.email },
-      labelFor(booking)
+      sessionLabel
     );
     await sendEmail({ to: patient.email, subject, html });
   }, "[api/bookings/id] patient email failed:");
@@ -509,10 +545,16 @@ function announceCancellation(booking: BookingRow, actorId: string, reason: stri
         attachments,
       });
     }
+    const byPatient = actorId === booking.userId;
+    await createNotification({
+      userId: booking.userId,
+      type: NOTIFICATION_TYPE.bookingCancelled,
+      title: `Cancelled: ${sessionLabel.toLowerCase()} on ${whenLabel}`,
+      href: PORTAL_ROUTES.bookings,
+    });
 
     const recipients = clinicRecipients(clinician?.email);
     if (recipients.length > 0) {
-      const byPatient = actorId === booking.userId;
       await sendEmail({
         to: recipients,
         subject: `Cancelled: ${whenLabel} — ${displayName(patient?.name, patient?.email, "Unknown")}`,
@@ -533,5 +575,10 @@ function announceCancellation(booking: BookingRow, actorId: string, reason: stri
         attachments,
       });
     }
+    await createNotificationForMany(await clinicRecipientIds(booking.clinicianId), {
+      type: NOTIFICATION_TYPE.bookingCancelled,
+      title: `Cancelled: ${whenLabel} — ${displayName(patient?.name, patient?.email, "Unknown")}`,
+      href: `${ADMIN_ROUTES.patients}/${booking.userId}`,
+    });
   }, "[api/bookings/id] cancellation emails failed:");
 }

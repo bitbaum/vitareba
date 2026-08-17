@@ -144,6 +144,59 @@ export const ADMIN_ROUTE_LABELS: Record<
 };
 
 /**
+ * Every admin path, as a union — same exhaustive-typing discipline as
+ * PortalRoute (see its comment). A missing entry for a new admin route is a
+ * compile error, not a silently blank nav icon.
+ */
+export type AdminRoute = (typeof ADMIN_ROUTES)[keyof typeof ADMIN_ROUTES];
+
+/**
+ * Admin nav badge semantics, in one place, since AdminNav.tsx and
+ * app/(admin)/layout.tsx both read this structure and each badge means
+ * something different:
+ *
+ *   - messages:     per-thread read state (getUnreadThreadCount) — never "stale"
+ *   - bookings:     seen-at gated — profiles.bookingsSeenAt, active bookings created since
+ *   - patients:     seen-at gated — profiles.patientsSeenAt, patients whose signal
+ *                   changed (profiles.lastKnownSignalAt) since last look
+ *   - applications: seen-at gated — profiles.applicationsSeenAt, pending applications
+ *                   created since last look
+ *
+ * Patients and applications used to be live state counts with no seen-at gate
+ * — a badge that never clears even after everything flagged has been
+ * reviewed, which trains a clinician to ignore it. Both now follow the exact
+ * pattern bookings already established.
+ */
+export const ADMIN_NAV_GROUPS: {
+  label: string | null;
+  routes: AdminRoute[];
+}[] = [
+  { label: null,        routes: [ADMIN_ROUTES.root] },
+  // An application is a not-yet-patient in the clinician's mental model —
+  // grouped with Patients so it reads as part of the patient pipeline, not an
+  // unrelated admin chore.
+  { label: "Patients",  routes: [ADMIN_ROUTES.patients, ADMIN_ROUTES.applications] },
+  // The three channels of ongoing interaction with an existing patient —
+  // deliberately the same shape as the portal's own "Care" group, so the same
+  // relationship reads the same way from either side.
+  { label: "Care",      routes: [ADMIN_ROUTES.bookings, ADMIN_ROUTES.messages, ADMIN_ROUTES.documents] },
+  { label: "Practice",  routes: [ADMIN_ROUTES.reports] },
+  { label: "Account",   routes: [ADMIN_ROUTES.profile] },
+];
+
+export const ADMIN_BOTTOM_NAV: AdminRoute[] = [
+  ADMIN_ROUTES.root,
+  ADMIN_ROUTES.patients,
+  ADMIN_ROUTES.bookings,
+  ADMIN_ROUTES.messages,
+];
+
+/** Bottom-bar tab labels where the full ADMIN_ROUTE_LABELS entry is too long. */
+export const ADMIN_ROUTE_SHORT_LABELS: Partial<Record<AdminRoute, string>> = {
+  [ADMIN_ROUTES.root]: "Today",
+};
+
+/**
  * Request header set by proxy.ts middleware containing the URL-derived locale.
  * Read by app/layout.tsx so <html lang> reflects the actual URL — not a cookie
  * (which crawlers don't carry, breaking SEO for non-default locales).

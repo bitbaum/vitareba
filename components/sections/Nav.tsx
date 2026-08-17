@@ -1,15 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
 import { Link } from "@/lib/i18n/navigation";
-import NextLink from "next/link";
 import Logo from "@/components/Logo";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { NavAuthActions } from "@/components/sections/NavAuthActions";
 import styles from "./Nav.module.css";
 import { COMPANY } from "@/lib/config/company";
-import { PORTAL_ROUTES, AUTH_ROUTES } from "@/lib/config/routes";
+import { MARKETING_SECTION_LINKS } from "@/lib/config/marketing-nav";
+import { useClickOutside } from "@/lib/hooks/useClickOutside";
 
 // Structural config — hrefs only; labels come from translations (nav.mega)
 const MEGA_HREFS = {
@@ -19,6 +20,7 @@ const MEGA_HREFS = {
 } as const;
 
 type MegaItem = { label: string; sub?: string };
+type MegaKey = "programmes" | "approach" | "diagnostics";
 
 export default function Nav() {
   const t = useTranslations("nav");
@@ -30,6 +32,42 @@ export default function Nav() {
   };
   const { data: session } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // Which mega panel is open — click/focus driven, not hover. Hover alone
+  // never worked on a tablet or hybrid laptop, and reconciling a hover-open
+  // state against a deliberate click-close was more complexity than it was
+  // worth, so this is the only way in on every device now.
+  const [openMega, setOpenMega] = useState<MegaKey | null>(null);
+  const megaGroupRef = useRef<HTMLDivElement>(null);
+  const triggerRefs = useRef<Record<MegaKey, HTMLButtonElement | null>>({
+    programmes: null,
+    approach: null,
+    diagnostics: null,
+  });
+  const panelRefs = useRef<Record<MegaKey, HTMLDivElement | null>>({
+    programmes: null,
+    approach: null,
+    diagnostics: null,
+  });
+  const prevOpenMega = useRef<MegaKey | null>(null);
+
+  useClickOutside(megaGroupRef, () => setOpenMega(null));
+
+  // Move focus into the panel on open, back to its trigger on close — never
+  // silently drop focus into the page body.
+  useEffect(() => {
+    if (openMega) {
+      const focusable = panelRefs.current[openMega]?.querySelector<HTMLElement>("a, button");
+      focusable?.focus();
+    } else if (prevOpenMega.current) {
+      triggerRefs.current[prevOpenMega.current]?.focus();
+    }
+    prevOpenMega.current = openMega;
+  }, [openMega]);
+
+  function toggleMega(key: MegaKey) {
+    setOpenMega((current) => (current === key ? null : key));
+  }
 
   // Lock body scroll while the mobile menu is open; Escape closes it
   useEffect(() => {
@@ -47,15 +85,9 @@ export default function Nav() {
   }, [menuOpen]);
 
   const closeMenu = () => setMenuOpen(false);
+  const authLabels = { dashboard: t("dashboard"), signIn: t("signIn"), cta: t("cta") };
 
-  const sectionLinks = [
-    { href: "#pillars", label: t("programmes") },
-    { href: "#approach", label: t("approach") },
-    { href: "#diagnostics", label: t("diagnostics") },
-    { href: "#longevity", label: t("longevity") },
-    { href: "#pricing", label: t("pricing") },
-    { href: "#team", label: t("team") },
-  ];
+  const sectionLinks = MARKETING_SECTION_LINKS.map(({ href, key }) => ({ href, label: t(key) }));
 
   return (
     <nav className={styles.nav}>
@@ -64,68 +96,120 @@ export default function Nav() {
       </Link>
 
       <div className={styles.navLinks}>
-        {/* PROGRAMMES — megamenu */}
-        <div className={styles.megaItem}>
-          <a href="#pillars" className={styles.megaTrigger}>
-            {t("programmes")}
-            <svg className={styles.chevron} width="9" height="9" viewBox="0 0 9 9" fill="none">
-              <path d="M1.5 3L4.5 6L7.5 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </a>
-          <div className={styles.megaPanel}>
-            <div className={styles.megaPanelInner}>
-              <div className={styles.megaCards}>
-                {mega.programmes.map((item, i) => (
-                  <a key={item.label} href={MEGA_HREFS.programmes[i]} className={styles.megaCard}>
-                    <span className={styles.megaCardLabel}>{item.label}</span>
-                    {item.sub && <span className={styles.megaCardSub}>{item.sub}</span>}
+        <div ref={megaGroupRef} className={styles.megaGroup}>
+          {/* PROGRAMMES — megamenu */}
+          <div className={styles.megaItem}>
+            <button
+              type="button"
+              ref={(el) => { triggerRefs.current.programmes = el; }}
+              className={styles.megaTrigger}
+              aria-expanded={openMega === "programmes"}
+              aria-controls="mega-programmes"
+              onClick={() => toggleMega("programmes")}
+            >
+              {t("programmes")}
+              <svg className={styles.chevron} width="9" height="9" viewBox="0 0 9 9" fill="none">
+                <path d="M1.5 3L4.5 6L7.5 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            <div
+              id="mega-programmes"
+              ref={(el) => { panelRefs.current.programmes = el; }}
+              className={openMega === "programmes" ? `${styles.megaPanel} ${styles.megaPanelOpen}` : styles.megaPanel}
+            >
+              <div className={styles.megaPanelInner}>
+                <div className={styles.megaCards}>
+                  {mega.programmes.map((item, i) => (
+                    <a
+                      key={item.label}
+                      href={MEGA_HREFS.programmes[i]}
+                      className={styles.megaCard}
+                      onClick={() => setOpenMega(null)}
+                    >
+                      <span className={styles.megaCardLabel}>{item.label}</span>
+                      {item.sub && <span className={styles.megaCardSub}>{item.sub}</span>}
+                    </a>
+                  ))}
+                </div>
+                <div className={styles.megaPanelFooter}>
+                  <a href="#pillars" className={styles.megaFooterLink} onClick={() => setOpenMega(null)}>
+                    {mega.programmesFooter}
                   </a>
-                ))}
-              </div>
-              <div className={styles.megaPanelFooter}>
-                <a href="#pillars" className={styles.megaFooterLink}>{mega.programmesFooter}</a>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* APPROACH — megamenu */}
-        <div className={styles.megaItem}>
-          <a href="#approach" className={styles.megaTrigger}>
-            {t("approach")}
-            <svg className={styles.chevron} width="9" height="9" viewBox="0 0 9 9" fill="none">
-              <path d="M1.5 3L4.5 6L7.5 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </a>
-          <div className={styles.megaPanel}>
-            <div className={styles.megaPanelInner}>
-              <div className={styles.megaList}>
-                {mega.approach.map((label, i) => (
-                  <a key={label} href={MEGA_HREFS.approach[i]} className={styles.megaListItem}>
-                    {label}
-                  </a>
-                ))}
+          {/* APPROACH — megamenu */}
+          <div className={styles.megaItem}>
+            <button
+              type="button"
+              ref={(el) => { triggerRefs.current.approach = el; }}
+              className={styles.megaTrigger}
+              aria-expanded={openMega === "approach"}
+              aria-controls="mega-approach"
+              onClick={() => toggleMega("approach")}
+            >
+              {t("approach")}
+              <svg className={styles.chevron} width="9" height="9" viewBox="0 0 9 9" fill="none">
+                <path d="M1.5 3L4.5 6L7.5 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            <div
+              id="mega-approach"
+              ref={(el) => { panelRefs.current.approach = el; }}
+              className={openMega === "approach" ? `${styles.megaPanel} ${styles.megaPanelOpen}` : styles.megaPanel}
+            >
+              <div className={styles.megaPanelInner}>
+                <div className={styles.megaList}>
+                  {mega.approach.map((label, i) => (
+                    <a
+                      key={label}
+                      href={MEGA_HREFS.approach[i]}
+                      className={styles.megaListItem}
+                      onClick={() => setOpenMega(null)}
+                    >
+                      {label}
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* DIAGNOSTICS — megamenu */}
-        <div className={styles.megaItem}>
-          <a href="#diagnostics" className={styles.megaTrigger}>
-            {t("diagnostics")}
-            <svg className={styles.chevron} width="9" height="9" viewBox="0 0 9 9" fill="none">
-              <path d="M1.5 3L4.5 6L7.5 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </a>
-          <div className={styles.megaPanel}>
-            <div className={styles.megaPanelInner}>
-              <div className={styles.megaList}>
-                {mega.diagnostics.map((label, i) => (
-                  <a key={label} href={MEGA_HREFS.diagnostics[i]} className={styles.megaListItem}>
-                    {label}
-                  </a>
-                ))}
+          {/* DIAGNOSTICS — megamenu */}
+          <div className={styles.megaItem}>
+            <button
+              type="button"
+              ref={(el) => { triggerRefs.current.diagnostics = el; }}
+              className={styles.megaTrigger}
+              aria-expanded={openMega === "diagnostics"}
+              aria-controls="mega-diagnostics"
+              onClick={() => toggleMega("diagnostics")}
+            >
+              {t("diagnostics")}
+              <svg className={styles.chevron} width="9" height="9" viewBox="0 0 9 9" fill="none">
+                <path d="M1.5 3L4.5 6L7.5 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            <div
+              id="mega-diagnostics"
+              ref={(el) => { panelRefs.current.diagnostics = el; }}
+              className={openMega === "diagnostics" ? `${styles.megaPanel} ${styles.megaPanelOpen}` : styles.megaPanel}
+            >
+              <div className={styles.megaPanelInner}>
+                <div className={styles.megaList}>
+                  {mega.diagnostics.map((label, i) => (
+                    <a
+                      key={label}
+                      href={MEGA_HREFS.diagnostics[i]}
+                      className={styles.megaListItem}
+                      onClick={() => setOpenMega(null)}
+                    >
+                      {label}
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -140,20 +224,7 @@ export default function Nav() {
 
       <div className={styles.navActions}>
         <LanguageSwitcher />
-        {session ? (
-          <NextLink href={PORTAL_ROUTES.dashboard} className={styles.navBtn}>
-            {t("dashboard")} &rarr;
-          </NextLink>
-        ) : (
-          <>
-            <Link href={AUTH_ROUTES.login} className={styles.navSignIn}>
-              {t("signIn")}
-            </Link>
-            <a href="?assessment=open" className={styles.navBtn}>
-              {t("cta")}
-            </a>
-          </>
-        )}
+        <NavAuthActions session={session} variant="desktop" labels={authLabels} />
         <button
           type="button"
           className={styles.menuToggle}
@@ -184,22 +255,7 @@ export default function Nav() {
               {t("blog")}
             </Link>
           </div>
-          <div className={styles.mobileMenuActions}>
-            {session ? (
-              <NextLink href={PORTAL_ROUTES.dashboard} className={styles.mobileMenuBtn} onClick={closeMenu}>
-                {t("dashboard")} &rarr;
-              </NextLink>
-            ) : (
-              <>
-                <a href="?assessment=open" className={styles.mobileMenuBtn} onClick={closeMenu}>
-                  {t("cta")}
-                </a>
-                <Link href={AUTH_ROUTES.login} className={styles.mobileMenuSignIn} onClick={closeMenu}>
-                  {t("signIn")}
-                </Link>
-              </>
-            )}
-          </div>
+          <NavAuthActions session={session} variant="mobile" onNavigate={closeMenu} labels={authLabels} />
         </div>
       )}
     </nav>

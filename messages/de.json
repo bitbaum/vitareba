@@ -450,7 +450,10 @@
     "ctaSecondary": "Discovery Call buchen"
   },
   "footer": {
-    "legal": "Alle psychedelischen Therapien innerhalb der Schweizer Regulierungsrahmen"
+    "legal": "Alle psychedelischen Therapien innerhalb der Schweizer Regulierungsrahmen",
+    "exploreHeading": "Entdecken",
+    "accountHeading": "Konto",
+    "emergencyLabel": "Im Notfall"
   },
   "auth": {
     "login": {

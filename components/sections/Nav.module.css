@@ -3,7 +3,7 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 100;
+  z-index: var(--z-nav);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -44,6 +44,14 @@
 
 /* ─── Megamenu item (trigger + panel) ─────────────────────────────────────── */
 
+/* Wraps all 3 mega items — the single ref useClickOutside watches, so a
+   click on ANY trigger (switching panels) never counts as "outside". */
+.megaGroup {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
 .megaItem {
   position: relative;
 }
@@ -61,10 +69,13 @@
   transition: color var(--transition-fast);
   white-space: nowrap;
   cursor: pointer;
+  background: none;
+  border: none;
+  font-family: var(--font-dm-sans), sans-serif;
 }
 
 .megaTrigger:hover,
-.megaItem:hover .megaTrigger {
+.megaTrigger[aria-expanded="true"] {
   color: var(--ink);
 }
 
@@ -74,7 +85,7 @@
   flex-shrink: 0;
 }
 
-.megaItem:hover .chevron {
+.megaTrigger[aria-expanded="true"] .chevron {
   transform: rotate(180deg);
   opacity: 0.8;
 }
@@ -93,7 +104,17 @@
   transition: opacity var(--transition-fast) ease, transform var(--transition-fast) ease, visibility var(--transition-fast);
   pointer-events: none;
   min-width: 16rem;
-  z-index: 200;
+  z-index: var(--z-dropdown);
+}
+
+/* Open state is a class, driven by React state — not :hover/:focus-within.
+   Hover alone never worked on a tablet or hybrid laptop with imprecise
+   pointer input; click/focus is the only way in on every device now. */
+.megaPanelOpen {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
 }
 
 /* Inner card that carries the visual styling */
@@ -120,13 +141,6 @@
   border-radius: var(--radius-2xs) 0 0 0;
 }
 
-.megaItem:hover .megaPanel,
-.megaItem:focus-within .megaPanel {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(0);
-  pointer-events: auto;
-}
 
 /* ─── Programme cards layout ───────────────────────────────────────────────── */
 

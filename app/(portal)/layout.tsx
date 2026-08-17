@@ -7,10 +7,12 @@ import styles from "./portal.module.css";
 import { UserDropdown } from "@/components/portal/UserDropdown";
 import { PortalNav, BottomNav } from "@/components/portal/PortalNav";
 import { NavBreadcrumb } from "@/components/portal/NavBreadcrumb";
+import { NotificationBell } from "@/components/shared/NotificationBell";
 import { db } from "@/lib/db";
 import { users, dailyCheckins, clinicalGoals, profiles } from "@/lib/db/schema";
 import { eq, and, isNull } from "drizzle-orm";
 import { getUnreadThreadCount } from "@/lib/domain/messages";
+import { getUnreadCount } from "@/lib/domain/notifications";
 import { formatDateISO } from "@/lib/utils/format";
 import { COMPANY } from "@/lib/config/company";
 import { USER_ROLE } from "@/lib/config/auth";
@@ -27,25 +29,27 @@ export default async function PortalLayout({ children }: { children: React.React
 
   const today = formatDateISO(new Date());
 
-  const [dbUser, unreadMessages, todayCheckin, patientProfile, activeGoalDates] = await Promise.all([
-    db.query.users.findFirst({
-      where: eq(users.id, session.user.id),
-      columns: { name: true },
-    }),
-    getUnreadThreadCount(session.user.id),
-    db.query.dailyCheckins.findFirst({
-      where: and(eq(dailyCheckins.userId, session.user.id), eq(dailyCheckins.date, today)),
-      columns: { id: true },
-    }),
-    db.query.profiles.findFirst({
-      where: eq(profiles.userId, session.user.id),
-      columns: { goalsSeenAt: true },
-    }),
-    db.query.clinicalGoals.findMany({
-      where: and(eq(clinicalGoals.patientId, session.user.id), isNull(clinicalGoals.completedAt)),
-      columns: { createdAt: true },
-    }),
-  ]);
+  const [dbUser, unreadMessages, todayCheckin, patientProfile, activeGoalDates, unreadNotifications] =
+    await Promise.all([
+      db.query.users.findFirst({
+        where: eq(users.id, session.user.id),
+        columns: { name: true },
+      }),
+      getUnreadThreadCount(session.user.id),
+      db.query.dailyCheckins.findFirst({
+        where: and(eq(dailyCheckins.userId, session.user.id), eq(dailyCheckins.date, today)),
+        columns: { id: true },
+      }),
+      db.query.profiles.findFirst({
+        where: eq(profiles.userId, session.user.id),
+        columns: { goalsSeenAt: true },
+      }),
+      db.query.clinicalGoals.findMany({
+        where: and(eq(clinicalGoals.patientId, session.user.id), isNull(clinicalGoals.completedAt)),
+        columns: { createdAt: true },
+      }),
+      getUnreadCount(session.user.id),
+    ]);
 
   const goalsSeenAt = patientProfile?.goalsSeenAt ?? null;
   const newGoalsCount = activeGoalDates.filter(
@@ -76,7 +80,10 @@ export default async function PortalLayout({ children }: { children: React.React
       <div className={styles.mainWrap}>
         <header className={styles.header}>
           <NavBreadcrumb />
-          <UserDropdown name={name} email={email} role={session.user.role} />
+          <div className={styles.headerActions}>
+            <NotificationBell initialUnreadCount={unreadNotifications} />
+            <UserDropdown name={name} email={email} role={session.user.role} />
+          </div>
         </header>
         <main className={styles.main}>{children}</main>
       </div>

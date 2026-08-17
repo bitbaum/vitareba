@@ -181,6 +181,10 @@ export const profiles = pgTable("profiles", {
   acceptingPatients: boolean("accepting_patients").notNull().default(true),
   // Signal tracking (updated by cron/signals, used to detect critical transitions)
   lastKnownSignal: varchar("last_known_signal", { length: 20 }),
+  // When lastKnownSignal last changed — pairs with patientsSeenAt below so the
+  // admin "urgent patients" badge can be "new since I looked", not a
+  // permanent count that trains a clinician to ignore it.
+  lastKnownSignalAt: timestamp("last_known_signal_at", { mode: "date" }),
   criticalAlertSentAt: timestamp("critical_alert_sent_at", { mode: "date" }),
   dipAlertSentAt: timestamp("dip_alert_sent_at", { mode: "date" }),
   // Updated when patient opens the goals page — drives "new goals" badge in nav
@@ -191,6 +195,12 @@ export const profiles = pgTable("profiles", {
   // in the clinician's UI — the exact gap that meant a booked appointment
   // went unnoticed until someone happened to open the page.
   bookingsSeenAt: timestamp("bookings_seen_at", { mode: "date" }),
+  // Same "new since last look" pattern for the admin Patients and Applications
+  // nav badges — both were previously live state counts with no seen-at gate,
+  // which meant the badge never cleared even after a clinician reviewed
+  // everything currently flagged.
+  patientsSeenAt: timestamp("patients_seen_at", { mode: "date" }),
+  applicationsSeenAt: timestamp("applications_seen_at", { mode: "date" }),
   // Explicit consent to AI processing of clinical data (GDPR Art. 9(2)(a) /
   // revFADP). Null = not consented; AI routes refuse without it.
   aiConsentAt: timestamp("ai_consent_at", { mode: "date" }),
@@ -652,6 +662,34 @@ export const emailQueue = pgTable("email_queue", {
   createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
 });
 
+// ─── Notifications ──────────────────────────────────────────────────────────
+//
+// A recipient's in-app inbox row, companion to (never a replacement for) the
+// existing email sends — same trigger sites, both fire. onDelete: cascade
+// because this is the recipient's own row with no independent clinical value,
+// not an authorship record, so it does not belong in schema-discipline's
+// RETAINED_AUTHORSHIP allowlist.
+
+export const notifications = pgTable(
+  "notifications",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    type: varchar("type", { length: 40 }).notNull(),
+    title: varchar("title", { length: 200 }).notNull(),
+    body: text("body"),
+    href: varchar("href", { length: 300 }),
+    readAt: timestamp("read_at", { mode: "date" }),
+    createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
+  },
+  (t) => [
+    index("notifications_user_read_idx").on(t.userId, t.readAt),
+    index("notifications_user_created_idx").on(t.userId, t.createdAt),
+  ]
+);
+
 // ─── Assessment leads (anonymous overlay completions for conversion tracking) ──
 
 export const assessmentLeads = pgTable("assessment_leads", {
@@ -824,6 +862,10 @@ export const programmeAssignmentsRelations = relations(programmeAssignments, ({ 
 
 export const emailQueueRelations = relations(emailQueue, ({ one }) => ({
   user: one(users, { fields: [emailQueue.userId], references: [users.id] }),
+}));
+
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  user: one(users, { fields: [notifications.userId], references: [users.id] }),
 }));
 
 export const clinicalGoalsRelations = relations(clinicalGoals, ({ one }) => ({

@@ -4,9 +4,12 @@ import { users } from "@/lib/db/schema";
 import { sendEmail } from "@/lib/email";
 import { newMessageEmail } from "@/lib/email/templates";
 import { COMPANY, PORTAL_URL } from "@/lib/config/company";
-import { PORTAL_ROUTES } from "@/lib/config/routes";
+import { PORTAL_ROUTES, ADMIN_ROUTES } from "@/lib/config/routes";
+import { USER_ROLE } from "@/lib/config/auth";
 import { displayName } from "@/lib/utils/format";
 import { loadThread } from "@/lib/domain/messages";
+import { createNotification } from "@/lib/domain/notifications";
+import { NOTIFICATION_TYPE } from "@/lib/config/notifications";
 
 /**
  * Tell everyone else in the thread that something was said.
@@ -36,7 +39,7 @@ export async function notifyThreadParticipants(
         users.id,
         recipients.map((p) => p.actorId)
       ),
-      columns: { id: true, name: true, email: true },
+      columns: { id: true, name: true, email: true, role: true },
     }),
     db.query.users.findFirst({
       where: eq(users.id, authorId),
@@ -47,8 +50,8 @@ export async function notifyThreadParticipants(
   const subject = loaded.thread.subject ?? "";
   const senderName = displayName(author?.name, author?.email);
 
-  await Promise.all(
-    people
+  await Promise.all([
+    ...people
       .filter((p) => Boolean(p.email))
       .map((p) =>
         sendEmail({
@@ -61,6 +64,15 @@ export async function notifyThreadParticipants(
             portalUrl: `${PORTAL_URL}${PORTAL_ROUTES.messages}/${threadId}`,
           }),
         })
-      )
-  );
+      ),
+    ...people.map((p) =>
+      createNotification({
+        userId: p.id,
+        type: NOTIFICATION_TYPE.newMessage,
+        title: `New message from ${senderName}`,
+        body: subject || undefined,
+        href: `${p.role === USER_ROLE.admin ? ADMIN_ROUTES.messages : PORTAL_ROUTES.messages}/${threadId}`,
+      })
+    ),
+  ]);
 }
