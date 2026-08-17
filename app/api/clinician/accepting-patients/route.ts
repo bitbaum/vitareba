@@ -12,33 +12,11 @@ export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { eq } from "drizzle-orm";
-import { requireSession } from "@/lib/auth/guards";
-import { db } from "@/lib/db";
-import { users } from "@/lib/db/schema";
+import { requireClinician } from "@/lib/auth/guards";
 import { badRequest, serviceUnavailable } from "@/lib/utils/api-response";
 import { isAcceptingPatients, setAcceptingPatients } from "@/lib/domain/care-team";
 
 const bodySchema = z.object({ accepting: z.boolean() });
-
-async function requireClinician() {
-  const guard = await requireSession();
-  if (guard.error) return { error: guard.error, clinicianId: null };
-
-  const row = await db.query.users.findFirst({
-    where: eq(users.id, guard.session.user.id),
-    columns: { isClinician: true },
-  });
-  if (!row?.isClinician) {
-    // Not "forbidden" — a plain patient account has no reason to learn that
-    // this setting exists at all.
-    return {
-      error: NextResponse.json({ success: false, error: "Not found" }, { status: 404 }),
-      clinicianId: null,
-    };
-  }
-  return { error: null, clinicianId: guard.session.user.id };
-}
 
 export async function GET() {
   const { error, clinicianId } = await requireClinician();

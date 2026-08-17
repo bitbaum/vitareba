@@ -39,6 +39,7 @@ const RETAINED_AUTHORSHIP = new Set([
   "admin_id",        // patient_notes — who recorded the clinical note
   "assigned_by",     // programme_assignments — who enrolled the patient
   "set_by_admin_id", // clinical_goals — who set the goal
+  "reviewed_by",     // clinician_applications — which admin approved/declined it
 ]);
 
 /** Every `.references(() => users.id …)` paired with its column name. */

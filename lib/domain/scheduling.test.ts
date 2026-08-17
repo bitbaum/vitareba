@@ -1,7 +1,7 @@
 /// <reference types="vitest/globals" />
 import { describe, expect, it } from "vitest";
 import { generateSlots, isBookableSlot, slotBusyInterval } from "./scheduling";
-import { DEFAULT_AVAILABILITY, getAvailabilityForEmail } from "@/lib/config/scheduling";
+import { DEFAULT_AVAILABILITY, type WeeklyHours } from "@/lib/config/scheduling";
 import { CLINIC_TIMEZONE } from "@/lib/config/company";
 
 const HOUR = 3_600_000;
@@ -95,26 +95,25 @@ describe("generateSlots", () => {
     expect(windows.some(([start, end]) => t >= start && t < end)).toBe(true);
   });
 
-  it("per-clinician rules produce different calendars (George evenings vs default)", () => {
-    const george = getAvailabilityForEmail("butaeff@gmail.com");
-    const slots = generateSlots({ now: NOW, rules: george, busy: [] });
+  it("per-clinician rules produce different calendars (evening rules vs default)", () => {
+    // Availability is per-clinician data now (lib/domain/clinician-profile.ts,
+    // DB-backed) rather than a hardcoded fixture — the engine itself only
+    // needs to prove it honours WHATEVER ClinicianAvailability it is given.
+    const eveningsOnly: WeeklyHours = { 1: [["17:00", "19:00"]], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [] };
+    const evenings = { ...DEFAULT_AVAILABILITY, weeklyHours: eveningsOnly };
+    const slots = generateSlots({ now: NOW, rules: evenings, busy: [] });
     expect(slots.length).toBeGreaterThan(0);
     for (const s of slots) {
-      const windows = george.weeklyHours[clinicWeekday(s)];
+      const windows = evenings.weeklyHours[clinicWeekday(s)];
       const t = clinicTime(s);
-      expect(windows.some(([start, end]) => t >= start && t < end), `${s.toISOString()} (${t})`).toBe(true);
+      expect(windows.some(([start, end]: [string, string]) => t >= start && t < end), `${s.toISOString()} (${t})`).toBe(true);
     }
-    // Monday 09:00 exists for default rules but not for George's evening hours
+    // Monday 09:00 exists for default rules but not for the evening-only rules
     const defSlots = generateSlots({ now: NOW, rules: RULES, busy: [] });
     const defMorning = defSlots.some((s) => clinicTime(s) === "09:00" && clinicWeekday(s) === 1);
-    const georgeMorningMonday = slots.some((s) => clinicTime(s) === "09:00" && clinicWeekday(s) === 1);
+    const eveningMorningMonday = slots.some((s) => clinicTime(s) === "09:00" && clinicWeekday(s) === 1);
     expect(defMorning).toBe(true);
-    expect(georgeMorningMonday).toBe(false);
-  });
-
-  it("unknown clinician email falls back to DEFAULT_AVAILABILITY", () => {
-    expect(getAvailabilityForEmail("nobody@example.com")).toEqual(DEFAULT_AVAILABILITY);
-    expect(getAvailabilityForEmail(null)).toEqual(DEFAULT_AVAILABILITY);
+    expect(eveningMorningMonday).toBe(false);
   });
 });
 

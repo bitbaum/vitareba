@@ -8,7 +8,7 @@ import { UserDropdown } from "@/components/portal/UserDropdown";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { NavBreadcrumb } from "@/components/portal/NavBreadcrumb";
 import { db } from "@/lib/db";
-import { users, bookings, profiles } from "@/lib/db/schema";
+import { users, bookings, profiles, clinicianApplications } from "@/lib/db/schema";
 import { eq, inArray, count } from "drizzle-orm";
 import { getUnreadThreadCount } from "@/lib/domain/messages";
 import { USER_ROLE } from "@/lib/config/auth";
@@ -26,7 +26,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const session = await auth();
   if (!session || session.user.role !== USER_ROLE.admin) redirect(PORTAL_ROUTES.dashboard);
 
-  const [dbUser, unreadMessages, pendingBookings, urgentPatients] = await Promise.all([
+  const [dbUser, unreadMessages, pendingBookings, urgentPatients, pendingApplications] = await Promise.all([
     db.query.users.findFirst({
       where: eq(users.id, session.user.id),
       columns: { name: true },
@@ -35,6 +35,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     db.select({ value: count() }).from(bookings).where(eq(bookings.status, BOOKING_STATUS.pending)).then((r) => r[0]?.value ?? 0),
     // Count patients whose stored signal is critical or attention — fast single-table read
     db.select({ value: count() }).from(profiles).where(inArray(profiles.lastKnownSignal, [PATIENT_SIGNAL.critical, PATIENT_SIGNAL.attention])).then((r) => r[0]?.value ?? 0),
+    db.select({ value: count() }).from(clinicianApplications).where(eq(clinicianApplications.status, "pending")).then((r) => r[0]?.value ?? 0),
   ]);
 
   const name = dbUser?.name ?? "";
@@ -47,7 +48,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <Logo variant="bright" />
         </Link>
         <p className={styles.adminBadge}>Admin</p>
-        <AdminNav unreadMessages={unreadMessages} pendingBookings={pendingBookings} urgentPatients={urgentPatients} />
+        <AdminNav
+          unreadMessages={unreadMessages}
+          pendingBookings={pendingBookings}
+          urgentPatients={urgentPatients}
+          pendingApplications={pendingApplications}
+        />
         <Link href={PORTAL_ROUTES.dashboard} className={styles.roleSwitch}>
           ← Patient portal
         </Link>

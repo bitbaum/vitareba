@@ -16,6 +16,18 @@
 .clinicianAvatar { composes: clinicianAvatar from "../bookings/bookings.module.css"; margin-top: 0.15rem; }
 .clinicianText { composes: clinicianText from "../bookings/bookings.module.css"; }
 .clinicianName { composes: clinicianName from "../bookings/bookings.module.css"; font-size: 0.95rem; }
+
+.clinicianNameLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.clinicianNameLink:hover,
+.clinicianNameLink:focus-visible {
+  color: var(--teal);
+  text-decoration: underline;
+  outline: none;
+}
 .clinicianMeta { composes: clinicianMeta from "../bookings/bookings.module.css"; }
 .clinicianBadge { composes: clinicianBadge from "../bookings/bookings.module.css"; }
 .clinicianBadgeWarn { composes: clinicianBadgeWarn from "../bookings/bookings.module.css"; }

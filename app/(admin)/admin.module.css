@@ -2108,3 +2108,83 @@
   color: var(--muted);
   font-size: 0.85rem;
 }
+
+/* ─── Weekly hours editor ─────────────────────────────────────────────────── */
+
+.hoursGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.hoursRow {
+  display: grid;
+  grid-template-columns: 7rem 1fr;
+  gap: 1rem;
+  align-items: baseline;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.hoursRow:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.hoursDayLabel {
+  font-size: 0.85rem;
+  color: var(--ink);
+}
+
+.hoursWindows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.hoursWindow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* A single input + action button on one line — the specialty-tag adder reuses
+   this exact row shape, not the hours-specific one above. */
+.inlineRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.declineNoteInput {
+  flex: 1;
+}
+
+.rowBetween {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
+}
+
+.hoursTimeInput {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.5rem;
+  font-size: 0.85rem;
+  color: var(--ink);
+  font-family: inherit;
+}
+
+.hoursTimeInput:focus {
+  outline: none;
+  border-color: var(--teal);
+}
+
+@media (max-width: 767px) {
+  .hoursRow {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+}

@@ -9,18 +9,20 @@ import { ADMIN_ROUTES } from "@/lib/config/routes";
 type NavItem = {
   href: string;
   label: string;
-  badgeKey?: "messages" | "bookings" | "patients";
+  badgeKey?: "messages" | "bookings" | "patients" | "applications";
 };
 
 const NAV_ITEMS: NavItem[] = [
   // First, and unbadged on purpose: the page whose job is to tell you what is
   // waiting does not also need a number shouting the same thing at it.
-  { href: ADMIN_ROUTES.root,      label: "Today" },
-  { href: ADMIN_ROUTES.patients,  label: "Patients",  badgeKey: "patients" },
-  { href: ADMIN_ROUTES.bookings,  label: "Bookings",  badgeKey: "bookings" },
-  { href: ADMIN_ROUTES.messages,  label: "Messages",  badgeKey: "messages" },
-  { href: ADMIN_ROUTES.documents, label: "Documents" },
-  { href: ADMIN_ROUTES.reports,   label: "Reports" },
+  { href: ADMIN_ROUTES.root,         label: "Today" },
+  { href: ADMIN_ROUTES.patients,     label: "Patients",  badgeKey: "patients" },
+  { href: ADMIN_ROUTES.bookings,     label: "Bookings",  badgeKey: "bookings" },
+  { href: ADMIN_ROUTES.messages,     label: "Messages",  badgeKey: "messages" },
+  { href: ADMIN_ROUTES.documents,    label: "Documents" },
+  { href: ADMIN_ROUTES.applications, label: "Applications", badgeKey: "applications" },
+  { href: ADMIN_ROUTES.reports,      label: "Reports" },
+  { href: ADMIN_ROUTES.profile,      label: "My Profile" },
 ];
 
 function isActive(pathname: string, href: string): boolean {
@@ -34,10 +36,12 @@ export function AdminNav({
   unreadMessages = 0,
   pendingBookings = 0,
   urgentPatients = 0,
+  pendingApplications = 0,
 }: {
   unreadMessages?: number;
   pendingBookings?: number;
   urgentPatients?: number;
+  pendingApplications?: number;
 }) {
   const pathname = usePathname();
 
@@ -49,6 +53,7 @@ export function AdminNav({
           badgeKey === "messages" ? unreadMessages :
           badgeKey === "bookings" ? pendingBookings :
           badgeKey === "patients" ? urgentPatients :
+          badgeKey === "applications" ? pendingApplications :
           0;
         return (
           <Link

@@ -12,6 +12,7 @@ const {
   mockGetAdminEmails,
   mockRunAfterResponse,
   mockCalendarBusyFindMany,
+  mockClinicianProfileFindFirst,
 } = vi.hoisted(() => ({
   mockRequireSession: vi.fn(),
   mockBookingFindMany: vi.fn(),
@@ -26,6 +27,8 @@ const {
   mockRunAfterResponse: vi.fn(),
   // The slot engine now also consults each clinician's subscribed calendar.
   mockCalendarBusyFindMany: vi.fn(),
+  // Availability rules — a clinician with no row uses DEFAULT_AVAILABILITY.
+  mockClinicianProfileFindFirst: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/guards", () => ({ requireSession: mockRequireSession }));
@@ -37,6 +40,7 @@ vi.mock("@/lib/db", () => ({
       users:    { findFirst: mockUserFindFirst },
       careTeam: { findFirst: mockCareTeamFindFirst },
       calendarBusy: { findMany: mockCalendarBusyFindMany },
+      clinicianProfiles: { findFirst: mockClinicianProfileFindFirst },
     },
     insert: mockInsert,
   },
@@ -207,6 +211,8 @@ describe("POST /api/bookings (patient, slot)", () => {
     mockUserFindFirst.mockResolvedValue(CLINICIAN); // clinician lookup
     mockBookingFindMany.mockResolvedValue([]); // no booked appointments
     mockCalendarBusyFindMany.mockResolvedValue([]); // no external calendar events
+    mockClinicianProfileFindFirst.mockReset();
+    mockClinicianProfileFindFirst.mockResolvedValue(undefined); // no row — DEFAULT_AVAILABILITY
     setupInsert([{ ...BOOKING, status: "confirmed", scheduledAt: NOW_SLOT }]);
   });
 
