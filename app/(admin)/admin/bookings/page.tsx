@@ -45,6 +45,12 @@ export default function AdminBookingsPage() {
 
   useEffect(() => { load(); }, [load]);
 
+  // Clears the admin nav's "new bookings" badge — fire-and-forget, the same
+  // "I looked at this page" signal the patient portal's goals page sends.
+  useEffect(() => {
+    fetch("/api/admin/bookings/mark-seen", { method: "PATCH" }).catch(() => {});
+  }, []);
+
   async function updateStatus(id: string, status: BookingStatus) {
     setUpdating(id);
     setError("");

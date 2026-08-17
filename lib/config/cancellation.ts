@@ -49,11 +49,22 @@ export const CANCELLATION_POLICY = {
     `nothing else happens. Inside ${CANCELLATION_NOTICE_HOURS} hours the slot usually cannot ` +
     `be refilled, so it is recorded as a late cancellation and your clinician sees it. ` +
     `There is no fee, and it is always better to tell us than not to come.`,
-  /** Shown at the moment of a late cancellation, before it is confirmed. */
-  lateWarning:
+  /**
+   * Shown at the moment of a late cancellation, before it is confirmed —
+   * BookingActions is the SAME control on both the patient's own bookings
+   * page and the admin bookings table, and this line used to be the patient's
+   * copy shown verbatim to a clinician cancelling on a patient's behalf
+   * ("...message your clinician" told George to message himself). Two
+   * versions, picked by actorLabel, same everywhere else in this file.
+   */
+  lateWarningPatient:
     `This is less than ${CANCELLATION_NOTICE_HOURS} hours before your appointment, so it will ` +
     `be recorded as a late cancellation. There is no charge. If you are unwell or something ` +
     `has happened, cancel anyway and message your clinician.`,
+  lateWarningClinic:
+    `This is less than ${CANCELLATION_NOTICE_HOURS} hours before the appointment, so it will be ` +
+    `recorded as a late cancellation for the patient. There is no charge. If they need to be ` +
+    `reached, message them directly.`,
 } as const;
 
 /** Longest reason a patient or clinician can attach to a cancellation. */

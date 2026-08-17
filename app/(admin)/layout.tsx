@@ -9,7 +9,7 @@ import { AdminNav } from "@/components/admin/AdminNav";
 import { NavBreadcrumb } from "@/components/portal/NavBreadcrumb";
 import { db } from "@/lib/db";
 import { users, bookings, profiles, clinicianApplications } from "@/lib/db/schema";
-import { eq, inArray, count } from "drizzle-orm";
+import { eq, inArray, count, and, gt } from "drizzle-orm";
 import { getUnreadThreadCount } from "@/lib/domain/messages";
 import { USER_ROLE } from "@/lib/config/auth";
 import { BOOKING_STATUS } from "@/lib/config/booking-status";
@@ -26,17 +26,36 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const session = await auth();
   if (!session || session.user.role !== USER_ROLE.admin) redirect(PORTAL_ROUTES.dashboard);
 
-  const [dbUser, unreadMessages, pendingBookings, urgentPatients, pendingApplications] = await Promise.all([
+  const [dbUser, adminProfile, unreadMessages, urgentPatients, pendingApplications] = await Promise.all([
     db.query.users.findFirst({
       where: eq(users.id, session.user.id),
       columns: { name: true },
     }),
+    db.query.profiles.findFirst({
+      where: eq(profiles.userId, session.user.id),
+      columns: { bookingsSeenAt: true },
+    }),
     getUnreadThreadCount(session.user.id),
-    db.select({ value: count() }).from(bookings).where(eq(bookings.status, BOOKING_STATUS.pending)).then((r) => r[0]?.value ?? 0),
     // Count patients whose stored signal is critical or attention — fast single-table read
     db.select({ value: count() }).from(profiles).where(inArray(profiles.lastKnownSignal, [PATIENT_SIGNAL.critical, PATIENT_SIGNAL.attention])).then((r) => r[0]?.value ?? 0),
     db.select({ value: count() }).from(clinicianApplications).where(eq(clinicianApplications.status, "pending")).then((r) => r[0]?.value ?? 0),
   ]);
+
+  // A native slot booking is born CONFIRMED, never "pending" — counting only
+  // pending status meant a real new booking produced no visible signal
+  // anywhere in the admin UI. "New" here means "exists and hasn't been seen",
+  // same contract as the patient portal's goalsSeenAt badge.
+  const bookingsSeenAt = adminProfile?.bookingsSeenAt ?? null;
+  const activeStatuses = [BOOKING_STATUS.pending, BOOKING_STATUS.confirmed];
+  const newBookings = await db
+    .select({ value: count() })
+    .from(bookings)
+    .where(
+      bookingsSeenAt
+        ? and(inArray(bookings.status, activeStatuses), gt(bookings.createdAt, bookingsSeenAt))
+        : inArray(bookings.status, activeStatuses)
+    )
+    .then((r) => r[0]?.value ?? 0);
 
   const name = dbUser?.name ?? "";
   const email = session.user.email ?? "";
@@ -50,7 +69,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <p className={styles.adminBadge}>Admin</p>
         <AdminNav
           unreadMessages={unreadMessages}
-          pendingBookings={pendingBookings}
+          newBookings={newBookings}
           urgentPatients={urgentPatients}
           pendingApplications={pendingApplications}
         />

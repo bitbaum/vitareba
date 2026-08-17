@@ -105,7 +105,7 @@ export function BookingActions({
       <div className={shared.cardTight}>
         <p className={shared.formHint}>
           {late
-            ? CANCELLATION_POLICY.lateWarning
+            ? (actorLabel === "clinic" ? CANCELLATION_POLICY.lateWarningClinic : CANCELLATION_POLICY.lateWarningPatient)
             : notice
               ? `Cancelling with ${notice}' notice. The slot goes back to another patient.`
               : "This request will be withdrawn."}

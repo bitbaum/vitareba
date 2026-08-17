@@ -754,6 +754,14 @@
   composes: btnPrimary from "../shared.module.css";
 }
 
+/* A step down from .headerBtn — for detaching/removing something that was
+   added with it (care team, calendars), not a new destructive action of its
+   own. Same bold black weight for both read as "these are equally weighty",
+   which they are not. */
+.removeBtn {
+  composes: btnSecondary from "../shared.module.css";
+}
+
 /* ─── Admin success/error banners ────────────────────────────────────────── */
 
 .successBanner {

@@ -185,6 +185,12 @@ export const profiles = pgTable("profiles", {
   dipAlertSentAt: timestamp("dip_alert_sent_at", { mode: "date" }),
   // Updated when patient opens the goals page — drives "new goals" badge in nav
   goalsSeenAt: timestamp("goals_seen_at", { mode: "date" }),
+  // Updated when an admin/clinician opens /admin/bookings — drives the admin
+  // nav's "new bookings" badge. Without this, a native slot booking (born
+  // status=confirmed, never "pending") produced zero visible signal anywhere
+  // in the clinician's UI — the exact gap that meant a booked appointment
+  // went unnoticed until someone happened to open the page.
+  bookingsSeenAt: timestamp("bookings_seen_at", { mode: "date" }),
   // Explicit consent to AI processing of clinical data (GDPR Art. 9(2)(a) /
   // revFADP). Null = not consented; AI routes refuse without it.
   aiConsentAt: timestamp("ai_consent_at", { mode: "date" }),

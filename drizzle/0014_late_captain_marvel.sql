@@ -1,0 +1,1 @@
+ALTER TABLE "profiles" ADD COLUMN "bookings_seen_at" timestamp;

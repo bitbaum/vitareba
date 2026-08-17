@@ -34,12 +34,12 @@ function isActive(pathname: string, href: string): boolean {
 
 export function AdminNav({
   unreadMessages = 0,
-  pendingBookings = 0,
+  newBookings = 0,
   urgentPatients = 0,
   pendingApplications = 0,
 }: {
   unreadMessages?: number;
-  pendingBookings?: number;
+  newBookings?: number;
   urgentPatients?: number;
   pendingApplications?: number;
 }) {
@@ -51,7 +51,7 @@ export function AdminNav({
         const active = isActive(pathname, href);
         const count =
           badgeKey === "messages" ? unreadMessages :
-          badgeKey === "bookings" ? pendingBookings :
+          badgeKey === "bookings" ? newBookings :
           badgeKey === "patients" ? urgentPatients :
           badgeKey === "applications" ? pendingApplications :
           0;
@@ -66,7 +66,7 @@ export function AdminNav({
             {count > 0 && (
               <span
                 className={badgeKey === "patients" ? styles.navBadgeUrgent : styles.navBadge}
-                aria-label={badgeKey === "patients" ? `${count} patients need attention` : `${count} pending`}
+                aria-label={badgeKey === "patients" ? `${count} patients need attention` : `${count} new`}
               >
                 {count > BADGE_MAX_COUNT ? `${BADGE_MAX_COUNT}+` : count}
               </span>
