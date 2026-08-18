@@ -15,16 +15,21 @@ export const CHECKIN_SCALE_MIN = 1;
 export const CHECKIN_SCALE_MAX = 5;
 
 /**
- * SSOT for all five daily check-in metrics — keys, display labels, scale edge labels, and chart
- * colours. Import from here; never redefine the list in components.
+ * SSOT for all five daily check-in metrics — keys, display labels, scale edge labels, chart
+ * colours, and DIRECTION. `inverted` marks the metrics where a higher number is
+ * worse (stress): every piece of maths that scores a day — the wellness
+ * average, the post-check-in readout — reads it from here rather than
+ * hand-writing the exception, which is how one of them ends up telling a
+ * patient their worst day was their best.
+ * Import from here; never redefine the list in components.
  * Adding a new metric: edit here + the DB schema (lib/db/schema.ts) only.
  */
 export const CHECKIN_METRICS = [
-  { key: "sleep",  label: "Sleep quality", shortLabel: "Sleep",  lowLabel: "Poor",      highLabel: "Excellent", color: "var(--purple)" },
-  { key: "energy", label: "Energy level",  shortLabel: "Energy", lowLabel: "Drained",   highLabel: "Vibrant",   color: "var(--teal)" },
-  { key: "mood",   label: "Mood",          shortLabel: "Mood",   lowLabel: "Low",       highLabel: "Great",     color: "var(--gold)" },
-  { key: "focus",  label: "Focus",         shortLabel: "Focus",  lowLabel: "Scattered", highLabel: "Sharp",     color: "var(--teal-dark)" },
-  { key: "stress", label: "Stress level",  shortLabel: "Stress", lowLabel: "None",      highLabel: "High",      color: "var(--danger)" },
+  { key: "sleep",  label: "Sleep quality", shortLabel: "Sleep",  lowLabel: "Poor",      highLabel: "Excellent", color: "var(--purple)",    inverted: false },
+  { key: "energy", label: "Energy level",  shortLabel: "Energy", lowLabel: "Drained",   highLabel: "Vibrant",   color: "var(--teal)",      inverted: false },
+  { key: "mood",   label: "Mood",          shortLabel: "Mood",   lowLabel: "Low",       highLabel: "Great",     color: "var(--gold)",      inverted: false },
+  { key: "focus",  label: "Focus",         shortLabel: "Focus",  lowLabel: "Scattered", highLabel: "Sharp",     color: "var(--teal-dark)", inverted: false },
+  { key: "stress", label: "Stress level",  shortLabel: "Stress", lowLabel: "None",      highLabel: "High",      color: "var(--danger)",    inverted: true  },
 ] as const;
 
 export type MetricKey = (typeof CHECKIN_METRICS)[number]["key"];
@@ -32,6 +37,20 @@ export type MetricKey = (typeof CHECKIN_METRICS)[number]["key"];
 /** How many days of check-in history to fetch on the check-in page.
  *  Must be large enough to compute streaks accurately beyond the 100-day milestone. */
 export const CHECKIN_HISTORY_DAYS = 110;
+
+/**
+ * Days of history the post-check-in readout averages to form "your baseline".
+ * A week absorbs the weekday/weekend swing without being so long that a real
+ * shift is buried in it.
+ */
+export const CHECKIN_BASELINE_DAYS = 7;
+
+/**
+ * How far a metric must move off the baseline before the readout calls it out.
+ * On a 1–5 scale, half a point is the smallest move that is not just the noise
+ * of a patient rounding their own morning.
+ */
+export const CHECKIN_MOVE_THRESHOLD = 0.5;
 
 /** How many days of check-in history to display in the history list */
 export const CHECKIN_DISPLAY_DAYS = 30;
@@ -135,7 +154,7 @@ export const CHECKIN_CHAT_MAX_TURNS = 20;
 
 /** One-tap openers, so the patient never faces an empty box after checking in */
 export const CHECKIN_CHAT_STARTERS = [
-  "What does today's check-in say?",
+  "What's driving today's numbers?",
   "Why does my focus keep dipping?",
   "What should I try this week?",
 ] as const;

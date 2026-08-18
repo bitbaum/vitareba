@@ -11,7 +11,9 @@ import { formatDateISO, formatDateMonthDay, sentenceCase } from "@/lib/utils/for
 import { computeStreak, streakMessage } from "@/lib/domain/checkin";
 import { LoadingState } from "@/components/LoadingState";
 import { CheckinCoach } from "./CheckinCoach";
+import { CheckinReadout } from "./CheckinReadout";
 import { QuickBook } from "./QuickBook";
+import { computeCheckinReadout } from "@/lib/domain/checkin-readout";
 
 
 type CheckinData = { date: string; notes: string } & Record<MetricKey, number>;
@@ -129,6 +131,10 @@ export function CheckinForm({
   const inProgress = filledCount > 0 && !allFilled;
   const streak = computeStreak(history);
   const doneToday = saved || alreadyCheckedIn;
+  // Today's row comes from `history` (the save writes it there), so the
+  // reading is computed from what was stored, not from unsaved form state.
+  const todayRow = doneToday ? history.find((c) => c.date === today) : undefined;
+  const readout = todayRow ? computeCheckinReadout(todayRow, history) : null;
 
   if (loading) return <LoadingState />;
   if (loadError) return <div className={styles.emptyState}>Failed to load your check-in history. Please refresh the page.</div>;
@@ -158,7 +164,7 @@ export function CheckinForm({
                 </div>
               </div>
               <p className={checkinStyles.successBody}>
-                Each data point refines your pattern. {sentenceCase(clinician)} reviews your trend before every consultation — this is the raw material of your programme. Ask about it below, or take it straight to {clinician}.
+                {sentenceCase(clinician)} reviews this trend before every consultation. Read what today says below, ask about it, or take it straight to {clinician}.
               </p>
               <div className={checkinStyles.successLinks}>
                 <Link href={PORTAL_ROUTES.messages} className={checkinStyles.successLinkPrimary}>Message {clinician} →</Link>
@@ -175,6 +181,7 @@ export function CheckinForm({
               )}
             </div>
 
+            {readout && <CheckinReadout readout={readout} />}
             <CheckinCoach clinicianLabel={clinician} />
             <QuickBook clinicianLabel={clinician} clinicianId={clinicianId} />
           </>

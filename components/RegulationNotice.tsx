@@ -10,15 +10,46 @@ import { PORTAL_ROUTES } from "@/lib/config/routes";
  *    rule, the law is a warning not a wall — and this is the label telling you
  *    exactly what you were just warned about.
  */
+/** The same four states in one sentence each — the in-flow half of the notice. */
+const COMPACT_DETAIL: Record<string, string> = {
+  no_consent:
+    "This reads your health data with an AI provider, so it needs your explicit consent first (GDPR Art. 9) — timestamped, and withdrawable any time in your profile.",
+  ai_not_configured:
+    "No AI provider is connected yet — a technical gap, not a legal one. It runs as soon as the clinic sets one up.",
+  device_warning:
+    "Not a diagnosis, and not a CE-marked medical device — your clinician holds clinical responsibility.",
+  dpa_warning:
+    "This ran on an AI provider without a signed EU/CH data-processing agreement, with your consent.",
+};
+
 export function RegulationNotice({
   blockId,
   reason,
+  compact = false,
 }: {
   blockId: string;
   reason?: "no_consent" | "ai_not_configured" | "blocked" | "device_warning" | "dpa_warning";
+  /**
+   * One line instead of the full panel, for notices that sit INSIDE a working
+   * flow. The law still has to be stated where it bites — but a patient who
+   * came to look at their own data should meet a sentence and a link, not a
+   * page of statute. The full account is always one tap away on /regulation.
+   */
+  compact?: boolean;
 }) {
   const block = getRegulatoryBlock(blockId);
   if (!block) return null;
+
+  if (compact) {
+    return (
+      <p className={shared.legalNoticeInline} role="note">
+        <span aria-hidden="true">⚖</span> {COMPACT_DETAIL[reason ?? "blocked"] ?? block.statusDetail}{" "}
+        <a className={shared.legalNoticeLink} href={`${PORTAL_ROUTES.regulation}#${block.id}`}>
+          Why →
+        </a>
+      </p>
+    );
+  }
 
   const isWarning = reason === "device_warning" || reason === "dpa_warning";
 

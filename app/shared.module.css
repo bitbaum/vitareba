@@ -564,6 +564,17 @@
 
 /* ─── Legal-gate notice (HTTP 451 surfaces) ──────────────────────────────── */
 
+.legalNoticeInline {
+  font-size: 0.72rem;
+  line-height: 1.6;
+  color: var(--muted);
+  background: var(--gold-6);
+  border-left: 2px solid var(--gold-30);
+  border-radius: var(--radius-xs);
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 1rem;
+}
+
 .legalNotice {
   border: 1px solid var(--gold-30);
   background: var(--gold-6);

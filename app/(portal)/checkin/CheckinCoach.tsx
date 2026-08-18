@@ -107,11 +107,12 @@ export function CheckinCoach({ clinicianLabel }: { clinicianLabel: string }) {
     <div className={shared.card}>
       <p className={shared.cardTitle}>Talk it through</p>
       <p className={shared.formHint}>
-        Ask about what you just logged. It reads your check-ins, scores and goals — nothing else —
-        and hands anything clinical to {clinicianLabel}.
+        Ask what today&apos;s numbers mean. It reads your check-ins, scores and goals — nothing else —
+        cites the figures it reasons from, and sends anything clinical to {clinicianLabel}, who sees
+        the same data.
       </p>
 
-      {dpaWarning && <RegulationNotice blockId="cloud-ai-processing" reason="dpa_warning" />}
+      {dpaWarning && <RegulationNotice blockId="cloud-ai-processing" reason="dpa_warning" compact />}
 
       {turns.length > 0 && (
         <div className={`${shared.msgList} ${checkinStyles.coachList}`}>
@@ -132,7 +133,7 @@ export function CheckinCoach({ clinicianLabel }: { clinicianLabel: string }) {
 
       {gate && (
         <>
-          <RegulationNotice blockId={gate.blockId} reason={gate.code} />
+          <RegulationNotice blockId={gate.blockId} reason={gate.code} compact />
           {gate.code === "no_consent" && (
             <button
               type="button"
@@ -203,8 +204,9 @@ export function CheckinCoach({ clinicianLabel }: { clinicianLabel: string }) {
 
       {turns.length > 0 && (
         <p className={checkinStyles.coachDisclaimer}>
-          {sentenceCase(clinicianLabel)} is the one who diagnoses and treats — this is a reading of
-          your own tracked data, not medical advice.
+          {sentenceCase(clinicianLabel)} diagnoses and treats. Anything suggested here is a reading
+          of your own data to try and review with them — not medical advice, and never about
+          medication or supplements.
         </p>
       )}
     </div>

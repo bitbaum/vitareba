@@ -71,12 +71,12 @@ export function AiInsightCard() {
       <p className={shared.cardTitle}>AI insight</p>
       {insight ? (
         <>
-          {dpaWarning && <RegulationNotice blockId="cloud-ai-processing" reason="dpa_warning" />}
+          {dpaWarning && <RegulationNotice blockId="cloud-ai-processing" reason="dpa_warning" compact />}
           <p className={shared.aiOutput}>{insight}</p>
         </>
       ) : gate ? (
         <>
-          <RegulationNotice blockId={gate.blockId} reason={gate.code} />
+          <RegulationNotice blockId={gate.blockId} reason={gate.code} compact />
           {gate.code === "no_consent" && (
             <button
               type="button"

@@ -9,7 +9,7 @@ import {
   SPARKLINE_MID_THRESHOLD,
 } from "@/lib/config/admin";
 import { DAY_MS } from "@/lib/utils/format";
-import { CHECKIN_SCALE_MAX } from "@/lib/config/portal";
+import { CHECKIN_METRICS, CHECKIN_SCALE_MAX, CHECKIN_SCALE_MIN } from "@/lib/config/portal";
 import { BOOKING_STATUS, type BookingStatus } from "@/lib/config/booking-status";
 
 type CheckinRow = {
@@ -41,9 +41,24 @@ export type SignalResult = {
   urgency: number;
 };
 
-/** Wellness score per check-in day: 1–5 where 5 is best. Stress is inverted. */
+/**
+ * Wellness score per check-in day: 1–5 where 5 is best.
+ *
+ * Direction comes from CHECKIN_METRICS (`inverted`) rather than a hand-written
+ * exception for stress — add a sixth metric tomorrow and this keeps scoring it
+ * the way the config says it runs.
+ */
 export function wellnessAvg(c: CheckinRow): number {
-  return (c.sleep + c.energy + c.mood + c.focus + (CHECKIN_SCALE_MAX + 1 - c.stress)) / 5;
+  const total = CHECKIN_METRICS.reduce(
+    (sum, m) => sum + orient(c[m.key], m.inverted),
+    0
+  );
+  return total / CHECKIN_METRICS.length;
+}
+
+/** A raw 1–5 value as "higher is better", flipping the inverted metrics. */
+export function orient(value: number, inverted: boolean): number {
+  return inverted ? CHECKIN_SCALE_MIN + CHECKIN_SCALE_MAX - value : value;
 }
 
 export function computePatientSignal({

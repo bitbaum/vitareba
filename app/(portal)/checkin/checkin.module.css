@@ -212,6 +212,141 @@
   outline: none;
 }
 
+/* ── Today's reading ────────────────────────────────────────────────────── */
+
+.readoutTop {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.readoutScore {
+  display: flex;
+  align-items: baseline;
+  gap: 0.15rem;
+  background: var(--teal-8);
+  border-radius: var(--radius-lg);
+  padding: 0.5rem 0.85rem;
+  flex-shrink: 0;
+}
+
+.readoutOutOf {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.readoutBaseline {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 0.15rem;
+  line-height: 1.4;
+}
+
+.readoutHeadline {
+  font-size: 0.85rem;
+  color: var(--ink2);
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+}
+
+.readoutRows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.readoutRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.readoutRow:last-child {
+  border-bottom: none;
+}
+
+.readoutLabel {
+  font-size: 0.78rem;
+  color: var(--ink);
+  flex: 1;
+  min-width: 0;
+}
+
+.dots {
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.dot,
+.dotFilled {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: var(--muted-18);
+}
+
+.dotFilled {
+  background: var(--teal);
+}
+
+.readoutValue {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--ink);
+  min-width: 1ch;
+  text-align: right;
+}
+
+.deltaFlat,
+.deltaBetter,
+.deltaWorse {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  min-width: 3.4ch;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.deltaFlat {
+  color: var(--muted);
+}
+
+.deltaBetter {
+  color: var(--teal);
+}
+
+.deltaWorse {
+  color: var(--danger);
+}
+
+/* Screen-reader-only text (globals' .sr-only is not reachable from a module) */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 767px) {
+  /* The label already names the metric; the dots are the redundant half */
+  .dots {
+    display: none;
+  }
+}
+
 /* ── Post-check-in AI conversation ──────────────────────────────────────── */
 
 .coachList {
