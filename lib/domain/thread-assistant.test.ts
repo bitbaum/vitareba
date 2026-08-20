@@ -104,9 +104,20 @@ describe("runThreadAssistant", () => {
     mockLoadThread.mockResolvedValue(loaded([patient, doctor], [msg("m1", "patient-1", T1)]));
 
     const r = await runThreadAssistant("thread-1", "dr-a");
-    expect(r).toEqual({ status: "blocked", code: "no_consent" });
+    // consentIsYours: false — the UI must not offer this clinician an
+    // "I consent" button. Clicking it would record THEIR consent, leave the
+    // gate shut, and read as a broken button.
+    expect(r).toEqual({ status: "blocked", code: "no_consent", consentIsYours: false });
     expect(mockAiChat).not.toHaveBeenCalled();
     expect(mockAddParticipant).not.toHaveBeenCalled();
+  });
+
+  it("tells the patient the missing consent is theirs to give", async () => {
+    mockProfileFindFirst.mockResolvedValue({ aiConsentAt: null });
+    mockLoadThread.mockResolvedValue(loaded([patient, doctor], [msg("m1", "patient-1", T1)]));
+
+    const r = await runThreadAssistant("thread-1", "patient-1");
+    expect(r).toEqual({ status: "blocked", code: "no_consent", consentIsYours: true });
   });
 
   it("checks consent against the thread's patient, not the requester", async () => {

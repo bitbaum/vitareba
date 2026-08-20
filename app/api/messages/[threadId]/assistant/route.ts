@@ -48,7 +48,14 @@ export async function POST(
   switch (turn.status) {
     case "blocked":
       return NextResponse.json(
-        { success: false, code: turn.code, blockId: "cloud-ai-processing" },
+        {
+          success: false,
+          code: turn.code,
+          blockId: "cloud-ai-processing",
+          // Only meaningful for no_consent, and deliberately decided server-side:
+          // the client cannot tell whose consent the gate just checked.
+          ...(turn.code === "no_consent" ? { consentIsYours: turn.consentIsYours } : {}),
+        },
         { status: 451 }
       );
     case "not-found":

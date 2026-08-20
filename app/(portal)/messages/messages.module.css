@@ -95,26 +95,3 @@
   font-size: 0.7rem;
   letter-spacing: 0.06em;
 }
-
-/* ─── Thread assistant — same idiom as the admin side ────────────────────── */
-
-/* Secondary on purpose: asking the assistant is never the primary action in a
-   clinical thread — replying yourself is. */
-.assistantBtn {
-  composes: btnSecondary from "../portal.module.css";
-  align-self: flex-end;
-}
-
-/* Carries the legal outcome (no consent, no provider, unsigned DPA), so it
-   must read as information rather than an error. */
-.assistantNote {
-  margin-top: 0.5rem;
-  color: var(--muted);
-  font-size: 0.85rem;
-}
-
-.composeActions {
-  display: flex;
-  align-items: flex-end;
-  gap: 0.6rem;
-}
