@@ -1,0 +1,24 @@
+/* Secondary on purpose: asking the assistant is never the primary action in a
+   clinical thread — replying to the human is. */
+.btn {
+  composes: btnSecondary from "../app/shared.module.css";
+  composes: btnSm from "../app/shared.module.css";
+}
+
+.wrap {
+  margin-top: 0.75rem;
+}
+
+/* Carries an outcome, not a failure ("nothing to add", "provider unreachable"),
+   so it must read as information rather than an error. */
+.note {
+  margin-top: 0.5rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.consentBtn {
+  composes: btnPrimary from "../app/shared.module.css";
+  composes: btnSm from "../app/shared.module.css";
+  margin-top: 0.5rem;
+}

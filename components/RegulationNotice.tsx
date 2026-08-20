@@ -15,7 +15,13 @@ export function RegulationNotice({
   reason,
 }: {
   blockId: string;
-  reason?: "no_consent" | "ai_not_configured" | "blocked" | "device_warning" | "dpa_warning";
+  reason?:
+    | "no_consent"
+    | "no_patient_consent"
+    | "ai_not_configured"
+    | "blocked"
+    | "device_warning"
+    | "dpa_warning";
 }) {
   const block = getRegulatoryBlock(blockId);
   if (!block) return null;
@@ -25,6 +31,8 @@ export function RegulationNotice({
   const detail =
     reason === "no_consent"
       ? "It needs your explicit consent first (GDPR Art. 9). One click below records it — timestamped, withdrawable any time in your profile."
+      : reason === "no_patient_consent"
+        ? "This patient has not given explicit consent for AI processing of their health data (GDPR Art. 9). Consent is theirs alone to give — you cannot record it on their behalf. They can switch it on in their profile privacy settings."
       : reason === "ai_not_configured"
         ? "No AI provider is connected yet — a technical gap, not a legal one. Once the clinic sets one up, this runs (with a warning if the provider lacks an EU data-processing agreement)."
         : reason === "device_warning"

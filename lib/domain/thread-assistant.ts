@@ -58,7 +58,11 @@ const complete: CompleteFn = async ({ system, prompt, maxTokens }) => {
 export type AssistantTurn =
   | { status: "posted"; body: string }
   | { status: "skipped"; reason: string }
-  | { status: "blocked"; code: "ai_not_configured" | "no_consent" }
+  | { status: "blocked"; code: "ai_not_configured" }
+  // `consentIsYours` exists so the UI never offers "I consent" to someone whose
+  // consent is not the one being checked. A clinician clicking it would record
+  // their own consent, leave the gate shut, and look like a broken button.
+  | { status: "blocked"; code: "no_consent"; consentIsYours: boolean }
   | { status: "not-found" };
 
 /**
@@ -90,7 +94,13 @@ export async function runThreadAssistant(
     where: eq(profiles.userId, loaded.row.patientId),
     columns: { aiConsentAt: true },
   });
-  if (!profile?.aiConsentAt) return { status: "blocked", code: "no_consent" };
+  if (!profile?.aiConsentAt) {
+    return {
+      status: "blocked",
+      code: "no_consent",
+      consentIsYours: loaded.row.patientId === requesterId,
+    };
+  }
 
   // First use invites the assistant. visibleFrom defaults to now, so it cannot
   // read anything said before it was brought in.
