@@ -9,8 +9,8 @@ The platform has two parts:
 1. **Public marketing site** — multilingual (de/en/fr/it), lands at `/de/`, primary CTA is the Inflection Edge self-assessment overlay
 2. **Patient portal + admin panel** — authenticated, database-backed, at `/dashboard` (patients) and `/admin` (Manuel)
 
-**Stack:** Next.js 16 (App Router, `standalone` output) · TypeScript strict · Tailwind v4 · self-hosted PostgreSQL (`pg` driver) · Drizzle ORM · NextAuth 5 · Resend email · self-hosted on the Hetzner box ("bitbaum") behind Caddy, served at `vitareba.orangecat.ch` (`vitareba.ch` is the intended
-public domain but is not pointed yet — do not probe it). Scheduled jobs run via systemd timers / cron on the box; documents are stored on local disk and served only through an authenticated route.
+**Stack:** Next.js 16 (App Router, `standalone` output) · TypeScript strict · Tailwind v4 · self-hosted PostgreSQL (`pg` driver, database `vitareba` on Hetzner bitbaum) · Drizzle ORM · NextAuth 5 · Resend email · self-hosted on the Hetzner box ("bitbaum") behind Caddy, served at `vitareba.orangecat.ch` (`vitareba.ch` is the intended
+public domain but is not pointed yet — do not probe it). Neon was decommissioned 2026-06-12. A laptop `.env.local` naming `neon.tech` is leftover garbage, not production. Scheduled jobs run via systemd timers / cron on the box; documents are stored on local disk and served only through an authenticated route.
 
 ---
 
