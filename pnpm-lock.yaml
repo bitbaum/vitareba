@@ -45,8 +45,8 @@ importers:
         specifier: ^6.11.0
         version: 6.11.0
       threadkit:
-        specifier: github:maonakamoto/threadkit
-        version: https://codeload.github.com/maonakamoto/threadkit/tar.gz/82723a5183575155f4c50991a858eeae6af9bfa9
+        specifier: github:catomean/threadkit
+        version: https://codeload.github.com/catomean/threadkit/tar.gz/82723a5183575155f4c50991a858eeae6af9bfa9
       zod:
         specifier: ^4.3.6
         version: 4.3.6
@@ -3837,8 +3837,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  threadkit@https://codeload.github.com/maonakamoto/threadkit/tar.gz/82723a5183575155f4c50991a858eeae6af9bfa9:
-    resolution: {gitHosted: true, integrity: sha512-S3Y1J/eq/Eo7nT+gZY4r15+6LtP9Cva5Q2yfF1c+A955WywBFngJkHtWOVph1A40Uayl9tz12mnEi8ywYs/1Qg==, tarball: https://codeload.github.com/maonakamoto/threadkit/tar.gz/82723a5183575155f4c50991a858eeae6af9bfa9}
+  threadkit@https://codeload.github.com/catomean/threadkit/tar.gz/82723a5183575155f4c50991a858eeae6af9bfa9:
+    resolution: {gitHosted: true, integrity: sha512-S3Y1J/eq/Eo7nT+gZY4r15+6LtP9Cva5Q2yfF1c+A955WywBFngJkHtWOVph1A40Uayl9tz12mnEi8ywYs/1Qg==, tarball: https://codeload.github.com/catomean/threadkit/tar.gz/82723a5183575155f4c50991a858eeae6af9bfa9}
     version: 0.1.0
     engines: {node: '>=18'}
 
@@ -7639,7 +7639,7 @@ snapshots:
       commander: 2.20.3
       source-map-support: 0.5.21
 
-  threadkit@https://codeload.github.com/maonakamoto/threadkit/tar.gz/82723a5183575155f4c50991a858eeae6af9bfa9: {}
+  threadkit@https://codeload.github.com/catomean/threadkit/tar.gz/82723a5183575155f4c50991a858eeae6af9bfa9: {}
 
   tiny-invariant@1.3.3: {}
 
