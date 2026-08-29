@@ -824,10 +824,9 @@
 
 .mRow {
   display: grid;
-  grid-template-columns: minmax(9rem, 1.6fr) minmax(6rem, auto) minmax(5rem, auto) minmax(
-      6rem,
-      1fr
-    ) auto;
+  grid-template-columns:
+    minmax(9rem, 1.6fr) minmax(6rem, auto) minmax(5rem, auto) minmax(6rem, 1fr)
+    auto;
   align-items: baseline;
   gap: 0.5rem 1rem;
   padding: 0.6rem 0;

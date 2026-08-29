@@ -67,11 +67,9 @@ describe("grantClinicianByEmail", () => {
     mockUserFindFirst.mockResolvedValue({ id: PATIENT_ID, isClinician: false });
     const returning = vi.fn().mockResolvedValue([{ id: APPLICATION_ID }]);
     const tx = {
-      update: vi
-        .fn()
-        .mockReturnValue({
-          set: vi.fn().mockReturnValue({ where: vi.fn().mockResolvedValue(undefined) }),
-        }),
+      update: vi.fn().mockReturnValue({
+        set: vi.fn().mockReturnValue({ where: vi.fn().mockResolvedValue(undefined) }),
+      }),
       insert: vi.fn().mockReturnValue({ values: vi.fn().mockReturnValue({ returning }) }),
     };
     mockTransaction.mockImplementation(async (cb: (tx: unknown) => Promise<unknown>) => cb(tx));
@@ -95,11 +93,9 @@ describe("grantClinicianByEmail", () => {
 describe("revokeClinicianStatus", () => {
   it("refuses a user who is not currently a clinician", async () => {
     mockUpdate.mockReturnValue({
-      set: vi
-        .fn()
-        .mockReturnValue({
-          where: vi.fn().mockReturnValue({ returning: vi.fn().mockResolvedValue([]) }),
-        }),
+      set: vi.fn().mockReturnValue({
+        where: vi.fn().mockReturnValue({ returning: vi.fn().mockResolvedValue([]) }),
+      }),
     });
     const result = await revokeClinicianStatus(PATIENT_ID);
     expect(result.ok).toBe(false);
@@ -107,13 +103,11 @@ describe("revokeClinicianStatus", () => {
 
   it("flips isClinician to false when found", async () => {
     mockUpdate.mockReturnValue({
-      set: vi
-        .fn()
-        .mockReturnValue({
-          where: vi
-            .fn()
-            .mockReturnValue({ returning: vi.fn().mockResolvedValue([{ id: PATIENT_ID }]) }),
-        }),
+      set: vi.fn().mockReturnValue({
+        where: vi
+          .fn()
+          .mockReturnValue({ returning: vi.fn().mockResolvedValue([{ id: PATIENT_ID }]) }),
+      }),
     });
     const result = await revokeClinicianStatus(PATIENT_ID);
     expect(result).toEqual({ ok: true, id: PATIENT_ID });
