@@ -1,6 +1,9 @@
 {
   "name": "vitareba",
   "version": "0.1.0",
+  "engines": {
+    "node": ">=20"
+  },
   "packageManager": "pnpm@11.6.0",
   "private": true,
   "scripts": {
