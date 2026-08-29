@@ -23,7 +23,6 @@ import { PORTAL_ROUTES, ADMIN_ROUTES } from "@/lib/config/routes";
 import { getUnreadPatientIds, getUnreadThreadCount } from "@/lib/domain/messages";
 import { MarkSeen } from "@/components/admin/MarkSeen";
 
-
 function StatCard({
   label,
   value,
@@ -39,10 +38,10 @@ function StatCard({
     accent === "danger"
       ? styles.statCardValueDanger
       : accent === "warn"
-      ? styles.statCardValueWarn
-      : sub
-      ? styles.statCardValueWithSub
-      : styles.statCardValueNoSub;
+        ? styles.statCardValueWarn
+        : sub
+          ? styles.statCardValueWithSub
+          : styles.statCardValueNoSub;
   return (
     <div className={`${styles.card} ${styles.statCardPadded}`}>
       <p className={styles.statCardLabel}>{label}</p>
@@ -60,24 +59,24 @@ export default async function PatientsPage() {
 
   const [patients, unreadPatientIds, unreadThreadCount] = await Promise.all([
     db.query.users.findMany({
-    where: patientScope(),
-    with: {
-      profile: true,
-      programmeAssignment: true,
-      assessmentResults: {
-        orderBy: [desc(assessmentResults.completedAt)],
-        limit: 2,
+      where: patientScope(),
+      with: {
+        profile: true,
+        programmeAssignment: true,
+        assessmentResults: {
+          orderBy: [desc(assessmentResults.completedAt)],
+          limit: 2,
+        },
+        bookings: {
+          orderBy: [desc(bookings.createdAt)],
+          limit: 1,
+        },
+        dailyCheckins: {
+          orderBy: [desc(dailyCheckins.date)],
+          limit: SIGNAL_CHECKIN_WINDOW_DAYS,
+        },
       },
-      bookings: {
-        orderBy: [desc(bookings.createdAt)],
-        limit: 1,
-      },
-      dailyCheckins: {
-        orderBy: [desc(dailyCheckins.date)],
-        limit: SIGNAL_CHECKIN_WINDOW_DAYS,
-      },
-    },
-  }),
+    }),
     getUnreadPatientIds(session.user.id),
     getUnreadThreadCount(session.user.id),
   ]);
@@ -98,14 +97,17 @@ export default async function PatientsPage() {
       return { ...p, signal, reason, urgency };
     })
     .sort(
-      (a, b) =>
-        SIGNAL_SORT_ORDER[a.signal] - SIGNAL_SORT_ORDER[b.signal] ||
-        b.urgency - a.urgency
+      (a, b) => SIGNAL_SORT_ORDER[a.signal] - SIGNAL_SORT_ORDER[b.signal] || b.urgency - a.urgency,
     );
 
   // KPI counts — single pass over enriched patients
   const todayStr = formatDateISO(now);
-  const signalCounts: Record<PatientSignal, number> = { critical: 0, attention: 0, active: 0, new: 0 };
+  const signalCounts: Record<PatientSignal, number> = {
+    critical: 0,
+    attention: 0,
+    active: 0,
+    new: 0,
+  };
   let todayCheckinCount = 0;
   for (const p of enriched) {
     signalCounts[p.signal]++;
@@ -126,7 +128,9 @@ export default async function PatientsPage() {
       <h1 className={styles.pageTitle}>
         <em>Patients</em>
       </h1>
-      <p className={styles.pageSub}>{patients.length} registered patient{patients.length !== 1 ? "s" : ""}</p>
+      <p className={styles.pageSub}>
+        {patients.length} registered patient{patients.length !== 1 ? "s" : ""}
+      </p>
 
       {patients.length > 0 && (
         <div className={styles.statsGrid}>
@@ -178,7 +182,7 @@ export default async function PatientsPage() {
               {enriched.map((p) => {
                 const latest = p.assessmentResults[0];
                 const sortedCheckins = [...p.dailyCheckins].sort((a, b) =>
-                  b.date.localeCompare(a.date)
+                  b.date.localeCompare(a.date),
                 );
                 const lastCheckin = sortedCheckins[0];
                 const checkinMap = new Map(p.dailyCheckins.map((c) => [c.date, c]));
@@ -192,7 +196,8 @@ export default async function PatientsPage() {
                       <span className={styles.signalBadge} data-signal={p.signal}>
                         {SIGNAL_LABELS[p.signal]}
                       </span>
-                      {(p.signal === PATIENT_SIGNAL.critical || p.signal === PATIENT_SIGNAL.attention) && (
+                      {(p.signal === PATIENT_SIGNAL.critical ||
+                        p.signal === PATIENT_SIGNAL.attention) && (
                         <div className={styles.signalReason}>{p.reason}</div>
                       )}
                     </td>
@@ -206,7 +211,9 @@ export default async function PatientsPage() {
                     </td>
 
                     {/* Last check-in */}
-                    <td className={`${styles.cellNowrapSm}${lastCheckin ? "" : ` ${styles.cellMuted}`}`}>
+                    <td
+                      className={`${styles.cellNowrapSm}${lastCheckin ? "" : ` ${styles.cellMuted}`}`}
+                    >
                       {lastCheckin ? relativeDate(lastCheckin.date, now) : "Never"}
                     </td>
 
@@ -232,7 +239,9 @@ export default async function PatientsPage() {
                     <td>
                       {latest ? (
                         <div>
-                          <span className={`${styles.scoreChip} ${scoreClass(latest.overallScore)}`}>
+                          <span
+                            className={`${styles.scoreChip} ${scoreClass(latest.overallScore)}`}
+                          >
                             {latest.overallScore}
                           </span>
                           <div className={styles.scoreVerdict}>
@@ -271,13 +280,20 @@ export default async function PatientsPage() {
                     {/* Unread message indicator */}
                     <td className={styles.tdCenter}>
                       {hasUnread && (
-                        <span className={styles.unreadDot} role="img" aria-label="Unread message from patient" />
+                        <span
+                          className={styles.unreadDot}
+                          role="img"
+                          aria-label="Unread message from patient"
+                        />
                       )}
                     </td>
 
                     {/* View */}
                     <td>
-                      <Link href={`${ADMIN_ROUTES.patients}/${p.id}`} className={`${styles.cellLink} ${styles.stretchedLink}`}>
+                      <Link
+                        href={`${ADMIN_ROUTES.patients}/${p.id}`}
+                        className={`${styles.cellLink} ${styles.stretchedLink}`}
+                      >
                         View →
                       </Link>
                     </td>

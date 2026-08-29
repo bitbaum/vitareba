@@ -17,7 +17,7 @@
  */
 export const TEAM_MEMBERS = [
   { key: "manuel", initials: "MR", name: "Manuel Riegner" },
-  { key: "george",  initials: "GE", name: "George" },
+  { key: "george", initials: "GE", name: "George" },
 ] as const;
 
 export type TeamMemberKey = (typeof TEAM_MEMBERS)[number]["key"];

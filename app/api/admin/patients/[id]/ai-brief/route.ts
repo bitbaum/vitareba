@@ -27,7 +27,7 @@ export async function POST(_req: Request, { params }: RouteContext) {
   if (!isAiConfigured()) {
     return NextResponse.json(
       { success: false, code: "ai_not_configured", blockId: "cloud-ai-processing" },
-      { status: 451 }
+      { status: 451 },
     );
   }
 
@@ -46,7 +46,7 @@ export async function POST(_req: Request, { params }: RouteContext) {
   if (!profile?.aiConsentAt) {
     return NextResponse.json(
       { success: false, code: "no_consent", blockId: "cloud-ai-processing" },
-      { status: 451 }
+      { status: 451 },
     );
   }
 
@@ -57,7 +57,10 @@ export async function POST(_req: Request, { params }: RouteContext) {
     if (!result.ok) {
       return NextResponse.json({ success: false, error: result.error }, { status: 502 });
     }
-    return NextResponse.json({ success: true, data: { brief: result.text, dpaWarning: !isAiDpaSigned() } });
+    return NextResponse.json({
+      success: true,
+      data: { brief: result.text, dpaWarning: !isAiDpaSigned() },
+    });
   } catch (err) {
     console.error("[api/ai-brief] failed:", err);
     return serviceUnavailable();

@@ -2,8 +2,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { mockRequireCron, mockRunCronEmails } = vi.hoisted(() => ({
-  mockRequireCron:    vi.fn(),
-  mockRunCronEmails:  vi.fn(),
+  mockRequireCron: vi.fn(),
+  mockRunCronEmails: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/guards", () => ({ requireCron: mockRequireCron }));

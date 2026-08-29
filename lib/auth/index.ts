@@ -68,7 +68,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
             name: user.name,
             role: user.role,
             emailVerified: user.emailVerified,
-          } as { id: string; email: string; name: string | null; role: string; emailVerified: Date | null };
+          } as {
+            id: string;
+            email: string;
+            name: string | null;
+            role: string;
+            emailVerified: Date | null;
+          };
         },
       }),
     ],
@@ -78,18 +84,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
 
         if (user) {
           token.id = user.id;
-          token.emailVerified =
-            (user as { emailVerified?: Date | null }).emailVerified ?? null;
+          token.emailVerified = (user as { emailVerified?: Date | null }).emailVerified ?? null;
 
           const existingRole = ((user as { role?: string }).role ?? USER_ROLE.patient) as UserRole;
           const correctRole = resolveRole(user.email ?? "", existingRole);
           // Promote-only sync: env-listed admins get their DB row lifted so
           // the rest of the app agrees; DB-granted roles are never demoted.
           if (correctRole !== existingRole && user.id) {
-            await db
-              .update(users)
-              .set({ role: correctRole })
-              .where(eq(users.id, user.id));
+            await db.update(users).set({ role: correctRole }).where(eq(users.id, user.id));
           }
           token.role = correctRole;
           token.checkedAt = now;
@@ -121,8 +123,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
       session({ session, token }) {
         session.user.id = token.id as string;
         session.user.role = token.role as UserRole;
-        session.user.emailVerified =
-          (token.emailVerified as Date | null | undefined) ?? null;
+        session.user.emailVerified = (token.emailVerified as Date | null | undefined) ?? null;
         return session;
       },
     },

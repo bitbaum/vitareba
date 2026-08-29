@@ -5,10 +5,10 @@ const DIM_KEYS = ["health", "mindset", "relationships", "career"] as const;
 type DimKey = (typeof DIM_KEYS)[number];
 
 const DIM_META: Record<DimKey, { icon: string }> = {
-  health:        { icon: "💚" },
-  mindset:       { icon: "🧠" },
+  health: { icon: "💚" },
+  mindset: { icon: "🧠" },
   relationships: { icon: "🤝" },
-  career:        { icon: "🚀" },
+  career: { icon: "🚀" },
 };
 
 type DimItem = { name: string; text: string };
@@ -22,17 +22,13 @@ export default async function SylClock() {
       <div className="section-inner">
         <div className={styles.grid}>
           <div>
-            <div className={`eyebrow ${styles.eyebrowDim}`}>
-              {t("eyebrow")}
-            </div>
+            <div className={`eyebrow ${styles.eyebrowDim}`}>{t("eyebrow")}</div>
             <h2 className="sec-title sec-title-light">
               {t("heading")}
               <br />
               <em>{t("headingEm")}</em>
             </h2>
-            <p className={styles.body}>
-              {t("body")}
-            </p>
+            <p className={styles.body}>{t("body")}</p>
           </div>
 
           <div>

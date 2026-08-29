@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { mockRequireSession, mockUpdate } = vi.hoisted(() => ({
   mockRequireSession: vi.fn(),
-  mockUpdate:         vi.fn(),
+  mockUpdate: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/guards", () => ({ requireSession: mockRequireSession }));
@@ -15,7 +15,7 @@ vi.mock("@/lib/db", () => ({
 import { POST } from "./route";
 
 const SESSION = { session: { user: { id: "user-1", role: "patient" } }, error: null };
-const UNAUTH  = { session: null, error: new Response(null, { status: 401 }) };
+const UNAUTH = { session: null, error: new Response(null, { status: 401 }) };
 
 const VALID_LEAD_ID = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11";
 
@@ -50,11 +50,13 @@ describe("POST /api/assessment-leads/convert", () => {
   });
 
   it("returns 400 when body is not valid JSON", async () => {
-    const res = await POST(new Request("https://example.com/api/assessment-leads/convert", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: "{ bad json",
-    }));
+    const res = await POST(
+      new Request("https://example.com/api/assessment-leads/convert", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: "{ bad json",
+      }),
+    );
     expect(res.status).toBe(400);
   });
 

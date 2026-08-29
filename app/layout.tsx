@@ -76,11 +76,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // Locale is injected by proxy.ts middleware from the URL pathname so crawlers
   // see the correct <html lang> on every request, regardless of cookies.
   const headersList = await headers();
@@ -104,11 +100,7 @@ export default async function RootLayout({
       addressLocality: COMPANY.address.city,
       addressCountry: "CH",
     },
-    medicalSpecialty: [
-      "Psychiatry",
-      "Metabolic Medicine",
-      "Longevity Medicine",
-    ],
+    medicalSpecialty: ["Psychiatry", "Metabolic Medicine", "Longevity Medicine"],
   };
 
   return (

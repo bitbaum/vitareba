@@ -6,13 +6,17 @@ import { requireAdmin } from "@/lib/auth/guards";
 import { serviceUnavailable, badRequest } from "@/lib/utils/api-response";
 import { UUID_RE } from "@/lib/utils/validate";
 import { db } from "@/lib/db";
-import { users, assessmentResults, bookings, documents, threads, threadMessages } from "@/lib/db/schema";
+import {
+  users,
+  assessmentResults,
+  bookings,
+  documents,
+  threads,
+  threadMessages,
+} from "@/lib/db/schema";
 import { toAdminPatientView } from "@/lib/db/user-view";
 
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const guard = await requireAdmin();
   if (guard.error) return guard.error;
 

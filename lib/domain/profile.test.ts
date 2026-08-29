@@ -1,5 +1,9 @@
 /// <reference types="vitest/globals" />
-import { computeProfileCompleteness, profileCompletenessColor, profileUpdateSchema } from "./profile";
+import {
+  computeProfileCompleteness,
+  profileCompletenessColor,
+  profileUpdateSchema,
+} from "./profile";
 
 // ─── profileUpdateSchema ──────────────────────────────────────────────────────
 
@@ -37,7 +41,9 @@ describe("profileUpdateSchema", () => {
   });
 
   it("rejects an invalid exerciseFrequency value", () => {
-    expect(profileUpdateSchema.safeParse({ exerciseFrequency: "daily_morning" }).success).toBe(false);
+    expect(profileUpdateSchema.safeParse({ exerciseFrequency: "daily_morning" }).success).toBe(
+      false,
+    );
   });
 
   it("accepts a full valid payload", () => {

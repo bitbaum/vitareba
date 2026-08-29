@@ -3,8 +3,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { mockRequireSession, mockFindFirst, mockReadLocal } = vi.hoisted(() => ({
   mockRequireSession: vi.fn(),
-  mockFindFirst:      vi.fn(),
-  mockReadLocal:      vi.fn(),
+  mockFindFirst: vi.fn(),
+  mockReadLocal: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/guards", () => ({ requireSession: mockRequireSession }));
@@ -25,12 +25,12 @@ import { GET } from "./route";
 const OWNER_ID = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11";
 const OTHER_ID = "b1ffcd88-8d1a-4fa7-aa5c-5aa8ac270b22";
 const ADMIN_ID = "c2aade77-7e2b-4b96-99b4-49b79b160c33";
-const DOC_ID   = "d3bbef66-6f3c-4ca5-88c3-38c68c050d44";
+const DOC_ID = "d3bbef66-6f3c-4ca5-88c3-38c68c050d44";
 
 const OWNER_SESSION = { session: { user: { id: OWNER_ID, role: "patient" } }, error: null };
 const OTHER_SESSION = { session: { user: { id: OTHER_ID, role: "patient" } }, error: null };
-const ADMIN_SESSION = { session: { user: { id: ADMIN_ID, role: "admin"   } }, error: null };
-const UNAUTH        = { session: null, error: new Response(null, { status: 401 }) };
+const ADMIN_SESSION = { session: { user: { id: ADMIN_ID, role: "admin" } }, error: null };
+const UNAUTH = { session: null, error: new Response(null, { status: 401 }) };
 
 const LOCAL_DOC = {
   userId: OWNER_ID,

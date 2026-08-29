@@ -64,13 +64,13 @@ describe("clinician identity discipline", () => {
     // A config key shaped like `clinicianName` is the exact defect this test
     // exists for: it reads as an answer to "who is the doctor", and config
     // cannot know that.
-    const offenders = FILES.filter((file) => file.startsWith(join("lib", "config"))).filter((file) =>
-      /\bclinician(Full|Display|Primary)?Name\s*:/.test(readFileSync(file, "utf8"))
+    const offenders = FILES.filter((file) => file.startsWith(join("lib", "config"))).filter(
+      (file) => /\bclinician(Full|Display|Primary)?Name\s*:/.test(readFileSync(file, "utf8")),
     );
 
     expect(
       offenders,
-      "Config cannot answer 'who treats this patient' — resolve it with clinicianLabelFor(patientId) and fall back to COMPANY.clinicianFallback."
+      "Config cannot answer 'who treats this patient' — resolve it with clinicianLabelFor(patientId) and fall back to COMPANY.clinicianFallback.",
     ).toEqual([]);
   });
 
@@ -81,17 +81,19 @@ describe("clinician identity discipline", () => {
 
     const offenders = FILES.filter(
       // Test fixtures name people on purpose — that is what a fixture is.
-      (file) => !NAME_ALLOWLIST.has(file) && !/\.test\.tsx?$/.test(file)
+      (file) => !NAME_ALLOWLIST.has(file) && !/\.test\.tsx?$/.test(file),
     ).flatMap((file) => {
       const source = stripComments(readFileSync(file, "utf8"));
       return names
-        .filter((name) => new RegExp(`\\b${name.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\b`).test(source))
+        .filter((name) =>
+          new RegExp(`\\b${name.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\b`).test(source),
+        )
         .map((name) => `${file}: "${name}"`);
     });
 
     expect(
       offenders,
-      "A clinician's name in shared copy is a guess shown as a fact — resolve it with clinicianLabelFor(patientId)."
+      "A clinician's name in shared copy is a guess shown as a fact — resolve it with clinicianLabelFor(patientId).",
     ).toEqual([]);
   });
 });

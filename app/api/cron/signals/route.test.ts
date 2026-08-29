@@ -108,9 +108,7 @@ describe("cron/signals route", () => {
         bookings: [
           { id: "booking-1", status: "confirmed", createdAt: new Date("2026-04-20T09:00:00.000Z") },
         ],
-        dailyCheckins: [
-          { date: "2026-05-01", sleep: 4, energy: 4, mood: 4, focus: 4, stress: 2 },
-        ],
+        dailyCheckins: [{ date: "2026-05-01", sleep: 4, energy: 4, mood: 4, focus: 4, stress: 2 }],
         clinicalGoals: [
           {
             id: "goal-1",
@@ -140,7 +138,7 @@ describe("cron/signals route", () => {
       expect.objectContaining({
         to: "alice@example.com",
         subject: "Goal achieved: Improve assessment score",
-      })
+      }),
     );
 
     expect(mockUpdate).toHaveBeenCalledTimes(1);
@@ -152,7 +150,7 @@ describe("cron/signals route", () => {
         current: 80,
         updatedAt: new Date("2026-05-02T12:00:00.000Z"),
         completedAt: new Date("2026-05-02T12:00:00.000Z"),
-      })
+      }),
     );
 
     expect(mockInsert).toHaveBeenCalledTimes(1);

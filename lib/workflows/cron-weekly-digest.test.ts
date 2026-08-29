@@ -44,7 +44,9 @@ describe("runCronWeeklyDigest", () => {
         name: "Alice",
         email: "alice@example.com",
         profile: { digestOptOut: false },
-        assessmentResults: [{ overallScore: 72, completedAt: new Date("2026-05-01T09:00:00.000Z") }],
+        assessmentResults: [
+          { overallScore: 72, completedAt: new Date("2026-05-01T09:00:00.000Z") },
+        ],
         bookings: [{ status: "confirmed", createdAt: new Date("2026-05-01T09:00:00.000Z") }],
         clinicalGoals: [{ title: "Focus", baseline: 40, current: 60, target: 80 }],
       },
@@ -53,14 +55,32 @@ describe("runCronWeeklyDigest", () => {
         name: "Bob",
         email: "bob@example.com",
         profile: { digestOptOut: true },
-        assessmentResults: [{ overallScore: 60, completedAt: new Date("2026-04-20T09:00:00.000Z") }],
+        assessmentResults: [
+          { overallScore: 60, completedAt: new Date("2026-04-20T09:00:00.000Z") },
+        ],
         bookings: [],
         clinicalGoals: [],
       },
     ]);
     mockSelectWhere.mockResolvedValue([
-      { userId: "patient-send", date: "2026-05-02", sleep: 4, energy: 4, mood: 4, focus: 4, stress: 2 },
-      { userId: "patient-send", date: "2026-05-01", sleep: 3, energy: 3, mood: 3, focus: 3, stress: 3 },
+      {
+        userId: "patient-send",
+        date: "2026-05-02",
+        sleep: 4,
+        energy: 4,
+        mood: 4,
+        focus: 4,
+        stress: 2,
+      },
+      {
+        userId: "patient-send",
+        date: "2026-05-01",
+        sleep: 3,
+        energy: 3,
+        mood: 3,
+        focus: 3,
+        stress: 3,
+      },
     ]);
     mockSendEmail.mockRejectedValue(new Error("provider down"));
 
@@ -76,7 +96,7 @@ describe("runCronWeeklyDigest", () => {
       expect.objectContaining({
         to: "alice@example.com",
         subject: "Your Vita weekly summary",
-      })
+      }),
     );
   });
 });

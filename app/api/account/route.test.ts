@@ -79,11 +79,13 @@ describe("POST /api/account", () => {
   });
 
   it("returns 400 for an invalid email address", async () => {
-    const res = await POST(new Request("https://example.com/api/account", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: "not-an-email", password: "SecurePass123!" }),
-    }));
+    const res = await POST(
+      new Request("https://example.com/api/account", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: "not-an-email", password: "SecurePass123!" }),
+      }),
+    );
     expect(res.status).toBe(400);
     const json = await res.json();
     expect(json.success).toBe(false);
@@ -91,11 +93,13 @@ describe("POST /api/account", () => {
   });
 
   it("returns 400 when password is too short", async () => {
-    const res = await POST(new Request("https://example.com/api/account", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: "alice@example.com", password: "short" }), // < 8 chars
-    }));
+    const res = await POST(
+      new Request("https://example.com/api/account", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: "alice@example.com", password: "short" }), // < 8 chars
+      }),
+    );
     expect(res.status).toBe(400);
     const json = await res.json();
     expect(json.error.password).toBeDefined();
@@ -147,7 +151,7 @@ describe("POST /api/account", () => {
     expect(mockRunAfterResponse).toHaveBeenCalledTimes(1);
     await mockRunAfterResponse.mock.calls[0][0]();
     expect(mockEnqueueWelcomeEmails).toHaveBeenCalledWith(
-      expect.objectContaining({ userId: "user-1" })
+      expect.objectContaining({ userId: "user-1" }),
     );
   });
 });

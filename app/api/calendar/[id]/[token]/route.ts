@@ -66,7 +66,6 @@ export async function GET(_req: Request, { params }: RouteContext) {
           // cancelled appointment lingers in the clinician's calendar forever.
           BOOKING_STATUS.cancelled,
         ]),
-
       ),
       columns: { id: true, scheduledAt: true, status: true, bookingType: true, createdAt: true },
       with: { user: { columns: { name: true, email: true } } },
@@ -91,7 +90,7 @@ export async function GET(_req: Request, { params }: RouteContext) {
         clinician: clinicianContact,
         sessionLabel: BOOKING_TYPE_CONFIG[b.bookingType]?.label ?? "Consultation",
         createdAt: b.createdAt,
-      })
+      }),
     );
 
   const body = buildIcsFeed(events, `${COMPANY.shortName} — ${clinician.name ?? "Clinic"}`);

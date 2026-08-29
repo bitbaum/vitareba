@@ -1,5 +1,15 @@
 /// <reference types="vitest/globals" />
-import { scoreColor, getVerdict, getVerdictName, getInterpretation, getInterpretationKey, VERDICT_TIERS, DIMENSIONS, QUESTIONS, computeScores } from "./data";
+import {
+  scoreColor,
+  getVerdict,
+  getVerdictName,
+  getInterpretation,
+  getInterpretationKey,
+  VERDICT_TIERS,
+  DIMENSIONS,
+  QUESTIONS,
+  computeScores,
+} from "./data";
 
 // ─── scoreColor ───────────────────────────────────────────────────────────────
 
@@ -193,7 +203,7 @@ describe("computeScores", () => {
   it("returns overallScore as mean of dimension scores", () => {
     const { scores, overallScore } = computeScores(allFives);
     const expected = Math.round(
-      Object.values(scores).reduce((a, b) => a + b, 0) / DIMENSIONS.length
+      Object.values(scores).reduce((a, b) => a + b, 0) / DIMENSIONS.length,
     );
     expect(overallScore).toBe(expected);
   });

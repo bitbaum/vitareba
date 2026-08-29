@@ -6,22 +6,29 @@ import styles from "../portal.module.css";
 import checkinStyles from "./checkin.module.css";
 import { CheckinTrendChart } from "@/components/portal/CheckinTrendChart";
 import { PortalPageHeader } from "@/components/portal/PortalPageHeader";
-import { CHECKIN_SCALE_MIN, CHECKIN_SCALE_MAX, SAVED_FEEDBACK_MS, SAVING_LABEL, SAVED_LABEL, CHECKIN_METRICS, CHECKIN_NOTES_MAX_LENGTH, CHECKIN_DISPLAY_DAYS, type MetricKey } from "@/lib/config/portal";
+import {
+  CHECKIN_SCALE_MIN,
+  CHECKIN_SCALE_MAX,
+  SAVED_FEEDBACK_MS,
+  SAVING_LABEL,
+  SAVED_LABEL,
+  CHECKIN_METRICS,
+  CHECKIN_NOTES_MAX_LENGTH,
+  CHECKIN_DISPLAY_DAYS,
+  type MetricKey,
+} from "@/lib/config/portal";
 import { PORTAL_ROUTES } from "@/lib/config/routes";
 import { formatDateISO, formatDateMonthDay, sentenceCase } from "@/lib/utils/format";
 import { computeStreak, streakMessage } from "@/lib/domain/checkin";
 import { LoadingState } from "@/components/LoadingState";
 
-
 type CheckinData = { date: string; notes: string } & Record<MetricKey, number>;
 
 type StoredCheckin = Omit<CheckinData, "notes"> & { notes: string | null; id: string };
 
-
-
 const SCALE = Array.from(
   { length: CHECKIN_SCALE_MAX - CHECKIN_SCALE_MIN + 1 },
-  (_, i) => i + CHECKIN_SCALE_MIN
+  (_, i) => i + CHECKIN_SCALE_MIN,
 );
 
 function todayISO() {
@@ -110,7 +117,10 @@ export function CheckinForm({ clinician }: { clinician: string }) {
 
   const chartData = history.map((c) => ({
     date: formatDateMonthDay(c.date + "T00:00:00"),
-    ...Object.fromEntries(CHECKIN_METRICS.map(({ key }) => [key, c[key]])) as Record<MetricKey, number>,
+    ...(Object.fromEntries(CHECKIN_METRICS.map(({ key }) => [key, c[key]])) as Record<
+      MetricKey,
+      number
+    >),
   }));
 
   const filledCount = CHECKIN_METRICS.filter(({ key }) => form[key] > 0).length;
@@ -119,12 +129,21 @@ export function CheckinForm({ clinician }: { clinician: string }) {
   const streak = computeStreak(history);
 
   if (loading) return <LoadingState />;
-  if (loadError) return <div className={styles.emptyState}>Failed to load your check-in history. Please refresh the page.</div>;
+  if (loadError)
+    return (
+      <div className={styles.emptyState}>
+        Failed to load your check-in history. Please refresh the page.
+      </div>
+    );
 
   return (
     <div>
       <PortalPageHeader
-        title={<>Daily <em>Check-in</em></>}
+        title={
+          <>
+            Daily <em>Check-in</em>
+          </>
+        }
         subtitle="Track your wellbeing — takes 30 seconds"
       />
 
@@ -140,11 +159,16 @@ export function CheckinForm({ clinician }: { clinician: string }) {
               </div>
             </div>
             <p className={checkinStyles.successBody}>
-              Each data point refines your pattern. {sentenceCase(clinician)} reviews your trend before every consultation — this is the raw material of your programme.
+              Each data point refines your pattern. {sentenceCase(clinician)} reviews your trend
+              before every consultation — this is the raw material of your programme.
             </p>
             <div className={checkinStyles.successLinks}>
-              <Link href={PORTAL_ROUTES.dashboard} className={checkinStyles.successLinkPrimary}>Back to dashboard →</Link>
-              <Link href={PORTAL_ROUTES.assessments} className={checkinStyles.successLinkMuted}>View full results</Link>
+              <Link href={PORTAL_ROUTES.dashboard} className={checkinStyles.successLinkPrimary}>
+                Back to dashboard →
+              </Link>
+              <Link href={PORTAL_ROUTES.assessments} className={checkinStyles.successLinkMuted}>
+                View full results
+              </Link>
             </div>
           </div>
         )}
@@ -160,7 +184,10 @@ export function CheckinForm({ clinician }: { clinician: string }) {
 
           <div className={checkinStyles.metrics}>
             {CHECKIN_METRICS.map(({ key, label, lowLabel, highLabel }) => (
-              <div key={key} className={`${checkinStyles.metricRow}${inProgress && form[key] === 0 ? ` ${checkinStyles.metricRowEmpty}` : ""}`}>
+              <div
+                key={key}
+                className={`${checkinStyles.metricRow}${inProgress && form[key] === 0 ? ` ${checkinStyles.metricRowEmpty}` : ""}`}
+              >
                 <div className={checkinStyles.metricLabel}>{label}</div>
                 <div className={checkinStyles.scaleWrap}>
                   <span className={checkinStyles.scaleEdge}>{lowLabel}</span>
@@ -203,11 +230,18 @@ export function CheckinForm({ clinician }: { clinician: string }) {
             className={`${styles.btnPrimary} ${styles.btnBlock}`}
             disabled={saving || !allFilled}
           >
-            {saving ? SAVING_LABEL : saved ? SAVED_LABEL : alreadyCheckedIn ? "Update check-in" : "Save check-in"}
+            {saving
+              ? SAVING_LABEL
+              : saved
+                ? SAVED_LABEL
+                : alreadyCheckedIn
+                  ? "Update check-in"
+                  : "Save check-in"}
           </button>
           {!allFilled && !saving && (
             <p className={checkinStyles.submitHint}>
-              {filledCount} / {CHECKIN_METRICS.length} metrics filled — select a value for each one above
+              {filledCount} / {CHECKIN_METRICS.length} metrics filled — select a value for each one
+              above
             </p>
           )}
         </form>
@@ -244,16 +278,13 @@ export function CheckinForm({ clinician }: { clinician: string }) {
                         </span>
                       ))}
                     </div>
-                    {c.notes && (
-                      <p className={checkinStyles.historyNote}>{c.notes}</p>
-                    )}
+                    {c.notes && <p className={checkinStyles.historyNote}>{c.notes}</p>}
                   </div>
                 ))}
               </div>
             </div>
           );
         })()}
-
       </div>
     </div>
   );

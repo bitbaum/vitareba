@@ -63,13 +63,11 @@ export function buildWelcomeEmailRows({
 // ─── DB-coupled functions (thin wrappers) ─────────────────────────────────────
 
 export async function enqueueAssessmentEmails(
-  params: Parameters<typeof buildAssessmentEmailRows>[0]
+  params: Parameters<typeof buildAssessmentEmailRows>[0],
 ) {
   await db.insert(emailQueue).values(buildAssessmentEmailRows(params));
 }
 
-export async function enqueueWelcomeEmails(
-  params: Parameters<typeof buildWelcomeEmailRows>[0]
-) {
+export async function enqueueWelcomeEmails(params: Parameters<typeof buildWelcomeEmailRows>[0]) {
   await db.insert(emailQueue).values(buildWelcomeEmailRows(params));
 }

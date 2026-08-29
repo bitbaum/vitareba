@@ -29,7 +29,9 @@
 
 .contactLink {
   font-size: 0.75rem;
-  color: var(--white-55); /* white-40 measured 3.82:1 on the footer — under the 4.5 AA floor for 12px text */
+  color: var(
+    --white-55
+  ); /* white-40 measured 3.82:1 on the footer — under the 4.5 AA floor for 12px text */
   text-decoration: none;
   transition: color var(--transition-fast);
   width: fit-content;

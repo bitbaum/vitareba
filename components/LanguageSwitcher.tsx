@@ -45,8 +45,20 @@ export function LanguageSwitcher() {
         aria-expanded={open}
       >
         {LOCALE_LABELS[locale]}
-        <svg className={`${styles.chevron} ${open ? styles.chevronOpen : ""}`} width="10" height="10" viewBox="0 0 10 10" fill="none">
-          <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <svg
+          className={`${styles.chevron} ${open ? styles.chevronOpen : ""}`}
+          width="10"
+          height="10"
+          viewBox="0 0 10 10"
+          fill="none"
+        >
+          <path
+            d="M2 3.5L5 6.5L8 3.5"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
       </button>
       {open && (

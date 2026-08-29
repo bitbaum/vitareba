@@ -41,7 +41,11 @@ vi.mock("@/lib/domain/notifications", () => ({
 
 vi.mock("@/lib/config/company", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/config/company")>();
-  return { ...actual, getAdminEmails: mockGetAdminEmails, PORTAL_URL: "https://portal.example.com" };
+  return {
+    ...actual,
+    getAdminEmails: mockGetAdminEmails,
+    PORTAL_URL: "https://portal.example.com",
+  };
 });
 
 import { runCronSignals } from "./cron-signals";
@@ -132,7 +136,10 @@ describe("runCronSignals", () => {
     const result = await runCronSignals(NOW);
     expect(result).toEqual({ success: true, alerts: 1, goalsCompleted: 0, checked: 1 });
     expect(mockSendEmail).toHaveBeenCalledWith(
-      expect.objectContaining({ to: "admin@example.com", subject: expect.stringContaining("Critical patient") })
+      expect.objectContaining({
+        to: "admin@example.com",
+        subject: expect.stringContaining("Critical patient"),
+      }),
     );
     expect(mockInsert).toHaveBeenCalledWith(profiles);
   });
@@ -171,9 +178,7 @@ describe("runCronSignals", () => {
 
   it("counts alert only when at least one admin email succeeds", async () => {
     mockGetAdminEmails.mockReturnValue(["admin1@example.com", "admin2@example.com"]);
-    mockSendEmail
-      .mockResolvedValueOnce(undefined)
-      .mockRejectedValueOnce(new Error("inbox full"));
+    mockSendEmail.mockResolvedValueOnce(undefined).mockRejectedValueOnce(new Error("inbox full"));
     mockFindMany.mockResolvedValue([criticalPatient()]);
     const result = await runCronSignals(NOW);
     expect(result).toEqual({ success: true, alerts: 1, goalsCompleted: 0, checked: 1 });
@@ -206,10 +211,17 @@ describe("runCronSignals", () => {
       activePatient({
         profile: { lastKnownSignal: "active" },
         dailyCheckins: [{ date: "2026-05-06", sleep: 4, energy: 4, mood: 3, focus: 4, stress: 2 }],
-        clinicalGoals: [{
-          id: "goal-1", title: "Improve mood", metric: "mood",
-          baseline: 0, current: 20, target: 80, completedAt: null,
-        }],
+        clinicalGoals: [
+          {
+            id: "goal-1",
+            title: "Improve mood",
+            metric: "mood",
+            baseline: 0,
+            current: 20,
+            target: 80,
+            completedAt: null,
+          },
+        ],
       }),
     ]);
     const result = await runCronSignals(NOW);
@@ -229,10 +241,17 @@ describe("runCronSignals", () => {
       activePatient({
         profile: { lastKnownSignal: "active" },
         dailyCheckins: [{ date: "2026-05-06", sleep: 4, energy: 4, mood: 5, focus: 4, stress: 2 }],
-        clinicalGoals: [{
-          id: "goal-mood", title: "Optimise mood", metric: "mood",
-          baseline: 0, current: 50, target: 100, completedAt: null,
-        }],
+        clinicalGoals: [
+          {
+            id: "goal-mood",
+            title: "Optimise mood",
+            metric: "mood",
+            baseline: 0,
+            current: 50,
+            target: 100,
+            completedAt: null,
+          },
+        ],
       }),
     ]);
     const result = await runCronSignals(NOW);
@@ -244,10 +263,16 @@ describe("runCronSignals", () => {
     // admin email + patient email
     expect(mockSendEmail).toHaveBeenCalledTimes(2);
     expect(mockSendEmail).toHaveBeenCalledWith(
-      expect.objectContaining({ to: "admin@example.com", subject: expect.stringContaining("Goal achieved") })
+      expect.objectContaining({
+        to: "admin@example.com",
+        subject: expect.stringContaining("Goal achieved"),
+      }),
     );
     expect(mockSendEmail).toHaveBeenCalledWith(
-      expect.objectContaining({ to: "bob@example.com", subject: expect.stringContaining("Goal achieved") })
+      expect.objectContaining({
+        to: "bob@example.com",
+        subject: expect.stringContaining("Goal achieved"),
+      }),
     );
   });
 
@@ -256,11 +281,20 @@ describe("runCronSignals", () => {
     mockFindMany.mockResolvedValue([
       activePatient({
         profile: { lastKnownSignal: "active" },
-        assessmentResults: [{ overallScore: 80, completedAt: new Date("2026-05-01T09:00:00.000Z") }],
-        clinicalGoals: [{
-          id: "goal-assess", title: "Reach target score", metric: ASSESSMENT_GOAL_METRIC_KEY,
-          baseline: 50, current: 70, target: 80, completedAt: null,
-        }],
+        assessmentResults: [
+          { overallScore: 80, completedAt: new Date("2026-05-01T09:00:00.000Z") },
+        ],
+        clinicalGoals: [
+          {
+            id: "goal-assess",
+            title: "Reach target score",
+            metric: ASSESSMENT_GOAL_METRIC_KEY,
+            baseline: 50,
+            current: 70,
+            target: 80,
+            completedAt: null,
+          },
+        ],
       }),
     ]);
     const result = await runCronSignals(NOW);
@@ -276,10 +310,17 @@ describe("runCronSignals", () => {
       activePatient({
         profile: { lastKnownSignal: "active" },
         dailyCheckins: [{ date: "2026-05-06", sleep: 4, energy: 4, mood: 3, focus: 4, stress: 2 }],
-        clinicalGoals: [{
-          id: "goal-same", title: "Mood", metric: "mood",
-          baseline: 0, current: 50, target: 80, completedAt: null,
-        }],
+        clinicalGoals: [
+          {
+            id: "goal-same",
+            title: "Mood",
+            metric: "mood",
+            baseline: 0,
+            current: 50,
+            target: 80,
+            completedAt: null,
+          },
+        ],
       }),
     ]);
     const result = await runCronSignals(NOW);
@@ -291,10 +332,17 @@ describe("runCronSignals", () => {
     mockFindMany.mockResolvedValue([
       activePatient({
         profile: { lastKnownSignal: "active" },
-        clinicalGoals: [{
-          id: "goal-no-metric", title: "Manual goal", metric: null,
-          baseline: 0, current: 50, target: 100, completedAt: null,
-        }],
+        clinicalGoals: [
+          {
+            id: "goal-no-metric",
+            title: "Manual goal",
+            metric: null,
+            baseline: 0,
+            current: 50,
+            target: 100,
+            completedAt: null,
+          },
+        ],
       }),
     ]);
     const result = await runCronSignals(NOW);
@@ -306,10 +354,17 @@ describe("runCronSignals", () => {
     mockFindMany.mockResolvedValue([
       activePatient({
         assessmentResults: [],
-        clinicalGoals: [{
-          id: "goal-no-data", title: "Improve score", metric: ASSESSMENT_GOAL_METRIC_KEY,
-          baseline: 50, current: 60, target: 80, completedAt: null,
-        }],
+        clinicalGoals: [
+          {
+            id: "goal-no-data",
+            title: "Improve score",
+            metric: ASSESSMENT_GOAL_METRIC_KEY,
+            baseline: 50,
+            current: 60,
+            target: 80,
+            completedAt: null,
+          },
+        ],
       }),
     ]);
     const result = await runCronSignals(NOW);
@@ -319,7 +374,7 @@ describe("runCronSignals", () => {
 
   it("processes multiple patients independently", async () => {
     mockFindMany.mockResolvedValue([
-      criticalPatient(),                                          // null → critical → alert
+      criticalPatient(), // null → critical → alert
       activePatient({ profile: { lastKnownSignal: "active" } }), // active → active → no change
     ]);
     const result = await runCronSignals(NOW);

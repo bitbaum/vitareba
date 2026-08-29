@@ -42,7 +42,7 @@ export async function createNotification(input: {
  *  the fan-out sites (thread participants, care team) are few. */
 export async function createNotificationForMany(
   userIds: string[],
-  input: { type: NotificationType; title: string; body?: string; href?: string }
+  input: { type: NotificationType; title: string; body?: string; href?: string },
 ): Promise<void> {
   await Promise.all(userIds.map((userId) => createNotification({ userId, ...input })));
 }
@@ -55,7 +55,7 @@ export type ListNotificationsResult = {
 /** Newest first, cursor-paginated on createdAt. */
 export async function listNotifications(
   userId: string,
-  opts: { limit?: number; cursor?: string } = {}
+  opts: { limit?: number; cursor?: string } = {},
 ): Promise<ListNotificationsResult> {
   const limit = opts.limit ?? NOTIFICATION_PAGE_SIZE;
   const cursorDate = opts.cursor ? new Date(opts.cursor) : null;
@@ -66,7 +66,7 @@ export async function listNotifications(
     .where(
       cursorDate
         ? and(eq(notifications.userId, userId), lt(notifications.createdAt, cursorDate))
-        : eq(notifications.userId, userId)
+        : eq(notifications.userId, userId),
     )
     .orderBy(desc(notifications.createdAt))
     .limit(limit + 1);

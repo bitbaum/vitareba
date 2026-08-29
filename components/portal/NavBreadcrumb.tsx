@@ -25,7 +25,5 @@ export function NavBreadcrumb() {
   const label = getLabel(pathname);
   if (!label) return null;
 
-  return (
-    <span className={styles.breadcrumb}>{label}</span>
-  );
+  return <span className={styles.breadcrumb}>{label}</span>;
 }

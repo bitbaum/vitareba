@@ -36,9 +36,7 @@ export function CheckinCard({
             ))}
           </div>
         )}
-        {todayNote && (
-          <p className={styles.checkinNotePreview}>{todayNote}</p>
-        )}
+        {todayNote && <p className={styles.checkinNotePreview}>{todayNote}</p>}
       </div>
       <Link href={PORTAL_ROUTES.checkin} className={`${styles.cardLinkMuted} ${styles.noWrap}`}>
         Edit →

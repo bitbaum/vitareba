@@ -1,12 +1,7 @@
 /// <reference types="vitest/globals" />
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const {
-  mockTokenFindFirst,
-  mockUpdate,
-  mockDelete,
-  mockHashPassword,
-} = vi.hoisted(() => ({
+const { mockTokenFindFirst, mockUpdate, mockDelete, mockHashPassword } = vi.hoisted(() => ({
   mockTokenFindFirst: vi.fn(),
   mockUpdate: vi.fn(),
   mockDelete: vi.fn(),
@@ -67,20 +62,24 @@ describe("POST /api/auth/reset-password", () => {
   });
 
   it("returns 400 when the token is missing from the request body", async () => {
-    const res = await POST(new Request("https://example.com/api/auth/reset-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: "alice@example.com", password: "NewSecurePass123!" }),
-    }));
+    const res = await POST(
+      new Request("https://example.com/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: "alice@example.com", password: "NewSecurePass123!" }),
+      }),
+    );
     expect(res.status).toBe(400);
   });
 
   it("returns 400 when the password is too short", async () => {
-    const res = await POST(new Request("https://example.com/api/auth/reset-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...VALID_BODY, password: "short" }), // < 8 chars
-    }));
+    const res = await POST(
+      new Request("https://example.com/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...VALID_BODY, password: "short" }), // < 8 chars
+      }),
+    );
     expect(res.status).toBe(400);
   });
 

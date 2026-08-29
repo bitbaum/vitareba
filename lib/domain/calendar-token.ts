@@ -19,7 +19,10 @@ function secret(): string {
 }
 
 export function calendarToken(userId: string): string {
-  return createHmac("sha256", secret()).update(`calendar:${userId}`).digest("base64url").slice(0, 32);
+  return createHmac("sha256", secret())
+    .update(`calendar:${userId}`)
+    .digest("base64url")
+    .slice(0, 32);
 }
 
 export function verifyCalendarToken(userId: string, token: string): boolean {

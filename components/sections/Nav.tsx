@@ -101,7 +101,9 @@ export default function Nav() {
           <div className={styles.megaItem}>
             <button
               type="button"
-              ref={(el) => { triggerRefs.current.programmes = el; }}
+              ref={(el) => {
+                triggerRefs.current.programmes = el;
+              }}
               className={styles.megaTrigger}
               aria-expanded={openMega === "programmes"}
               aria-controls="mega-programmes"
@@ -109,13 +111,25 @@ export default function Nav() {
             >
               {t("programmes")}
               <svg className={styles.chevron} width="9" height="9" viewBox="0 0 9 9" fill="none">
-                <path d="M1.5 3L4.5 6L7.5 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                <path
+                  d="M1.5 3L4.5 6L7.5 3"
+                  stroke="currentColor"
+                  strokeWidth="1.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
             <div
               id="mega-programmes"
-              ref={(el) => { panelRefs.current.programmes = el; }}
-              className={openMega === "programmes" ? `${styles.megaPanel} ${styles.megaPanelOpen}` : styles.megaPanel}
+              ref={(el) => {
+                panelRefs.current.programmes = el;
+              }}
+              className={
+                openMega === "programmes"
+                  ? `${styles.megaPanel} ${styles.megaPanelOpen}`
+                  : styles.megaPanel
+              }
             >
               <div className={styles.megaPanelInner}>
                 <div className={styles.megaCards}>
@@ -132,7 +146,11 @@ export default function Nav() {
                   ))}
                 </div>
                 <div className={styles.megaPanelFooter}>
-                  <a href="#pillars" className={styles.megaFooterLink} onClick={() => setOpenMega(null)}>
+                  <a
+                    href="#pillars"
+                    className={styles.megaFooterLink}
+                    onClick={() => setOpenMega(null)}
+                  >
                     {mega.programmesFooter}
                   </a>
                 </div>
@@ -144,7 +162,9 @@ export default function Nav() {
           <div className={styles.megaItem}>
             <button
               type="button"
-              ref={(el) => { triggerRefs.current.approach = el; }}
+              ref={(el) => {
+                triggerRefs.current.approach = el;
+              }}
               className={styles.megaTrigger}
               aria-expanded={openMega === "approach"}
               aria-controls="mega-approach"
@@ -152,13 +172,25 @@ export default function Nav() {
             >
               {t("approach")}
               <svg className={styles.chevron} width="9" height="9" viewBox="0 0 9 9" fill="none">
-                <path d="M1.5 3L4.5 6L7.5 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                <path
+                  d="M1.5 3L4.5 6L7.5 3"
+                  stroke="currentColor"
+                  strokeWidth="1.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
             <div
               id="mega-approach"
-              ref={(el) => { panelRefs.current.approach = el; }}
-              className={openMega === "approach" ? `${styles.megaPanel} ${styles.megaPanelOpen}` : styles.megaPanel}
+              ref={(el) => {
+                panelRefs.current.approach = el;
+              }}
+              className={
+                openMega === "approach"
+                  ? `${styles.megaPanel} ${styles.megaPanelOpen}`
+                  : styles.megaPanel
+              }
             >
               <div className={styles.megaPanelInner}>
                 <div className={styles.megaList}>
@@ -181,7 +213,9 @@ export default function Nav() {
           <div className={styles.megaItem}>
             <button
               type="button"
-              ref={(el) => { triggerRefs.current.diagnostics = el; }}
+              ref={(el) => {
+                triggerRefs.current.diagnostics = el;
+              }}
               className={styles.megaTrigger}
               aria-expanded={openMega === "diagnostics"}
               aria-controls="mega-diagnostics"
@@ -189,13 +223,25 @@ export default function Nav() {
             >
               {t("diagnostics")}
               <svg className={styles.chevron} width="9" height="9" viewBox="0 0 9 9" fill="none">
-                <path d="M1.5 3L4.5 6L7.5 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                <path
+                  d="M1.5 3L4.5 6L7.5 3"
+                  stroke="currentColor"
+                  strokeWidth="1.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
             <div
               id="mega-diagnostics"
-              ref={(el) => { panelRefs.current.diagnostics = el; }}
-              className={openMega === "diagnostics" ? `${styles.megaPanel} ${styles.megaPanelOpen}` : styles.megaPanel}
+              ref={(el) => {
+                panelRefs.current.diagnostics = el;
+              }}
+              className={
+                openMega === "diagnostics"
+                  ? `${styles.megaPanel} ${styles.megaPanelOpen}`
+                  : styles.megaPanel
+              }
             >
               <div className={styles.megaPanelInner}>
                 <div className={styles.megaList}>
@@ -216,10 +262,18 @@ export default function Nav() {
         </div>
 
         {/* Simple links */}
-        <a href="#longevity" className={styles.navLink}>{t("longevity")}</a>
-        <a href="#pricing"   className={styles.navLink}>{t("pricing")}</a>
-        <a href="#team"      className={styles.navLink}>{t("team")}</a>
-        <Link href="/blog"   className={styles.navLink}>{t("blog")}</Link>
+        <a href="#longevity" className={styles.navLink}>
+          {t("longevity")}
+        </a>
+        <a href="#pricing" className={styles.navLink}>
+          {t("pricing")}
+        </a>
+        <a href="#team" className={styles.navLink}>
+          {t("team")}
+        </a>
+        <Link href="/blog" className={styles.navLink}>
+          {t("blog")}
+        </Link>
       </div>
 
       <div className={styles.navActions}>
@@ -235,9 +289,19 @@ export default function Nav() {
         >
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
             {menuOpen ? (
-              <path d="M4 4L16 16M16 4L4 16" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              <path
+                d="M4 4L16 16M16 4L4 16"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+              />
             ) : (
-              <path d="M3 5.5H17M3 10H17M3 14.5H17" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              <path
+                d="M3 5.5H17M3 10H17M3 14.5H17"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+              />
             )}
           </svg>
         </button>
@@ -255,7 +319,12 @@ export default function Nav() {
               {t("blog")}
             </Link>
           </div>
-          <NavAuthActions session={session} variant="mobile" onNavigate={closeMenu} labels={authLabels} />
+          <NavAuthActions
+            session={session}
+            variant="mobile"
+            onNavigate={closeMenu}
+            labels={authLabels}
+          />
         </div>
       )}
     </nav>

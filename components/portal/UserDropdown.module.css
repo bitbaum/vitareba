@@ -16,7 +16,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background var(--transition-fast), border-color var(--transition-fast);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast);
   font-family: var(--font-dm-sans), sans-serif;
   flex-shrink: 0;
 }

@@ -31,10 +31,7 @@ export default async function Programs() {
             const prog = items[key];
             if (!prog) return null;
             return (
-              <div
-                key={key}
-                className={`${styles.prog} ${meta.featured ? styles.featured : ""}`}
-              >
+              <div key={key} className={`${styles.prog} ${meta.featured ? styles.featured : ""}`}>
                 {prog.badge && <div className={styles.badge}>{prog.badge}</div>}
                 <div className={`${styles.name}${meta.featured ? ` ${styles.nameFeatured}` : ""}`}>
                   {meta.label}

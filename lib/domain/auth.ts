@@ -34,7 +34,8 @@ export const loginSchema = z.object({
 
 export const registerSchema = z.object({
   email: emailField({ invalidMessage: "Invalid email address" }),
-  password: z.string()
+  password: z
+    .string()
     .min(PASSWORD_MIN_LENGTH, `Password must be at least ${PASSWORD_MIN_LENGTH} characters`)
     .max(PASSWORD_MAX_LENGTH),
 });
@@ -76,7 +77,7 @@ export type SessionUserRow = {
 export function shouldRevalidateSession(
   token: SessionToken,
   now: number,
-  intervalMs: number = SESSION_REVALIDATE_MS
+  intervalMs: number = SESSION_REVALIDATE_MS,
 ): boolean {
   const checkedAt = typeof token.checkedAt === "number" ? token.checkedAt : null;
   if (checkedAt === null) return true;
@@ -102,7 +103,7 @@ export function revalidatedSessionToken<T extends SessionToken>(
   token: T,
   row: SessionUserRow | null | undefined,
   now: number,
-  lookupFailed = false
+  lookupFailed = false,
 ): T | null {
   if (lookupFailed) return token;
   if (!row) return null;
@@ -134,10 +135,7 @@ export function verifyPassword(password: string, hash: string): Promise<boolean>
  * start with `//` (protocol-relative) or `/\` (Windows-style). Anything else
  * (full URLs, missing leading slash, empty/null) collapses to the fallback.
  */
-export function sanitizeReturnTo(
-  input: string | null | undefined,
-  fallback: string
-): string {
+export function sanitizeReturnTo(input: string | null | undefined, fallback: string): string {
   if (typeof input !== "string" || input.length === 0) return fallback;
   if (input[0] !== "/") return fallback;
   if (input.startsWith("//") || input.startsWith("/\\")) return fallback;
@@ -147,10 +145,7 @@ export function sanitizeReturnTo(
 // ─── Brute-force protection ───────────────────────────────────────────────────
 
 /** True when the user is currently locked out from logging in. */
-export function isUserLocked(
-  user: { lockedUntil: Date | null },
-  now: Date = new Date()
-): boolean {
+export function isUserLocked(user: { lockedUntil: Date | null }, now: Date = new Date()): boolean {
   return user.lockedUntil !== null && user.lockedUntil.getTime() > now.getTime();
 }
 
@@ -163,7 +158,7 @@ export function isUserLocked(
 export function nextLoginAttemptState(
   current: { failedLoginAttempts: number },
   success: boolean,
-  now: Date = new Date()
+  now: Date = new Date(),
 ): { failedLoginAttempts: number; lockedUntil: Date | null } {
   if (success) return { failedLoginAttempts: 0, lockedUntil: null };
   const next = current.failedLoginAttempts + 1;

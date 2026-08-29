@@ -97,25 +97,21 @@ export default function AdminDocumentsPage() {
           </h1>
           <p className={styles.pageSub}>Patient documents and lab results</p>
         </div>
-        <button
-          type="button"
-          onClick={() => setShowForm(!showForm)}
-          className={styles.headerBtn}
-        >
+        <button type="button" onClick={() => setShowForm(!showForm)} className={styles.headerBtn}>
           + Add document
         </button>
       </div>
 
-      {success && (
-        <div className={styles.successBanner}>Document added successfully.</div>
-      )}
+      {success && <div className={styles.successBanner}>Document added successfully.</div>}
 
       {showForm && (
         <div className={styles.cardMb}>
           <p className={styles.sectionEyebrow}>New document</p>
           <form onSubmit={handleSubmit} className={styles.formStack}>
             <div className={styles.formField}>
-              <label className={styles.formLabel} htmlFor="doc-patient">Patient</label>
+              <label className={styles.formLabel} htmlFor="doc-patient">
+                Patient
+              </label>
               <select
                 id="doc-patient"
                 value={patientId}
@@ -133,7 +129,9 @@ export default function AdminDocumentsPage() {
             </div>
             <div className={styles.formGrid2}>
               <div className={styles.formField}>
-                <label className={styles.formLabel} htmlFor="doc-title">Title</label>
+                <label className={styles.formLabel} htmlFor="doc-title">
+                  Title
+                </label>
                 <input
                   id="doc-title"
                   className={styles.formInput}
@@ -144,7 +142,9 @@ export default function AdminDocumentsPage() {
                 />
               </div>
               <div className={styles.formField}>
-                <label className={styles.formLabel} htmlFor="doc-url">File URL</label>
+                <label className={styles.formLabel} htmlFor="doc-url">
+                  File URL
+                </label>
                 <input
                   id="doc-url"
                   className={styles.formInput}
@@ -158,18 +158,10 @@ export default function AdminDocumentsPage() {
             </div>
             {error && <p className={styles.formError}>{error}</p>}
             <div className={styles.formRow}>
-              <button
-                type="submit"
-                className={styles.formRowSubmit}
-                disabled={submitting}
-              >
+              <button type="submit" className={styles.formRowSubmit} disabled={submitting}>
                 {submitting ? "Adding…" : "Add document"}
               </button>
-              <button
-                type="button"
-                onClick={() => setShowForm(false)}
-                className={styles.cancelBtn}
-              >
+              <button type="button" onClick={() => setShowForm(false)} className={styles.cancelBtn}>
                 Cancel
               </button>
             </div>
@@ -201,7 +193,10 @@ export default function AdminDocumentsPage() {
               {documents.map((doc) => (
                 <tr key={doc.id}>
                   <td>
-                    <Link href={`${ADMIN_ROUTES.patients}/${doc.user.id}`} className={styles.linkPlain}>
+                    <Link
+                      href={`${ADMIN_ROUTES.patients}/${doc.user.id}`}
+                      className={styles.linkPlain}
+                    >
                       <div className={styles.cellName}>
                         {doc.user.name ?? <span className={styles.cellMuted}>No name</span>}
                       </div>
@@ -209,12 +204,8 @@ export default function AdminDocumentsPage() {
                     </Link>
                   </td>
                   <td className={styles.cellInk2}>{doc.title}</td>
-                  <td className={styles.cellSub}>
-                    {doc.mimeType ?? "—"}
-                  </td>
-                  <td className={styles.cellNowrap}>
-                    {formatDateShort(doc.createdAt)}
-                  </td>
+                  <td className={styles.cellSub}>{doc.mimeType ?? "—"}</td>
+                  <td className={styles.cellNowrap}>{formatDateShort(doc.createdAt)}</td>
                   <td>
                     <a
                       href={documentFileUrl(doc.id)}

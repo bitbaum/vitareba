@@ -26,9 +26,7 @@ export function ProfileCompletenessBar({
     <div className={styles.profileBar}>
       <div className={styles.profileBarHeader}>
         <p className={shared.cardTitleFlush}>Intake profile</p>
-        <span className={`${styles.profileBarPct} ${profileCompletenessClass(pct)}`}>
-          {pct}%
-        </span>
+        <span className={`${styles.profileBarPct} ${profileCompletenessClass(pct)}`}>{pct}%</span>
       </div>
       <div className={styles.profileBarTrack}>
         <div className={shared.progressFill} style={{ width: `${pct}%` }} />
@@ -37,9 +35,8 @@ export function ProfileCompletenessBar({
         {pct < PROFILE_COMPLETENESS_LOW_PCT
           ? `A full profile lets ${clinician} arrive at your consultation already knowing your context — not spending the first 20 minutes gathering basics.`
           : pct < PROFILE_COMPLETENESS_HIGH_PCT
-          ? `Almost there — a complete profile means ${clinician} can design your programme before you even walk in the door.`
-          : `Just a few fields left — complete your profile so ${clinician} has the full picture.`}
-        {" "}
+            ? `Almost there — a complete profile means ${clinician} can design your programme before you even walk in the door.`
+            : `Just a few fields left — complete your profile so ${clinician} has the full picture.`}{" "}
         <Link href={PORTAL_ROUTES.profile} className={styles.profileBarLink}>
           Complete profile →
         </Link>
@@ -49,7 +46,8 @@ export function ProfileCompletenessBar({
           Missing:{" "}
           {shown.map((f, i) => (
             <span key={f} className={styles.profileBarMissingField}>
-              {f}{i < shown.length - 1 || remainder > 0 ? "," : ""}
+              {f}
+              {i < shown.length - 1 || remainder > 0 ? "," : ""}
             </span>
           ))}
           {remainder > 0 && <span> and {remainder} more</span>}

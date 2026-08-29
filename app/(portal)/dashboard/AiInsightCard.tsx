@@ -91,7 +91,8 @@ export function AiInsightCard() {
       ) : (
         <>
           <p className={shared.formHint}>
-            A short AI reflection on your recent check-ins, scores and goals — your data, read back to you.
+            A short AI reflection on your recent check-ins, scores and goals — your data, read back
+            to you.
           </p>
           <button
             type="button"

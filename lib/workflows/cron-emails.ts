@@ -35,7 +35,7 @@ export async function runCronEmails(now: Date = new Date()): Promise<CronEmailsR
     console.error(
       process.env.RESEND_API_KEY
         ? "[cron/emails] sender is a sandbox address that reaches nobody — queue left pending"
-        : "[cron/emails] RESEND_API_KEY not configured — queue left pending"
+        : "[cron/emails] RESEND_API_KEY not configured — queue left pending",
     );
     return { success: false, error: "Email provider not configured" };
   }
@@ -43,10 +43,7 @@ export async function runCronEmails(now: Date = new Date()): Promise<CronEmailsR
   let pending;
   try {
     pending = await db.query.emailQueue.findMany({
-      where: and(
-        eq(emailQueue.status, EMAIL_QUEUE_STATUS.pending),
-        lte(emailQueue.sendAt, now)
-      ),
+      where: and(eq(emailQueue.status, EMAIL_QUEUE_STATUS.pending), lte(emailQueue.sendAt, now)),
       with: { user: { columns: { name: true, email: true } } },
     });
   } catch (err) {
@@ -105,7 +102,11 @@ export async function runCronEmails(now: Date = new Date()): Promise<CronEmailsR
         const existingBooking = await db.query.bookings.findFirst({
           where: and(
             eq(bookings.userId, item.userId),
-            inArray(bookings.status, [BOOKING_STATUS.pending, BOOKING_STATUS.confirmed, BOOKING_STATUS.attended])
+            inArray(bookings.status, [
+              BOOKING_STATUS.pending,
+              BOOKING_STATUS.confirmed,
+              BOOKING_STATUS.attended,
+            ]),
           ),
           columns: { id: true },
         });
@@ -118,7 +119,12 @@ export async function runCronEmails(now: Date = new Date()): Promise<CronEmailsR
           continue;
         }
         const overallScore = payload.overallScore as number;
-        html = assessmentBookingEmail({ patientName, overallScore, portalUrl: PORTAL_URL, clinician });
+        html = assessmentBookingEmail({
+          patientName,
+          overallScore,
+          portalUrl: PORTAL_URL,
+          clinician,
+        });
         subject = `Book a consultation with ${clinician}`;
       } else if (item.templateKey === EMAIL_TEMPLATE.welcomePatient) {
         html = welcomePatientEmail({ patientName, portalUrl: PORTAL_URL, clinician });
@@ -127,7 +133,10 @@ export async function runCronEmails(now: Date = new Date()): Promise<CronEmailsR
         const existingProfile = await db.query.profiles.findFirst({
           where: eq(profiles.userId, item.userId),
         });
-        if (computeProfileCompleteness(existingProfile as Record<string, unknown> | null) >= GOAL_PROGRESS_COMPLETE_PCT) {
+        if (
+          computeProfileCompleteness(existingProfile as Record<string, unknown> | null) >=
+          GOAL_PROGRESS_COMPLETE_PCT
+        ) {
           await db
             .update(emailQueue)
             .set({ status: EMAIL_QUEUE_STATUS.sent, sentAt: now })

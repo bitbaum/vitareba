@@ -28,7 +28,14 @@ export type PhaseKey = (typeof PHASE_ENUM_VALUES)[number];
 
 export const PROGRAMME_CONFIG: Record<
   ProgrammeKey,
-  { label: string; description: string; duration: string; price: string; featured: boolean; btnStyle: "primary" | "outline" }
+  {
+    label: string;
+    description: string;
+    duration: string;
+    price: string;
+    featured: boolean;
+    btnStyle: "primary" | "outline";
+  }
 > = {
   edge_diagnostic: {
     label: "Edge Diagnostic",
@@ -59,10 +66,7 @@ export const PROGRAMME_CONFIG: Record<
   },
 };
 
-export const PHASE_CONFIG: Record<
-  PhaseKey,
-  { label: string; description: string }
-> = {
+export const PHASE_CONFIG: Record<PhaseKey, { label: string; description: string }> = {
   intake: {
     label: "Intake",
     description:

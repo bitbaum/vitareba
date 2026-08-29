@@ -75,11 +75,7 @@ function getInitials(name: string): string {
   return "?";
 }
 
-function ProfileHero({
-  apiData,
-}: {
-  apiData: ProfileApiData;
-}) {
+function ProfileHero({ apiData }: { apiData: ProfileApiData }) {
   const name = apiData.name;
   const email = apiData.email;
   const image = apiData.image;
@@ -87,7 +83,7 @@ function ProfileHero({
   const city = apiData.city;
   const memberSince = apiData.memberSince;
 
-  const initials = name ? getInitials(name) : (email ? email[0].toUpperCase() : "?");
+  const initials = name ? getInitials(name) : email ? email[0].toUpperCase() : "?";
   const meta = [occupation, city].filter(Boolean).join(" · ");
 
   return (
@@ -97,9 +93,7 @@ function ProfileHero({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={image} alt={name ?? "Avatar"} className={profileStyles.avatarImg} />
         ) : (
-          <div className={profileStyles.avatarInitials}>
-            {initials}
-          </div>
+          <div className={profileStyles.avatarInitials}>{initials}</div>
         )}
       </div>
       <div className={profileStyles.heroInfo}>
@@ -111,9 +105,7 @@ function ProfileHero({
         {email && <p className={profileStyles.heroEmail}>{email}</p>}
         {meta && <p className={profileStyles.heroMeta}>{meta}</p>}
         {memberSince && (
-          <p className={profileStyles.heroSince}>
-            Member since {formatDateLong(memberSince)}
-          </p>
+          <p className={profileStyles.heroSince}>Member since {formatDateLong(memberSince)}</p>
         )}
       </div>
     </div>
@@ -132,7 +124,11 @@ export function ProfileForm({ clinician = COMPANY.clinicianFallback }: { clinici
   const load = useCallback(async () => {
     try {
       const res = await fetch("/api/profile");
-      if (!res.ok) { setLoadError(true); setLoading(false); return; }
+      if (!res.ok) {
+        setLoadError(true);
+        setLoading(false);
+        return;
+      }
       const json = await res.json();
       const data: ProfileApiData = json.data ?? {};
       setApiData(data);
@@ -162,7 +158,9 @@ export function ProfileForm({ clinician = COMPANY.clinicianFallback }: { clinici
     }
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -198,40 +196,54 @@ export function ProfileForm({ clinician = COMPANY.clinicianFallback }: { clinici
   }
 
   function set(field: keyof ProfileData) {
-    return (
-      e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-    ) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+      setForm((prev) => ({ ...prev, [field]: e.target.value }));
   }
 
   if (loading) return <LoadingState />;
-  if (loadError) return <div className={styles.emptyState}>Failed to load your profile. Please refresh the page.</div>;
+  if (loadError)
+    return (
+      <div className={styles.emptyState}>Failed to load your profile. Please refresh the page.</div>
+    );
 
   const pct = computeProfileCompleteness(form as Record<string, unknown>);
 
   return (
     <>
       {/* ── Profile hero ──────────────────────────────────────────────── */}
-      {apiData && <ProfileHero apiData={{ ...apiData, name: form.name || apiData.name, occupation: form.occupation, city: form.city }} />}
+      {apiData && (
+        <ProfileHero
+          apiData={{
+            ...apiData,
+            name: form.name || apiData.name,
+            occupation: form.occupation,
+            city: form.city,
+          }}
+        />
+      )}
 
       {/* ── Completeness indicator ────────────────────────────────────── */}
       <div className={styles.cardTight}>
         <div className={profileStyles.completenessHeader}>
           <span className={profileStyles.completenessLabel}>Profile completeness</span>
-          <span className={`${styles.statValue} ${styles.statMd} ${profileStyles.completenessValue}`}>{pct}%</span>
+          <span
+            className={`${styles.statValue} ${styles.statMd} ${profileStyles.completenessValue}`}
+          >
+            {pct}%
+          </span>
         </div>
         <div className={profileStyles.completenessTrack}>
           <div className={styles.progressFill} style={{ width: `${pct}%` }} />
         </div>
         {pct < 100 && (
           <p className={profileStyles.completenessHint}>
-            A complete profile helps {clinician} personalise your programme and provide
-            24/7 tailored support.
+            A complete profile helps {clinician} personalise your programme and provide 24/7
+            tailored support.
           </p>
         )}
       </div>
 
       <form onSubmit={handleSubmit} className={profileStyles.form}>
-
         <PersonalFields form={form} set={set} />
         <ClinicalContextFields form={form} set={set} />
         <LifestyleFields form={form} set={set} />
@@ -256,19 +268,35 @@ export function ProfileForm({ clinician = COMPANY.clinicianFallback }: { clinici
         <div className={styles.card}>
           <p className={styles.cardTitle}>How did you find {COMPANY.shortName}?</p>
           <div className={authStyles.field}>
-            <input id="referral" aria-label={`How did you find ${COMPANY.shortName}?`} className={authStyles.input} value={form.referralSource} onChange={set("referralSource")} maxLength={PROFILE_REFERRAL_SOURCE_MAX_LENGTH} placeholder="Referral, social media, search…" />
+            <input
+              id="referral"
+              aria-label={`How did you find ${COMPANY.shortName}?`}
+              className={authStyles.input}
+              value={form.referralSource}
+              onChange={set("referralSource")}
+              maxLength={PROFILE_REFERRAL_SOURCE_MAX_LENGTH}
+              placeholder="Referral, social media, search…"
+            />
           </div>
         </div>
 
         <EmailPreferencesFields
           digestOptOut={form.digestOptOut}
-          onDigestOptOutChange={(checked) => setForm((prev) => ({ ...prev, digestOptOut: checked }))}
+          onDigestOptOutChange={(checked) =>
+            setForm((prev) => ({ ...prev, digestOptOut: checked }))
+          }
           reminderOptOut={form.reminderOptOut}
-          onReminderOptOutChange={(checked) => setForm((prev) => ({ ...prev, reminderOptOut: checked }))}
+          onReminderOptOutChange={(checked) =>
+            setForm((prev) => ({ ...prev, reminderOptOut: checked }))
+          }
         />
 
         {saveError && <p className={styles.formError}>{saveError}</p>}
-        <button type="submit" className={`${styles.btnPrimary} ${styles.btnBlock}`} disabled={saving}>
+        <button
+          type="submit"
+          className={`${styles.btnPrimary} ${styles.btnBlock}`}
+          disabled={saving}
+        >
           {saving ? SAVING_LABEL : saved ? SAVED_LABEL : "Save changes"}
         </button>
       </form>

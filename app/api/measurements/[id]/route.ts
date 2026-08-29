@@ -29,8 +29,7 @@ import { badRequest, serviceUnavailable } from "@/lib/utils/api-response";
 /** Provenance a patient may remove on their own authority. */
 const SELF_RECORDED_SOURCES = ["home", "wearable"];
 
-const notFound = () =>
-  NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
+const notFound = () => NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const guard = await requireSession();
@@ -63,7 +62,7 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
         success: false,
         error: "Laboratory results can only be corrected by your clinician — send them a message",
       },
-      { status: 403 }
+      { status: 403 },
     );
   }
 
@@ -73,7 +72,7 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
     console.error("[api/measurements] delete failed:", err);
     return NextResponse.json(
       { success: false, error: "Could not remove — please try again" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 

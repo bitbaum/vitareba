@@ -39,9 +39,7 @@ function mediaBlocks(lines: string[]): Block[] {
       depth -= (lines[j].match(/\}/g) ?? []).length;
       if (depth === 0 && j > i) {
         const body = lines.slice(i, j + 1).join("\n");
-        const classes = new Set(
-          [...body.matchAll(/\.([A-Za-z0-9_-]+)\s*[{,:]/g)].map((m) => m[1]),
-        );
+        const classes = new Set([...body.matchAll(/\.([A-Za-z0-9_-]+)\s*[{,:]/g)].map((m) => m[1]));
         blocks.push({ startLine: i + 1, classes });
         i = j;
         break;

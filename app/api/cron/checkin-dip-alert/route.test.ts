@@ -2,13 +2,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { profiles } from "@/lib/db/schema";
 
-const { mockFindMany, mockUpdate, mockSendEmail, mockGetAdminEmails, mockRequireCron } = vi.hoisted(() => ({
-  mockFindMany: vi.fn(),
-  mockUpdate: vi.fn(),
-  mockSendEmail: vi.fn(),
-  mockGetAdminEmails: vi.fn(),
-  mockRequireCron: vi.fn(),
-}));
+const { mockFindMany, mockUpdate, mockSendEmail, mockGetAdminEmails, mockRequireCron } = vi.hoisted(
+  () => ({
+    mockFindMany: vi.fn(),
+    mockUpdate: vi.fn(),
+    mockSendEmail: vi.fn(),
+    mockGetAdminEmails: vi.fn(),
+    mockRequireCron: vi.fn(),
+  }),
+);
 
 vi.mock("@/lib/db", () => ({
   db: {

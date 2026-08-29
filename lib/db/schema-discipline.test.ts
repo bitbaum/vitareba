@@ -36,10 +36,10 @@ const SCHEMA = readFileSync(join(process.cwd(), "lib/db/schema.ts"), "utf8");
  * column.
  */
 const RETAINED_AUTHORSHIP = new Set([
-  "admin_id",        // patient_notes — who recorded the clinical note
-  "assigned_by",     // programme_assignments — who enrolled the patient
+  "admin_id", // patient_notes — who recorded the clinical note
+  "assigned_by", // programme_assignments — who enrolled the patient
   "set_by_admin_id", // clinical_goals — who set the goal
-  "reviewed_by",     // clinician_applications — which admin approved/declined it
+  "reviewed_by", // clinician_applications — which admin approved/declined it
 ]);
 
 /** Every `.references(() => users.id …)` paired with its column name. */
@@ -66,7 +66,7 @@ describe("user foreign-key delete policy", () => {
       .map((fk) => fk.column);
     expect(
       unstated,
-      "add { onDelete: … } — or add the column to RETAINED_AUTHORSHIP with the reason"
+      "add { onDelete: … } — or add the column to RETAINED_AUTHORSHIP with the reason",
     ).toEqual([]);
   });
 

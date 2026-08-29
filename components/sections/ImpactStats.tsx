@@ -24,9 +24,7 @@ export default async function ImpactStats() {
             <div key={i} className={styles.card}>
               <div className={styles.n}>
                 {stat.number}
-                {stat.unit && (
-                  <span className={styles.unit}>{stat.unit}</span>
-                )}
+                {stat.unit && <span className={styles.unit}>{stat.unit}</span>}
               </div>
               <div className={styles.label}>{stat.label}</div>
               <div className={styles.source}>{stat.source}</div>

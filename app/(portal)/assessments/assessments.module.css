@@ -8,9 +8,15 @@
   gap: 1rem;
 }
 
-.savedEyebrow { composes: darkBannerEyebrow from "../../shared.module.css"; }
-.savedTitle { composes: darkBannerTitle from "../../shared.module.css"; }
-.savedBody { composes: darkBannerBody from "../../shared.module.css"; }
+.savedEyebrow {
+  composes: darkBannerEyebrow from "../../shared.module.css";
+}
+.savedTitle {
+  composes: darkBannerTitle from "../../shared.module.css";
+}
+.savedBody {
+  composes: darkBannerBody from "../../shared.module.css";
+}
 
 .savedActions {
   display: flex;
@@ -19,7 +25,9 @@
   flex-wrap: wrap;
 }
 
-.savedSecondary { composes: darkBannerLinkMuted from "../../shared.module.css"; }
+.savedSecondary {
+  composes: darkBannerLinkMuted from "../../shared.module.css";
+}
 
 /* ── Retake CTA ─────────────────────────────────────────────────────────── */
 

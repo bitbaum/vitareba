@@ -8,9 +8,10 @@ import { ASSESSMENT_SCORE_MIN, ASSESSMENT_SCORE_MAX, DIMENSIONS } from "@/lib/as
 // don't know how to handle.
 const scoreValue = z.number().min(ASSESSMENT_SCORE_MIN).max(ASSESSMENT_SCORE_MAX);
 
-const scoresShape = Object.fromEntries(
-  DIMENSIONS.map((d) => [d.id, scoreValue])
-) as Record<(typeof DIMENSIONS)[number]["id"], typeof scoreValue>;
+const scoresShape = Object.fromEntries(DIMENSIONS.map((d) => [d.id, scoreValue])) as Record<
+  (typeof DIMENSIONS)[number]["id"],
+  typeof scoreValue
+>;
 
 export const assessmentScoresSchema = z.object(scoresShape).strict();
 

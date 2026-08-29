@@ -5,7 +5,11 @@ import { useRouter } from "next/navigation";
 import styles from "../portal.module.css";
 import formStyles from "../../forms.module.css";
 import docStyles from "./documents.module.css";
-import { DOCUMENT_MAX_FILE_SIZE_MB, DOCUMENT_TITLE_MAX_LENGTH, SAVED_FEEDBACK_MS } from "@/lib/config/portal";
+import {
+  DOCUMENT_MAX_FILE_SIZE_MB,
+  DOCUMENT_TITLE_MAX_LENGTH,
+  SAVED_FEEDBACK_MS,
+} from "@/lib/config/portal";
 
 /**
  * Patients add their own documents here — lab results, referral letters, a
@@ -65,7 +69,9 @@ export function DocumentUploadForm() {
       </p>
       <div className={docStyles.uploadGrid}>
         <div className={formStyles.field}>
-          <label className={formStyles.label} htmlFor="doc-title">Title</label>
+          <label className={formStyles.label} htmlFor="doc-title">
+            Title
+          </label>
           <input
             id="doc-title"
             className={formStyles.input}
@@ -77,7 +83,9 @@ export function DocumentUploadForm() {
           />
         </div>
         <div className={formStyles.field}>
-          <label className={formStyles.label} htmlFor="doc-file">File (max {DOCUMENT_MAX_FILE_SIZE_MB} MB)</label>
+          <label className={formStyles.label} htmlFor="doc-file">
+            File (max {DOCUMENT_MAX_FILE_SIZE_MB} MB)
+          </label>
           <input
             id="doc-file"
             ref={fileRef}
@@ -107,7 +115,11 @@ export function DocumentUploadForm() {
         className={`${styles.btnPrimary} ${docStyles.uploadSubmit}`}
         disabled={uploading || !file || !title.trim()}
       >
-        {progress === "uploading" ? "Uploading…" : progress === "done" ? "Uploaded ✓" : "Upload document"}
+        {progress === "uploading"
+          ? "Uploading…"
+          : progress === "done"
+            ? "Uploaded ✓"
+            : "Upload document"}
       </button>
     </form>
   );

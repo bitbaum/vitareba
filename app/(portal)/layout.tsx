@@ -29,31 +29,37 @@ export default async function PortalLayout({ children }: { children: React.React
 
   const today = formatDateISO(new Date());
 
-  const [dbUser, unreadMessages, todayCheckin, patientProfile, activeGoalDates, unreadNotifications] =
-    await Promise.all([
-      db.query.users.findFirst({
-        where: eq(users.id, session.user.id),
-        columns: { name: true },
-      }),
-      getUnreadThreadCount(session.user.id),
-      db.query.dailyCheckins.findFirst({
-        where: and(eq(dailyCheckins.userId, session.user.id), eq(dailyCheckins.date, today)),
-        columns: { id: true },
-      }),
-      db.query.profiles.findFirst({
-        where: eq(profiles.userId, session.user.id),
-        columns: { goalsSeenAt: true },
-      }),
-      db.query.clinicalGoals.findMany({
-        where: and(eq(clinicalGoals.patientId, session.user.id), isNull(clinicalGoals.completedAt)),
-        columns: { createdAt: true },
-      }),
-      getUnreadCount(session.user.id),
-    ]);
+  const [
+    dbUser,
+    unreadMessages,
+    todayCheckin,
+    patientProfile,
+    activeGoalDates,
+    unreadNotifications,
+  ] = await Promise.all([
+    db.query.users.findFirst({
+      where: eq(users.id, session.user.id),
+      columns: { name: true },
+    }),
+    getUnreadThreadCount(session.user.id),
+    db.query.dailyCheckins.findFirst({
+      where: and(eq(dailyCheckins.userId, session.user.id), eq(dailyCheckins.date, today)),
+      columns: { id: true },
+    }),
+    db.query.profiles.findFirst({
+      where: eq(profiles.userId, session.user.id),
+      columns: { goalsSeenAt: true },
+    }),
+    db.query.clinicalGoals.findMany({
+      where: and(eq(clinicalGoals.patientId, session.user.id), isNull(clinicalGoals.completedAt)),
+      columns: { createdAt: true },
+    }),
+    getUnreadCount(session.user.id),
+  ]);
 
   const goalsSeenAt = patientProfile?.goalsSeenAt ?? null;
   const newGoalsCount = activeGoalDates.filter(
-    (g) => !goalsSeenAt || g.createdAt > goalsSeenAt
+    (g) => !goalsSeenAt || g.createdAt > goalsSeenAt,
   ).length;
 
   const hasTodayCheckin = !!todayCheckin;
@@ -67,7 +73,11 @@ export default async function PortalLayout({ children }: { children: React.React
         <Link href="/" className={styles.logoLink} aria-label={`${COMPANY.shortName} — home`}>
           <Logo variant="bright" />
         </Link>
-        <PortalNav unreadMessages={unreadMessages} hasTodayCheckin={hasTodayCheckin} newGoals={newGoalsCount} />
+        <PortalNav
+          unreadMessages={unreadMessages}
+          hasTodayCheckin={hasTodayCheckin}
+          newGoals={newGoalsCount}
+        />
         {/* Lands on Today, not the patient list. The list answers "how is
             everyone"; the first question on arriving is "what needs me". */}
         {session.user.role === USER_ROLE.admin && (
@@ -88,7 +98,11 @@ export default async function PortalLayout({ children }: { children: React.React
         <main className={styles.main}>{children}</main>
       </div>
 
-      <BottomNav unreadMessages={unreadMessages} hasTodayCheckin={hasTodayCheckin} newGoals={newGoalsCount} />
+      <BottomNav
+        unreadMessages={unreadMessages}
+        hasTodayCheckin={hasTodayCheckin}
+        newGoals={newGoalsCount}
+      />
     </div>
   );
 }

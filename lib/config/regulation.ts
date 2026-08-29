@@ -88,7 +88,8 @@ export const REGULATORY_BLOCKS: RegulatoryBlock[] = [
         name: "Schrems II judgment",
         cite: "CJEU C-311/18",
         passedBy: "Court of Justice of the EU, 16 July 2020",
-        keyPeople: "case brought by privacy activist Max Schrems; struck down the EU–US Privacy Shield",
+        keyPeople:
+          "case brought by privacy activist Max Schrems; struck down the EU–US Privacy Shield",
         inForce: "immediate",
       },
       {

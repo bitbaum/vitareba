@@ -64,16 +64,21 @@ export async function POST(req: Request, { params }: RouteContext) {
       .returning();
   } catch (err) {
     console.error("[api/admin/notes] insert failed:", err);
-    return NextResponse.json({ success: false, error: "Failed to save note — please try again" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "Failed to save note — please try again" },
+      { status: 500 },
+    );
   }
 
-  const admin = await db.query.users.findFirst({
-    where: eq(users.id, session.user.id),
-    columns: { name: true },
-  }).catch(() => null);
+  const admin = await db.query.users
+    .findFirst({
+      where: eq(users.id, session.user.id),
+      columns: { name: true },
+    })
+    .catch(() => null);
 
   return NextResponse.json(
     { success: true, data: { ...note, admin: { name: admin?.name ?? null } } },
-    { status: 201 }
+    { status: 201 },
   );
 }

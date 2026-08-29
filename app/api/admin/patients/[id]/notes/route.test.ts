@@ -2,10 +2,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { mockRequireAdmin, mockFindMany, mockUserFindFirst, mockInsert } = vi.hoisted(() => ({
-  mockRequireAdmin:   vi.fn(),
-  mockFindMany:       vi.fn(),
-  mockUserFindFirst:  vi.fn(),
-  mockInsert:         vi.fn(),
+  mockRequireAdmin: vi.fn(),
+  mockFindMany: vi.fn(),
+  mockUserFindFirst: vi.fn(),
+  mockInsert: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/guards", () => ({ requireAdmin: mockRequireAdmin }));
@@ -14,7 +14,7 @@ vi.mock("@/lib/db", () => ({
   db: {
     query: {
       patientNotes: { findMany: mockFindMany },
-      users:        { findFirst: mockUserFindFirst },
+      users: { findFirst: mockUserFindFirst },
     },
     insert: mockInsert,
   },
@@ -23,9 +23,15 @@ vi.mock("@/lib/db", () => ({
 import { GET, POST } from "./route";
 
 const ADMIN_SESSION = { session: { user: { id: "admin-1", role: "admin" } }, error: null };
-const UNAUTH        = { session: null, error: new Response(null, { status: 401 }) };
+const UNAUTH = { session: null, error: new Response(null, { status: 401 }) };
 
-const NOTE = { id: "note-1", patientId: "patient-1", adminId: "admin-1", body: "Patient is progressing well.", admin: { name: "Manuel" } };
+const NOTE = {
+  id: "note-1",
+  patientId: "patient-1",
+  adminId: "admin-1",
+  body: "Patient is progressing well.",
+  admin: { name: "Manuel" },
+};
 const VALID_PATIENT_ID = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11";
 const PARAMS = { params: Promise.resolve({ id: VALID_PATIENT_ID }) };
 

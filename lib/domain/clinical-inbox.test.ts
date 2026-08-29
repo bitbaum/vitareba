@@ -13,11 +13,7 @@
 import { describe, expect, it } from "vitest";
 import { buildClinicalInbox, type InboxInput, type InboxPatient } from "./clinical-inbox";
 import { newestPerPatientPerKind } from "./clinical-inbox-data";
-import {
-  INBOX_SECTIONS,
-  INBOX_SECTION_LIMIT,
-  type InboxSectionKey,
-} from "@/lib/config/inbox";
+import { INBOX_SECTIONS, INBOX_SECTION_LIMIT, type InboxSectionKey } from "@/lib/config/inbox";
 import { BOOKING_STATUS } from "@/lib/config/booking-status";
 import { NO_CHECKIN_CRITICAL_DAYS, NEW_PATIENT_GRACE_DAYS } from "@/lib/config/admin";
 import { DAY_MS } from "@/lib/utils/format";
@@ -47,7 +43,12 @@ function healthyPatient(over: Partial<InboxPatient> = {}): InboxPatient {
     assessments: [{ overallScore: 78, completedAt: daysAgo(10) }],
     checkins: [{ date: isoDaysAgo(0), sleep: 4, energy: 4, mood: 4, focus: 4, stress: 2 }],
     bookings: [
-      { id: "healthy-b", status: BOOKING_STATUS.confirmed, createdAt: daysAgo(9), scheduledAt: daysAgo(-3) },
+      {
+        id: "healthy-b",
+        status: BOOKING_STATUS.confirmed,
+        createdAt: daysAgo(9),
+        scheduledAt: daysAgo(-3),
+      },
     ],
     ...over,
   });
@@ -158,9 +159,7 @@ describe("results to review", () => {
   it("says why the value matters, in the guideline's own terms", () => {
     const inbox = build({
       patients: [patient()],
-      latestMeasurements: [
-        { patientId: "p1", kind: "egfr", value: 22, measuredAt: daysAgo(3) },
-      ],
+      latestMeasurements: [{ patientId: "p1", kind: "egfr", value: 22, measuredAt: daysAgo(3) }],
     });
     expect(section(inbox, "results").items[0].detail).toContain("KDIGO");
   });
@@ -174,7 +173,16 @@ describe("who needs contacting", () => {
     const inbox = build({
       patients: [
         patient({
-          checkins: [{ date: isoDaysAgo(NO_CHECKIN_CRITICAL_DAYS + 2), sleep: 3, energy: 3, mood: 3, focus: 3, stress: 3 }],
+          checkins: [
+            {
+              date: isoDaysAgo(NO_CHECKIN_CRITICAL_DAYS + 2),
+              sleep: 3,
+              energy: 3,
+              mood: 3,
+              focus: 3,
+              stress: 3,
+            },
+          ],
         }),
       ],
     });
@@ -252,7 +260,13 @@ describe("messages waiting on a reply", () => {
     const inbox = build({
       patients: [patient()],
       threads: [
-        { id: "t1", patientId: "p1", subject: "Answered", lastMessageAt: daysAgo(3), awaitingReply: false },
+        {
+          id: "t1",
+          patientId: "p1",
+          subject: "Answered",
+          lastMessageAt: daysAgo(3),
+          awaitingReply: false,
+        },
       ],
     });
     expect(section(inbox, "messages").items).toHaveLength(0);
@@ -281,8 +295,18 @@ describe("bookings awaiting confirmation", () => {
       patients: [
         patient({
           bookings: [
-            { id: "b1", status: BOOKING_STATUS.pending, createdAt: daysAgo(2), scheduledAt: daysAgo(-5) },
-            { id: "b2", status: BOOKING_STATUS.confirmed, createdAt: daysAgo(9), scheduledAt: daysAgo(-1) },
+            {
+              id: "b1",
+              status: BOOKING_STATUS.pending,
+              createdAt: daysAgo(2),
+              scheduledAt: daysAgo(-5),
+            },
+            {
+              id: "b2",
+              status: BOOKING_STATUS.confirmed,
+              createdAt: daysAgo(9),
+              scheduledAt: daysAgo(-1),
+            },
           ],
         }),
       ],
@@ -313,9 +337,27 @@ describe("ordering and truncation", () => {
     const inbox = build({
       patients: [patient()],
       threads: [
-        { id: "recent", patientId: "p1", subject: "Recent", lastMessageAt: daysAgo(1), awaitingReply: true },
-        { id: "old", patientId: "p1", subject: "Old", lastMessageAt: daysAgo(12), awaitingReply: true },
-        { id: "mid", patientId: "p1", subject: "Mid", lastMessageAt: daysAgo(5), awaitingReply: true },
+        {
+          id: "recent",
+          patientId: "p1",
+          subject: "Recent",
+          lastMessageAt: daysAgo(1),
+          awaitingReply: true,
+        },
+        {
+          id: "old",
+          patientId: "p1",
+          subject: "Old",
+          lastMessageAt: daysAgo(12),
+          awaitingReply: true,
+        },
+        {
+          id: "mid",
+          patientId: "p1",
+          subject: "Mid",
+          lastMessageAt: daysAgo(5),
+          awaitingReply: true,
+        },
       ],
     });
     expect(section(inbox, "messages").items.map((i) => i.headline)).toEqual([
@@ -359,7 +401,13 @@ describe("ordering and truncation", () => {
         { patientId: "p1", kind: "bp_diastolic", value: 118, measuredAt: daysAgo(1) },
       ],
       threads: [
-        { id: "t1", patientId: "p1", subject: "Hi", lastMessageAt: daysAgo(2), awaitingReply: true },
+        {
+          id: "t1",
+          patientId: "p1",
+          subject: "Hi",
+          lastMessageAt: daysAgo(2),
+          awaitingReply: true,
+        },
       ],
     });
     const keys = inbox.sections.flatMap((s) => s.items.map((i) => i.key));

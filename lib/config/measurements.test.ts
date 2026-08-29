@@ -64,7 +64,7 @@ describe("measurement definitions", () => {
   it("files every marker under a real category", () => {
     for (const def of MEASUREMENT_DEFS) {
       expect(CATEGORY_KEYS, `${def.key} has unknown category ${def.category}`).toContain(
-        def.category
+        def.category,
       );
     }
   });
@@ -130,13 +130,13 @@ describe("optimal targets sit inside the reference interval", () => {
         if (def.optimal.low !== undefined && range.low !== undefined) {
           expect(
             def.optimal.low,
-            `${def.key}: optimal.low is below ${name}.low`
+            `${def.key}: optimal.low is below ${name}.low`,
           ).toBeGreaterThanOrEqual(range.low);
         }
         if (def.optimal.high !== undefined && range.high !== undefined) {
           expect(
             def.optimal.high,
-            `${def.key}: optimal.high is above ${name}.high`
+            `${def.key}: optimal.high is above ${name}.high`,
           ).toBeLessThanOrEqual(range.high);
         }
       }
@@ -154,13 +154,13 @@ describe("action thresholds sit outside the reference interval", () => {
         if (def.alert.low !== undefined && range.low !== undefined) {
           expect(
             def.alert.low,
-            `${def.key}: alert.low is above ${name}.low — would alert on normal values`
+            `${def.key}: alert.low is above ${name}.low — would alert on normal values`,
           ).toBeLessThanOrEqual(range.low);
         }
         if (def.alert.high !== undefined && range.high !== undefined) {
           expect(
             def.alert.high,
-            `${def.key}: alert.high is below ${name}.high — would alert on normal values`
+            `${def.key}: alert.high is below ${name}.high — would alert on normal values`,
           ).toBeGreaterThanOrEqual(range.high);
         }
       }
@@ -174,7 +174,7 @@ describe("sex-specific intervals", () => {
       const hasOne = Boolean(def.refFemale) !== Boolean(def.refMale);
       expect(
         hasOne,
-        `${def.key} defines an interval for one sex only — the other would silently fall back`
+        `${def.key} defines an interval for one sex only — the other would silently fall back`,
       ).toBe(false);
     }
   });
@@ -206,7 +206,7 @@ describe("patient-enterable markers", () => {
       const def = measurementDef(key)!;
       expect(
         labCategories,
-        `${key} is a laboratory result and must be entered under a clinician`
+        `${key} is a laboratory result and must be entered under a clinician`,
       ).not.toContain(def.category);
     }
   });
@@ -245,10 +245,10 @@ describe("input bounds", () => {
       for (const [name, range] of refIntervals(def)) {
         for (const [edge, v] of Object.entries(range)) {
           expect(v, `${def.key}.${name}.${edge} below input floor`).toBeGreaterThan(
-            MEASUREMENT_VALUE_MIN
+            MEASUREMENT_VALUE_MIN,
           );
           expect(v, `${def.key}.${name}.${edge} above input ceiling`).toBeLessThan(
-            MEASUREMENT_VALUE_MAX
+            MEASUREMENT_VALUE_MAX,
           );
         }
       }

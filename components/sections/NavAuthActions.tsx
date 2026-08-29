@@ -28,7 +28,11 @@ export function NavAuthActions({
     return (
       <div className={styles.mobileMenuActions}>
         {session ? (
-          <NextLink href={PORTAL_ROUTES.dashboard} className={styles.mobileMenuBtn} onClick={onNavigate}>
+          <NextLink
+            href={PORTAL_ROUTES.dashboard}
+            className={styles.mobileMenuBtn}
+            onClick={onNavigate}
+          >
             {labels.dashboard} &rarr;
           </NextLink>
         ) : (

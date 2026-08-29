@@ -12,20 +12,20 @@ const {
   mockSendEmail,
   mockRunAfterResponse,
 } = vi.hoisted(() => ({
-  mockRequireSession:  vi.fn(),
-  mockPut:             vi.fn(),
-  mockInsert:          vi.fn(),
-  mockValues:          vi.fn(),
-  mockUserFindFirst:   vi.fn(),
-  mockUserFindMany:    vi.fn(),
-  mockGetCareTeamIds:  vi.fn(),
-  mockSendEmail:       vi.fn(),
+  mockRequireSession: vi.fn(),
+  mockPut: vi.fn(),
+  mockInsert: vi.fn(),
+  mockValues: vi.fn(),
+  mockUserFindFirst: vi.fn(),
+  mockUserFindMany: vi.fn(),
+  mockGetCareTeamIds: vi.fn(),
+  mockSendEmail: vi.fn(),
   mockRunAfterResponse: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/guards", () => ({ requireSession: mockRequireSession }));
-vi.mock("@/lib/storage",      () => ({ putLocal: mockPut }));
-vi.mock("@/lib/email/index",  () => ({ sendEmail: mockSendEmail }));
+vi.mock("@/lib/storage", () => ({ putLocal: mockPut }));
+vi.mock("@/lib/email/index", () => ({ sendEmail: mockSendEmail }));
 vi.mock("@/lib/utils/post-response", () => ({ runAfterResponse: mockRunAfterResponse }));
 vi.mock("@/lib/domain/care-team", () => ({ getCareTeamIds: mockGetCareTeamIds }));
 
@@ -42,15 +42,20 @@ import { POST } from "./route";
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
-const PATIENT_ID       = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11";
+const PATIENT_ID = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11";
 const OTHER_PATIENT_ID = "b1ffcd88-8d1a-4fa7-aa5c-5aa8ac270b22";
-const ADMIN_ID         = "c2aade77-7e2b-4b96-99b4-49b79b160c33";
+const ADMIN_ID = "c2aade77-7e2b-4b96-99b4-49b79b160c33";
 
-const ADMIN_SESSION   = { session: { user: { id: ADMIN_ID,   role: "admin"   } }, error: null };
+const ADMIN_SESSION = { session: { user: { id: ADMIN_ID, role: "admin" } }, error: null };
 const PATIENT_SESSION = { session: { user: { id: PATIENT_ID, role: "patient" } }, error: null };
-const UNAUTH          = { session: null, error: new Response(null, { status: 401 }) };
+const UNAUTH = { session: null, error: new Response(null, { status: 401 }) };
 
-const DOC = { id: "doc-1", userId: PATIENT_ID, title: "Lab results", fileUrl: "https://blob.example.com/file.pdf" };
+const DOC = {
+  id: "doc-1",
+  userId: PATIENT_ID,
+  title: "Lab results",
+  fileUrl: "https://blob.example.com/file.pdf",
+};
 
 function makeFile(opts: { name?: string; type?: string; sizeBytes?: number } = {}) {
   const { name = "test.pdf", type = "application/pdf", sizeBytes } = opts;
@@ -61,8 +66,8 @@ function makeFile(opts: { name?: string; type?: string; sizeBytes?: number } = {
 function makeFormData(overrides: Record<string, string | File | null> = {}) {
   const form = new FormData();
   const defaults: Record<string, string | File> = {
-    file:      makeFile(),
-    title:     "Lab results",
+    file: makeFile(),
+    title: "Lab results",
     patientId: PATIENT_ID,
   };
   for (const [key, val] of Object.entries({ ...defaults, ...overrides })) {
@@ -209,7 +214,7 @@ describe("POST /api/documents/upload", () => {
       expect.objectContaining({
         to: "alice@example.com",
         subject: expect.stringContaining("Lab results"),
-      })
+      }),
     );
   });
 
@@ -233,7 +238,7 @@ describe("POST /api/documents/upload", () => {
       expect.objectContaining({
         to: ["doc@vitareba.ch"],
         subject: expect.stringContaining("Alice"),
-      })
+      }),
     );
   });
 
@@ -247,7 +252,7 @@ describe("POST /api/documents/upload", () => {
     await mockRunAfterResponse.mock.calls[0][0]();
 
     expect(mockSendEmail).toHaveBeenCalledWith(
-      expect.objectContaining({ to: ["manuel@example.com"] })
+      expect.objectContaining({ to: ["manuel@example.com"] }),
     );
   });
 });

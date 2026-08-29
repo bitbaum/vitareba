@@ -2,7 +2,14 @@
 
 import { useState, useEffect, useCallback } from "react";
 import styles from "@/app/(admin)/admin.module.css";
-import { type GoalRow, GOAL_TITLE_MAX_LENGTH, GOAL_NOTES_MAX_LENGTH, CHECKIN_METRICS, ASSESSMENT_GOAL_METRIC_KEY, ASSESSMENT_GOAL_METRIC_LABEL } from "@/lib/config/portal";
+import {
+  type GoalRow,
+  GOAL_TITLE_MAX_LENGTH,
+  GOAL_NOTES_MAX_LENGTH,
+  CHECKIN_METRICS,
+  ASSESSMENT_GOAL_METRIC_KEY,
+  ASSESSMENT_GOAL_METRIC_LABEL,
+} from "@/lib/config/portal";
 import { goalBarGeometry } from "@/lib/domain/goals";
 import { LoadingState } from "@/components/LoadingState";
 
@@ -12,7 +19,15 @@ const GOAL_METRIC_OPTIONS: { value: string; label: string }[] = [
   ...CHECKIN_METRICS.map((m) => ({ value: m.key, label: `Check-in: ${m.label}` })),
 ];
 
-function GoalProgressBar({ baseline, current, target }: { baseline: number | null; current: number | null; target: number | null }) {
+function GoalProgressBar({
+  baseline,
+  current,
+  target,
+}: {
+  baseline: number | null;
+  current: number | null;
+  target: number | null;
+}) {
   const geom = goalBarGeometry(baseline, current, target);
   if (!geom) return null;
   const { fillLeft, fillWidth, targetPct } = geom;
@@ -20,7 +35,10 @@ function GoalProgressBar({ baseline, current, target }: { baseline: number | nul
   return (
     <div className={styles.goalBar}>
       {fillWidth > 0 && (
-        <div className={styles.goalBarFill} style={{ left: `${fillLeft}%`, width: `${fillWidth}%` }} />
+        <div
+          className={styles.goalBarFill}
+          style={{ left: `${fillLeft}%`, width: `${fillWidth}%` }}
+        />
       )}
       {targetPct != null && (
         <div className={styles.goalBarTarget} style={{ left: `${targetPct}%` }} />
@@ -34,7 +52,14 @@ export function PatientGoalsCard({ patientId }: { patientId: string }) {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ title: "", metric: "", baseline: "", target: "", current: "", notes: "" });
+  const [form, setForm] = useState({
+    title: "",
+    metric: "",
+    baseline: "",
+    target: "",
+    current: "",
+    notes: "",
+  });
   const [saving, setSaving] = useState(false);
   const [actionError, setActionError] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -43,7 +68,10 @@ export function PatientGoalsCard({ patientId }: { patientId: string }) {
   const load = useCallback(async () => {
     try {
       const res = await fetch(`/api/admin/patients/${patientId}/goals`);
-      if (!res.ok) { setLoadError(true); return; }
+      if (!res.ok) {
+        setLoadError(true);
+        return;
+      }
       const data = await res.json();
       setGoals(data.data ?? []);
     } catch {
@@ -53,7 +81,9 @@ export function PatientGoalsCard({ patientId }: { patientId: string }) {
     }
   }, [patientId]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
@@ -72,7 +102,10 @@ export function PatientGoalsCard({ patientId }: { patientId: string }) {
           notes: form.notes || null,
         }),
       });
-      if (!res.ok) { setActionError("Failed to add goal."); return; }
+      if (!res.ok) {
+        setActionError("Failed to add goal.");
+        return;
+      }
       setForm({ title: "", metric: "", baseline: "", target: "", current: "", notes: "" });
       setShowForm(false);
       load();
@@ -92,7 +125,10 @@ export function PatientGoalsCard({ patientId }: { patientId: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ current: Number(editCurrent) }),
       });
-      if (!res.ok) { setActionError("Failed to update score."); return; }
+      if (!res.ok) {
+        setActionError("Failed to update score.");
+        return;
+      }
       setEditingId(null);
       setEditCurrent("");
       load();
@@ -109,7 +145,10 @@ export function PatientGoalsCard({ patientId }: { patientId: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ completed: !goal.completedAt }),
       });
-      if (!res.ok) { setActionError("Failed to update goal."); return; }
+      if (!res.ok) {
+        setActionError("Failed to update goal.");
+        return;
+      }
       load();
     } catch {
       setActionError("Failed to update goal.");
@@ -120,7 +159,10 @@ export function PatientGoalsCard({ patientId }: { patientId: string }) {
     setActionError("");
     try {
       const res = await fetch(`/api/admin/goals/${goalId}`, { method: "DELETE" });
-      if (!res.ok) { setActionError("Failed to delete goal."); return; }
+      if (!res.ok) {
+        setActionError("Failed to delete goal.");
+        return;
+      }
       load();
     } catch {
       setActionError("Failed to delete goal.");
@@ -158,12 +200,16 @@ export function PatientGoalsCard({ patientId }: { patientId: string }) {
             className={styles.goalFormSelect}
           >
             {GOAL_METRIC_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
             ))}
           </select>
           <div className={styles.goalFormGrid3}>
             <input
-              type="number" min="0" max="100"
+              type="number"
+              min="0"
+              max="100"
               aria-label="Baseline score (0–100)"
               placeholder="Baseline (0–100)"
               value={form.baseline}
@@ -171,7 +217,9 @@ export function PatientGoalsCard({ patientId }: { patientId: string }) {
               className={styles.goalFormInput}
             />
             <input
-              type="number" min="0" max="100"
+              type="number"
+              min="0"
+              max="100"
               aria-label="Current score (0–100)"
               placeholder="Current (0–100)"
               value={form.current}
@@ -179,7 +227,9 @@ export function PatientGoalsCard({ patientId }: { patientId: string }) {
               className={styles.goalFormInput}
             />
             <input
-              type="number" min="0" max="100"
+              type="number"
+              min="0"
+              max="100"
               aria-label="Target score (0–100)"
               placeholder="Target (0–100)"
               value={form.target}
@@ -200,7 +250,12 @@ export function PatientGoalsCard({ patientId }: { patientId: string }) {
             <button type="submit" disabled={saving} className={styles.goalFormSubmit}>
               {saving ? "Saving…" : "Add goal"}
             </button>
-            <button type="button" onClick={() => setShowForm(false)} aria-label="Cancel adding new goal" className={styles.goalFormCancel}>
+            <button
+              type="button"
+              onClick={() => setShowForm(false)}
+              aria-label="Cancel adding new goal"
+              className={styles.goalFormCancel}
+            >
               Cancel
             </button>
           </div>
@@ -225,17 +280,31 @@ export function PatientGoalsCard({ patientId }: { patientId: string }) {
               <div className={styles.goalItemHeader}>
                 <p className={styles.goalTitle}>{goal.title}</p>
                 <div className={styles.goalItemActions}>
-                  <button type="button" onClick={() => handleToggleComplete(goal)} aria-label={`Mark "${goal.title}" as complete`} className={styles.goalDoneBtn}>
+                  <button
+                    type="button"
+                    onClick={() => handleToggleComplete(goal)}
+                    aria-label={`Mark "${goal.title}" as complete`}
+                    className={styles.goalDoneBtn}
+                  >
                     ✓ Done
                   </button>
-                  <button type="button" onClick={() => handleDelete(goal.id)} aria-label={`Delete goal "${goal.title}"`} className={styles.goalDeleteBtn}>
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(goal.id)}
+                    aria-label={`Delete goal "${goal.title}"`}
+                    className={styles.goalDeleteBtn}
+                  >
                     ✕
                   </button>
                 </div>
               </div>
               {(goal.baseline != null || goal.current != null || goal.target != null) && (
                 <>
-                  <GoalProgressBar baseline={goal.baseline} current={goal.current} target={goal.target} />
+                  <GoalProgressBar
+                    baseline={goal.baseline}
+                    current={goal.current}
+                    target={goal.target}
+                  />
                   <p className={styles.goalStats}>
                     {goal.baseline != null && `Baseline: ${goal.baseline}`}
                     {goal.current != null && ` · Current: ${goal.current}`}
@@ -246,7 +315,9 @@ export function PatientGoalsCard({ patientId }: { patientId: string }) {
               {editingId === goal.id ? (
                 <div className={styles.goalEditRow}>
                   <input
-                    type="number" min="0" max="100"
+                    type="number"
+                    min="0"
+                    max="100"
                     aria-label="New score (0–100)"
                     value={editCurrent}
                     onChange={(e) => setEditCurrent(e.target.value)}
@@ -254,17 +325,30 @@ export function PatientGoalsCard({ patientId }: { patientId: string }) {
                     className={styles.goalEditInput}
                     autoFocus
                   />
-                  <button type="button" onClick={() => handleUpdateCurrent(goal.id)} aria-label={`Save score update for "${goal.title}"`} className={styles.goalEditSave}>
+                  <button
+                    type="button"
+                    onClick={() => handleUpdateCurrent(goal.id)}
+                    aria-label={`Save score update for "${goal.title}"`}
+                    className={styles.goalEditSave}
+                  >
                     Save
                   </button>
-                  <button type="button" onClick={() => setEditingId(null)} aria-label={`Cancel score edit for "${goal.title}"`} className={styles.goalEditCancel}>
+                  <button
+                    type="button"
+                    onClick={() => setEditingId(null)}
+                    aria-label={`Cancel score edit for "${goal.title}"`}
+                    className={styles.goalEditCancel}
+                  >
                     Cancel
                   </button>
                 </div>
               ) : (
                 <button
                   type="button"
-                  onClick={() => { setEditingId(goal.id); setEditCurrent(goal.current?.toString() ?? ""); }}
+                  onClick={() => {
+                    setEditingId(goal.id);
+                    setEditCurrent(goal.current?.toString() ?? "");
+                  }}
                   className={styles.goalUpdateLink}
                 >
                   Update score
@@ -272,7 +356,8 @@ export function PatientGoalsCard({ patientId }: { patientId: string }) {
               )}
               {goal.metric && (
                 <p className={styles.goalMetricTag}>
-                  Auto-updated from: {GOAL_METRIC_OPTIONS.find((o) => o.value === goal.metric)?.label ?? goal.metric}
+                  Auto-updated from:{" "}
+                  {GOAL_METRIC_OPTIONS.find((o) => o.value === goal.metric)?.label ?? goal.metric}
                 </p>
               )}
               {goal.notes && <p className={styles.goalNotes}>{goal.notes}</p>}
@@ -290,10 +375,20 @@ export function PatientGoalsCard({ patientId }: { patientId: string }) {
                     <div className={styles.goalCompletedHeader}>
                       <p className={styles.goalCompletedTitle}>{goal.title}</p>
                       <div className={styles.goalCompletedActions}>
-                        <button type="button" onClick={() => handleToggleComplete(goal)} aria-label={`Reopen goal "${goal.title}"`} className={styles.goalCompletedBtn}>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleComplete(goal)}
+                          aria-label={`Reopen goal "${goal.title}"`}
+                          className={styles.goalCompletedBtn}
+                        >
                           Reopen
                         </button>
-                        <button type="button" onClick={() => handleDelete(goal.id)} aria-label={`Delete goal "${goal.title}"`} className={styles.goalCompletedBtn}>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(goal.id)}
+                          aria-label={`Delete goal "${goal.title}"`}
+                          className={styles.goalCompletedBtn}
+                        >
                           ✕
                         </button>
                       </div>

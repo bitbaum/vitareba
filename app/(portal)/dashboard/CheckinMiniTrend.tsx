@@ -23,9 +23,10 @@ export function CheckinMiniTrend({ checkins }: { checkins: CheckinRow[] }) {
   // Checkins arrive newest-first from the DB; chart expects oldest-first
   const data = [...checkins].reverse().map((c) => ({
     date: formatDateMonthDay(c.date + "T00:00:00"),
-    ...Object.fromEntries(
-      CHECKIN_METRICS.map(({ key }) => [key, c[key as MetricKey]])
-    ) as Record<MetricKey, number>,
+    ...(Object.fromEntries(CHECKIN_METRICS.map(({ key }) => [key, c[key as MetricKey]])) as Record<
+      MetricKey,
+      number
+    >),
   }));
 
   return (

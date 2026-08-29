@@ -18,20 +18,12 @@ export default async function PsychedelicReadiness() {
               <br />
               <em>{t("headingEm")}</em>
             </h2>
-            <p className="sec-sub sec-sub-mt">
-              {t("sub")}
-            </p>
+            <p className="sec-sub sec-sub-mt">{t("sub")}</p>
 
             <div className={styles.callout}>
-              <div className={styles.calloutTitle}>
-                {t("calloutTitle")}
-              </div>
-              <div className={styles.calloutText}>
-                {t("calloutText")}
-              </div>
-              <div className={styles.calloutCite}>
-                {t("calloutCite")}
-              </div>
+              <div className={styles.calloutTitle}>{t("calloutTitle")}</div>
+              <div className={styles.calloutText}>{t("calloutText")}</div>
+              <div className={styles.calloutCite}>{t("calloutCite")}</div>
             </div>
           </div>
 
@@ -47,9 +39,7 @@ export default async function PsychedelicReadiness() {
                 </div>
               ))}
             </div>
-            <p className={styles.body}>
-              {t("footer")}
-            </p>
+            <p className={styles.body}>{t("footer")}</p>
           </div>
         </div>
       </div>

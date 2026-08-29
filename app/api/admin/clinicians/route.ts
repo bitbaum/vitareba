@@ -3,7 +3,11 @@ export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/guards";
 import { serviceUnavailable, badRequest } from "@/lib/utils/api-response";
-import { listClinicians, grantClinicianByEmail, grantClinicianSchema } from "@/lib/domain/clinicians";
+import {
+  listClinicians,
+  grantClinicianByEmail,
+  grantClinicianSchema,
+} from "@/lib/domain/clinicians";
 
 export async function GET() {
   const guard = await requireAdmin();
@@ -33,7 +37,7 @@ export async function POST(req: Request) {
     console.error("[api/admin/clinicians] POST failed:", err);
     return NextResponse.json(
       { success: false, error: "Could not add that clinician — please try again" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

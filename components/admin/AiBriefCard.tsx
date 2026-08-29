@@ -6,7 +6,12 @@ import shared from "@/app/shared.module.css";
 import { RegulationNotice } from "@/components/RegulationNotice";
 
 type Gate = { code: "no_consent" | "ai_not_configured"; blockId: string };
-type Output = { kind: "brief" | "differential"; text: string; dpaWarning: boolean; deviceWarning: boolean };
+type Output = {
+  kind: "brief" | "differential";
+  text: string;
+  dpaWarning: boolean;
+  deviceWarning: boolean;
+};
 
 /**
  * Clinician-side AI. Both features run (house rule: the law is a warning,
@@ -59,8 +64,12 @@ export function AiBriefCard({ patientId }: { patientId: string }) {
 
       {output ? (
         <>
-          {output.deviceWarning && <RegulationNotice blockId="ai-diagnosis" reason="device_warning" />}
-          {output.dpaWarning && <RegulationNotice blockId="cloud-ai-processing" reason="dpa_warning" />}
+          {output.deviceWarning && (
+            <RegulationNotice blockId="ai-diagnosis" reason="device_warning" />
+          )}
+          {output.dpaWarning && (
+            <RegulationNotice blockId="cloud-ai-processing" reason="dpa_warning" />
+          )}
           <p className={shared.aiOutput}>{output.text}</p>
         </>
       ) : gate ? (
@@ -68,8 +77,8 @@ export function AiBriefCard({ patientId }: { patientId: string }) {
           <RegulationNotice blockId={gate.blockId} reason={gate.code} />
           {gate.code === "no_consent" && (
             <p className={styles.cellSub}>
-              This patient hasn&apos;t given AI consent yet — it&apos;s one toggle in their
-              Profile → Privacy &amp; data, or one click on their own dashboard AI card.
+              This patient hasn&apos;t given AI consent yet — it&apos;s one toggle in their Profile
+              → Privacy &amp; data, or one click on their own dashboard AI card.
             </p>
           )}
         </>

@@ -28,17 +28,21 @@ export async function PATCH(req: Request, { params }: RouteContext) {
 
   try {
     await Promise.all([
-      name != null
-        ? db.update(users).set({ name }).where(eq(users.id, id))
-        : Promise.resolve(),
+      name != null ? db.update(users).set({ name }).where(eq(users.id, id)) : Promise.resolve(),
       db
         .insert(profiles)
         .values({ userId: id, ...profileFields })
-        .onConflictDoUpdate({ target: profiles.userId, set: { ...profileFields, updatedAt: new Date() } }),
+        .onConflictDoUpdate({
+          target: profiles.userId,
+          set: { ...profileFields, updatedAt: new Date() },
+        }),
     ]);
   } catch (err) {
     console.error("[api/admin/profile] upsert failed:", err);
-    return NextResponse.json({ success: false, error: "Failed to save profile — please try again" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "Failed to save profile — please try again" },
+      { status: 500 },
+    );
   }
 
   return NextResponse.json({ success: true });

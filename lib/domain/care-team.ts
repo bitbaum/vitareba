@@ -96,7 +96,7 @@ export async function getPrimaryClinicianId(patientId: string): Promise<string |
 
 export async function addCareTeamMember(
   clinicianId: string,
-  patientId: string
+  patientId: string,
 ): Promise<CareTeamResult> {
   const clinician = await getClinicianById(clinicianId);
   if (!clinician) return { ok: false, error: "Unknown clinician" };
@@ -107,7 +107,7 @@ export async function addCareTeamMember(
 
 export async function removeCareTeamMember(
   clinicianId: string,
-  patientId: string
+  patientId: string,
 ): Promise<CareTeamResult> {
   await db
     .delete(careTeam)
@@ -135,7 +135,7 @@ export async function removeCareTeamMember(
  */
 export async function canPatientChooseClinician(
   patientId: string,
-  clinicianId: string
+  clinicianId: string,
 ): Promise<CareTeamResult> {
   if (patientId === clinicianId) return { ok: true };
 

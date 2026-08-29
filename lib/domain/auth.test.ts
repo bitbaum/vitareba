@@ -32,7 +32,9 @@ import {
 
 describe("loginSchema", () => {
   it("accepts valid email and non-empty password", () => {
-    expect(loginSchema.safeParse({ email: "user@example.com", password: "abc" }).success).toBe(true);
+    expect(loginSchema.safeParse({ email: "user@example.com", password: "abc" }).success).toBe(
+      true,
+    );
   });
 
   it("rejects invalid email", () => {
@@ -54,13 +56,19 @@ describe("loginSchema", () => {
 
   it("rejects password over PASSWORD_MAX_LENGTH", () => {
     expect(
-      loginSchema.safeParse({ email: "user@example.com", password: "a".repeat(PASSWORD_MAX_LENGTH + 1) }).success
+      loginSchema.safeParse({
+        email: "user@example.com",
+        password: "a".repeat(PASSWORD_MAX_LENGTH + 1),
+      }).success,
     ).toBe(false);
   });
 
   it("accepts password at exactly PASSWORD_MAX_LENGTH", () => {
     expect(
-      loginSchema.safeParse({ email: "user@example.com", password: "a".repeat(PASSWORD_MAX_LENGTH) }).success
+      loginSchema.safeParse({
+        email: "user@example.com",
+        password: "a".repeat(PASSWORD_MAX_LENGTH),
+      }).success,
     ).toBe(true);
   });
 });
@@ -243,7 +251,7 @@ describe("nextLoginAttemptState", () => {
       const result = nextLoginAttemptState(
         { failedLoginAttempts: LOGIN_LOCKOUT_THRESHOLD - 2 },
         false,
-        NOW
+        NOW,
       );
       expect(result.failedLoginAttempts).toBe(LOGIN_LOCKOUT_THRESHOLD - 1);
       expect(result.lockedUntil).toBeNull();
@@ -255,7 +263,7 @@ describe("nextLoginAttemptState", () => {
       const result = nextLoginAttemptState(
         { failedLoginAttempts: LOGIN_LOCKOUT_THRESHOLD - 1 },
         false,
-        NOW
+        NOW,
       );
       expect(result.failedLoginAttempts).toBe(0);
       expect(result.lockedUntil).not.toBeNull();
@@ -337,7 +345,7 @@ describe("sanitizeReturnTo", () => {
 
     it("path with query string", () => {
       expect(sanitizeReturnTo("/admin/patients?signal=critical", FALLBACK)).toBe(
-        "/admin/patients?signal=critical"
+        "/admin/patients?signal=critical",
       );
     });
 
@@ -473,7 +481,7 @@ describe("revalidatedSessionToken", () => {
     const next = revalidatedSessionToken(
       token,
       { email: "patient@example.com", role: USER_ROLE.patient, emailVerified: null },
-      NOW
+      NOW,
     );
     expect(next?.role).toBe(USER_ROLE.patient);
     expect(next?.checkedAt).toBe(NOW);
@@ -485,7 +493,7 @@ describe("revalidatedSessionToken", () => {
     const next = revalidatedSessionToken(
       token,
       { email: "admin@example.com", role: USER_ROLE.patient, emailVerified: null },
-      NOW
+      NOW,
     );
     expect(next?.role).toBe(USER_ROLE.admin);
   });
@@ -495,7 +503,7 @@ describe("revalidatedSessionToken", () => {
     const next = revalidatedSessionToken(
       token,
       { email: "p@example.com", role: USER_ROLE.patient, emailVerified: verifiedAt },
-      NOW
+      NOW,
     );
     expect(next?.emailVerified).toBe(verifiedAt);
   });

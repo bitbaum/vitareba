@@ -134,7 +134,9 @@ export function parseIcsDate(value: string, params: Record<string, string>): Ics
 
 /** ISO-8601 duration as used by DURATION: `PT1H30M`, `P1D`, `-PT15M`. */
 export function parseIcsDuration(value: string): number | null {
-  const m = value.trim().match(/^([+-])?P(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?$/);
+  const m = value
+    .trim()
+    .match(/^([+-])?P(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?$/);
   if (!m) return null;
   const [, sign, w, d, h, mi, s] = m;
   const ms =
@@ -192,12 +194,12 @@ export function expandRecurrence(
   start: Date,
   rule: Rrule,
   windowStart: Date,
-  windowEnd: Date
+  windowEnd: Date,
 ): Date[] {
   const out: Date[] = [];
   const hardEnd = Math.min(
     windowEnd.getTime(),
-    rule.until ? rule.until.getTime() : Number.POSITIVE_INFINITY
+    rule.until ? rule.until.getTime() : Number.POSITIVE_INFINITY,
   );
 
   const push = (d: Date) => {
@@ -352,7 +354,7 @@ function collect(
     cancelled: boolean;
   },
   out: BusyInterval[],
-  opts: ParseOptions
+  opts: ParseOptions,
 ): void {
   if (!ev.start || ev.transparent || ev.cancelled) return;
 

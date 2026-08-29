@@ -17,9 +17,13 @@ export function CalendarSubscribeCard() {
     let alive = true;
     fetch("/api/calendar/subscribe")
       .then((r) => (r.ok ? r.json() : null))
-      .then((body) => { if (alive) setUrl(body?.data?.url ?? null); })
+      .then((body) => {
+        if (alive) setUrl(body?.data?.url ?? null);
+      })
       .catch(() => {});
-    return () => { alive = false; };
+    return () => {
+      alive = false;
+    };
   }, []);
 
   if (!url) return null;
@@ -38,11 +42,10 @@ export function CalendarSubscribeCard() {
     <div className={styles.cardMb}>
       <p className={styles.cardTitle}>Your calendar feed</p>
       <p className={styles.docMeta}>
-        Add this address to Google Calendar (Other calendars → From URL), Apple
-        Calendar (File → New Calendar Subscription) or Outlook (Add calendar →
-        Subscribe from web). Your appointments then appear — and disappear when
-        cancelled — automatically. Keep the link private; it grants read access
-        to your schedule.
+        Add this address to Google Calendar (Other calendars → From URL), Apple Calendar (File → New
+        Calendar Subscription) or Outlook (Add calendar → Subscribe from web). Your appointments
+        then appear — and disappear when cancelled — automatically. Keep the link private; it grants
+        read access to your schedule.
       </p>
       <div className={styles.feedUrlRow}>
         <code className={styles.feedUrl}>{url}</code>

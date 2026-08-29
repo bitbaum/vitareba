@@ -18,11 +18,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(
-    ellipse at 30% 60%,
-    var(--teal-20),
-    transparent 60%
-  );
+  background: radial-gradient(ellipse at 30% 60%, var(--teal-20), transparent 60%);
 }
 
 .heroR {
@@ -215,7 +211,9 @@
   text-decoration: none;
   font-family: var(--font-dm-sans), sans-serif;
   border-radius: var(--radius-xs);
-  transition: border-color var(--transition-normal), color var(--transition-normal);
+  transition:
+    border-color var(--transition-normal),
+    color var(--transition-normal);
 }
 
 .btnGhostLight:hover {

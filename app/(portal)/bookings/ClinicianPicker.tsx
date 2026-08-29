@@ -21,13 +21,24 @@ type Props = {
 };
 
 /** Step 1 of the booking picker: "who you'd like to see". */
-export function ClinicianPicker({ clinicians, clinicianId, careTeam, selfId, nextFreeDay, onSelect }: Props) {
+export function ClinicianPicker({
+  clinicians,
+  clinicianId,
+  careTeam,
+  selfId,
+  nextFreeDay,
+  onSelect,
+}: Props) {
   if (clinicians.length === 0) return null;
 
   return (
     <div className={bookingStyles.pickerStep}>
       <p className={bookingStyles.stepLabel}>1 · Who you&apos;d like to see</p>
-      <div className={bookingStyles.clinicianRow} role="radiogroup" aria-label="Choose your clinician">
+      <div
+        className={bookingStyles.clinicianRow}
+        role="radiogroup"
+        aria-label="Choose your clinician"
+      >
         {clinicians.map((c) => {
           const active = c.id === clinicianId;
           const mine = careTeam.includes(c.id);
@@ -56,7 +67,9 @@ export function ClinicianPicker({ clinicians, clinicianId, careTeam, selfId, nex
                   {c.name ?? "Clinician"}
                   {mine && <span className={bookingStyles.clinicianBadge}>Your clinician</span>}
                   {closedToMe && (
-                    <span className={bookingStyles.clinicianBadgeWarn}>Not accepting new patients</span>
+                    <span className={bookingStyles.clinicianBadgeWarn}>
+                      Not accepting new patients
+                    </span>
                   )}
                 </span>
                 <span className={bookingStyles.clinicianMeta}>

@@ -154,7 +154,7 @@ export type MeasurementReading = {
 export function readMeasurement(
   kind: string,
   value: number,
-  sex?: BiologicalSex | null
+  sex?: BiologicalSex | null,
 ): MeasurementReading {
   const def = measurementDef(kind);
   if (!def) {
@@ -234,7 +234,7 @@ function steadyThreshold(def: MeasurementDef, range: MeasurementRange | undefine
 export function computeTrend(
   kind: string,
   points: readonly MeasurementPoint[],
-  sex?: BiologicalSex | null
+  sex?: BiologicalSex | null,
 ): MeasurementTrend {
   const sorted = [...points].sort((a, b) => a.measuredAt.getTime() - b.measuredAt.getTime());
   const latest = sorted[sorted.length - 1];

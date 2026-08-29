@@ -21,7 +21,7 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
     console.error("[api/admin/clinicians/id] DELETE failed:", err);
     return NextResponse.json(
       { success: false, error: "Could not remove that clinician — please try again" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

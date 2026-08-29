@@ -17,7 +17,9 @@
   color: var(--ink2);
   padding: 0.35rem 0.55rem;
   line-height: 1;
-  transition: border-color var(--transition-fast), color var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    color var(--transition-fast);
   min-height: 2rem;
 }
 
@@ -64,7 +66,9 @@
   padding: 0.4rem 0.65rem;
   border-radius: var(--radius-sm);
   text-align: left;
-  transition: background var(--transition-fast), color var(--transition-fast);
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
   line-height: 1;
 }
 

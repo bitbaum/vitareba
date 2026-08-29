@@ -38,7 +38,9 @@ export async function compilePatientDigest(patientId: string, now: Date): Promis
   if (checkins.length === 0) {
     lines.push(`Check-ins (last ${DIGEST_CHECKIN_DAYS}d): none recorded.`);
   } else {
-    lines.push(`Check-ins (last ${DIGEST_CHECKIN_DAYS}d, ${checkins.length} entries, 1–5 scale, newest first):`);
+    lines.push(
+      `Check-ins (last ${DIGEST_CHECKIN_DAYS}d, ${checkins.length} entries, 1–5 scale, newest first):`,
+    );
     for (const c of checkins) {
       const scores = CHECKIN_METRICS.map((m) => `${m.key}=${c[m.key as keyof typeof c]}`).join(" ");
       lines.push(`  ${c.date}: ${scores}${c.notes ? ` note="${c.notes}"` : ""}`);
@@ -53,7 +55,7 @@ export async function compilePatientDigest(patientId: string, now: Date): Promis
       const scores = a.scores as Record<string, number>;
       const dims = DIMENSIONS.map((d) => `${d.name}=${scores[d.id] ?? "?"}`).join(", ");
       lines.push(
-        `  ${formatDateISO(a.completedAt)}: overall ${a.overallScore} (${getVerdict(a.overallScore).name}); ${dims}`
+        `  ${formatDateISO(a.completedAt)}: overall ${a.overallScore} (${getVerdict(a.overallScore).name}); ${dims}`,
       );
     }
   }
@@ -64,7 +66,7 @@ export async function compilePatientDigest(patientId: string, now: Date): Promis
     lines.push("Active clinical goals:");
     for (const g of goals) {
       lines.push(
-        `  "${g.title}" metric=${g.metric ?? "-"} baseline=${g.baseline ?? "-"} current=${g.current ?? "-"} target=${g.target ?? "-"}`
+        `  "${g.title}" metric=${g.metric ?? "-"} baseline=${g.baseline ?? "-"} current=${g.current ?? "-"} target=${g.target ?? "-"}`,
       );
     }
   }

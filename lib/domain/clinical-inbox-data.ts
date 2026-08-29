@@ -13,7 +13,11 @@ import { db } from "@/lib/db";
 import { assessmentResults, bookings, dailyCheckins, measurements } from "@/lib/db/schema";
 import { patientScope } from "@/lib/domain/patients";
 import { getThreadsAwaitingReply } from "@/lib/domain/messages";
-import { buildClinicalInbox, type ClinicalInbox, type InboxMeasurement } from "@/lib/domain/clinical-inbox";
+import {
+  buildClinicalInbox,
+  type ClinicalInbox,
+  type InboxMeasurement,
+} from "@/lib/domain/clinical-inbox";
 import { SIGNAL_CHECKIN_WINDOW_DAYS } from "@/lib/config/admin";
 import { MEASUREMENT_DEFS, type BiologicalSex } from "@/lib/config/measurements";
 import { RESULT_REVIEW_WINDOW_DAYS } from "@/lib/config/inbox";
@@ -27,7 +31,7 @@ export async function loadClinicalInbox(
   /** Whose inbox this is. "Awaiting reply" is answered per clinician, because
    * with a care team two clinicians genuinely have different answers. */
   actorId: string,
-  now = new Date()
+  now = new Date(),
 ): Promise<ClinicalInbox> {
   const cutoff = new Date(now.getTime() - RESULT_REVIEW_WINDOW_DAYS * DAY_MS);
 

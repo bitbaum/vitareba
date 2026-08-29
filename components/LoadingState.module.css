@@ -11,12 +11,7 @@
 .line {
   height: 0.9rem;
   border-radius: var(--radius-sm);
-  background: linear-gradient(
-    90deg,
-    var(--muted-8) 25%,
-    var(--muted-18) 50%,
-    var(--muted-8) 75%
-  );
+  background: linear-gradient(90deg, var(--muted-8) 25%, var(--muted-18) 50%, var(--muted-8) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
 }

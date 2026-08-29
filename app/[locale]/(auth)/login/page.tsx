@@ -62,7 +62,9 @@ function LoginForm() {
 
       <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.field}>
-          <label className={styles.label} htmlFor="email">{t("emailLabel")}</label>
+          <label className={styles.label} htmlFor="email">
+            {t("emailLabel")}
+          </label>
           <input
             id="email"
             className={styles.input}
@@ -75,7 +77,9 @@ function LoginForm() {
           />
         </div>
         <div className={styles.field}>
-          <label className={styles.label} htmlFor="password">{t("passwordLabel")}</label>
+          <label className={styles.label} htmlFor="password">
+            {t("passwordLabel")}
+          </label>
           <input
             id="password"
             className={styles.input}

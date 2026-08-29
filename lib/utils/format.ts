@@ -28,7 +28,12 @@ export function formatDateNumeric(date: Date | string): string {
 /** "2 Apr, 10:30" — for message timestamps */
 export function formatDateTime(date: Date | string): string {
   const d = typeof date === "string" ? new Date(date) : date;
-  return d.toLocaleString(LOCALE, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  return d.toLocaleString(LOCALE, {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 /** "2 Apr" — for chart axis labels where year is omitted for compactness */
@@ -171,7 +176,7 @@ export function formatRelativeTime(date: Date, now: Date): string {
 export function displayName(
   name: string | null | undefined,
   email: string | null | undefined,
-  fallback = "there"
+  fallback = "there",
 ): string {
   return name ?? email?.split("@")[0] ?? fallback;
 }

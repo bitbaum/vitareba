@@ -97,11 +97,7 @@ export function generateSlots({ now, rules, busy }: GenerateSlotsInput): Date[] 
       const windowStart = clinicTimeToUtc(dayISO, start);
       const windowEnd = clinicTimeToUtc(dayISO, end);
 
-      for (
-        let t = windowStart.getTime();
-        t + slotSpanMs <= windowEnd.getTime();
-        t += slotSpanMs
-      ) {
+      for (let t = windowStart.getTime(); t + slotSpanMs <= windowEnd.getTime(); t += slotSpanMs) {
         if (t < earliest || t > latest) continue;
         const slotEnd = t + slotSpanMs;
         const conflict = busy.some((b) => t < b.end.getTime() && slotEnd > b.start.getTime());

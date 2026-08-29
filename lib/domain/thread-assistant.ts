@@ -74,7 +74,7 @@ export type AssistantTurn =
  */
 export async function runThreadAssistant(
   threadId: string,
-  requesterId: string
+  requesterId: string,
 ): Promise<AssistantTurn> {
   if (!isAiConfigured()) return { status: "blocked", code: "ai_not_configured" };
 

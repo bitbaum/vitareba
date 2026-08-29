@@ -33,7 +33,14 @@ export async function GET() {
       await Promise.all([
         db.query.users.findFirst({
           where: eq(users.id, uid),
-          columns: { id: true, name: true, email: true, role: true, isClinician: true, createdAt: true },
+          columns: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            isClinician: true,
+            createdAt: true,
+          },
         }),
         db.query.profiles.findFirst({ where: eq(profiles.userId, uid) }),
         db.query.dailyCheckins.findMany({

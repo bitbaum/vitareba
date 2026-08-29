@@ -21,15 +21,12 @@ import { NOTIFICATION_TYPE } from "@/lib/config/notifications";
  *
  * AI and system participants are skipped: they have no mailbox, by design.
  */
-export async function notifyThreadParticipants(
-  threadId: string,
-  authorId: string
-): Promise<void> {
+export async function notifyThreadParticipants(threadId: string, authorId: string): Promise<void> {
   const loaded = await loadThread(threadId);
   if (!loaded) return;
 
   const recipients = loaded.thread.participants.filter(
-    (p) => p.actorId !== authorId && p.kind === "human" && !p.leftAt
+    (p) => p.actorId !== authorId && p.kind === "human" && !p.leftAt,
   );
   if (recipients.length === 0) return;
 
@@ -37,7 +34,7 @@ export async function notifyThreadParticipants(
     db.query.users.findMany({
       where: inArray(
         users.id,
-        recipients.map((p) => p.actorId)
+        recipients.map((p) => p.actorId),
       ),
       columns: { id: true, name: true, email: true, role: true },
     }),
@@ -63,7 +60,7 @@ export async function notifyThreadParticipants(
             subject,
             portalUrl: `${PORTAL_URL}${PORTAL_ROUTES.messages}/${threadId}`,
           }),
-        })
+        }),
       ),
     ...people.map((p) =>
       createNotification({
@@ -72,7 +69,7 @@ export async function notifyThreadParticipants(
         title: `New message from ${senderName}`,
         body: subject || undefined,
         href: `${p.role === USER_ROLE.admin ? ADMIN_ROUTES.messages : PORTAL_ROUTES.messages}/${threadId}`,
-      })
+      }),
     ),
   ]);
 }

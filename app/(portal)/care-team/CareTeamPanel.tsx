@@ -48,7 +48,10 @@ export function CareTeamPanel({ selfId }: { selfId: string }) {
     setLoadError(false);
     try {
       const res = await fetch("/api/care-team");
-      if (!res.ok) { setLoadError(true); return; }
+      if (!res.ok) {
+        setLoadError(true);
+        return;
+      }
       const { data } = await res.json();
       setClinicians(data?.clinicians ?? []);
       setMine(data?.mine ?? []);
@@ -59,7 +62,9 @@ export function CareTeamPanel({ selfId }: { selfId: string }) {
     }
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   async function toggle(clinicianId: string, isMine: boolean) {
     setBusyId(clinicianId);
@@ -75,7 +80,9 @@ export function CareTeamPanel({ selfId }: { selfId: string }) {
         setError(body?.error ?? "That didn't save — please try again.");
         return;
       }
-      setMine((prev) => (isMine ? prev.filter((id) => id !== clinicianId) : [...prev, clinicianId]));
+      setMine((prev) =>
+        isMine ? prev.filter((id) => id !== clinicianId) : [...prev, clinicianId],
+      );
       // Booking defaults and message recipients read the care team server-side.
       router.refresh();
     } catch {
@@ -126,7 +133,11 @@ export function CareTeamPanel({ selfId }: { selfId: string }) {
         return (
           <div
             key={c.id}
-            className={closedToMe ? `${styles.clinicianCard} ${styles.clinicianCardClosed}` : styles.clinicianCard}
+            className={
+              closedToMe
+                ? `${styles.clinicianCard} ${styles.clinicianCardClosed}`
+                : styles.clinicianCard
+            }
           >
             <span className={styles.clinicianAvatar} aria-hidden="true">
               {initials(c.name)}
@@ -134,7 +145,10 @@ export function CareTeamPanel({ selfId }: { selfId: string }) {
             <div className={styles.clinicianBody}>
               <span className={styles.clinicianText}>
                 <span className={styles.clinicianName}>
-                  <Link href={`${PORTAL_ROUTES.careTeam}/${c.id}`} className={styles.clinicianNameLink}>
+                  <Link
+                    href={`${PORTAL_ROUTES.careTeam}/${c.id}`}
+                    className={styles.clinicianNameLink}
+                  >
                     {c.name ?? "Clinician"}
                   </Link>
                   {isSelf && " (you)"}
@@ -143,7 +157,11 @@ export function CareTeamPanel({ selfId }: { selfId: string }) {
                   )}
                 </span>
                 <span className={styles.clinicianMeta}>
-                  {isMine ? "On your care team" : closedToMe ? "Closed to new patients right now" : "Not on your care team"}
+                  {isMine
+                    ? "On your care team"
+                    : closedToMe
+                      ? "Closed to new patients right now"
+                      : "Not on your care team"}
                 </span>
               </span>
 
@@ -165,7 +183,9 @@ export function CareTeamPanel({ selfId }: { selfId: string }) {
                   className={portalStyles.btnSecondary}
                   onClick={() => toggle(c.id, isMine)}
                   disabled={busyId === c.id || (closedToMe && !isMine)}
-                  title={closedToMe ? "This clinician is not taking new patients right now." : undefined}
+                  title={
+                    closedToMe ? "This clinician is not taking new patients right now." : undefined
+                  }
                 >
                   {busyId === c.id ? "Saving…" : isMine ? "Remove" : "Choose"}
                 </button>

@@ -23,5 +23,5 @@ export type ProfileData = {
 
 /** The shape of ProfileForm's `set(field)` helper — shared by every field-group so each one stays a pure renderer over the parent's single `form` state, not a second source of truth. */
 export type FieldSetter = (
-  field: keyof ProfileData
+  field: keyof ProfileData,
 ) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;

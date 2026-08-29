@@ -13,7 +13,9 @@ export type CronCheckinDipAlertResult =
   | { success: true; alerted: number; skipped: number }
   | { success: false; error: "Database unavailable" };
 
-export async function runCronCheckinDipAlert(now: Date = new Date()): Promise<CronCheckinDipAlertResult> {
+export async function runCronCheckinDipAlert(
+  now: Date = new Date(),
+): Promise<CronCheckinDipAlertResult> {
   const cutoff = new Date(now);
   cutoff.setDate(cutoff.getDate() - CHECKIN_DIP_ALERT_DAYS);
   const cutoffDate = formatDateISO(cutoff);
@@ -101,23 +103,30 @@ export async function runCronCheckinDipAlert(now: Date = new Date()): Promise<Cr
               to: adminEmail,
               subject: `⚠️ Check-in dip alert — ${patientName}`,
               html,
-            })
-          )
+            }),
+          ),
         );
         sends.forEach((result, index) => {
           if (result.status === "rejected") {
-            console.error("[cron/checkin-dip-alert] send failed for", patientId, "to", adminEmails[index], result.reason);
+            console.error(
+              "[cron/checkin-dip-alert] send failed for",
+              patientId,
+              "to",
+              adminEmails[index],
+              result.reason,
+            );
           }
         });
         if (sends.some((result) => result.status === "fulfilled")) {
-          await db.update(profiles)
+          await db
+            .update(profiles)
             .set({ dipAlertSentAt: now })
             .where(eq(profiles.userId, patientId));
           return true;
         }
         throw new Error(`No dip alert email delivered for patient ${patientId}`);
-      })()
-    )
+      })(),
+    ),
   );
 
   return {

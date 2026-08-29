@@ -20,11 +20,46 @@ export const CHECKIN_SCALE_MAX = 5;
  * Adding a new metric: edit here + the DB schema (lib/db/schema.ts) only.
  */
 export const CHECKIN_METRICS = [
-  { key: "sleep",  label: "Sleep quality", shortLabel: "Sleep",  lowLabel: "Poor",      highLabel: "Excellent", color: "var(--purple)" },
-  { key: "energy", label: "Energy level",  shortLabel: "Energy", lowLabel: "Drained",   highLabel: "Vibrant",   color: "var(--teal)" },
-  { key: "mood",   label: "Mood",          shortLabel: "Mood",   lowLabel: "Low",       highLabel: "Great",     color: "var(--gold)" },
-  { key: "focus",  label: "Focus",         shortLabel: "Focus",  lowLabel: "Scattered", highLabel: "Sharp",     color: "var(--teal-dark)" },
-  { key: "stress", label: "Stress level",  shortLabel: "Stress", lowLabel: "None",      highLabel: "High",      color: "var(--danger)" },
+  {
+    key: "sleep",
+    label: "Sleep quality",
+    shortLabel: "Sleep",
+    lowLabel: "Poor",
+    highLabel: "Excellent",
+    color: "var(--purple)",
+  },
+  {
+    key: "energy",
+    label: "Energy level",
+    shortLabel: "Energy",
+    lowLabel: "Drained",
+    highLabel: "Vibrant",
+    color: "var(--teal)",
+  },
+  {
+    key: "mood",
+    label: "Mood",
+    shortLabel: "Mood",
+    lowLabel: "Low",
+    highLabel: "Great",
+    color: "var(--gold)",
+  },
+  {
+    key: "focus",
+    label: "Focus",
+    shortLabel: "Focus",
+    lowLabel: "Scattered",
+    highLabel: "Sharp",
+    color: "var(--teal-dark)",
+  },
+  {
+    key: "stress",
+    label: "Stress level",
+    shortLabel: "Stress",
+    lowLabel: "None",
+    highLabel: "High",
+    color: "var(--danger)",
+  },
 ] as const;
 
 export type MetricKey = (typeof CHECKIN_METRICS)[number]["key"];
@@ -79,16 +114,16 @@ export const PROFILE_COMPLETION_FIELDS = [
 
 /** Human-readable labels for each profile completion field — used in the dashboard bar */
 export const PROFILE_FIELD_LABELS: Record<(typeof PROFILE_COMPLETION_FIELDS)[number], string> = {
-  dateOfBirth:        "Date of birth",
-  city:               "City",
-  occupation:         "Occupation",
-  mainConcern:        "Main concern",
-  goals:              "Goals",
-  diagnosisHistory:   "Diagnosis history",
+  dateOfBirth: "Date of birth",
+  city: "City",
+  occupation: "Occupation",
+  mainConcern: "Main concern",
+  goals: "Goals",
+  diagnosisHistory: "Diagnosis history",
   currentMedications: "Medications",
   currentSupplements: "Supplements",
-  sleepHoursAvg:      "Sleep average",
-  exerciseFrequency:  "Exercise frequency",
+  sleepHoursAvg: "Sleep average",
+  exerciseFrequency: "Exercise frequency",
 };
 
 /** Fraction of PROFILE_COMPLETION_FIELDS filled before admin is notified */
@@ -214,7 +249,8 @@ export const ASSESSMENT_GOAL_METRIC_LABEL = "Assessment overall score" as const;
  */
 export function goalMetricAutoUpdateNote(metric: string | null | undefined): string | null {
   if (!metric) return null;
-  if (metric === ASSESSMENT_GOAL_METRIC_KEY) return "auto-updates from your Inflection Edge assessments";
+  if (metric === ASSESSMENT_GOAL_METRIC_KEY)
+    return "auto-updates from your Inflection Edge assessments";
   if ((CHECKIN_METRICS as readonly { key: string }[]).some((m) => m.key === metric))
     return "auto-updates from your daily check-ins";
   return null;

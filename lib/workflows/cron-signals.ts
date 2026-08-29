@@ -1,12 +1,28 @@
 import { db } from "@/lib/db";
-import { users, profiles, assessmentResults, bookings, dailyCheckins, clinicalGoals } from "@/lib/db/schema";
+import {
+  users,
+  profiles,
+  assessmentResults,
+  bookings,
+  dailyCheckins,
+  clinicalGoals,
+} from "@/lib/db/schema";
 import { eq, desc, isNull } from "drizzle-orm";
 import { sendEmail } from "@/lib/email/index";
-import { criticalPatientAlertEmail, goalAchievedAdminEmail, goalAchievedPatientEmail } from "@/lib/email/templates";
+import {
+  criticalPatientAlertEmail,
+  goalAchievedAdminEmail,
+  goalAchievedPatientEmail,
+} from "@/lib/email/templates";
 import { computePatientSignal } from "@/lib/domain/signals";
 import { normalizeCheckinMetric } from "@/lib/domain/checkin";
 import { computeGoalProgress } from "@/lib/domain/goals";
-import { PATIENT_SIGNAL, CHECKIN_GOAL_METRICS, SIGNAL_CHECKIN_WINDOW_DAYS, type CheckinGoalMetric } from "@/lib/config/admin";
+import {
+  PATIENT_SIGNAL,
+  CHECKIN_GOAL_METRICS,
+  SIGNAL_CHECKIN_WINDOW_DAYS,
+  type CheckinGoalMetric,
+} from "@/lib/config/admin";
 import { ASSESSMENT_GOAL_METRIC_KEY, GOAL_PROGRESS_COMPLETE_PCT } from "@/lib/config/portal";
 import { USER_ROLE } from "@/lib/config/auth";
 import { PORTAL_URL, getAdminEmails } from "@/lib/config/company";
@@ -96,9 +112,10 @@ export async function runCronSignals(now: Date = new Date()): Promise<CronSignal
       }));
       const assessmentHistory = patient.assessmentResults.map((a) => ({
         score: a.overallScore,
-        completedAt: a.completedAt instanceof Date
-          ? a.completedAt.toISOString().slice(0, 10)
-          : String(a.completedAt).slice(0, 10),
+        completedAt:
+          a.completedAt instanceof Date
+            ? a.completedAt.toISOString().slice(0, 10)
+            : String(a.completedAt).slice(0, 10),
       }));
 
       if (adminEmails.length > 0) {
@@ -115,12 +132,18 @@ export async function runCronSignals(now: Date = new Date()): Promise<CronSignal
                 recentCheckins,
                 assessmentHistory,
               }),
-            })
-          )
+            }),
+          ),
         );
         results.forEach((result, index) => {
           if (result.status === "rejected") {
-            console.error("[cron/signals] alert send failed for", patient.id, "to", adminEmails[index], result.reason);
+            console.error(
+              "[cron/signals] alert send failed for",
+              patient.id,
+              "to",
+              adminEmails[index],
+              result.reason,
+            );
           }
         });
         if (results.some((result) => result.status === "fulfilled")) {
@@ -133,7 +156,7 @@ export async function runCronSignals(now: Date = new Date()): Promise<CronSignal
           title: `Critical patient: ${patientName}`,
           body: reason,
           href: `${ADMIN_ROUTES.patients}/${patient.id}`,
-        })
+        }),
       );
     }
 
@@ -146,7 +169,10 @@ export async function runCronSignals(now: Date = new Date()): Promise<CronSignal
 
       if (goal.metric === ASSESSMENT_GOAL_METRIC_KEY && latestAssessment) {
         liveValue = latestAssessment.overallScore;
-      } else if ((CHECKIN_GOAL_METRICS as readonly string[]).includes(goal.metric) && checkins.length > 0) {
+      } else if (
+        (CHECKIN_GOAL_METRICS as readonly string[]).includes(goal.metric) &&
+        checkins.length > 0
+      ) {
         const key = goal.metric as CheckinGoalMetric;
         const sum = checkins.reduce((acc, c) => acc + c[key], 0);
         liveValue = normalizeCheckinMetric(sum / checkins.length);
@@ -158,13 +184,14 @@ export async function runCronSignals(now: Date = new Date()): Promise<CronSignal
           progress !== null && progress >= GOAL_PROGRESS_COMPLETE_PCT && goal.completedAt === null;
 
         dbWrites.push(
-          db.update(clinicalGoals)
+          db
+            .update(clinicalGoals)
             .set({
               current: liveValue,
               ...(isNewlyAchieved ? { completedAt: now } : {}),
               updatedAt: now,
             })
-            .where(eq(clinicalGoals.id, goal.id))
+            .where(eq(clinicalGoals.id, goal.id)),
         );
 
         if (isNewlyAchieved) {
@@ -178,8 +205,12 @@ export async function runCronSignals(now: Date = new Date()): Promise<CronSignal
                 subject: `Goal achieved: ${patientName} — ${goal.title}`,
                 html: goalAchievedAdminEmail({ patientName, goalTitle: goal.title, adminUrl }),
               }).catch((err) =>
-                console.error("[cron/signals] goal achievement admin email failed:", patient.id, err)
-              )
+                console.error(
+                  "[cron/signals] goal achievement admin email failed:",
+                  patient.id,
+                  err,
+                ),
+              ),
             );
           }
           notificationWrites.push(
@@ -187,7 +218,7 @@ export async function runCronSignals(now: Date = new Date()): Promise<CronSignal
               type: NOTIFICATION_TYPE.goalAchieved,
               title: `Goal achieved: ${patientName} — ${goal.title}`,
               href: `${ADMIN_ROUTES.patients}/${patient.id}`,
-            })
+            }),
           );
           if (patient.email) {
             notificationWrites.push(
@@ -201,8 +232,12 @@ export async function runCronSignals(now: Date = new Date()): Promise<CronSignal
                   clinician: await clinicianLabelFor(patient.id),
                 }),
               }).catch((err) =>
-                console.error("[cron/signals] goal achievement patient email failed:", patient.id, err)
-              )
+                console.error(
+                  "[cron/signals] goal achievement patient email failed:",
+                  patient.id,
+                  err,
+                ),
+              ),
             );
           }
           notificationWrites.push(
@@ -211,7 +246,7 @@ export async function runCronSignals(now: Date = new Date()): Promise<CronSignal
               type: NOTIFICATION_TYPE.goalAchieved,
               title: `Goal achieved: ${goal.title}`,
               href: PORTAL_ROUTES.goals,
-            })
+            }),
           );
         }
       }
@@ -219,12 +254,13 @@ export async function runCronSignals(now: Date = new Date()): Promise<CronSignal
 
     if (signal !== previousSignal) {
       dbWrites.push(
-        db.insert(profiles)
+        db
+          .insert(profiles)
           .values({ userId: patient.id, lastKnownSignal: signal, lastKnownSignalAt: now })
           .onConflictDoUpdate({
             target: profiles.userId,
             set: { lastKnownSignal: signal, lastKnownSignalAt: now },
-          })
+          }),
       );
     }
   }

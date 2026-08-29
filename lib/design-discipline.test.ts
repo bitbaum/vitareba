@@ -129,9 +129,7 @@ describe("design-token discipline", () => {
     // Caught for real: .booking-status-pending referenced --warn-12, which was
     // never defined — the badge background silently rendered transparent.
     const globals = readFileSync("app/globals.css", "utf8");
-    const defined = new Set(
-      [...globals.matchAll(/^\s*(--[a-z0-9-]+)\s*:/gm)].map((m) => m[1]),
-    );
+    const defined = new Set([...globals.matchAll(/^\s*(--[a-z0-9-]+)\s*:/gm)].map((m) => m[1]));
     const offenders = globals
       .split("\n")
       .flatMap((line, i) =>

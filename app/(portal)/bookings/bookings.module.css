@@ -38,7 +38,9 @@
   font-family: inherit;
   cursor: pointer;
   min-height: 3.5rem;
-  transition: border-color var(--transition-fast), background var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast);
 }
 
 .clinicianCard:hover,
@@ -157,7 +159,9 @@
   flex-direction: column;
   align-items: center;
   gap: 0.1rem;
-  transition: border-color var(--transition-fast), background var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast);
 }
 
 .dateCell:hover,
@@ -236,7 +240,10 @@
   font-family: inherit;
   cursor: pointer;
   min-height: 2.75rem; /* 44px touch target */
-  transition: border-color var(--transition-fast), color var(--transition-fast), background var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    background var(--transition-fast);
 }
 
 .slotBtn:hover,
@@ -342,7 +349,10 @@
   color: var(--muted);
   font-size: 0.85rem;
   cursor: pointer;
-  transition: border-color var(--transition-fast), color var(--transition-fast), background var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    background var(--transition-fast);
 }
 
 .typeBtn:hover {

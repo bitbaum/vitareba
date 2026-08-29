@@ -14,7 +14,7 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json(
       { success: false, error: parsed.error.flatten().fieldErrors },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -27,12 +27,15 @@ export async function POST(req: Request) {
     });
   } catch (err) {
     console.error("[api/account] email check failed:", err);
-    return NextResponse.json({ success: false, error: "Registration failed — please try again" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "Registration failed — please try again" },
+      { status: 500 },
+    );
   }
   if (existing) {
     return NextResponse.json(
       { success: false, error: { email: ["Email already registered"] } },
-      { status: 409 }
+      { status: 409 },
     );
   }
 
@@ -53,7 +56,7 @@ export async function POST(req: Request) {
     if (inserted.length === 0) {
       return NextResponse.json(
         { success: false, error: { email: ["Email already registered"] } },
-        { status: 409 }
+        { status: 409 },
       );
     }
     newUser = inserted[0];
@@ -61,12 +64,15 @@ export async function POST(req: Request) {
     await db.insert(profiles).values({ userId: newUser.id });
   } catch (err) {
     console.error("[api/account] registration failed:", err);
-    return NextResponse.json({ success: false, error: "Registration failed — please try again" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "Registration failed — please try again" },
+      { status: 500 },
+    );
   }
 
   runAfterResponse(
     () => enqueueWelcomeEmails({ userId: newUser.id, triggeredAt: new Date() }),
-    "[email-queue] welcome enqueue failed:"
+    "[email-queue] welcome enqueue failed:",
   );
 
   return NextResponse.json({ success: true }, { status: 201 });

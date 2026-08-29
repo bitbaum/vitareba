@@ -66,15 +66,15 @@ export default async function AdminMessagesPage() {
                       )}
                     </td>
                     <td>
-                      <div className={`${styles.cellName}${isUnread ? ` ${styles.unreadSubject}` : ""}`}>
+                      <div
+                        className={`${styles.cellName}${isUnread ? ` ${styles.unreadSubject}` : ""}`}
+                      >
                         {t.patient.name ?? <span className={styles.cellMuted}>No name</span>}
                       </div>
                       <div className={styles.cellSub}>{t.patient.email}</div>
                     </td>
                     <td>
-                      <div className={isUnread ? styles.unreadSubject : undefined}>
-                        {t.subject}
-                      </div>
+                      <div className={isUnread ? styles.unreadSubject : undefined}>{t.subject}</div>
                       {t.clinician?.name && (
                         <div className={styles.cellSub}>→ {t.clinician.name}</div>
                       )}

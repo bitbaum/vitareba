@@ -76,22 +76,22 @@ describe("assessmentScoresSchema", () => {
 describe("assessmentSaveSchema", () => {
   it("accepts a fully valid save payload", () => {
     expect(
-      assessmentSaveSchema.safeParse({ scores: makeValidScores(), overallScore: 72 }).success
+      assessmentSaveSchema.safeParse({ scores: makeValidScores(), overallScore: 72 }).success,
     ).toBe(true);
   });
 
   it("rejects non-integer overallScore", () => {
     expect(
-      assessmentSaveSchema.safeParse({ scores: makeValidScores(), overallScore: 72.5 }).success
+      assessmentSaveSchema.safeParse({ scores: makeValidScores(), overallScore: 72.5 }).success,
     ).toBe(false);
   });
 
   it("rejects out-of-range overallScore", () => {
     expect(
-      assessmentSaveSchema.safeParse({ scores: makeValidScores(), overallScore: 101 }).success
+      assessmentSaveSchema.safeParse({ scores: makeValidScores(), overallScore: 101 }).success,
     ).toBe(false);
     expect(
-      assessmentSaveSchema.safeParse({ scores: makeValidScores(), overallScore: -1 }).success
+      assessmentSaveSchema.safeParse({ scores: makeValidScores(), overallScore: -1 }).success,
     ).toBe(false);
   });
 

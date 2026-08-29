@@ -1,7 +1,11 @@
 /// <reference types="vitest/globals" />
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("resend", () => ({ Resend: class { emails = { send: vi.fn() } } }));
+vi.mock("resend", () => ({
+  Resend: class {
+    emails = { send: vi.fn() };
+  },
+}));
 
 import { isEmailConfigured, usesSandboxSender } from "./index";
 

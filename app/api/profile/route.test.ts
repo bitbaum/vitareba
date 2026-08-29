@@ -40,7 +40,11 @@ vi.mock("@/lib/email/index", () => ({ sendEmail: mockSendEmail }));
 
 vi.mock("@/lib/config/company", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/config/company")>();
-  return { ...actual, getAdminEmails: mockGetAdminEmails, PORTAL_URL: "https://portal.example.com" };
+  return {
+    ...actual,
+    getAdminEmails: mockGetAdminEmails,
+    PORTAL_URL: "https://portal.example.com",
+  };
 });
 
 vi.mock("@/lib/utils/post-response", () => ({ runAfterResponse: mockRunAfterResponse }));
@@ -49,23 +53,38 @@ import { GET, PATCH } from "./route";
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
-const SESSION = { session: { user: { id: "user-1", role: "patient", email: "alice@example.com" } }, error: null };
-const UNAUTH  = { session: null, error: new Response(null, { status: 401 }) };
+const SESSION = {
+  session: { user: { id: "user-1", role: "patient", email: "alice@example.com" } },
+  error: null,
+};
+const UNAUTH = { session: null, error: new Response(null, { status: 401 }) };
 
 // PROFILE_COMPLETION_FIELDS has 10 items; PROFILE_COMPLETION_THRESHOLD = 0.7 → 70%
 // 6 filled → Math.round(6/10 * 100) = 60  (below threshold)
 // 7 filled → Math.round(7/10 * 100) = 70  (at threshold — triggers notification)
 
 const PROFILE_60PCT = {
-  userId: "user-1", dateOfBirth: "1990-01-01", city: "Zürich", occupation: "Engineer",
-  mainConcern: "Focus", goals: "Improve", diagnosisHistory: "ADHD",
-  currentMedications: null, currentSupplements: null, sleepHoursAvg: null, exerciseFrequency: null,
+  userId: "user-1",
+  dateOfBirth: "1990-01-01",
+  city: "Zürich",
+  occupation: "Engineer",
+  mainConcern: "Focus",
+  goals: "Improve",
+  diagnosisHistory: "ADHD",
+  currentMedications: null,
+  currentSupplements: null,
+  sleepHoursAvg: null,
+  exerciseFrequency: null,
 };
 
 const PROFILE_70PCT = { ...PROFILE_60PCT, currentMedications: "Ritalin" };
 const PROFILE_80PCT = { ...PROFILE_70PCT, currentSupplements: "Omega 3" };
 
-const VALID_PATCH = { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ city: "Zürich" }) };
+const VALID_PATCH = {
+  method: "PATCH",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ city: "Zürich" }),
+};
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -114,7 +133,9 @@ describe("GET /api/profile", () => {
     mockRequireSession.mockResolvedValue(SESSION);
     mockProfileFindFirst.mockResolvedValue(PROFILE_60PCT);
     mockUserFindFirst.mockResolvedValue({
-      name: "Alice", email: "alice@example.com", image: null,
+      name: "Alice",
+      email: "alice@example.com",
+      image: null,
       createdAt: new Date("2026-01-01T00:00:00.000Z"),
     });
     const res = await GET();
@@ -129,7 +150,12 @@ describe("GET /api/profile", () => {
   it("returns null profile fields when no profile row exists", async () => {
     mockRequireSession.mockResolvedValue(SESSION);
     mockProfileFindFirst.mockResolvedValue(undefined);
-    mockUserFindFirst.mockResolvedValue({ name: "Alice", email: "alice@example.com", image: null, createdAt: new Date() });
+    mockUserFindFirst.mockResolvedValue({
+      name: "Alice",
+      email: "alice@example.com",
+      image: null,
+      createdAt: new Date(),
+    });
     const res = await GET();
     const { data } = await res.json();
     expect(data.city).toBeUndefined();
@@ -160,11 +186,13 @@ describe("PATCH /api/profile", () => {
 
   it("returns 400 for invalid body", async () => {
     mockRequireSession.mockResolvedValue(SESSION);
-    const res = await PATCH(new Request("https://example.com/api/profile", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sleepHoursAvg: 99 }), // out of valid range
-    }));
+    const res = await PATCH(
+      new Request("https://example.com/api/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sleepHoursAvg: 99 }), // out of valid range
+      }),
+    );
     expect(res.status).toBe(400);
   });
 
@@ -185,7 +213,7 @@ describe("PATCH /api/profile", () => {
   it("sends admin notification when completeness crosses the 70% threshold", async () => {
     mockRequireSession.mockResolvedValue(SESSION);
     mockProfileFindFirst.mockResolvedValue(PROFILE_60PCT); // existing: 60%
-    setupInsert([PROFILE_70PCT]);                           // updated: 70% — crosses threshold
+    setupInsert([PROFILE_70PCT]); // updated: 70% — crosses threshold
     mockUserFindFirst.mockResolvedValue({ name: "Alice", email: "alice@example.com" });
 
     const res = await PATCH(new Request("https://example.com/api/profile", VALID_PATCH));
@@ -197,14 +225,14 @@ describe("PATCH /api/profile", () => {
       expect.objectContaining({
         to: ["admin@example.com"],
         subject: expect.stringContaining("Profile ready"),
-      })
+      }),
     );
   });
 
   it("does not notify admin when completeness stays below threshold", async () => {
     mockRequireSession.mockResolvedValue(SESSION);
     mockProfileFindFirst.mockResolvedValue(PROFILE_60PCT); // 60%
-    setupInsert([PROFILE_60PCT]);                           // still 60%
+    setupInsert([PROFILE_60PCT]); // still 60%
 
     await PATCH(new Request("https://example.com/api/profile", VALID_PATCH));
     expect(mockRunAfterResponse).not.toHaveBeenCalled();
@@ -213,7 +241,7 @@ describe("PATCH /api/profile", () => {
   it("does not notify admin when completeness was already at or above threshold", async () => {
     mockRequireSession.mockResolvedValue(SESSION);
     mockProfileFindFirst.mockResolvedValue(PROFILE_70PCT); // existing: 70%
-    setupInsert([PROFILE_80PCT]);                           // updated: 80% — no crossing
+    setupInsert([PROFILE_80PCT]); // updated: 80% — no crossing
 
     await PATCH(new Request("https://example.com/api/profile", VALID_PATCH));
     expect(mockRunAfterResponse).not.toHaveBeenCalled();
@@ -236,11 +264,13 @@ describe("PATCH /api/profile", () => {
     mockProfileFindFirst.mockResolvedValue(PROFILE_70PCT);
     setupInsert([PROFILE_70PCT]);
 
-    await PATCH(new Request("https://example.com/api/profile", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: "Alice Updated" }),
-    }));
+    await PATCH(
+      new Request("https://example.com/api/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: "Alice Updated" }),
+      }),
+    );
     expect(mockUpdate).toHaveBeenCalled();
   });
 

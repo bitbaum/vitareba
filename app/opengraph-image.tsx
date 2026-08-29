@@ -12,6 +12,6 @@ export const contentType = "image/png";
 export default function OgImage() {
   return new ImageResponse(
     ogImageElement({ tagline: "Metabolic Psychiatry & Systemic Longevity" }),
-    { ...size }
+    { ...size },
   );
 }

@@ -1,7 +1,17 @@
 import { auth } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
 import { db } from "@/lib/db";
-import { users, assessmentResults, bookings, documents, threads, threadMessages, dailyCheckins, patientNotes, careTeam } from "@/lib/db/schema";
+import {
+  users,
+  assessmentResults,
+  bookings,
+  documents,
+  threads,
+  threadMessages,
+  dailyCheckins,
+  patientNotes,
+  careTeam,
+} from "@/lib/db/schema";
 import { eq, desc, asc } from "drizzle-orm";
 import Link from "next/link";
 import styles from "../../../admin.module.css";
@@ -28,11 +38,7 @@ import { ADMIN_ROUTES, PORTAL_ROUTES, documentFileUrl } from "@/lib/config/route
 import { computePatientSignal } from "@/lib/domain/signals";
 import { SIGNAL_LABELS, SIGNAL_CHECKIN_WINDOW_DAYS } from "@/lib/config/admin";
 
-export default async function PatientDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function PatientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
   if (!session || session.user.role !== USER_ROLE.admin) redirect(PORTAL_ROUTES.dashboard);
 
@@ -105,9 +111,15 @@ export default async function PatientDetailPage({
         <div className={styles.patientHeaderRow}>
           <div>
             <h1 className={styles.pageTitle}>
-              {patient.name ? <em>{patient.name}</em> : <span className={styles.patientNameMuted}>Unnamed patient</span>}
+              {patient.name ? (
+                <em>{patient.name}</em>
+              ) : (
+                <span className={styles.patientNameMuted}>Unnamed patient</span>
+              )}
             </h1>
-            <p className={styles.pageSub}>{patient.email} · registered {formatDateLong(patient.createdAt)}</p>
+            <p className={styles.pageSub}>
+              {patient.email} · registered {formatDateLong(patient.createdAt)}
+            </p>
           </div>
           <div className={styles.patientSignalBlock}>
             <span className={styles.signalBadge} data-signal={signal}>
@@ -162,7 +174,9 @@ export default async function PatientDetailPage({
                           <p className={styles.checkinNotesLabel}>Patient notes</p>
                           {withNotes.map((c) => (
                             <div key={c.id} className={styles.checkinNoteRow}>
-                              <span className={styles.checkinNoteDate}>{formatDateShort(c.date + "T00:00:00")}</span>
+                              <span className={styles.checkinNoteDate}>
+                                {formatDateShort(c.date + "T00:00:00")}
+                              </span>
                               <span className={styles.checkinNoteText}>{c.notes}</span>
                             </div>
                           ))}
@@ -212,12 +226,16 @@ export default async function PatientDetailPage({
                   <ProgrammeAssignmentForm
                     patientId={patient.id}
                     clinician={await clinicianLabelFor(patient.id)}
-                    initial={patient.programmeAssignment ? {
-                      programme: patient.programmeAssignment.programme,
-                      phase: patient.programmeAssignment.phase,
-                      startDate: patient.programmeAssignment.startDate ?? null,
-                      notes: patient.programmeAssignment.notes ?? null,
-                    } : null}
+                    initial={
+                      patient.programmeAssignment
+                        ? {
+                            programme: patient.programmeAssignment.programme,
+                            phase: patient.programmeAssignment.phase,
+                            startDate: patient.programmeAssignment.startDate ?? null,
+                            notes: patient.programmeAssignment.notes ?? null,
+                          }
+                        : null
+                    }
                   />
                 </div>
               </>
@@ -263,7 +281,12 @@ export default async function PatientDetailPage({
                               {doc.mimeType && ` · ${doc.mimeType}`}
                             </div>
                           </div>
-                          <a href={documentFileUrl(doc.id)} target="_blank" rel="noopener noreferrer" className={styles.docLink}>
+                          <a
+                            href={documentFileUrl(doc.id)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.docLink}
+                          >
                             Open →
                           </a>
                         </div>

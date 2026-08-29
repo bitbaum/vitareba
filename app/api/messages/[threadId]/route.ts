@@ -2,12 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
 import { requireSession } from "@/lib/auth/guards";
-import {
-  getThreadForActor,
-  markThreadRead,
-  postMessage,
-  replySchema,
-} from "@/lib/domain/messages";
+import { getThreadForActor, markThreadRead, postMessage, replySchema } from "@/lib/domain/messages";
 import { serializeThread } from "@/lib/domain/messages-view";
 import { notifyThreadParticipants } from "@/lib/domain/message-notifications";
 import { runAfterResponse } from "@/lib/utils/post-response";
@@ -19,13 +14,9 @@ import { UUID_RE } from "@/lib/utils/validate";
  * A 403 would confirm the thread is real — and, on a clinical system, that a
  * particular conversation exists is itself a disclosure.
  */
-const notFound = () =>
-  NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
+const notFound = () => NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
 
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ threadId: string }> }
-) {
+export async function GET(_req: Request, { params }: { params: Promise<{ threadId: string }> }) {
   const guard = await requireSession();
   if (guard.error) return guard.error;
   const actorId = guard.session.user.id;
@@ -46,16 +37,13 @@ export async function GET(
   // Moves only this participant's own mark — never anyone else's.
   runAfterResponse(
     () => markThreadRead(threadId, actorId),
-    "[api/messages/threadId] mark-read failed:"
+    "[api/messages/threadId] mark-read failed:",
   );
 
   return NextResponse.json({ success: true, data: payload });
 }
 
-export async function POST(
-  req: Request,
-  { params }: { params: Promise<{ threadId: string }> }
-) {
+export async function POST(req: Request, { params }: { params: Promise<{ threadId: string }> }) {
   const guard = await requireSession();
   if (guard.error) return guard.error;
   const actorId = guard.session.user.id;
@@ -80,7 +68,7 @@ export async function POST(
     console.error("[api/messages/threadId] send failed:", err);
     return NextResponse.json(
       { success: false, error: "Failed to send message — please try again" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -90,7 +78,7 @@ export async function POST(
 
   runAfterResponse(
     () => notifyThreadParticipants(threadId, actorId),
-    "[api/messages/threadId] notification failed:"
+    "[api/messages/threadId] notification failed:",
   );
 
   return NextResponse.json({ success: true, data: result.message }, { status: 201 });

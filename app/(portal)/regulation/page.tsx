@@ -14,17 +14,21 @@ export default function RegulationPage() {
   return (
     <div>
       <PortalPageHeader
-        title={<>Switched off <em>by law</em></>}
+        title={
+          <>
+            Switched off <em>by law</em>
+          </>
+        }
         subtitle="The regulatory ledger of this product"
       />
 
       <p className={regStyles.intro}>
         Some things this portal could do for you today are disabled — not because we didn&apos;t
-        build them (we did; the code ships with every deployment), but because a law says they
-        may not run, or may not run yet. We think you deserve to know exactly which law, who
-        passed it, and who benefits — and to judge for yourself whether the trade was worth it.
-        Some of these rules genuinely protect you. Some mostly protect an industry. We label
-        our view of each; the facts below are checkable either way.
+        build them (we did; the code ships with every deployment), but because a law says they may
+        not run, or may not run yet. We think you deserve to know exactly which law, who passed it,
+        and who benefits — and to judge for yourself whether the trade was worth it. Some of these
+        rules genuinely protect you. Some mostly protect an industry. We label our view of each; the
+        facts below are checkable either way.
       </p>
 
       {REGULATORY_BLOCKS.map((block) => (
@@ -44,8 +48,8 @@ export default function RegulationPage() {
           <div className={regStyles.lawList}>
             {block.laws.map((law) => (
               <p key={law.cite} className={regStyles.law}>
-                ⚖ <strong>{law.name}</strong> — passed by {law.passedBy}; {law.keyPeople}.
-                In force: {law.inForce}. <span className={regStyles.lawCite}>{law.cite}</span>
+                ⚖ <strong>{law.name}</strong> — passed by {law.passedBy}; {law.keyPeople}. In force:{" "}
+                {law.inForce}. <span className={regStyles.lawCite}>{law.cite}</span>
               </p>
             ))}
           </div>

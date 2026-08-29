@@ -26,14 +26,16 @@ vi.mock("@/lib/db", () => ({
     query: {
       assessmentResults: {
         findFirst: mockAssessmentFindFirst,
-        findMany:  mockAssessmentFindMany,
+        findMany: mockAssessmentFindMany,
       },
     },
     insert: mockInsert,
   },
 }));
 
-vi.mock("@/lib/domain/email-queue", () => ({ enqueueAssessmentEmails: mockEnqueueAssessmentEmails }));
+vi.mock("@/lib/domain/email-queue", () => ({
+  enqueueAssessmentEmails: mockEnqueueAssessmentEmails,
+}));
 
 vi.mock("@/lib/utils/post-response", () => ({ runAfterResponse: mockRunAfterResponse }));
 
@@ -41,15 +43,26 @@ import { GET, POST } from "./route";
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
-const SESSION = { session: { user: { id: "user-1", role: "patient", email: "alice@example.com" } }, error: null };
-const UNAUTH  = { session: null, error: new Response(null, { status: 401 }) };
+const SESSION = {
+  session: { user: { id: "user-1", role: "patient", email: "alice@example.com" } },
+  error: null,
+};
+const UNAUTH = { session: null, error: new Response(null, { status: 401 }) };
 
 // All 5 dimension keys required by assessmentScoresSchema
-const VALID_SCORES = { arousal: 75, divergent: 60, hyperfocus: 80, volatility: 45, environment: 70 };
+const VALID_SCORES = {
+  arousal: 75,
+  divergent: 60,
+  hyperfocus: 80,
+  volatility: 45,
+  environment: 70,
+};
 
 const RESULT = {
-  id: "result-1", userId: "user-1",
-  scores: VALID_SCORES, overallScore: 66,
+  id: "result-1",
+  userId: "user-1",
+  scores: VALID_SCORES,
+  overallScore: 66,
   completedAt: new Date("2026-05-07T09:00:00.000Z"),
 };
 
@@ -122,11 +135,13 @@ describe("POST /api/assessment", () => {
 
   it("returns 400 when overallScore is out of range", async () => {
     mockRequireSession.mockResolvedValue(SESSION);
-    const res = await POST(new Request("https://example.com/api/assessment", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ scores: VALID_SCORES, overallScore: 150 }), // > 100
-    }));
+    const res = await POST(
+      new Request("https://example.com/api/assessment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ scores: VALID_SCORES, overallScore: 150 }), // > 100
+      }),
+    );
     expect(res.status).toBe(400);
   });
 
@@ -134,11 +149,13 @@ describe("POST /api/assessment", () => {
     mockRequireSession.mockResolvedValue(SESSION);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { arousal, ...missingDimension } = VALID_SCORES;
-    const res = await POST(new Request("https://example.com/api/assessment", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ scores: missingDimension, overallScore: 66 }),
-    }));
+    const res = await POST(
+      new Request("https://example.com/api/assessment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ scores: missingDimension, overallScore: 66 }),
+      }),
+    );
     expect(res.status).toBe(400);
   });
 
@@ -162,7 +179,7 @@ describe("POST /api/assessment", () => {
     expect(mockRunAfterResponse).toHaveBeenCalledTimes(1);
     await mockRunAfterResponse.mock.calls[0][0]();
     expect(mockEnqueueAssessmentEmails).toHaveBeenCalledWith(
-      expect.objectContaining({ isFirstAssessment: true, userId: "user-1", overallScore: 66 })
+      expect.objectContaining({ isFirstAssessment: true, userId: "user-1", overallScore: 66 }),
     );
   });
 
@@ -174,7 +191,7 @@ describe("POST /api/assessment", () => {
     expect(res.status).toBe(201);
     await mockRunAfterResponse.mock.calls[0][0]();
     expect(mockEnqueueAssessmentEmails).toHaveBeenCalledWith(
-      expect.objectContaining({ isFirstAssessment: false })
+      expect.objectContaining({ isFirstAssessment: false }),
     );
   });
 
@@ -187,7 +204,7 @@ describe("POST /api/assessment", () => {
     expect(res.status).toBe(201);
     await mockRunAfterResponse.mock.calls[0][0]();
     expect(mockEnqueueAssessmentEmails).toHaveBeenCalledWith(
-      expect.objectContaining({ isFirstAssessment: true })
+      expect.objectContaining({ isFirstAssessment: true }),
     );
   });
 });

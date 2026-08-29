@@ -65,7 +65,7 @@ export async function getClinicians(): Promise<Clinician[]> {
 export async function getBusyIntervals(
   now: Date,
   clinicianId: string,
-  rules: ClinicianAvailability
+  rules: ClinicianAvailability,
 ): Promise<BusyInterval[]> {
   const [rows, external] = await Promise.all([
     db.query.bookings.findMany({
@@ -73,7 +73,7 @@ export async function getBusyIntervals(
         inArray(bookings.status, [BOOKING_STATUS.pending, BOOKING_STATUS.confirmed]),
         isNotNull(bookings.scheduledAt),
         gte(bookings.scheduledAt, now),
-        or(eq(bookings.clinicianId, clinicianId), isNull(bookings.clinicianId))
+        or(eq(bookings.clinicianId, clinicianId), isNull(bookings.clinicianId)),
       ),
       columns: { scheduledAt: true },
     }),

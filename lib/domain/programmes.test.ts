@@ -85,7 +85,10 @@ describe("programmeUpdateSchema", () => {
 
   it("accepts all PHASE_ENUM_VALUES", () => {
     for (const phase of PHASE_ENUM_VALUES) {
-      const result = programmeUpdateSchema.safeParse({ programme: PROGRAMME_ENUM_VALUES[0], phase });
+      const result = programmeUpdateSchema.safeParse({
+        programme: PROGRAMME_ENUM_VALUES[0],
+        phase,
+      });
       expect(result.success).toBe(true);
     }
   });

@@ -26,7 +26,10 @@ export default function ThreadPage() {
   const load = useCallback(async () => {
     try {
       const res = await fetch(`/api/messages/${threadId}`);
-      if (!res.ok) { setLoadError(true); return; }
+      if (!res.ok) {
+        setLoadError(true);
+        return;
+      }
       const data = await res.json();
       setThread(data.data);
     } catch {
@@ -34,7 +37,9 @@ export default function ThreadPage() {
     }
   }, [threadId]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   // Poll for new messages every 30 s while the tab is focused
   useEffect(() => {
@@ -44,7 +49,9 @@ export default function ThreadPage() {
     return () => clearInterval(interval);
   }, [load]);
 
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [thread?.messages.length]);
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [thread?.messages.length]);
 
   async function handleSend(e: React.FormEvent) {
     e.preventDefault();
@@ -70,14 +77,22 @@ export default function ThreadPage() {
     }
   }
 
-  if (loadError) return (
-    <div className={styles.emptyState}>
-      Could not load this conversation.{" "}
-      <button type="button" onClick={() => { setLoadError(false); load(); }} className={styles.retryBtn}>
-        Retry
-      </button>
-    </div>
-  );
+  if (loadError)
+    return (
+      <div className={styles.emptyState}>
+        Could not load this conversation.{" "}
+        <button
+          type="button"
+          onClick={() => {
+            setLoadError(false);
+            load();
+          }}
+          className={styles.retryBtn}
+        >
+          Retry
+        </button>
+      </div>
+    );
   if (!thread) return <LoadingState />;
 
   return (
@@ -90,8 +105,7 @@ export default function ThreadPage() {
       {/* Who is in the room. Shown once a conversation stops being just you and
           your clinician — a patient should never have to guess that a colleague
           or an assistant can read what they write. */}
-      {(thread.participants.length > 2 ||
-        thread.participants.some((p) => p.kind === "ai")) && (
+      {(thread.participants.length > 2 || thread.participants.some((p) => p.kind === "ai")) && (
         <p className={msgStyles.participants}>
           In this conversation:{" "}
           {thread.participants
@@ -117,9 +131,7 @@ export default function ThreadPage() {
                 </span>
               )}{" "}
               · {formatDateTime(msg.createdAt)}
-              {msg.mine && msg.readByOthers && (
-                <span className={styles.msgRead}> · Read</span>
-              )}
+              {msg.mine && msg.readByOthers && <span className={styles.msgRead}> · Read</span>}
             </p>
           </div>
         ))}
@@ -135,7 +147,12 @@ export default function ThreadPage() {
             onChange={(e) => setBody(e.target.value)}
             maxLength={MESSAGE_BODY_MAX_LENGTH}
             placeholder="Type a message…"
-            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(e); } }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSend(e);
+              }
+            }}
           />
           <button type="submit" className={styles.sendBtn} disabled={sending || !body.trim()}>
             {sending ? "Sending…" : "Send"}

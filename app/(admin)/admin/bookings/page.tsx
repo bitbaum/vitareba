@@ -4,15 +4,23 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import styles from "../../admin.module.css";
 import {
-  BOOKING_STATUS, BOOKING_STATUS_CONFIG, BOOKING_STATUS_VALUES,
-  BOOKING_TYPE_CONFIG, MACHINE_TYPE_CONFIG,
-  type BookingRowWithUser, type BookingStatus,
+  BOOKING_STATUS,
+  BOOKING_STATUS_CONFIG,
+  BOOKING_STATUS_VALUES,
+  BOOKING_TYPE_CONFIG,
+  MACHINE_TYPE_CONFIG,
+  type BookingRowWithUser,
+  type BookingStatus,
 } from "@/lib/config/booking-status";
 import { BookingActions } from "@/components/clinical/BookingActions";
-import { formatDateShort, formatDateNumeric, formatSlotDay, formatSlotTime } from "@/lib/utils/format";
+import {
+  formatDateShort,
+  formatDateNumeric,
+  formatSlotDay,
+  formatSlotTime,
+} from "@/lib/utils/format";
 import { ADMIN_ROUTES } from "@/lib/config/routes";
 import { LoadingState } from "@/components/LoadingState";
-
 
 // "upcoming" answers the clinician's daily question — who am I seeing next? —
 // and is the default: slot bookings are born confirmed, so the old "pending"
@@ -33,7 +41,10 @@ export default function AdminBookingsPage() {
   const load = useCallback(async () => {
     try {
       const res = await fetch("/api/bookings");
-      if (!res.ok) { setLoadError(true); return; }
+      if (!res.ok) {
+        setLoadError(true);
+        return;
+      }
       const data = await res.json();
       setBookings(data.data ?? []);
     } catch {
@@ -43,7 +54,9 @@ export default function AdminBookingsPage() {
     }
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   // Clears the admin nav's "new bookings" badge — fire-and-forget, the same
   // "I looked at this page" signal the patient portal's goals page sends.
@@ -72,7 +85,12 @@ export default function AdminBookingsPage() {
 
   const now = Date.now();
   const upcoming = bookings
-    .filter((b) => b.scheduledAt && new Date(b.scheduledAt).getTime() >= now && ACTIVE_STATUSES.includes(b.status))
+    .filter(
+      (b) =>
+        b.scheduledAt &&
+        new Date(b.scheduledAt).getTime() >= now &&
+        ACTIVE_STATUSES.includes(b.status),
+    )
     .sort((a, b) => new Date(a.scheduledAt!).getTime() - new Date(b.scheduledAt!).getTime());
   const filtered =
     filter === "upcoming"
@@ -100,7 +118,9 @@ export default function AdminBookingsPage() {
           went unused: nobody had connected a real calendar. */}
       <p className={styles.pageSub}>
         Working hours, intake and calendar sync now live on{" "}
-        <Link href={ADMIN_ROUTES.profile} className={styles.cellLink}>My Profile →</Link>
+        <Link href={ADMIN_ROUTES.profile} className={styles.cellLink}>
+          My Profile →
+        </Link>
       </p>
 
       <div className={styles.filterBar}>
@@ -111,7 +131,8 @@ export default function AdminBookingsPage() {
             onClick={() => setFilter(f)}
             className={`${styles.filterTab}${filter === f ? ` ${styles.filterTabActive}` : ""}`}
           >
-            {f}{f === BOOKING_STATUS.pending && pendingCount > 0 ? ` (${pendingCount})` : ""}
+            {f}
+            {f === BOOKING_STATUS.pending && pendingCount > 0 ? ` (${pendingCount})` : ""}
           </button>
         ))}
       </div>
@@ -155,22 +176,29 @@ export default function AdminBookingsPage() {
                         {b.user.name ?? <span className={styles.cellMuted}>No name</span>}
                       </div>
                       <div className={styles.cellSub}>{b.user.email}</div>
-                      <Link href={`${ADMIN_ROUTES.patients}/${b.user.id}`} className={styles.cellLink}>
+                      <Link
+                        href={`${ADMIN_ROUTES.patients}/${b.user.id}`}
+                        className={styles.cellLink}
+                      >
                         View patient →
                       </Link>
                     </td>
                     <td className={styles.cellNowrap}>
                       <div>{BOOKING_TYPE_CONFIG[b.bookingType]?.label ?? b.bookingType}</div>
                       {b.machineType && (
-                        <div className={styles.cellSub}>{MACHINE_TYPE_CONFIG[b.machineType]?.label}</div>
+                        <div className={styles.cellSub}>
+                          {MACHINE_TYPE_CONFIG[b.machineType]?.label}
+                        </div>
                       )}
                     </td>
                     <td className={styles.cellNowrap}>
-                      {b.scheduledAt
-                        ? `${formatSlotDay(b.scheduledAt)}, ${formatSlotTime(b.scheduledAt)}`
-                        : b.preferredDate
-                          ? formatDateShort(b.preferredDate)
-                          : <span className={styles.cellMuted}>—</span>}
+                      {b.scheduledAt ? (
+                        `${formatSlotDay(b.scheduledAt)}, ${formatSlotTime(b.scheduledAt)}`
+                      ) : b.preferredDate ? (
+                        formatDateShort(b.preferredDate)
+                      ) : (
+                        <span className={styles.cellMuted}>—</span>
+                      )}
                     </td>
                     <td className={styles.tdNotes}>
                       {b.notes ? (
@@ -179,13 +207,9 @@ export default function AdminBookingsPage() {
                         <span className={styles.cellMuted}>—</span>
                       )}
                     </td>
-                    <td className={styles.cellNowrap}>
-                      {formatDateNumeric(b.createdAt)}
-                    </td>
+                    <td className={styles.cellNowrap}>{formatDateNumeric(b.createdAt)}</td>
                     <td>
-                      <span className={`${styles.badge} ${s.badgeClass}`}>
-                        {s.label}
-                      </span>
+                      <span className={`${styles.badge} ${s.badgeClass}`}>{s.label}</span>
                       {/* A late cancellation is clinical information, not just
                           accounting — a pattern of them is worth a conversation. */}
                       {b.lateCancellation && (

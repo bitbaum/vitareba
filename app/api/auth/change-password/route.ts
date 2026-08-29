@@ -8,7 +8,12 @@ import { serviceUnavailable } from "@/lib/utils/api-response";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH } from "@/lib/config/auth";
-import { hashPassword, verifyPassword, isUserLocked, nextLoginAttemptState } from "@/lib/domain/auth";
+import {
+  hashPassword,
+  verifyPassword,
+  isUserLocked,
+  nextLoginAttemptState,
+} from "@/lib/domain/auth";
 
 const schema = z.object({
   currentPassword: z.string().min(1).max(PASSWORD_MAX_LENGTH),
@@ -43,7 +48,7 @@ export async function POST(req: Request) {
   if (!user?.password) {
     return NextResponse.json(
       { success: false, error: "No password set on this account" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -54,7 +59,7 @@ export async function POST(req: Request) {
   if (isUserLocked(user)) {
     return NextResponse.json(
       { success: false, error: "Too many attempts — please try again later" },
-      { status: 429 }
+      { status: 429 },
     );
   }
 
@@ -66,7 +71,7 @@ export async function POST(req: Request) {
     await db.update(users).set(nextState).where(eq(users.id, session.user.id));
     return NextResponse.json(
       { success: false, error: "Current password is incorrect" },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -81,7 +86,10 @@ export async function POST(req: Request) {
       .where(eq(users.id, session.user.id));
   } catch (err) {
     console.error("[api/auth/change-password] update failed:", err);
-    return NextResponse.json({ success: false, error: "Failed to update password — please try again" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "Failed to update password — please try again" },
+      { status: 500 },
+    );
   }
 
   return NextResponse.json({ success: true });

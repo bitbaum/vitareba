@@ -19,7 +19,11 @@ export default async function ProfilePage() {
   return (
     <div className={profileStyles.layout}>
       <PortalPageHeader
-        title={<>My <em>Profile</em></>}
+        title={
+          <>
+            My <em>Profile</em>
+          </>
+        }
         subtitle="The more you share, the more tailored your support can be."
       />
       <ProfileForm clinician={clinician} />
@@ -30,8 +34,8 @@ export default async function ProfilePage() {
       <div className={`${styles.card} ${styles.cardGap}`}>
         <p className={styles.cardTitle}>My care team</p>
         <p className={styles.formHint}>
-          Currently: {clinician}. Choose a clinician, switch to another, or
-          message and book with them directly.
+          Currently: {clinician}. Choose a clinician, switch to another, or message and book with
+          them directly.
         </p>
         <Link href={PORTAL_ROUTES.careTeam} className={styles.btnSecondary}>
           Manage my care team →

@@ -5,14 +5,20 @@ import { type GoalRow } from "@/lib/config/portal";
 import { PORTAL_ROUTES } from "@/lib/config/routes";
 import { computeGoalProgress, goalProgressLabel } from "@/lib/domain/goals";
 
-export function GoalsCard({ goals }: { goals: Pick<GoalRow, "id" | "title" | "baseline" | "current" | "target">[] }) {
+export function GoalsCard({
+  goals,
+}: {
+  goals: Pick<GoalRow, "id" | "title" | "baseline" | "current" | "target">[];
+}) {
   if (goals.length === 0) return null;
 
   return (
     <div className={shared.card}>
       <div className={styles.goalsCardHeader}>
         <p className={shared.cardTitleFlush}>Your goals</p>
-        <Link href={PORTAL_ROUTES.goals} className={styles.goalsViewAll}>View all</Link>
+        <Link href={PORTAL_ROUTES.goals} className={styles.goalsViewAll}>
+          View all
+        </Link>
       </div>
       <div className={styles.goalsList}>
         {goals.map((goal) => {
@@ -24,17 +30,14 @@ export function GoalsCard({ goals }: { goals: Pick<GoalRow, "id" | "title" | "ba
               {hasProgress && (
                 <>
                   <div className={shared.progressTrack}>
-                    <div
-                      className={shared.progressFill}
-                      style={{ width: `${currentPct ?? 0}%` }}
-                    />
+                    <div className={shared.progressFill} style={{ width: `${currentPct ?? 0}%` }} />
                   </div>
                   <p className={styles.goalProgressMeta}>
                     {currentPct != null
                       ? goalProgressLabel(currentPct)
                       : goal.current != null
-                      ? `Current: ${goal.current}${goal.target != null ? ` · Target: ${goal.target}` : ""}`
-                      : null}
+                        ? `Current: ${goal.current}${goal.target != null ? ` · Target: ${goal.target}` : ""}`
+                        : null}
                   </p>
                 </>
               )}

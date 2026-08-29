@@ -21,7 +21,8 @@ export async function GET() {
   const { session } = guard;
 
   let profile: typeof profiles.$inferSelect | undefined;
-  let userRow: { name: string | null; email: string; image: string | null; createdAt: Date } | undefined;
+  let userRow:
+    { name: string | null; email: string; image: string | null; createdAt: Date } | undefined;
   try {
     [profile, userRow] = await Promise.all([
       db.query.profiles.findFirst({ where: eq(profiles.userId, session.user.id) }),
@@ -69,7 +70,9 @@ export async function PATCH(req: Request) {
   try {
     // Parallel: update name (if provided) + fetch existing profile for threshold check
     [, existing] = await Promise.all([
-      name ? db.update(users).set({ name }).where(eq(users.id, session.user.id)) : Promise.resolve(),
+      name
+        ? db.update(users).set({ name }).where(eq(users.id, session.user.id))
+        : Promise.resolve(),
       db.query.profiles.findFirst({ where: eq(profiles.userId, session.user.id) }),
     ]);
 
@@ -77,11 +80,17 @@ export async function PATCH(req: Request) {
     [updated] = await db
       .insert(profiles)
       .values({ userId: session.user.id, ...profileFields, ...consentPatch })
-      .onConflictDoUpdate({ target: profiles.userId, set: { ...profileFields, ...consentPatch, updatedAt: new Date() } })
+      .onConflictDoUpdate({
+        target: profiles.userId,
+        set: { ...profileFields, ...consentPatch, updatedAt: new Date() },
+      })
       .returning();
   } catch (err) {
     console.error("[api/profile] upsert failed:", err);
-    return NextResponse.json({ success: false, error: "Failed to save profile — please try again" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "Failed to save profile — please try again" },
+      { status: 500 },
+    );
   }
 
   const oldPct = computeProfileCompleteness(existing as Record<string, unknown> | null);

@@ -5,7 +5,7 @@
   /* Base palette */
   --ink: #1a1a22;
   --ink2: #3a3a4a;
-  --muted: #71727c;  /* darkened from #888a96 — passes WCAG AA 4.5:1 on white */
+  --muted: #71727c; /* darkened from #888a96 — passes WCAG AA 4.5:1 on white */
   --faint: #c4c0b8;
   --teal: #2a7a8a;
   --teal-dark: #1e6672;
@@ -22,7 +22,7 @@
   --border: #e5e0d8;
   --warn: #d4820a;
   --danger: #e05a5a;
-  --purple: #6366f1;   /* sleep metric in check-in trend chart */
+  --purple: #6366f1; /* sleep metric in check-in trend chart */
   --white: #ffffff;
   --footer-bg: #111118;
 
@@ -37,33 +37,33 @@
   --section-pad-x: 3rem;
 
   /* White opacity scale — used in dark/ink-background sections */
-  --white-3:  rgba(255, 255, 255, 0.03);
-  --white-5:  rgba(255, 255, 255, 0.05);
-  --white-6:  rgba(255, 255, 255, 0.06);
-  --white-7:  rgba(255, 255, 255, 0.07);
-  --white-8:  rgba(255, 255, 255, 0.08);
-  --white-10: rgba(255, 255, 255, 0.10);
+  --white-3: rgba(255, 255, 255, 0.03);
+  --white-5: rgba(255, 255, 255, 0.05);
+  --white-6: rgba(255, 255, 255, 0.06);
+  --white-7: rgba(255, 255, 255, 0.07);
+  --white-8: rgba(255, 255, 255, 0.08);
+  --white-10: rgba(255, 255, 255, 0.1);
   --white-12: rgba(255, 255, 255, 0.12);
   --white-15: rgba(255, 255, 255, 0.15);
   --white-18: rgba(255, 255, 255, 0.18);
-  --white-20: rgba(255, 255, 255, 0.20);
+  --white-20: rgba(255, 255, 255, 0.2);
   --white-25: rgba(255, 255, 255, 0.25);
-  --white-30: rgba(255, 255, 255, 0.30);
+  --white-30: rgba(255, 255, 255, 0.3);
   --white-35: rgba(255, 255, 255, 0.35);
-  --white-40: rgba(255, 255, 255, 0.40);
-  --white-50: rgba(255, 255, 255, 0.50);
+  --white-40: rgba(255, 255, 255, 0.4);
+  --white-50: rgba(255, 255, 255, 0.5);
   --white-55: rgba(255, 255, 255, 0.55);
   --white-58: rgba(255, 255, 255, 0.58);
-  --white-60: rgba(255, 255, 255, 0.60);
+  --white-60: rgba(255, 255, 255, 0.6);
   --white-62: rgba(255, 255, 255, 0.62);
   --white-75: rgba(255, 255, 255, 0.75);
-  --white-80: rgba(255, 255, 255, 0.80);
-  --white-90: rgba(255, 255, 255, 0.90);
+  --white-80: rgba(255, 255, 255, 0.8);
+  --white-90: rgba(255, 255, 255, 0.9);
   --white-97: rgba(255, 255, 255, 0.97);
 
   /* Primary (teal) opacity scale — computed from --teal so theme changes cascade */
-  --teal-6:  color-mix(in srgb, var(--teal)  6%, transparent);
-  --teal-8:  color-mix(in srgb, var(--teal)  8%, transparent);
+  --teal-6: color-mix(in srgb, var(--teal) 6%, transparent);
+  --teal-8: color-mix(in srgb, var(--teal) 8%, transparent);
   --teal-10: color-mix(in srgb, var(--teal) 10%, transparent);
   --teal-15: color-mix(in srgb, var(--teal) 15%, transparent);
   --teal-20: color-mix(in srgb, var(--teal) 20%, transparent);
@@ -73,7 +73,7 @@
   --teal-70: color-mix(in srgb, var(--teal) 70%, transparent);
 
   /* Gold opacity scale */
-  --gold-6:  color-mix(in srgb, var(--gold)  6%, transparent);
+  --gold-6: color-mix(in srgb, var(--gold) 6%, transparent);
   --gold-12: color-mix(in srgb, var(--gold) 12%, transparent);
   --gold-70: color-mix(in srgb, var(--gold) 70%, transparent);
 
@@ -81,12 +81,12 @@
   --danger-10: color-mix(in srgb, var(--danger) 10%, transparent);
 
   /* Warn opacity scale */
-  --warn-8:  color-mix(in srgb, var(--warn)  8%, transparent);
+  --warn-8: color-mix(in srgb, var(--warn) 8%, transparent);
   --warn-10: color-mix(in srgb, var(--warn) 10%, transparent);
   --warn-12: color-mix(in srgb, var(--warn) 12%, transparent);
 
   /* Muted opacity scale */
-  --muted-8:  color-mix(in srgb, var(--muted)  8%, transparent);
+  --muted-8: color-mix(in srgb, var(--muted) 8%, transparent);
   --muted-10: color-mix(in srgb, var(--muted) 10%, transparent);
   --muted-12: color-mix(in srgb, var(--muted) 12%, transparent);
   --muted-18: color-mix(in srgb, var(--muted) 18%, transparent);
@@ -102,37 +102,37 @@
 
   /* Shadow scale — for dropdowns, cards, modals */
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.03);
-  --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.10);
+  --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.1);
   --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04);
-  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.10), 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06);
 
   /* Border radius scale */
-  --radius-2xs:  2px;
-  --radius-xs:   0.2rem;
-  --radius-sm:   0.25rem;
-  --radius-md:   0.4rem;
-  --radius-lg:   0.5rem;
-  --radius-xl:   0.875rem;
-  --radius-2xl:  1rem;
+  --radius-2xs: 2px;
+  --radius-xs: 0.2rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.4rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.875rem;
+  --radius-2xl: 1rem;
   --radius-full: 50%;
   --radius-pill: 2rem;
 
   /* Transition timing */
-  --transition-fast:   0.15s;
+  --transition-fast: 0.15s;
   --transition-normal: 0.3s;
-  --transition-slow:   0.4s;
+  --transition-slow: 0.4s;
 
   /* Mobile bottom nav height — anything sticky above it must clear this. */
   --portal-bottom-nav-h: 60px;
 
   /* Z-index scale */
-  --z-sticky:        10;
-  --z-nav:           100;
+  --z-sticky: 10;
+  --z-nav: 100;
   /* Dropdown panels (mega menu, notification bell, user menu) sit above the
      nav bar they hang off of but below the full-screen mobile overlay. */
-  --z-dropdown:      150;
-  --z-overlay:       200;
-  --z-overlay-pb:    201;
+  --z-dropdown: 150;
+  --z-overlay: 200;
+  --z-overlay-pb: 201;
   --z-overlay-close: 202;
 }
 
@@ -262,7 +262,9 @@ body {
   text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
-  transition: background var(--transition-fast), border-color var(--transition-fast);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
 .btn-dark:hover,
@@ -286,7 +288,9 @@ body {
   text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
-  transition: background var(--transition-fast), color var(--transition-fast);
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
 }
 
 .btn-outline:hover,
@@ -298,22 +302,46 @@ body {
 
 /* ─── Score colour utilities ───────────────────────────────── */
 /* Use className={scoreClass(n)} instead of style={{ color: scoreColor(n) }} */
-.score-good { color: var(--teal); }
-.score-warn { color: var(--warn); }
-.score-bad  { color: var(--danger); }
+.score-good {
+  color: var(--teal);
+}
+.score-warn {
+  color: var(--warn);
+}
+.score-bad {
+  color: var(--danger);
+}
 
 /* ─── Profile completeness colour utilities ─────────────────── */
 /* Use className={profileCompletenessClass(pct)} instead of inline style */
-.pct-good { color: var(--teal); }
-.pct-warn { color: var(--warn); }
-.pct-bad  { color: var(--danger); }
+.pct-good {
+  color: var(--teal);
+}
+.pct-warn {
+  color: var(--warn);
+}
+.pct-bad {
+  color: var(--danger);
+}
 
 /* ─── Booking status badge utilities ───────────────────────── */
 /* Use className={s.badgeClass} instead of style={{ color: s.color, background: s.bg }} */
-.booking-status-pending   { color: var(--warn);  background: var(--warn-12);  }
-.booking-status-confirmed { color: var(--teal);  background: var(--teal-12);  }
-.booking-status-attended  { color: var(--gold);  background: var(--gold-12);  }
-.booking-status-cancelled { color: var(--muted); background: var(--muted-12); }
+.booking-status-pending {
+  color: var(--warn);
+  background: var(--warn-12);
+}
+.booking-status-confirmed {
+  color: var(--teal);
+  background: var(--teal-12);
+}
+.booking-status-attended {
+  color: var(--gold);
+  background: var(--gold-12);
+}
+.booking-status-cancelled {
+  color: var(--muted);
+  background: var(--muted-12);
+}
 
 /* ─── Accessibility utilities ──────────────────────────────── */
 /* Visually hidden but available to screen readers */

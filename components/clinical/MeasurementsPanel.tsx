@@ -116,7 +116,7 @@ export function MeasurementsPanel({ patientId }: { patientId?: string }) {
       const list = byKind.get(kind);
       return list?.[list.length - 1];
     },
-    [byKind]
+    [byKind],
   );
 
   // Values that crossed a recognised action threshold. Deliberately built from
@@ -144,17 +144,17 @@ export function MeasurementsPanel({ patientId }: { patientId?: string }) {
   const enterableDefs = useMemo(
     () =>
       MEASUREMENT_DEFS.filter(
-        (d) => canRecordClinical || (PATIENT_ENTERABLE_KEYS as readonly string[]).includes(d.key)
+        (d) => canRecordClinical || (PATIENT_ENTERABLE_KEYS as readonly string[]).includes(d.key),
       ),
-    [canRecordClinical]
+    [canRecordClinical],
   );
 
   const sourceOptions = useMemo(
     () =>
       MEASUREMENT_SOURCES.filter(
-        (s) => canRecordClinical || s.key === "home" || s.key === "wearable"
+        (s) => canRecordClinical || s.key === "home" || s.key === "wearable",
       ),
-    [canRecordClinical]
+    [canRecordClinical],
   );
 
   async function handleSubmit(e: React.FormEvent) {
@@ -393,7 +393,7 @@ export function MeasurementsPanel({ patientId }: { patientId?: string }) {
 
       {MEASUREMENT_CATEGORIES.map((cat) => {
         const defs = MEASUREMENT_DEFS.filter(
-          (d) => d.category === cat.key && (showUnmeasured || byKind.has(d.key))
+          (d) => d.category === cat.key && (showUnmeasured || byKind.has(d.key)),
         );
         if (defs.length === 0) return null;
         return (
@@ -499,9 +499,7 @@ function StatusPill({
   // Hitting the narrower guideline target is worth saying — but MISSING it is
   // still "in range", in the same colour, because a target is not a boundary and
   // a patient must never be shown as abnormal for sitting inside normal.
-  return (
-    <span className={shared.mStatusWithin}>{reading.atOptimal ? "Optimal" : "In range"}</span>
-  );
+  return <span className={shared.mStatusWithin}>{reading.atOptimal ? "Optimal" : "In range"}</span>;
 }
 
 function TrendLabel({
@@ -547,7 +545,7 @@ function today(): string {
 function updateDraft(
   set: React.Dispatch<React.SetStateAction<EntryDraft[]>>,
   index: number,
-  patch: Partial<EntryDraft>
+  patch: Partial<EntryDraft>,
 ) {
   set((drafts) => drafts.map((d, i) => (i === index ? { ...d, ...patch } : d)));
 }
@@ -581,7 +579,7 @@ function intervalSentence(kind: string, sex: BiologicalSex | null): string {
 function sexCaveat(sex: BiologicalSex | null, byKind: Map<string, unknown>): string {
   if (sex === "female" || sex === "male") return "";
   const affected = MEASUREMENT_DEFS.filter(
-    (d) => (d.refFemale || d.refMale) && byKind.has(d.key)
+    (d) => (d.refFemale || d.refMale) && byKind.has(d.key),
   ).length;
   if (affected === 0) return "";
   // "1 of them are" reads as a bug to the clinician who spots it, and quietly
@@ -595,7 +593,7 @@ function sexCaveat(sex: BiologicalSex | null, byKind: Map<string, unknown>): str
  * saved beside its own weight and height goes stale the moment either changes.
  */
 function computeDerived(
-  latestOf: (kind: string) => MeasurementRow | undefined
+  latestOf: (kind: string) => MeasurementRow | undefined,
 ): { label: string; value: string; hint: string }[] {
   const out: { label: string; value: string; hint: string }[] = [];
 

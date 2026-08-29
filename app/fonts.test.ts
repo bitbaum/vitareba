@@ -40,7 +40,7 @@ describe("builds do not fetch fonts", () => {
 
     expect(
       offenders,
-      `${offenders.join(", ")} downloads fonts at build time — vendor the woff2 into public/fonts and use next/font/local`
+      `${offenders.join(", ")} downloads fonts at build time — vendor the woff2 into public/fonts and use next/font/local`,
     ).toEqual([]);
   });
 });

@@ -120,7 +120,10 @@ export async function PATCH(req: Request, { params }: RouteContext) {
     }
   } catch (err) {
     console.error("[api/admin/programme] upsert failed:", err);
-    return NextResponse.json({ success: false, error: "Failed to save assignment — please try again" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "Failed to save assignment — please try again" },
+      { status: 500 },
+    );
   }
 
   return NextResponse.json({ success: true, data: result });

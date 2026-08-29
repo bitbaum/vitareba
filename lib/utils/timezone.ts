@@ -32,7 +32,10 @@ function offsetFormatter(timeZone: string): Intl.DateTimeFormat {
 export function zoneOffsetMs(at: Date, timeZone: string): number {
   let name: string;
   try {
-    name = offsetFormatter(timeZone).formatToParts(at).find((p) => p.type === "timeZoneName")?.value ?? "GMT";
+    name =
+      offsetFormatter(timeZone)
+        .formatToParts(at)
+        .find((p) => p.type === "timeZoneName")?.value ?? "GMT";
   } catch {
     return 0;
   }

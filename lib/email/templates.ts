@@ -7,8 +7,17 @@ import { PASSWORD_RESET_TOKEN_EXPIRY_MS } from "@/lib/config/auth";
 import { streakMessage } from "@/lib/domain/checkin";
 import { sentenceCase } from "@/lib/utils/format";
 import {
-  COLOR_INK, COLOR_INK2, COLOR_MUTED, COLOR_TEAL, COLOR_GOLD,
-  COLOR_OFF, COLOR_LIGHT, COLOR_BORDER, COLOR_WARN, COLOR_DANGER, COLOR_WHITE,
+  COLOR_INK,
+  COLOR_INK2,
+  COLOR_MUTED,
+  COLOR_TEAL,
+  COLOR_GOLD,
+  COLOR_OFF,
+  COLOR_LIGHT,
+  COLOR_BORDER,
+  COLOR_WARN,
+  COLOR_DANGER,
+  COLOR_WHITE,
 } from "@/lib/config/theme";
 
 /** Escapes HTML special characters to prevent injection in email templates. */
@@ -265,11 +274,7 @@ export function bookingChangedClinicianEmail({
 
 // ─── Password reset ────────────────────────────────────────────────────────────
 
-export function passwordResetEmail({
-  resetUrl,
-}: {
-  resetUrl: string;
-}) {
+export function passwordResetEmail({ resetUrl }: { resetUrl: string }) {
   return layout(`
     <p>You requested a password reset for your ${COMPANY.shortName} account.</p>
     <p>Click the button below to set a new password. This link expires in <strong>${PASSWORD_RESET_TOKEN_EXPIRY_MS / 3_600_000} ${PASSWORD_RESET_TOKEN_EXPIRY_MS / 3_600_000 === 1 ? "hour" : "hours"}</strong>.</p>
@@ -394,13 +399,22 @@ export function criticalPatientAlertEmail({
   patientEmail: string;
   reason: string;
   adminUrl: string;
-  recentCheckins?: { date: string; sleep: number; energy: number; mood: number; focus: number; stress: number }[];
+  recentCheckins?: {
+    date: string;
+    sleep: number;
+    energy: number;
+    mood: number;
+    focus: number;
+    stress: number;
+  }[];
   assessmentHistory?: { score: number; completedAt: string }[];
 }) {
   patientName = escapeHtml(patientName);
   patientEmail = escapeHtml(patientEmail);
 
-  const checkinsTable = recentCheckins.length > 0 ? `
+  const checkinsTable =
+    recentCheckins.length > 0
+      ? `
     <p class="meta" style="margin-bottom:0.25rem"><strong>Recent check-ins</strong></p>
     <table style="width:100%;border-collapse:collapse;font-size:0.8rem;margin-bottom:0.5rem">
       <thead>
@@ -414,7 +428,9 @@ export function criticalPatientAlertEmail({
         </tr>
       </thead>
       <tbody>
-        ${recentCheckins.map((c) => `
+        ${recentCheckins
+          .map(
+            (c) => `
           <tr>
             <td style="color:${COLOR_INK2};padding:0.2rem 0.4rem 0.2rem 0">${c.date}</td>
             <td style="text-align:center;color:${metricColor(c.sleep)};font-weight:500;padding:0.2rem">${c.sleep}</td>
@@ -423,15 +439,19 @@ export function criticalPatientAlertEmail({
             <td style="text-align:center;color:${metricColor(c.focus)};font-weight:500;padding:0.2rem">${c.focus}</td>
             <td style="text-align:center;color:${metricColor(c.stress, true)};font-weight:500;padding:0.2rem">${c.stress}</td>
           </tr>
-        `).join("")}
+        `,
+          )
+          .join("")}
       </tbody>
-    </table>` : "";
+    </table>`
+      : "";
 
-  const assessmentLine = assessmentHistory.length >= 2
-    ? `<p class="meta"><strong>Assessment:</strong> ${assessmentHistory[1].score} → ${assessmentHistory[0].score} / 100 (${assessmentHistory[0].completedAt})</p>`
-    : assessmentHistory.length === 1
-    ? `<p class="meta"><strong>Latest assessment:</strong> ${assessmentHistory[0].score} / 100 (${assessmentHistory[0].completedAt})</p>`
-    : "";
+  const assessmentLine =
+    assessmentHistory.length >= 2
+      ? `<p class="meta"><strong>Assessment:</strong> ${assessmentHistory[1].score} → ${assessmentHistory[0].score} / 100 (${assessmentHistory[0].completedAt})</p>`
+      : assessmentHistory.length === 1
+        ? `<p class="meta"><strong>Latest assessment:</strong> ${assessmentHistory[0].score} / 100 (${assessmentHistory[0].completedAt})</p>`
+        : "";
 
   return layout(`
     <p>A patient has been flagged as <strong style="color:${COLOR_DANGER}">Critical</strong>.</p>
@@ -478,7 +498,7 @@ export function assessmentResultsEmail({
         <div style="font-size:0.8rem;font-weight:500;color:${COLOR_INK};margin-bottom:0.25rem">${d.name}</div>
         <div style="font-size:0.76rem;color:${COLOR_INK2};line-height:1.6">${d.interpretation}</div>
       </td>
-    </tr>`
+    </tr>`,
     )
     .join("");
 
@@ -576,15 +596,16 @@ type MetricInsight = { label: string; delta: number };
 function weeklyInsight(
   curr: Record<MetricKey, number>,
   prev: Record<MetricKey, number> | null,
-  clinician: string
+  clinician: string,
 ): string | null {
-  if (!prev) return `First week of data on record — ${clinician} now has a baseline to track against.`;
+  if (!prev)
+    return `First week of data on record — ${clinician} now has a baseline to track against.`;
 
   const metrics: MetricInsight[] = [
-    { label: "sleep",  delta: curr.sleep  - prev.sleep },
+    { label: "sleep", delta: curr.sleep - prev.sleep },
     { label: "energy", delta: curr.energy - prev.energy },
-    { label: "mood",   delta: curr.mood   - prev.mood },
-    { label: "focus",  delta: curr.focus  - prev.focus },
+    { label: "mood", delta: curr.mood - prev.mood },
+    { label: "focus", delta: curr.focus - prev.focus },
     { label: "stress", delta: -(curr.stress - prev.stress) }, // inverted: lower stress = better
   ];
 
@@ -621,7 +642,12 @@ function deltaArrow(curr: number, prev: number): string {
   return "→";
 }
 
-function metricRow(label: string, curr: number | undefined, prev: number | undefined, invert = false): string {
+function metricRow(
+  label: string,
+  curr: number | undefined,
+  prev: number | undefined,
+  invert = false,
+): string {
   if (curr == null || prev == null) return "";
   const displayCurr = invert ? 6 - curr : curr;
   const displayPrev = invert ? 6 - prev : prev;
@@ -666,7 +692,8 @@ export function weeklyDigestEmail({
   const hasCheckins = thisWeekAvgs !== null;
   const insight = hasCheckins ? weeklyInsight(thisWeekAvgs!, prevWeekAvgs, clinician) : null;
 
-  const checkinSection = hasCheckins ? `
+  const checkinSection = hasCheckins
+    ? `
     ${insight ? `<p style="font-size:0.9rem;color:${COLOR_INK};font-style:italic;margin-bottom:1rem">${insight}</p>` : ""}
     <p><strong>This week's check-in averages</strong></p>
     <table style="width:100%;border-collapse:collapse;margin-bottom:0.5rem">
@@ -686,26 +713,35 @@ export function weeklyDigestEmail({
         ${metricRow("Stress (low=good)", thisWeekAvgs!.stress, prevWeekAvgs?.stress, true)}
       </tbody>
     </table>
-    <div class="divider"></div>` : `
+    <div class="divider"></div>`
+    : `
     <p class="meta">No check-ins this week. Consistent tracking helps ${clinician} see your patterns clearly.</p>
     <div class="divider"></div>`;
 
-  const assessmentSection = latestScore !== null ? `
-    <p><strong>Latest Inflection Edge score:</strong> ${latestScore}/100 — ${verdictName ?? ""}</p>` : "";
+  const assessmentSection =
+    latestScore !== null
+      ? `
+    <p><strong>Latest Inflection Edge score:</strong> ${latestScore}/100 — ${verdictName ?? ""}</p>`
+      : "";
 
-  const bookingSection = nextBookingStatus ? `
-    <p class="meta">Your next consultation is <strong>${nextBookingStatus}</strong>.</p>` : "";
+  const bookingSection = nextBookingStatus
+    ? `
+    <p class="meta">Your next consultation is <strong>${nextBookingStatus}</strong>.</p>`
+    : "";
 
-  const goalsSection = activeGoals.length > 0 ? `
+  const goalsSection =
+    activeGoals.length > 0
+      ? `
     <div class="divider"></div>
     <p><strong>Clinical goal progress</strong></p>
     <table style="width:100%;border-collapse:collapse;margin-bottom:0.5rem">
       <tbody>
-        ${activeGoals.map((g) => {
-          const escaped = escapeHtml(g.title);
-          const barWidth = Math.min(100, g.pct);
-          const barColor = g.pct >= 60 ? COLOR_TEAL : g.pct >= 30 ? COLOR_GOLD : COLOR_MUTED;
-          return `<tr>
+        ${activeGoals
+          .map((g) => {
+            const escaped = escapeHtml(g.title);
+            const barWidth = Math.min(100, g.pct);
+            const barColor = g.pct >= 60 ? COLOR_TEAL : g.pct >= 30 ? COLOR_GOLD : COLOR_MUTED;
+            return `<tr>
             <td style="padding:0.4rem 0.5rem 0.4rem 0;font-size:0.85rem;color:${COLOR_INK2};vertical-align:middle;width:50%">${escaped}</td>
             <td style="padding:0.4rem 0;vertical-align:middle">
               <div style="background:${COLOR_LIGHT};border-radius:3px;height:6px;width:100%">
@@ -714,13 +750,16 @@ export function weeklyDigestEmail({
             </td>
             <td style="padding:0.4rem 0 0.4rem 0.5rem;font-size:0.8rem;color:${COLOR_MUTED};white-space:nowrap;vertical-align:middle">${g.pct}% · ${g.current}→${g.target}</td>
           </tr>`;
-        }).join("")}
+          })
+          .join("")}
       </tbody>
-    </table>` : "";
+    </table>`
+      : "";
 
-  const streakSection = streak >= 3
-    ? `<p style="font-size:0.9rem;color:${COLOR_TEAL};font-weight:500;margin-bottom:0.5rem">🔥 ${escapeHtml(streakMessage(streak))}</p>`
-    : "";
+  const streakSection =
+    streak >= 3
+      ? `<p style="font-size:0.9rem;color:${COLOR_TEAL};font-weight:500;margin-bottom:0.5rem">🔥 ${escapeHtml(streakMessage(streak))}</p>`
+      : "";
 
   return layout(`
     <p>Hi ${patientName},</p>
@@ -752,12 +791,14 @@ export function checkinReminderEmail({
   patientName = escapeHtml(patientName);
   clinician = escapeHtml(clinician);
 
-  const streakLine = atRiskStreak >= 2
-    ? `<p style="font-size:1rem;font-weight:600;color:${COLOR_INK}">🔥 ${atRiskStreak}-day streak — don't break it now.</p>`
-    : "";
-  const bodyLine = atRiskStreak >= 2
-    ? `<p>You've logged ${atRiskStreak} days in a row. One more entry keeps your streak alive and gives ${clinician} a complete picture of your week.</p>`
-    : `<p>Logging your daily check-in takes 30 seconds and helps ${clinician} track your progress across sleep, energy, mood, focus, and stress.</p>`;
+  const streakLine =
+    atRiskStreak >= 2
+      ? `<p style="font-size:1rem;font-weight:600;color:${COLOR_INK}">🔥 ${atRiskStreak}-day streak — don't break it now.</p>`
+      : "";
+  const bodyLine =
+    atRiskStreak >= 2
+      ? `<p>You've logged ${atRiskStreak} days in a row. One more entry keeps your streak alive and gives ${clinician} a complete picture of your week.</p>`
+      : `<p>Logging your daily check-in takes 30 seconds and helps ${clinician} track your progress across sleep, energy, mood, focus, and stress.</p>`;
 
   return layout(`
     <p>Hi <strong>${patientName}</strong>,</p>
@@ -784,12 +825,22 @@ export function checkinDipAlertEmail({
   avgScore: number;
   days: number;
   adminUrl: string;
-  dipDays?: { date: string; sleep: number; energy: number; mood: number; focus: number; stress: number; note?: string }[];
+  dipDays?: {
+    date: string;
+    sleep: number;
+    energy: number;
+    mood: number;
+    focus: number;
+    stress: number;
+    note?: string;
+  }[];
 }) {
   patientName = escapeHtml(patientName);
   patientEmail = escapeHtml(patientEmail);
 
-  const dipTable = dipDays.length > 0 ? `
+  const dipTable =
+    dipDays.length > 0
+      ? `
     <table style="width:100%;border-collapse:collapse;margin-top:0.5rem;font-size:0.8rem">
       <thead>
         <tr>
@@ -802,7 +853,9 @@ export function checkinDipAlertEmail({
         </tr>
       </thead>
       <tbody>
-        ${dipDays.map((d) => `
+        ${dipDays
+          .map(
+            (d) => `
           <tr>
             <td style="color:${COLOR_INK2};padding:0.2rem 0.4rem 0.2rem 0">${d.date}</td>
             <td style="text-align:center;color:${metricColor(d.sleep)};font-weight:500;padding:0.2rem">${d.sleep}</td>
@@ -812,9 +865,12 @@ export function checkinDipAlertEmail({
             <td style="text-align:center;color:${metricColor(d.stress, true)};font-weight:500;padding:0.2rem">${d.stress}</td>
           </tr>
           ${d.note ? `<tr><td colspan="6" style="color:${COLOR_MUTED};font-style:italic;padding:0.1rem 0 0.3rem 0;font-size:0.75rem">"${escapeHtml(d.note)}"</td></tr>` : ""}
-        `).join("")}
+        `,
+          )
+          .join("")}
       </tbody>
-    </table>` : "";
+    </table>`
+      : "";
 
   return layout(`
     <p>A patient has had consistently low wellbeing scores for the past <strong>${days} days</strong>.</p>
@@ -849,13 +905,15 @@ export function checkinStreakMilestoneEmail({
   let body: string;
   if (streak >= STREAK_100) {
     heading = `${STREAK_100}-day streak`;
-    body = "One hundred consecutive days of data. That is not a streak — that is a dataset. Your protocol can now be tuned with a precision most patients never reach.";
+    body =
+      "One hundred consecutive days of data. That is not a streak — that is a dataset. Your protocol can now be tuned with a precision most patients never reach.";
   } else if (streak >= STREAK_30) {
     heading = `${STREAK_30}-day streak`;
     body = `A full month of daily check-ins. The trend lines are real now — ${clinician} can see patterns that a handful of sessions would never reveal.`;
   } else {
     heading = `${STREAK_7}-day streak`;
-    body = "One full week logged. Seven data points in a row is where the signal starts to separate from the noise. Keep going.";
+    body =
+      "One full week logged. Seven data points in a row is where the signal starts to separate from the noise. Keep going.";
   }
 
   return layout(`

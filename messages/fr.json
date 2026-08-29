@@ -124,12 +124,7 @@
       "adhd": {
         "name": "ADHD pour les Hauts Performeurs",
         "desc": "Notre programme phare avec le SYL Clock propriétaire — cartographiant vos symptômes selon quatre dimensions de vie : santé, mindset, relations et carrière. Diagnostic formel, bilan métabolique, médecine de longévité et 90 jours de coaching de transformation Surf Your Life.",
-        "tags": [
-          "SYL Clock",
-          "4 Dimensions",
-          "Coaching 90 jours",
-          "Surf Your Life"
-        ]
+        "tags": ["SYL Clock", "4 Dimensions", "Coaching 90 jours", "Surf Your Life"]
       },
       "psychedelic": {
         "name": "Psychedelic Readiness",
@@ -177,32 +172,19 @@
         "sub": "Point d'entrée",
         "title": "Inflection Edge Assessment",
         "text": "Notre instrument de performance propriétaire à 30 questions et 5 dimensions. Génère votre Neurotype Blueprint et structure l'ensemble de la conversation diagnostique.",
-        "tags": [
-          "En ligne · Gratuit",
-          "5 Dimensions",
-          "Performance Blueprint"
-        ]
+        "tags": ["En ligne · Gratuit", "5 Dimensions", "Performance Blueprint"]
       },
       {
         "sub": "Diagnostic clinique",
         "title": "Diagnostic Formel de l'ADHD",
         "text": "Évaluation psychiatrique complète par notre psychiatre métabolique. Au-delà des listes de contrôle — nous évaluons le type d'ADHD, les comorbidités, la sensibilité au rejet, la fonction exécutive et votre phénotype de performance spécifique.",
-        "tags": [
-          "DSM-5 / ICD-11",
-          "Cartographie des comorbidités",
-          "Révision médicamenteuse"
-        ]
+        "tags": ["DSM-5 / ICD-11", "Cartographie des comorbidités", "Révision médicamenteuse"]
       },
       {
         "sub": "Niveau biologique",
         "title": "Bilan Métabolique Complet",
         "text": "L'évaluation qui distingue Vita. Nous examinons les systèmes biologiques qui déterminent votre tableau clinique — axe intestin-cerveau, neurotransmetteurs, fonction mitochondriale, hormones, micronutriments, toxines, HRV, rythme circadien et plus encore.",
-        "tags": [
-          "Gut · Brain Axis",
-          "Mitochondrial",
-          "HRV · Circadien",
-          "Toxines"
-        ]
+        "tags": ["Gut · Brain Axis", "Mitochondrial", "HRV · Circadien", "Toxines"]
       },
       {
         "sub": "Neuroplasticité & Longévité",
@@ -220,23 +202,13 @@
         "sub": "Médecine de la Longévité",
         "title": "Protocole Technologique Vita",
         "text": "L'ADHD réduit l'espérance de vie jusqu'à 13 ans. Nos technologies de médecine de la longévité traitent directement ce problème — santé mitochondriale, récupération du système nerveux, longévité cellulaire et fondements biologiques d'une performance cognitive durable.",
-        "tags": [
-          "H₂ Therapy",
-          "IHHT",
-          "PEMF",
-          "Infrarouge",
-          "HRV Biofeedback"
-        ]
+        "tags": ["H₂ Therapy", "IHHT", "PEMF", "Infrarouge", "HRV Biofeedback"]
       },
       {
         "sub": "Architecture de Performance",
         "title": "Surf Your Life + Home Harmony",
         "text": "La couche de coaching qui convertit les insights cliniques en architecture quotidienne. Vous repensez votre façon de travailler, de diriger, de décider et de récupérer — en fonction de votre neurotype spécifique. Comprend un audit complet de vos environnements personnels et professionnels.",
-        "tags": [
-          "Surf Your Life",
-          "Home Harmony",
-          "Programme 90 jours"
-        ]
+        "tags": ["Surf Your Life", "Home Harmony", "Programme 90 jours"]
       }
     ]
   },

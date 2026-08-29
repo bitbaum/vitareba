@@ -32,9 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const url = `${SITE_URL}/${locale}`;
 
   // Build hreflang map for all supported locales
-  const languages = Object.fromEntries(
-    routing.locales.map((l) => [l, `${SITE_URL}/${l}`])
-  );
+  const languages = Object.fromEntries(routing.locales.map((l) => [l, `${SITE_URL}/${l}`]));
 
   return {
     title,

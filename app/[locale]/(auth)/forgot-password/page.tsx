@@ -44,11 +44,11 @@ export default function ForgotPasswordPage() {
     return (
       <>
         <h1 className={styles.title}>{t("successTitle")}</h1>
-        <p className={styles.subtitle}>
-          {t("successSub", { email })}
-        </p>
+        <p className={styles.subtitle}>{t("successSub", { email })}</p>
         <div className={styles.linkRow}>
-          <Link className={styles.link} href={AUTH_ROUTES.login}>{t("backToSignIn")}</Link>
+          <Link className={styles.link} href={AUTH_ROUTES.login}>
+            {t("backToSignIn")}
+          </Link>
         </div>
       </>
     );
@@ -61,7 +61,9 @@ export default function ForgotPasswordPage() {
 
       <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.field}>
-          <label className={styles.label} htmlFor="email">{t("emailLabel")}</label>
+          <label className={styles.label} htmlFor="email">
+            {t("emailLabel")}
+          </label>
           <input
             id="email"
             className={styles.input}
@@ -84,7 +86,9 @@ export default function ForgotPasswordPage() {
       </form>
 
       <div className={styles.linkRow}>
-        <Link className={styles.link} href={AUTH_ROUTES.login}>{t("backToSignIn")}</Link>
+        <Link className={styles.link} href={AUTH_ROUTES.login}>
+          {t("backToSignIn")}
+        </Link>
       </div>
     </>
   );

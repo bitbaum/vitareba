@@ -32,11 +32,13 @@ describe("POST /api/assessment-leads", () => {
   });
 
   it("returns 400 when the request body is not valid JSON", async () => {
-    const res = await POST(new Request("https://example.com/api/assessment-leads", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: "{ not valid json",
-    }));
+    const res = await POST(
+      new Request("https://example.com/api/assessment-leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: "{ not valid json",
+      }),
+    );
     expect(res.status).toBe(400);
   });
 

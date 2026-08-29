@@ -39,12 +39,13 @@ export async function POST(req: Request) {
   // Ownership is decided server-side, never by the client: an admin may upload
   // for any patient, everybody else can only ever upload for themselves.
   const isAdmin = session.user.role === USER_ROLE.admin;
-  const patientId = isAdmin
-    ? (formData.get("patientId") as string | null)
-    : session.user.id;
+  const patientId = isAdmin ? (formData.get("patientId") as string | null) : session.user.id;
 
   if (!file || !title?.trim() || !patientId) {
-    return NextResponse.json({ success: false, error: "file, title, and patientId required" }, { status: 400 });
+    return NextResponse.json(
+      { success: false, error: "file, title, and patientId required" },
+      { status: 400 },
+    );
   }
 
   if (!UUID_RE.test(patientId)) {
@@ -52,11 +53,17 @@ export async function POST(req: Request) {
   }
 
   if (title.trim().length > DOCUMENT_TITLE_MAX_LENGTH) {
-    return NextResponse.json({ success: false, error: `Title must be ${DOCUMENT_TITLE_MAX_LENGTH} characters or fewer` }, { status: 400 });
+    return NextResponse.json(
+      { success: false, error: `Title must be ${DOCUMENT_TITLE_MAX_LENGTH} characters or fewer` },
+      { status: 400 },
+    );
   }
 
   if (file.size > MAX_BYTES) {
-    return NextResponse.json({ success: false, error: `File exceeds ${DOCUMENT_MAX_FILE_SIZE_MB} MB limit` }, { status: 413 });
+    return NextResponse.json(
+      { success: false, error: `File exceeds ${DOCUMENT_MAX_FILE_SIZE_MB} MB limit` },
+      { status: 413 },
+    );
   }
 
   if (file.type && !ALLOWED_MIME_TYPES.has(file.type)) {
@@ -72,7 +79,10 @@ export async function POST(req: Request) {
     blob = await putLocal(blobPath, file);
   } catch (err) {
     console.error("[api/documents/upload] blob upload failed:", err);
-    return NextResponse.json({ success: false, error: "File upload failed — please try again" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "File upload failed — please try again" },
+      { status: 500 },
+    );
   }
 
   let doc: typeof documents.$inferSelect;
@@ -89,7 +99,10 @@ export async function POST(req: Request) {
       .returning();
   } catch (err) {
     console.error("[api/documents/upload] db insert failed:", err);
-    return NextResponse.json({ success: false, error: "Failed to save document record — please try again" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "Failed to save document record — please try again" },
+      { status: 500 },
+    );
   }
 
   const trimmedTitle = title.trim();
@@ -99,7 +112,7 @@ export async function POST(req: Request) {
   // see lib/domain/document-notify.ts.
   runAfterResponse(
     () => notifyDocumentAdded({ patientId, uploaderId: session.user.id, title: trimmedTitle }),
-    "[api/documents/upload] notification failed:"
+    "[api/documents/upload] notification failed:",
   );
 
   return NextResponse.json({ success: true, data: doc }, { status: 201 });

@@ -2,7 +2,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { emailQueue } from "@/lib/db/schema";
 
-const { mockFindMany, mockBookingFindFirst, mockProfileFindFirst, mockAssessmentFindFirst, mockUpdate, mockSendEmail, mockIsEmailConfigured } = vi.hoisted(() => ({
+const {
+  mockFindMany,
+  mockBookingFindFirst,
+  mockProfileFindFirst,
+  mockAssessmentFindFirst,
+  mockUpdate,
+  mockSendEmail,
+  mockIsEmailConfigured,
+} = vi.hoisted(() => ({
   mockIsEmailConfigured: vi.fn(),
   mockFindMany: vi.fn(),
   mockBookingFindFirst: vi.fn(),

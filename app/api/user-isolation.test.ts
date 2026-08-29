@@ -164,13 +164,13 @@ describe("cross-user patient-data isolation", () => {
 
     // The DB mock honours the routes' real where-clauses against the stores
     mockCheckinFindMany.mockImplementation(async (opts?: { where?: SQL }) =>
-      queryRows(checkinStore, opts?.where)
+      queryRows(checkinStore, opts?.where),
     );
-    mockCheckinFindFirst.mockImplementation(async (opts?: { where?: SQL }) =>
-      queryRows(checkinStore, opts?.where)[0]
+    mockCheckinFindFirst.mockImplementation(
+      async (opts?: { where?: SQL }) => queryRows(checkinStore, opts?.where)[0],
     );
     mockDocumentFindMany.mockImplementation(async (opts?: { where?: SQL }) =>
-      queryRows(documentStore, opts?.where)
+      queryRows(documentStore, opts?.where),
     );
 
     mockUpdateWhere.mockResolvedValue({});
@@ -217,14 +217,14 @@ describe("cross-user patient-data isolation", () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(VALID_CHECKIN),
-        })
+        }),
       );
 
       expect(res.status).toBe(200);
       expect(mockUpdate).not.toHaveBeenCalled();
       expect(mockInsert).toHaveBeenCalledTimes(1);
       expect(mockInsertValues).toHaveBeenCalledWith(
-        expect.objectContaining({ userId: ALICE_ID, date: TODAY })
+        expect.objectContaining({ userId: ALICE_ID, date: TODAY }),
       );
     });
 
@@ -238,7 +238,7 @@ describe("cross-user patient-data isolation", () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(VALID_CHECKIN),
-        })
+        }),
       );
 
       expect(res.status).toBe(200);
@@ -263,7 +263,7 @@ describe("cross-user patient-data isolation", () => {
       ];
 
       const res = await getDocuments(
-        new Request(`https://example.com/api/documents?patientId=${BOB_ID}`)
+        new Request(`https://example.com/api/documents?patientId=${BOB_ID}`),
       );
       expect(res.status).toBe(200);
       const { data } = await res.json();

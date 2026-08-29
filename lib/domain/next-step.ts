@@ -22,14 +22,7 @@ export interface NextStepInput {
 }
 
 export interface NextStep {
-  key:
-    | "assessment"
-    | "checkin"
-    | "messages"
-    | "profile"
-    | "retake"
-    | "book"
-    | "done";
+  key: "assessment" | "checkin" | "messages" | "profile" | "retake" | "book" | "done";
   href: string;
   /** Imperative, ≤4 words — the only text a user must read. */
   label: string;

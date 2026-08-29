@@ -7,8 +7,12 @@ function makeStorage(initial: Record<string, string> = {}) {
   const store = new Map(Object.entries(initial));
   return {
     getItem: (key: string) => store.get(key) ?? null,
-    setItem: (key: string, value: string) => { store.set(key, value); },
-    removeItem: (key: string) => { store.delete(key); },
+    setItem: (key: string, value: string) => {
+      store.set(key, value);
+    },
+    removeItem: (key: string) => {
+      store.delete(key);
+    },
     _store: store,
   };
 }
@@ -47,7 +51,11 @@ describe("safeSessionGet", () => {
   });
 
   it("returns null and does not throw when getItem throws", () => {
-    vi.stubGlobal("sessionStorage", { getItem: () => { throw new Error("SecurityError"); } });
+    vi.stubGlobal("sessionStorage", {
+      getItem: () => {
+        throw new Error("SecurityError");
+      },
+    });
     expect(() => safeSessionGet("k")).not.toThrow();
     expect(safeSessionGet("k")).toBeNull();
     vi.unstubAllGlobals();
@@ -70,7 +78,11 @@ describe("safeSessionSet", () => {
   });
 
   it("does not throw when setItem throws (e.g. QuotaExceededError)", () => {
-    vi.stubGlobal("sessionStorage", { setItem: () => { throw new DOMException("QuotaExceeded"); } });
+    vi.stubGlobal("sessionStorage", {
+      setItem: () => {
+        throw new DOMException("QuotaExceeded");
+      },
+    });
     expect(() => safeSessionSet("k", "v")).not.toThrow();
     vi.unstubAllGlobals();
   });
@@ -106,7 +118,11 @@ describe("safeSessionRemove", () => {
   });
 
   it("does not throw when removeItem throws", () => {
-    vi.stubGlobal("sessionStorage", { removeItem: () => { throw new Error("SecurityError"); } });
+    vi.stubGlobal("sessionStorage", {
+      removeItem: () => {
+        throw new Error("SecurityError");
+      },
+    });
     expect(() => safeSessionRemove("k")).not.toThrow();
     vi.unstubAllGlobals();
   });

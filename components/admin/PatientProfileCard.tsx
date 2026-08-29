@@ -71,14 +71,18 @@ export function PatientProfileCard({ profile }: { profile: Profile | null | unde
       </table>
 
       <p className={styles.profileSubLabel}>Lifestyle</p>
-      <table className={pr?.notes || pr?.referralSource ? styles.profileTable : styles.profileTableLast}>
+      <table
+        className={pr?.notes || pr?.referralSource ? styles.profileTable : styles.profileTableLast}
+      >
         <tbody>
           <tr>
             <td className={styles.profileTdLabel}>Sleep avg</td>
             <td className={styles.profileTdValue}>
-              {pr?.sleepHoursAvg != null
-                ? `${pr.sleepHoursAvg}h/night`
-                : <span className={styles.cellFaint}>—</span>}
+              {pr?.sleepHoursAvg != null ? (
+                `${pr.sleepHoursAvg}h/night`
+              ) : (
+                <span className={styles.cellFaint}>—</span>
+              )}
             </td>
           </tr>
           <tr>

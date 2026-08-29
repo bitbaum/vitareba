@@ -32,12 +32,18 @@ type Props = {
  * confirmed slot.
  */
 export function RequestBookingForm({
-  bookingType, onBookingTypeChange,
-  machineType, onMachineTypeChange,
-  preferredDate, onPreferredDateChange,
-  notes, onNotesChange,
-  submitting, submitError,
-  onSubmit, onCancel,
+  bookingType,
+  onBookingTypeChange,
+  machineType,
+  onMachineTypeChange,
+  preferredDate,
+  onPreferredDateChange,
+  notes,
+  onNotesChange,
+  submitting,
+  submitError,
+  onSubmit,
+  onCancel,
 }: Props) {
   return (
     <div className={`${styles.card} ${styles.cardGap}`}>
@@ -55,7 +61,10 @@ export function RequestBookingForm({
                 key={t}
                 type="button"
                 className={`${bookingStyles.typeBtn}${bookingType === t ? ` ${bookingStyles.typeBtnActive}` : ""}`}
-                onClick={() => { onBookingTypeChange(t); onMachineTypeChange(""); }}
+                onClick={() => {
+                  onBookingTypeChange(t);
+                  onMachineTypeChange("");
+                }}
               >
                 {BOOKING_TYPE_CONFIG[t].label}
               </button>
@@ -65,7 +74,9 @@ export function RequestBookingForm({
 
         {bookingType === "machine" && (
           <div className={authStyles.field}>
-            <label className={authStyles.label} htmlFor="machineType">Technology</label>
+            <label className={authStyles.label} htmlFor="machineType">
+              Technology
+            </label>
             <select
               id="machineType"
               className={authStyles.input}
@@ -75,19 +86,31 @@ export function RequestBookingForm({
             >
               <option value="">Select technology…</option>
               {MACHINE_TYPE_VALUES.map((m) => (
-                <option key={m} value={m}>{MACHINE_TYPE_CONFIG[m].label}</option>
+                <option key={m} value={m}>
+                  {MACHINE_TYPE_CONFIG[m].label}
+                </option>
               ))}
             </select>
           </div>
         )}
 
         <div className={authStyles.field}>
-          <label className={authStyles.label} htmlFor="date">Preferred date (optional)</label>
-          <input id="date" className={authStyles.input} type="date" value={preferredDate} onChange={(e) => onPreferredDateChange(e.target.value)} />
+          <label className={authStyles.label} htmlFor="date">
+            Preferred date (optional)
+          </label>
+          <input
+            id="date"
+            className={authStyles.input}
+            type="date"
+            value={preferredDate}
+            onChange={(e) => onPreferredDateChange(e.target.value)}
+          />
         </div>
         <div className={authStyles.field}>
           <label className={authStyles.label} htmlFor="notes">
-            {bookingType === "machine" ? "Anything to prepare?" : "What would you like to focus on?"}
+            {bookingType === "machine"
+              ? "Anything to prepare?"
+              : "What would you like to focus on?"}
           </label>
           <textarea
             id="notes"

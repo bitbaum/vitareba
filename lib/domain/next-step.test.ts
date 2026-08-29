@@ -15,14 +15,24 @@ const base: NextStepInput = {
 
 describe("computeNextStep — priority funnel", () => {
   it("assessment first: without a baseline nothing else matters", () => {
-    const step = computeNextStep({ ...base, hasAssessment: false, checkedInToday: false, unreadMessages: 3 });
+    const step = computeNextStep({
+      ...base,
+      hasAssessment: false,
+      checkedInToday: false,
+      unreadMessages: 3,
+    });
     expect(step.key).toBe("assessment");
     expect(step.href).toBe(PORTAL_ROUTES.assessment);
     expect(step.urgent).toBe(true);
   });
 
   it("daily check-in second, with streak framing when at risk", () => {
-    const step = computeNextStep({ ...base, checkedInToday: false, atRiskStreak: 7, unreadMessages: 2 });
+    const step = computeNextStep({
+      ...base,
+      checkedInToday: false,
+      atRiskStreak: 7,
+      unreadMessages: 2,
+    });
     expect(step.key).toBe("checkin");
     expect(step.sub).toContain("7-day streak");
     expect(step.urgent).toBe(true);

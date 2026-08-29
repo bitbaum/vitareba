@@ -4,7 +4,12 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { and, eq, gt } from "drizzle-orm";
 import { serviceUnavailable } from "@/lib/utils/api-response";
-import { PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH, PASSWORD_RESET_TOKEN_MAX_LENGTH, RESET_TOKEN_IDENTIFIER_PREFIX } from "@/lib/config/auth";
+import {
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_RESET_TOKEN_MAX_LENGTH,
+  RESET_TOKEN_IDENTIFIER_PREFIX,
+} from "@/lib/config/auth";
 import { db } from "@/lib/db";
 import { users, verificationTokens } from "@/lib/db/schema";
 import { hashPassword, emailField } from "@/lib/domain/auth";
@@ -21,7 +26,7 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json(
       { success: false, error: "Invalid data", code: "invalid_data" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -33,7 +38,7 @@ export async function POST(req: Request) {
       where: and(
         eq(verificationTokens.identifier, `${RESET_TOKEN_IDENTIFIER_PREFIX}${email}`),
         eq(verificationTokens.token, token),
-        gt(verificationTokens.expires, new Date())
+        gt(verificationTokens.expires, new Date()),
       ),
     });
   } catch (err) {
@@ -44,7 +49,7 @@ export async function POST(req: Request) {
   if (!record) {
     return NextResponse.json(
       { success: false, error: "Invalid or expired link", code: "invalid_token" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -57,12 +62,18 @@ export async function POST(req: Request) {
       .update(users)
       .set({ password: hashed, failedLoginAttempts: 0, lockedUntil: null })
       .where(eq(users.email, email));
-    await db.delete(verificationTokens).where(eq(verificationTokens.identifier, `${RESET_TOKEN_IDENTIFIER_PREFIX}${email}`));
+    await db
+      .delete(verificationTokens)
+      .where(eq(verificationTokens.identifier, `${RESET_TOKEN_IDENTIFIER_PREFIX}${email}`));
   } catch (err) {
     console.error("[api/auth/reset-password] update failed:", err);
     return NextResponse.json(
-      { success: false, error: "Failed to reset password — please try again", code: "server_error" },
-      { status: 500 }
+      {
+        success: false,
+        error: "Failed to reset password — please try again",
+        code: "server_error",
+      },
+      { status: 500 },
     );
   }
 

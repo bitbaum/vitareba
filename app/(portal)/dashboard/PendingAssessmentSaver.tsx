@@ -58,7 +58,7 @@ export function PendingAssessmentSaver() {
     } catch {
       safeSessionRemove(STORAGE_KEYS.pendingAssessment);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return null;

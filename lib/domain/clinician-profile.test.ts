@@ -133,7 +133,9 @@ describe("updateClinicianProfile", () => {
     await updateClinicianProfile(CLINICIAN_ID, { bio: "New bio" });
 
     expect(mockInsert).toHaveBeenCalled();
-    expect(values).toHaveBeenCalledWith(expect.objectContaining({ userId: CLINICIAN_ID, bio: "New bio" }));
+    expect(values).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: CLINICIAN_ID, bio: "New bio" }),
+    );
     expect(onConflictDoUpdate).toHaveBeenCalled();
   });
 });

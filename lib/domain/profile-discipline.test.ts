@@ -18,10 +18,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { profileUpdateSchema } from "./profile";
 
-const FORMS = [
-  "app/(portal)/profile/ProfileForm.tsx",
-  "components/admin/AdminProfileEditForm.tsx",
-];
+const FORMS = ["app/(portal)/profile/ProfileForm.tsx", "components/admin/AdminProfileEditForm.tsx"];
 
 /**
  * Schema keys that intentionally have no form input, each with the reason.
@@ -52,7 +49,7 @@ describe("every profile schema field is reachable from a form", () => {
     });
     expect(
       missing,
-      `${formPath} never mentions ${missing.join(", ")} — the field would silently never be saved`
+      `${formPath} never mentions ${missing.join(", ")} — the field would silently never be saved`,
     ).toEqual([]);
   });
 

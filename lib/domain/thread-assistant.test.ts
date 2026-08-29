@@ -65,7 +65,7 @@ function containsString(value: unknown, needle: string, seen = new WeakSet()): b
   if (seen.has(value as object)) return false;
   seen.add(value as object);
   return Object.values(value as Record<string, unknown>).some((v) =>
-    containsString(v, needle, seen)
+    containsString(v, needle, seen),
   );
 }
 
@@ -141,9 +141,7 @@ describe("runThreadAssistant", () => {
   it("invites the assistant on first use, without granting it the backlog", async () => {
     mockLoadThread
       .mockResolvedValueOnce(loaded([patient, doctor], [msg("m1", "patient-1", T1)]))
-      .mockResolvedValueOnce(
-        loaded([patient, doctor, assistant], [msg("m1", "patient-1", T1)])
-      );
+      .mockResolvedValueOnce(loaded([patient, doctor, assistant], [msg("m1", "patient-1", T1)]));
 
     await runThreadAssistant("thread-1", "patient-1");
 
@@ -177,7 +175,10 @@ describe("runThreadAssistant", () => {
     mockLoadThread
       .mockResolvedValueOnce(loaded([patient, doctor], [msg("m1", "patient-1", T1)]))
       .mockResolvedValueOnce(
-        loaded([patient, doctor, assistant], [msg("m1", "patient-1", new Date("2026-01-01T12:00:00Z"))])
+        loaded(
+          [patient, doctor, assistant],
+          [msg("m1", "patient-1", new Date("2026-01-01T12:00:00Z"))],
+        ),
       );
 
     const r = await runThreadAssistant("thread-1", "patient-1");
@@ -195,7 +196,10 @@ describe("runThreadAssistant", () => {
     mockLoadThread
       .mockResolvedValueOnce(loaded([patient, doctor], [msg("m1", "patient-1", T1)]))
       .mockResolvedValueOnce(
-        loaded([patient, doctor, assistant], [msg("m1", "patient-1", new Date("2026-01-01T12:00:00Z"))])
+        loaded(
+          [patient, doctor, assistant],
+          [msg("m1", "patient-1", new Date("2026-01-01T12:00:00Z"))],
+        ),
       );
 
     const r = await runThreadAssistant("thread-1", "patient-1");
@@ -207,7 +211,10 @@ describe("runThreadAssistant", () => {
     mockLoadThread
       .mockResolvedValueOnce(loaded([patient, doctor], [msg("m1", "patient-1", T1)]))
       .mockResolvedValueOnce(
-        loaded([patient, doctor, assistant], [msg("m1", "patient-1", new Date("2026-01-01T12:00:00Z"))])
+        loaded(
+          [patient, doctor, assistant],
+          [msg("m1", "patient-1", new Date("2026-01-01T12:00:00Z"))],
+        ),
       );
 
     await runThreadAssistant("thread-1", "patient-1");

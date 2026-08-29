@@ -105,13 +105,17 @@ export function BookingActions({
       <div className={shared.cardTight}>
         <p className={shared.formHint}>
           {late
-            ? (actorLabel === "clinic" ? CANCELLATION_POLICY.lateWarningClinic : CANCELLATION_POLICY.lateWarningPatient)
+            ? actorLabel === "clinic"
+              ? CANCELLATION_POLICY.lateWarningClinic
+              : CANCELLATION_POLICY.lateWarningPatient
             : notice
               ? `Cancelling with ${notice}' notice. The slot goes back to another patient.`
               : "This request will be withdrawn."}
         </p>
         <label className={shared.formHint} htmlFor={`reason-${booking.id}`}>
-          {actorLabel === "clinic" ? "Reason (recorded on the booking)" : "Anything we should know? (optional)"}
+          {actorLabel === "clinic"
+            ? "Reason (recorded on the booking)"
+            : "Anything we should know? (optional)"}
         </label>
         <textarea
           id={`reason-${booking.id}`}
@@ -119,11 +123,18 @@ export function BookingActions({
           value={reason}
           maxLength={CANCELLATION_REASON_MAX}
           onChange={(e) => setReason(e.target.value)}
-          placeholder={actorLabel === "clinic" ? "Clinician unavailable…" : "Feeling unwell, travelling…"}
+          placeholder={
+            actorLabel === "clinic" ? "Clinician unavailable…" : "Feeling unwell, travelling…"
+          }
         />
         {error && <p className={shared.formError}>{error}</p>}
         <div className={shared.formActions}>
-          <button type="button" className={shared.btnPrimary} onClick={handleCancel} disabled={busy}>
+          <button
+            type="button"
+            className={shared.btnPrimary}
+            onClick={handleCancel}
+            disabled={busy}
+          >
             {busy ? "Cancelling…" : "Yes, cancel it"}
           </button>
           <button

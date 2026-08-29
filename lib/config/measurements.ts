@@ -40,16 +40,16 @@
 // ─── Categories ───────────────────────────────────────────────────────────────
 
 export const MEASUREMENT_CATEGORIES = [
-  { key: "vitals",        label: "Vitals" },
-  { key: "body",          label: "Body composition" },
-  { key: "metabolic",     label: "Metabolic" },
-  { key: "lipids",        label: "Lipids" },
-  { key: "inflammation",  label: "Inflammation" },
-  { key: "thyroid",       label: "Thyroid" },
-  { key: "hormones",      label: "Hormones" },
+  { key: "vitals", label: "Vitals" },
+  { key: "body", label: "Body composition" },
+  { key: "metabolic", label: "Metabolic" },
+  { key: "lipids", label: "Lipids" },
+  { key: "inflammation", label: "Inflammation" },
+  { key: "thyroid", label: "Thyroid" },
+  { key: "hormones", label: "Hormones" },
   { key: "micronutrient", label: "Micronutrients" },
-  { key: "organ",         label: "Organ function" },
-  { key: "recovery",      label: "Sleep & recovery" },
+  { key: "organ", label: "Organ function" },
+  { key: "recovery", label: "Sleep & recovery" },
 ] as const;
 
 export type MeasurementCategory = (typeof MEASUREMENT_CATEGORIES)[number]["key"];
@@ -130,7 +130,8 @@ const DEFS = [
     ref: { low: 90, high: 139 },
     optimal: { low: 90, high: 119 },
     alert: { low: 90, high: 179 },
-    alertSource: "ESC/ESH: ≥180 systolic is a hypertensive crisis; <90 is symptomatic hypotension territory",
+    alertSource:
+      "ESC/ESH: ≥180 systolic is a hypertensive crisis; <90 is symptomatic hypotension territory",
     direction: "within",
     patientEnterable: true,
     source: "ESC/ESH 2023: ≥140 defines hypertension; <120 optimal",
@@ -161,7 +162,8 @@ const DEFS = [
     decimals: 0,
     ref: { low: 50, high: 90 },
     alert: { low: 40, high: 120 },
-    alertSource: "Resting bradycardia <40 or tachycardia >120 warrants prompt review — the pair to watch on a stimulant",
+    alertSource:
+      "Resting bradycardia <40 or tachycardia >120 warrants prompt review — the pair to watch on a stimulant",
     direction: "lower",
     patientEnterable: true,
     source: "Conventional adult resting range; trained athletes run lower",
@@ -231,7 +233,8 @@ const DEFS = [
     decimals: 1,
     ref: { low: 3.9, high: 5.5 },
     alert: { high: 10.9 },
-    alertSource: "≥11.1 mmol/L is the diabetes-range threshold and should not wait for the next appointment",
+    alertSource:
+      "≥11.1 mmol/L is the diabetes-range threshold and should not wait for the next appointment",
     direction: "within",
     patientEnterable: false,
     source: "ADA: 5.6–6.9 impaired fasting glucose, ≥7.0 diabetes range",
@@ -383,7 +386,8 @@ const DEFS = [
     decimals: 2,
     ref: { low: 0.4, high: 4.0 },
     alert: { low: 0.1, high: 10 },
-    alertSource: "Overt thyroid dysfunction sits outside 0.1–10; both ends can look exactly like the symptoms we are treating",
+    alertSource:
+      "Overt thyroid dysfunction sits outside 0.1–10; both ends can look exactly like the symptoms we are treating",
     direction: "within",
     patientEnterable: false,
     source: "Conventional adult laboratory interval",
@@ -558,7 +562,8 @@ const DEFS = [
     decimals: 0,
     ref: { low: 90 },
     alert: { low: 30 },
-    alertSource: "KDIGO: <30 is severely reduced kidney function and changes what may be prescribed",
+    alertSource:
+      "KDIGO: <30 is severely reduced kidney function and changes what may be prescribed",
     direction: "higher",
     patientEnterable: false,
     source: "KDIGO: ≥90 normal, 60–89 mildly reduced, <60 for ≥3 months defines CKD",
@@ -574,7 +579,8 @@ const DEFS = [
     refMale: { low: 10, high: 50 },
     ref: { low: 10, high: 50 },
     alert: { high: 150 },
-    alertSource: "Above roughly three times the upper limit of normal is the conventional stop-and-review point in drug monitoring",
+    alertSource:
+      "Above roughly three times the upper limit of normal is the conventional stop-and-review point in drug monitoring",
     direction: "lower",
     patientEnterable: false,
     source: "Sex-specific laboratory intervals",
@@ -684,7 +690,7 @@ export function isMeasurementKey(key: string): key is MeasurementKey {
 
 /** The subset a patient may record themselves — vitals and wearable numbers. */
 export const PATIENT_ENTERABLE_KEYS = DEFS.filter((d) => d.patientEnterable).map(
-  (d) => d.key
+  (d) => d.key,
 ) as readonly MeasurementKey[];
 
 // ─── Provenance ───────────────────────────────────────────────────────────────
@@ -696,16 +702,16 @@ export const PATIENT_ENTERABLE_KEYS = DEFS.filter((d) => d.patientEnterable).map
  * same weight as a laboratory report.
  */
 export const MEASUREMENT_SOURCES = [
-  { key: "lab",       label: "Laboratory",   description: "Reported by an accredited laboratory" },
-  { key: "clinic",    label: "In clinic",    description: "Measured during a consultation" },
-  { key: "home",      label: "Home",         description: "Measured by the patient at home" },
-  { key: "wearable",  label: "Wearable",     description: "Read from a device or app" },
+  { key: "lab", label: "Laboratory", description: "Reported by an accredited laboratory" },
+  { key: "clinic", label: "In clinic", description: "Measured during a consultation" },
+  { key: "home", label: "Home", description: "Measured by the patient at home" },
+  { key: "wearable", label: "Wearable", description: "Read from a device or app" },
 ] as const;
 
 export type MeasurementSource = (typeof MEASUREMENT_SOURCES)[number]["key"];
 
 export const MEASUREMENT_SOURCE_KEYS = MEASUREMENT_SOURCES.map(
-  (s) => s.key
+  (s) => s.key,
 ) as readonly MeasurementSource[];
 
 export function isMeasurementSource(key: string): key is MeasurementSource {

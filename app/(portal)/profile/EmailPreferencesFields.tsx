@@ -9,7 +9,10 @@ type Props = {
 };
 
 export function EmailPreferencesFields({
-  digestOptOut, onDigestOptOutChange, reminderOptOut, onReminderOptOutChange,
+  digestOptOut,
+  onDigestOptOutChange,
+  reminderOptOut,
+  onReminderOptOutChange,
 }: Props) {
   return (
     <div className={styles.card} id="email-preferences">
@@ -24,7 +27,8 @@ export function EmailPreferencesFields({
         Opt out of weekly summary emails
       </label>
       <p className={profileStyles.checkboxHint}>
-        Weekly summaries include your check-in averages, latest score, and booking status. Uncheck to receive them.
+        Weekly summaries include your check-in averages, latest score, and booking status. Uncheck
+        to receive them.
       </p>
       <label className={profileStyles.checkboxRow}>
         <input

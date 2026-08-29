@@ -2,25 +2,25 @@
 // Adding a new portal route: update here + middleware.ts PORTAL_PREFIXES
 
 export const AUTH_ROUTES = {
-  login:          "/login",
-  register:       "/register",
+  login: "/login",
+  register: "/register",
   forgotPassword: "/forgot-password",
-  resetPassword:  "/reset-password",
+  resetPassword: "/reset-password",
 } as const satisfies Record<string, string>;
 
 export const PORTAL_ROUTES = {
-  dashboard:   "/dashboard",
-  checkin:     "/checkin",
-  assessment:  "/assessment",
+  dashboard: "/dashboard",
+  checkin: "/checkin",
+  assessment: "/assessment",
   assessments: "/assessments",
-  labs:        "/labs",
-  goals:       "/goals",
-  careTeam:    "/care-team",
-  bookings:    "/bookings",
-  messages:    "/messages",
-  documents:   "/documents",
-  profile:     "/profile",
-  regulation:  "/regulation",
+  labs: "/labs",
+  goals: "/goals",
+  careTeam: "/care-team",
+  bookings: "/bookings",
+  messages: "/messages",
+  documents: "/documents",
+  profile: "/profile",
+  regulation: "/regulation",
 } as const satisfies Record<string, string>;
 
 /**
@@ -48,18 +48,18 @@ export const PORTAL_ROUTE_LABELS: Record<
   (typeof PORTAL_ROUTES)[keyof typeof PORTAL_ROUTES],
   string
 > = {
-  [PORTAL_ROUTES.dashboard]:   "Dashboard",
-  [PORTAL_ROUTES.checkin]:     "Daily Check-in",
-  [PORTAL_ROUTES.assessment]:  "Assessment",
+  [PORTAL_ROUTES.dashboard]: "Dashboard",
+  [PORTAL_ROUTES.checkin]: "Daily Check-in",
+  [PORTAL_ROUTES.assessment]: "Assessment",
   [PORTAL_ROUTES.assessments]: "My Results",
-  [PORTAL_ROUTES.labs]:        "Labs & Vitals",
-  [PORTAL_ROUTES.goals]:       "My Goals",
-  [PORTAL_ROUTES.careTeam]:    "Care Team",
-  [PORTAL_ROUTES.bookings]:    "Bookings",
-  [PORTAL_ROUTES.messages]:    "Messages",
-  [PORTAL_ROUTES.documents]:   "Documents",
-  [PORTAL_ROUTES.profile]:     "Profile",
-  [PORTAL_ROUTES.regulation]:  "Regulation",
+  [PORTAL_ROUTES.labs]: "Labs & Vitals",
+  [PORTAL_ROUTES.goals]: "My Goals",
+  [PORTAL_ROUTES.careTeam]: "Care Team",
+  [PORTAL_ROUTES.bookings]: "Bookings",
+  [PORTAL_ROUTES.messages]: "Messages",
+  [PORTAL_ROUTES.documents]: "Documents",
+  [PORTAL_ROUTES.profile]: "Profile",
+  [PORTAL_ROUTES.regulation]: "Regulation",
 };
 
 /**
@@ -72,9 +72,26 @@ export const PORTAL_NAV_GROUPS: {
   label: string | null;
   routes: (typeof PORTAL_ROUTES)[keyof typeof PORTAL_ROUTES][];
 }[] = [
-  { label: null,      routes: [PORTAL_ROUTES.dashboard] },
-  { label: "Track",   routes: [PORTAL_ROUTES.checkin, PORTAL_ROUTES.assessment, PORTAL_ROUTES.assessments, PORTAL_ROUTES.labs, PORTAL_ROUTES.goals] },
-  { label: "Care",    routes: [PORTAL_ROUTES.careTeam, PORTAL_ROUTES.bookings, PORTAL_ROUTES.messages, PORTAL_ROUTES.documents] },
+  { label: null, routes: [PORTAL_ROUTES.dashboard] },
+  {
+    label: "Track",
+    routes: [
+      PORTAL_ROUTES.checkin,
+      PORTAL_ROUTES.assessment,
+      PORTAL_ROUTES.assessments,
+      PORTAL_ROUTES.labs,
+      PORTAL_ROUTES.goals,
+    ],
+  },
+  {
+    label: "Care",
+    routes: [
+      PORTAL_ROUTES.careTeam,
+      PORTAL_ROUTES.bookings,
+      PORTAL_ROUTES.messages,
+      PORTAL_ROUTES.documents,
+    ],
+  },
   { label: "Account", routes: [PORTAL_ROUTES.profile] },
 ];
 
@@ -91,8 +108,8 @@ export const PORTAL_ROUTE_SHORT_LABELS: Partial<
   Record<(typeof PORTAL_ROUTES)[keyof typeof PORTAL_ROUTES], string>
 > = {
   [PORTAL_ROUTES.dashboard]: "Home",
-  [PORTAL_ROUTES.checkin]:   "Check-in",
-  [PORTAL_ROUTES.labs]:      "Labs",
+  [PORTAL_ROUTES.checkin]: "Check-in",
+  [PORTAL_ROUTES.labs]: "Labs",
 };
 
 /**
@@ -118,30 +135,28 @@ export const PUBLIC_API_PREFIXES = [
 ] as const satisfies readonly string[];
 
 export const ADMIN_ROUTES = {
-  root:         "/admin",
-  patients:     "/admin/patients",
-  bookings:     "/admin/bookings",
-  messages:     "/admin/messages",
-  documents:    "/admin/documents",
-  reports:      "/admin/reports",
-  profile:      "/admin/profile",
+  root: "/admin",
+  patients: "/admin/patients",
+  bookings: "/admin/bookings",
+  messages: "/admin/messages",
+  documents: "/admin/documents",
+  reports: "/admin/reports",
+  profile: "/admin/profile",
   applications: "/admin/applications",
 } as const satisfies Record<string, string>;
 
 /** Display label per admin route — consumed by NavBreadcrumb (same contract as PORTAL_ROUTE_LABELS). */
-export const ADMIN_ROUTE_LABELS: Record<
-  (typeof ADMIN_ROUTES)[keyof typeof ADMIN_ROUTES],
-  string
-> = {
-  [ADMIN_ROUTES.root]:         "Today",
-  [ADMIN_ROUTES.patients]:     "Patients",
-  [ADMIN_ROUTES.bookings]:     "Bookings",
-  [ADMIN_ROUTES.messages]:     "Messages",
-  [ADMIN_ROUTES.documents]:    "Documents",
-  [ADMIN_ROUTES.reports]:      "Reports",
-  [ADMIN_ROUTES.profile]:      "My Profile",
-  [ADMIN_ROUTES.applications]: "Clinicians",
-};
+export const ADMIN_ROUTE_LABELS: Record<(typeof ADMIN_ROUTES)[keyof typeof ADMIN_ROUTES], string> =
+  {
+    [ADMIN_ROUTES.root]: "Today",
+    [ADMIN_ROUTES.patients]: "Patients",
+    [ADMIN_ROUTES.bookings]: "Bookings",
+    [ADMIN_ROUTES.messages]: "Messages",
+    [ADMIN_ROUTES.documents]: "Documents",
+    [ADMIN_ROUTES.reports]: "Reports",
+    [ADMIN_ROUTES.profile]: "My Profile",
+    [ADMIN_ROUTES.applications]: "Clinicians",
+  };
 
 /**
  * Every admin path, as a union — same exhaustive-typing discipline as
@@ -171,18 +186,18 @@ export const ADMIN_NAV_GROUPS: {
   label: string | null;
   routes: AdminRoute[];
 }[] = [
-  { label: null,        routes: [ADMIN_ROUTES.root] },
-  { label: "Patients",  routes: [ADMIN_ROUTES.patients] },
+  { label: null, routes: [ADMIN_ROUTES.root] },
+  { label: "Patients", routes: [ADMIN_ROUTES.patients] },
   // The three channels of ongoing interaction with an existing patient —
   // deliberately the same shape as the portal's own "Care" group, so the same
   // relationship reads the same way from either side.
-  { label: "Care",      routes: [ADMIN_ROUTES.bookings, ADMIN_ROUTES.messages, ADMIN_ROUTES.documents] },
+  { label: "Care", routes: [ADMIN_ROUTES.bookings, ADMIN_ROUTES.messages, ADMIN_ROUTES.documents] },
   // Practice-governance concerns, not day-to-day clinical work — deliberately
   // separated from the Patients/Care groups a working clinician actually
   // lives in. Who is staff (Clinicians) is an owner decision, not something
   // that belongs mixed into a doctor's patient pipeline.
-  { label: "Practice",  routes: [ADMIN_ROUTES.reports, ADMIN_ROUTES.applications] },
-  { label: "Account",   routes: [ADMIN_ROUTES.profile] },
+  { label: "Practice", routes: [ADMIN_ROUTES.reports, ADMIN_ROUTES.applications] },
+  { label: "Account", routes: [ADMIN_ROUTES.profile] },
 ];
 
 export const ADMIN_BOTTOM_NAV: AdminRoute[] = [

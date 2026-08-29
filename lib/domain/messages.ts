@@ -83,7 +83,7 @@ async function participatingThreadIds(actorId: string): Promise<string[]> {
  * caller was allowed to know that; the route decides how to answer.
  */
 export async function loadThread(
-  threadId: string
+  threadId: string,
 ): Promise<{ thread: Thread; messages: Message[]; row: ThreadRow } | null> {
   const [row, participantRows, messageRows] = await Promise.all([
     db.query.threads.findFirst({ where: eq(threads.id, threadId) }),
@@ -110,7 +110,7 @@ export async function loadThread(
  */
 export async function getThreadForActor(
   threadId: string,
-  actorId: string
+  actorId: string,
 ): Promise<{ thread: Thread; messages: Message[]; row: ThreadRow } | null> {
   const loaded = await loadThread(threadId);
   if (!loaded) return null;
@@ -196,9 +196,7 @@ export async function getUnreadThreadIds(actorId: string): Promise<Set<string>> 
 /** Patient ids whose threads have something unread for this actor. */
 export async function getUnreadPatientIds(actorId: string): Promise<Set<string>> {
   const entries = await listThreadsForActor(actorId);
-  return new Set(
-    entries.filter((e) => e.unread > 0).map((e) => e.row.patientId)
-  );
+  return new Set(entries.filter((e) => e.unread > 0).map((e) => e.row.patientId));
 }
 
 /**
@@ -209,7 +207,7 @@ export async function getUnreadPatientIds(actorId: string): Promise<Set<string>>
  * still unanswered, and from the patient's side those are identical.
  */
 export async function getThreadsAwaitingReply(
-  actorId: string
+  actorId: string,
 ): Promise<{ id: string; patientId: string; subject: string; lastMessageAt: Date }[]> {
   const entries = await listThreadsForActor(actorId);
   return entries
@@ -226,7 +224,7 @@ export async function getThreadsAwaitingReply(
 export async function markThreadRead(
   threadId: string,
   actorId: string,
-  at: Date = new Date()
+  at: Date = new Date(),
 ): Promise<void> {
   await db
     .update(threadParticipants)
@@ -237,14 +235,13 @@ export async function markThreadRead(
         eq(threadParticipants.actorId, actorId),
         // Never move a mark backwards: a stale tab finishing its request after a
         // newer one would otherwise resurrect messages the user has already read.
-        or(isNull(threadParticipants.lastReadAt), lt(threadParticipants.lastReadAt, at))
-      )
+        or(isNull(threadParticipants.lastReadAt), lt(threadParticipants.lastReadAt, at)),
+      ),
     );
 }
 
 export type PostMessageResult =
-  | { ok: true; message: MessageRow }
-  | { ok: false; reason: "not-found" | "forbidden" };
+  { ok: true; message: MessageRow } | { ok: false; reason: "not-found" | "forbidden" };
 
 /**
  * Append a message, if this actor is allowed to speak here.
@@ -278,10 +275,7 @@ export async function postMessage(input: {
     })
     .returning();
 
-  await db
-    .update(threads)
-    .set({ lastMessageAt: new Date() })
-    .where(eq(threads.id, input.threadId));
+  await db.update(threads).set({ lastMessageAt: new Date() }).where(eq(threads.id, input.threadId));
 
   return { ok: true, message };
 }

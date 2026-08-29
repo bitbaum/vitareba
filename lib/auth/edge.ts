@@ -15,8 +15,7 @@ const edgeConfig: NextAuthConfig = {
     session({ session, token }) {
       session.user.id = token.id as string;
       session.user.role = token.role as UserRole;
-      session.user.emailVerified =
-        (token.emailVerified as Date | null | undefined) ?? null;
+      session.user.emailVerified = (token.emailVerified as Date | null | undefined) ?? null;
       return session;
     },
   },

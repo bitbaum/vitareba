@@ -32,7 +32,9 @@ export function AcceptingPatientsToggle() {
     }
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   async function toggle() {
     if (accepting === null) return;

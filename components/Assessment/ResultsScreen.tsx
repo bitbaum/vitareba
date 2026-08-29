@@ -35,11 +35,7 @@ type AssessmentResultsI18n = {
   };
 };
 
-export default function ResultsScreen({
-  scores,
-  overall,
-  onRestart,
-}: ResultsScreenProps) {
+export default function ResultsScreen({ scores, overall, onRestart }: ResultsScreenProps) {
   const verdict = getVerdict(overall);
   // Preserve the visitor's marketing-site locale through to /register so a
   // German visitor on /de/ taking the overlay doesn't suddenly land on
@@ -48,9 +44,7 @@ export default function ResultsScreen({
   const pathname = usePathname();
   const seg = pathname.split("/")[1];
   const isLocalePrefixed = (routing.locales as readonly string[]).includes(seg);
-  const registerHref = isLocalePrefixed
-    ? `/${seg}${AUTH_ROUTES.register}`
-    : AUTH_ROUTES.register;
+  const registerHref = isLocalePrefixed ? `/${seg}${AUTH_ROUTES.register}` : AUTH_ROUTES.register;
 
   const msgs = useMessages() as unknown as { assessment: AssessmentResultsI18n };
   const i18n = msgs.assessment;
@@ -81,9 +75,7 @@ export default function ResultsScreen({
             <div key={dim.id} className={styles.rScoreCard}>
               <div className={styles.rScIcon}>{dim.icon}</div>
               <div className={styles.rScName}>{i18n.dimensions[dim.id] ?? dim.id}</div>
-              <div className={`${styles.rScN} ${scoreClass(score)}`}>
-                {score}
-              </div>
+              <div className={`${styles.rScN} ${scoreClass(score)}`}>{score}</div>
               <div className={styles.rScBar}>
                 <div
                   className={styles.rScFill}
@@ -106,11 +98,7 @@ export default function ResultsScreen({
                 <div className={styles.rDimName}>
                   {dim.icon} {i18n.dimensions[dim.id] ?? dim.id}
                 </div>
-                <div
-                  className={`${styles.rDimScore} ${scoreClass(score)}`}
-                >
-                  {score}
-                </div>
+                <div className={`${styles.rDimScore} ${scoreClass(score)}`}>{score}</div>
               </div>
               <div className={styles.rDimBar}>
                 <div
@@ -135,7 +123,7 @@ export default function ResultsScreen({
             onClick={() => {
               safeSessionSet(
                 STORAGE_KEYS.pendingAssessment,
-                JSON.stringify({ scores, overallScore: overall })
+                JSON.stringify({ scores, overallScore: overall }),
               );
             }}
           >

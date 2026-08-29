@@ -370,9 +370,7 @@ export function computeScores(answers: (number | null)[]): {
 
   const scores = {} as Record<DimensionId, number>;
   for (const d of DIMENSIONS) {
-    scores[d.id] = counts[d.id] > 0
-      ? Math.round((totals[d.id] / (counts[d.id] * 5)) * 100)
-      : 0;
+    scores[d.id] = counts[d.id] > 0 ? Math.round((totals[d.id] / (counts[d.id] * 5)) * 100) : 0;
   }
 
   const vals = Object.values(scores);

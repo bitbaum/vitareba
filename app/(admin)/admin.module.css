@@ -67,7 +67,9 @@
   color: var(--white-60);
   text-decoration: none;
   font-size: 0.82rem;
-  transition: background var(--transition-fast), color var(--transition-fast);
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
   display: flex;
   align-items: center;
   gap: 0.65rem;
@@ -142,7 +144,6 @@
   background: var(--warn);
 }
 
-
 .mainWrap {
   composes: mainWrap from "../shared.module.css";
 }
@@ -163,7 +164,6 @@
   composes: main from "../shared.module.css";
 }
 
-
 /* Shared admin UI — geometry from app/shared.module.css */
 .pageTitle {
   composes: pageTitle from "../shared.module.css";
@@ -181,9 +181,15 @@
   composes: cardMb from "../shared.module.css";
 }
 
-.checkboxRow { composes: checkboxRow from "../shared.module.css"; }
-.checkboxInput { composes: checkboxInput from "../shared.module.css"; }
-.checkboxHint { composes: checkboxHint from "../shared.module.css"; }
+.checkboxRow {
+  composes: checkboxRow from "../shared.module.css";
+}
+.checkboxInput {
+  composes: checkboxInput from "../shared.module.css";
+}
+.checkboxHint {
+  composes: checkboxHint from "../shared.module.css";
+}
 
 .table {
   width: 100%;
@@ -310,12 +316,31 @@
   margin-top: 0.2rem;
 }
 
-.phasePill[data-phase="intake"]     { color: var(--muted); background: var(--muted-10); }
-.phasePill[data-phase="assessment"] { color: var(--teal);  background: var(--teal-10); }
-.phasePill[data-phase="planning"]   { color: var(--warn);  background: var(--warn-10); }
-.phasePill[data-phase="active"]     { color: var(--teal);  background: var(--teal-15); font-weight: 600; }
-.phasePill[data-phase="review"]     { color: var(--warn);  background: var(--warn-10); }
-.phasePill[data-phase="completed"]  { color: var(--muted); background: var(--muted-8); }
+.phasePill[data-phase="intake"] {
+  color: var(--muted);
+  background: var(--muted-10);
+}
+.phasePill[data-phase="assessment"] {
+  color: var(--teal);
+  background: var(--teal-10);
+}
+.phasePill[data-phase="planning"] {
+  color: var(--warn);
+  background: var(--warn-10);
+}
+.phasePill[data-phase="active"] {
+  color: var(--teal);
+  background: var(--teal-15);
+  font-weight: 600;
+}
+.phasePill[data-phase="review"] {
+  color: var(--warn);
+  background: var(--warn-10);
+}
+.phasePill[data-phase="completed"] {
+  color: var(--muted);
+  background: var(--muted-8);
+}
 
 /* ─── Sparkline ──────────────────────────────────────────────────────────────── */
 
@@ -333,9 +358,15 @@
   flex-shrink: 0;
 }
 
-.sparkDot[data-level="low"]  { background: var(--danger); }
-.sparkDot[data-level="mid"]  { background: var(--warn); }
-.sparkDot[data-level="high"] { background: var(--teal); }
+.sparkDot[data-level="low"] {
+  background: var(--danger);
+}
+.sparkDot[data-level="mid"] {
+  background: var(--warn);
+}
+.sparkDot[data-level="high"] {
+  background: var(--teal);
+}
 
 /* ─── Card label (used in section headers within detail cards) ─────────────── */
 
@@ -903,7 +934,7 @@
 }
 
 .stretchedLink::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   z-index: 0;
@@ -1010,7 +1041,10 @@
   cursor: pointer;
   text-transform: capitalize;
   letter-spacing: 0.04em;
-  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
 .filterTab:hover,
@@ -1903,9 +1937,18 @@
 
 /* Tone is the whole design of this screen: a section that shouts must be one
    the reader can trust, so only two of the five are allowed to. */
-.inboxTitleUrgent { composes: inboxTitle; color: var(--danger); }
-.inboxTitleAttention { composes: inboxTitle; color: var(--warn); }
-.inboxTitleRoutine { composes: inboxTitle; color: var(--muted); }
+.inboxTitleUrgent {
+  composes: inboxTitle;
+  color: var(--danger);
+}
+.inboxTitleAttention {
+  composes: inboxTitle;
+  color: var(--warn);
+}
+.inboxTitleRoutine {
+  composes: inboxTitle;
+  color: var(--muted);
+}
 
 .inboxCount {
   font-size: 0.7rem;
