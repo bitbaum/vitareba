@@ -28,7 +28,15 @@ export async function runCronEmails(now: Date = new Date()): Promise<CronEmailsR
   // No provider → leave every row pending (retried next run once configured)
   // instead of "sending" into the void and marking the queue sent.
   if (!isEmailConfigured()) {
-    console.error("[cron/emails] RESEND_API_KEY not configured — queue left pending");
+    // Name the real reason. isEmailConfigured() is false for TWO reasons and
+    // this line only ever announced one of them, so a sandbox sender — the
+    // case the guard was written for — reported a missing key that was
+    // present and correctly shaped.
+    console.error(
+      process.env.RESEND_API_KEY
+        ? "[cron/emails] sender is a sandbox address that reaches nobody — queue left pending"
+        : "[cron/emails] RESEND_API_KEY not configured — queue left pending"
+    );
     return { success: false, error: "Email provider not configured" };
   }
 

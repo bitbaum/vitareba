@@ -10,7 +10,10 @@ export async function GET(req: Request) {
 
   const result = await runCronEmails();
   if (!result.success) {
-    return NextResponse.json({ success: false, error: "Database unavailable" }, { status: 500 });
+    // Report the cause the workflow actually returned. Hardcoding one of the
+    // two made an email-configuration failure read as a database failure, and
+    // the operator chased Postgres while the sender address was the problem.
+    return NextResponse.json({ success: false, error: result.error }, { status: 500 });
   }
   return NextResponse.json(result);
 }
