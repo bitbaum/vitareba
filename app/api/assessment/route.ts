@@ -45,18 +45,22 @@ export async function POST(req: Request) {
       .returning();
   } catch (err) {
     console.error("[api/assessment] insert failed:", err);
-    return NextResponse.json({ success: false, error: "Failed to save assessment — please try again" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "Failed to save assessment — please try again" },
+      { status: 500 },
+    );
   }
 
   runAfterResponse(
-    () => enqueueAssessmentEmails({
-      userId: session.user.id,
-      overallScore: parsed.data.overallScore,
-      scores: parsed.data.scores,
-      triggeredAt: result.completedAt,
-      isFirstAssessment: priorCount === 0,
-    }),
-    "[email-queue] enqueue failed:"
+    () =>
+      enqueueAssessmentEmails({
+        userId: session.user.id,
+        overallScore: parsed.data.overallScore,
+        scores: parsed.data.scores,
+        triggeredAt: result.completedAt,
+        isFirstAssessment: priorCount === 0,
+      }),
+    "[email-queue] enqueue failed:",
   );
 
   return NextResponse.json({ success: true, data: result }, { status: 201 });

@@ -26,7 +26,15 @@ type Props = {
 
 /** Every past and upcoming appointment — loading/error/empty states included. */
 export function BookingHistoryList({
-  loading, loadError, onRetry, bookings, clinicianLabel, slotMinutes, onRequestBooking, onChanged, onMove,
+  loading,
+  loadError,
+  onRetry,
+  bookings,
+  clinicianLabel,
+  slotMinutes,
+  onRequestBooking,
+  onChanged,
+  onMove,
 }: Props) {
   if (loading) return <LoadingState />;
 
@@ -48,7 +56,11 @@ export function BookingHistoryList({
       <div className={styles.card}>
         <div className={styles.emptyState}>
           <p className={styles.emptyTitle}>No bookings yet</p>
-          <p>A discovery call is the fastest way to find out if {COMPANY.shortName} is right for you — {slotMinutes} minutes with {clinicianLabel} to look at your Inflection Edge results and map out a programme.</p>
+          <p>
+            A discovery call is the fastest way to find out if {COMPANY.shortName} is right for you
+            — {slotMinutes} minutes with {clinicianLabel} to look at your Inflection Edge results
+            and map out a programme.
+          </p>
           <button type="button" className={styles.emptyAction} onClick={onRequestBooking}>
             Request a booking →
           </button>
@@ -84,15 +96,11 @@ export function BookingHistoryList({
                   {machineLabel ? `${typeLabel} — ${machineLabel}` : typeLabel}
                   {b.clinician?.name ? ` with ${b.clinician.name}` : ""}
                 </p>
-                {b.scheduledAt && (
-                  <p className={bookingStyles.bookingWhere}>{CLINIC_LOCATION}</p>
-                )}
+                {b.scheduledAt && <p className={bookingStyles.bookingWhere}>{CLINIC_LOCATION}</p>}
                 {b.notes && <p className={bookingStyles.bookingNote}>{b.notes}</p>}
               </div>
               <div className={bookingStyles.bookingActions}>
-                <span className={`${styles.pill} ${s.badgeClass}`}>
-                  {s.label}
-                </span>
+                <span className={`${styles.pill} ${s.badgeClass}`}>{s.label}</span>
                 {/* Was gated to `pending`, which is a status no booked
                     appointment ever has — every patient who picked a time
                     was stuck with it. The control now decides for itself,

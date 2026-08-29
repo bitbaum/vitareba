@@ -13,7 +13,11 @@ import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { clinicianProfiles, users } from "@/lib/db/schema";
-import { DEFAULT_AVAILABILITY, type ClinicianAvailability, type WeeklyHours } from "@/lib/config/scheduling";
+import {
+  DEFAULT_AVAILABILITY,
+  type ClinicianAvailability,
+  type WeeklyHours,
+} from "@/lib/config/scheduling";
 import {
   CLINICIAN_BIO_MAX_LENGTH,
   CLINICIAN_TITLE_MAX_LENGTH,
@@ -36,13 +40,16 @@ const timeWindowSchema = z
  */
 const weeklyHoursSchema = z.partialRecord(
   z.enum(["1", "2", "3", "4", "5", "6", "7"]),
-  z.array(timeWindowSchema).max(6)
+  z.array(timeWindowSchema).max(6),
 );
 
 export const clinicianProfileUpdateSchema = z.object({
   bio: z.string().max(CLINICIAN_BIO_MAX_LENGTH).nullable().optional(),
   title: z.string().max(CLINICIAN_TITLE_MAX_LENGTH).nullable().optional(),
-  specialties: z.array(z.string().trim().min(1).max(CLINICIAN_SPECIALTY_MAX_LENGTH)).max(CLINICIAN_SPECIALTIES_MAX_COUNT).optional(),
+  specialties: z
+    .array(z.string().trim().min(1).max(CLINICIAN_SPECIALTY_MAX_LENGTH))
+    .max(CLINICIAN_SPECIALTIES_MAX_COUNT)
+    .optional(),
   weeklyHours: weeklyHoursSchema.optional(),
   slotMinutes: z.number().int().min(5).max(240).optional(),
   bufferMinutes: z.number().int().min(0).max(120).optional(),
@@ -68,7 +75,9 @@ export type ClinicianProfileRow = {
 };
 
 /** The raw row for self-service editing — nulls mean "not set, using defaults", shown as such rather than filled in with a guess. */
-export async function getClinicianProfile(clinicianId: string): Promise<ClinicianProfileRow | null> {
+export async function getClinicianProfile(
+  clinicianId: string,
+): Promise<ClinicianProfileRow | null> {
   const row = await db.query.clinicianProfiles.findFirst({
     where: eq(clinicianProfiles.userId, clinicianId),
   });
@@ -92,7 +101,9 @@ export async function getClinicianProfile(clinicianId: string): Promise<Clinicia
  * `{ ...DEFAULT_AVAILABILITY, ...override }` spread with the same contract:
  * an unset field falls back to the default, not to a missing/undefined value.
  */
-export async function getClinicianAvailability(clinicianId: string): Promise<ClinicianAvailability> {
+export async function getClinicianAvailability(
+  clinicianId: string,
+): Promise<ClinicianAvailability> {
   const row = await getClinicianProfile(clinicianId);
   if (!row) return DEFAULT_AVAILABILITY;
   return {
@@ -117,13 +128,17 @@ export type PublicClinicianProfile = {
 };
 
 /** What a patient may see about a clinician — never leadTimeHours/horizonDays/maxPerDay, which are booking-engine tuning, not identity. */
-export async function getPublicClinicianProfile(clinicianId: string): Promise<PublicClinicianProfile | null> {
+export async function getPublicClinicianProfile(
+  clinicianId: string,
+): Promise<PublicClinicianProfile | null> {
   const row = await db.query.users.findFirst({
     where: eq(users.id, clinicianId),
     columns: { id: true, name: true, isClinician: true },
     with: {
       profile: { columns: { acceptingPatients: true } },
-      clinicianProfile: { columns: { bio: true, title: true, specialties: true, weeklyHours: true } },
+      clinicianProfile: {
+        columns: { bio: true, title: true, specialties: true, weeklyHours: true },
+      },
     },
   });
   if (!row?.isClinician) return null;
@@ -135,14 +150,18 @@ export async function getPublicClinicianProfile(clinicianId: string): Promise<Pu
     bio: row.clinicianProfile?.bio ?? null,
     specialties: (row.clinicianProfile?.specialties as string[] | null) ?? [],
     acceptingPatients: row.profile?.acceptingPatients ?? true,
-    weeklyHours: (row.clinicianProfile?.weeklyHours as WeeklyHours | null) ?? DEFAULT_AVAILABILITY.weeklyHours,
+    weeklyHours:
+      (row.clinicianProfile?.weeklyHours as WeeklyHours | null) ?? DEFAULT_AVAILABILITY.weeklyHours,
   };
 }
 
 // ─── Writes ─────────────────────────────────────────────────────────────────
 
 /** Self-service only — upserts because the row is created lazily on first edit. */
-export async function updateClinicianProfile(clinicianId: string, patch: ClinicianProfileUpdate): Promise<void> {
+export async function updateClinicianProfile(
+  clinicianId: string,
+  patch: ClinicianProfileUpdate,
+): Promise<void> {
   await db
     .insert(clinicianProfiles)
     .values({ userId: clinicianId, ...patch })

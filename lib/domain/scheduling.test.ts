@@ -18,7 +18,10 @@ function clinicTime(d: Date): string {
 }
 
 function clinicWeekday(d: Date): number {
-  const wd = new Intl.DateTimeFormat("en-US", { timeZone: CLINIC_TIMEZONE, weekday: "short" }).format(d);
+  const wd = new Intl.DateTimeFormat("en-US", {
+    timeZone: CLINIC_TIMEZONE,
+    weekday: "short",
+  }).format(d);
   return ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].indexOf(wd) + 1;
 }
 
@@ -57,11 +60,15 @@ describe("generateSlots", () => {
   it("removes slots overlapping a busy interval, including the buffer", () => {
     const free = generateSlots({ now: NOW, rules: RULES, busy: [] });
     const taken = free[0];
-    const remaining = generateSlots({ now: NOW, rules: RULES, busy: [slotBusyInterval(taken, RULES)] });
+    const remaining = generateSlots({
+      now: NOW,
+      rules: RULES,
+      busy: [slotBusyInterval(taken, RULES)],
+    });
     expect(remaining.some((s) => s.getTime() === taken.getTime())).toBe(false);
     const next = remaining.find((s) => s.getTime() > taken.getTime());
     expect(next!.getTime()).toBeGreaterThanOrEqual(
-      taken.getTime() + (RULES.slotMinutes + RULES.bufferMinutes) * 60_000
+      taken.getTime() + (RULES.slotMinutes + RULES.bufferMinutes) * 60_000,
     );
   });
 
@@ -69,12 +76,14 @@ describe("generateSlots", () => {
     const free = generateSlots({ now: NOW, rules: RULES, busy: [] });
     const firstDay = free[0];
     const sameDay = free.filter(
-      (s) => clinicWeekday(s) === clinicWeekday(firstDay) && s.getTime() - firstDay.getTime() < 24 * HOUR
+      (s) =>
+        clinicWeekday(s) === clinicWeekday(firstDay) &&
+        s.getTime() - firstDay.getTime() < 24 * HOUR,
     );
     const busy = sameDay.slice(0, RULES.maxPerDay).map((s) => slotBusyInterval(s, RULES));
     const remaining = generateSlots({ now: NOW, rules: RULES, busy });
     const remainingSameDay = remaining.filter(
-      (s) => s >= firstDay && s.getTime() - firstDay.getTime() < 14 * HOUR
+      (s) => s >= firstDay && s.getTime() - firstDay.getTime() < 14 * HOUR,
     );
     expect(remainingSameDay).toEqual([]);
   });
@@ -99,19 +108,32 @@ describe("generateSlots", () => {
     // Availability is per-clinician data now (lib/domain/clinician-profile.ts,
     // DB-backed) rather than a hardcoded fixture — the engine itself only
     // needs to prove it honours WHATEVER ClinicianAvailability it is given.
-    const eveningsOnly: WeeklyHours = { 1: [["17:00", "19:00"]], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [] };
+    const eveningsOnly: WeeklyHours = {
+      1: [["17:00", "19:00"]],
+      2: [],
+      3: [],
+      4: [],
+      5: [],
+      6: [],
+      7: [],
+    };
     const evenings = { ...DEFAULT_AVAILABILITY, weeklyHours: eveningsOnly };
     const slots = generateSlots({ now: NOW, rules: evenings, busy: [] });
     expect(slots.length).toBeGreaterThan(0);
     for (const s of slots) {
       const windows = evenings.weeklyHours[clinicWeekday(s)];
       const t = clinicTime(s);
-      expect(windows.some(([start, end]: [string, string]) => t >= start && t < end), `${s.toISOString()} (${t})`).toBe(true);
+      expect(
+        windows.some(([start, end]: [string, string]) => t >= start && t < end),
+        `${s.toISOString()} (${t})`,
+      ).toBe(true);
     }
     // Monday 09:00 exists for default rules but not for the evening-only rules
     const defSlots = generateSlots({ now: NOW, rules: RULES, busy: [] });
     const defMorning = defSlots.some((s) => clinicTime(s) === "09:00" && clinicWeekday(s) === 1);
-    const eveningMorningMonday = slots.some((s) => clinicTime(s) === "09:00" && clinicWeekday(s) === 1);
+    const eveningMorningMonday = slots.some(
+      (s) => clinicTime(s) === "09:00" && clinicWeekday(s) === 1,
+    );
     expect(defMorning).toBe(true);
     expect(eveningMorningMonday).toBe(false);
   });
@@ -128,6 +150,8 @@ describe("isBookableSlot", () => {
   it("rejects a slot that just became busy (race re-check)", () => {
     const slots = generateSlots({ now: NOW, rules: RULES, busy: [] });
     const taken = slots[0];
-    expect(isBookableSlot(taken, { now: NOW, rules: RULES, busy: [slotBusyInterval(taken, RULES)] })).toBe(false);
+    expect(
+      isBookableSlot(taken, { now: NOW, rules: RULES, busy: [slotBusyInterval(taken, RULES)] }),
+    ).toBe(false);
   });
 });

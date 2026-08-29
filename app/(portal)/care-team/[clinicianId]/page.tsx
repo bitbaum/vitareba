@@ -62,7 +62,9 @@ export default async function ClinicianProfilePage({ params }: RouteContext) {
           <p className={styles.cardTitle}>Specialties</p>
           <div className="tags">
             {profile.specialties.map((s) => (
-              <span key={s} className="tag">{s}</span>
+              <span key={s} className="tag">
+                {s}
+              </span>
             ))}
           </div>
         </div>
@@ -87,7 +89,10 @@ export default async function ClinicianProfilePage({ params }: RouteContext) {
         <Link href={`${PORTAL_ROUTES.messages}?to=${clinicianId}`} className={styles.btnSecondary}>
           Message
         </Link>
-        <Link href={`${PORTAL_ROUTES.bookings}?clinicianId=${clinicianId}`} className={styles.btnPrimary}>
+        <Link
+          href={`${PORTAL_ROUTES.bookings}?clinicianId=${clinicianId}`}
+          className={styles.btnPrimary}
+        >
           Book
         </Link>
       </div>

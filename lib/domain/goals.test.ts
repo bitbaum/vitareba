@@ -1,5 +1,11 @@
 /// <reference types="vitest/globals" />
-import { goalCreateSchema, goalUpdateSchema, computeGoalProgress, goalProgressLabel, goalBarGeometry } from "./goals";
+import {
+  goalCreateSchema,
+  goalUpdateSchema,
+  computeGoalProgress,
+  goalProgressLabel,
+  goalBarGeometry,
+} from "./goals";
 
 // ─── goalCreateSchema ──────────────────────────────────────────────────────────
 

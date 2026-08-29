@@ -6,10 +6,7 @@
  * "you cannot" by the server, has been lied to by one of them.
  */
 
-import {
-  CANCELLATION_NOTICE_HOURS,
-  RESCHEDULE_NOTICE_HOURS,
-} from "@/lib/config/cancellation";
+import { CANCELLATION_NOTICE_HOURS, RESCHEDULE_NOTICE_HOURS } from "@/lib/config/cancellation";
 import { BOOKING_STATUS, type BookingStatus } from "@/lib/config/booking-status";
 import { HOUR_MS } from "@/lib/utils/format";
 
@@ -25,8 +22,7 @@ export type BookingTiming = {
 };
 
 export type ChangeVerdict =
-  | { allowed: true; late: boolean; hoursNotice: number | null }
-  | { allowed: false; reason: string };
+  { allowed: true; late: boolean; hoursNotice: number | null } | { allowed: false; reason: string };
 
 /**
  * Hours between now and the appointment. Null when there is no agreed time —
@@ -53,7 +49,7 @@ export function hoursOfNotice(scheduledAt: Date | null, now: Date): number | nul
 function hadTheChance(
   scheduledAt: Date | null,
   createdAt: Date | null | undefined,
-  noticeHours: number
+  noticeHours: number,
 ): boolean {
   if (!scheduledAt || !createdAt) return true; // Nothing to excuse them with.
   const leadAtBooking = (scheduledAt.getTime() - createdAt.getTime()) / HOUR_MS;
@@ -64,7 +60,7 @@ function assess(
   { status, scheduledAt, createdAt }: BookingTiming,
   now: Date,
   noticeHours: number,
-  verb: string
+  verb: string,
 ): ChangeVerdict {
   if (status === BOOKING_STATUS.cancelled) {
     return { allowed: false, reason: "This appointment is already cancelled." };
@@ -75,7 +71,10 @@ function assess(
   // A past appointment is a record, not a plan. Cancelling it would rewrite
   // what happened; the honest action is to mark whether it was attended.
   if (scheduledAt && scheduledAt.getTime() <= now.getTime()) {
-    return { allowed: false, reason: `This appointment has already started — it cannot be ${verb}.` };
+    return {
+      allowed: false,
+      reason: `This appointment has already started — it cannot be ${verb}.`,
+    };
   }
 
   const notice = hoursOfNotice(scheduledAt, now);

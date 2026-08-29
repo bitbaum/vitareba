@@ -19,10 +19,7 @@ import { UUID_RE } from "@/lib/utils/validate";
  * points at the regulatory ledger so the UI can explain *why* rather than
  * showing a dead button.
  */
-export async function POST(
-  _req: Request,
-  { params }: { params: Promise<{ threadId: string }> }
-) {
+export async function POST(_req: Request, { params }: { params: Promise<{ threadId: string }> }) {
   const guard = await requireSession();
   if (guard.error) return guard.error;
   const actorId = guard.session.user.id;
@@ -56,7 +53,7 @@ export async function POST(
           // the client cannot tell whose consent the gate just checked.
           ...(turn.code === "no_consent" ? { consentIsYours: turn.consentIsYours } : {}),
         },
-        { status: 451 }
+        { status: 451 },
       );
     case "not-found":
       return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });

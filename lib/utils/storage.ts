@@ -4,13 +4,21 @@ export const STORAGE_KEYS = {
 } as const;
 
 export function safeSessionGet(key: string): string | null {
-  try { return sessionStorage.getItem(key); } catch { return null; }
+  try {
+    return sessionStorage.getItem(key);
+  } catch {
+    return null;
+  }
 }
 
 export function safeSessionSet(key: string, value: string): void {
-  try { sessionStorage.setItem(key, value); } catch {}
+  try {
+    sessionStorage.setItem(key, value);
+  } catch {}
 }
 
 export function safeSessionRemove(key: string): void {
-  try { sessionStorage.removeItem(key); } catch {}
+  try {
+    sessionStorage.removeItem(key);
+  } catch {}
 }

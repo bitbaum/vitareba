@@ -8,7 +8,12 @@ import goalStyles from "./goals.module.css";
 import { PortalPageHeader } from "@/components/portal/PortalPageHeader";
 import { PORTAL_ROUTES } from "@/lib/config/routes";
 import { computeGoalProgress, goalProgressLabel } from "@/lib/domain/goals";
-import { CHECKIN_METRICS, ASSESSMENT_GOAL_METRIC_KEY, ASSESSMENT_GOAL_METRIC_LABEL, goalMetricAutoUpdateNote } from "@/lib/config/portal";
+import {
+  CHECKIN_METRICS,
+  ASSESSMENT_GOAL_METRIC_KEY,
+  ASSESSMENT_GOAL_METRIC_LABEL,
+  goalMetricAutoUpdateNote,
+} from "@/lib/config/portal";
 import { formatDateLong } from "@/lib/utils/format";
 
 /** Map check-in metric keys + assessment metric to human-readable labels for goal display */
@@ -16,7 +21,6 @@ const METRIC_LABELS: Record<string, string> = {
   ...Object.fromEntries(CHECKIN_METRICS.map((m) => [m.key, m.label])),
   [ASSESSMENT_GOAL_METRIC_KEY]: ASSESSMENT_GOAL_METRIC_LABEL,
 };
-
 
 export default async function GoalsPage() {
   const session = await auth();
@@ -32,10 +36,13 @@ export default async function GoalsPage() {
         where: eq(clinicalGoals.patientId, session.user.id),
         orderBy: [asc(clinicalGoals.createdAt)],
       }),
-      db.insert(profiles)
+      db
+        .insert(profiles)
         .values({ userId: session.user.id, goalsSeenAt: now })
         .onConflictDoUpdate({ target: profiles.userId, set: { goalsSeenAt: now } })
-        .catch(() => {/* non-critical — badge simply stays until next visit */}),
+        .catch(() => {
+          /* non-critical — badge simply stays until next visit */
+        }),
     ]);
   } catch {
     loadError = true;
@@ -47,7 +54,11 @@ export default async function GoalsPage() {
   return (
     <div>
       <PortalPageHeader
-        title={<>My <em>Goals</em></>}
+        title={
+          <>
+            My <em>Goals</em>
+          </>
+        }
         subtitle="Clinical goals set by your clinician — updated as you progress."
       />
 
@@ -74,8 +85,11 @@ export default async function GoalsPage() {
               <div className={styles.listStack}>
                 {active.map((goal) => {
                   const pct = computeGoalProgress(goal.baseline, goal.current, goal.target);
-                  const hasNumbers = goal.baseline != null || goal.current != null || goal.target != null;
-                  const metricLabel = goal.metric ? (METRIC_LABELS[goal.metric] ?? goal.metric) : null;
+                  const hasNumbers =
+                    goal.baseline != null || goal.current != null || goal.target != null;
+                  const metricLabel = goal.metric
+                    ? (METRIC_LABELS[goal.metric] ?? goal.metric)
+                    : null;
                   const autoUpdateNote = goalMetricAutoUpdateNote(goal.metric);
 
                   return (
@@ -84,7 +98,8 @@ export default async function GoalsPage() {
 
                       {metricLabel && (
                         <p className={styles.meta}>
-                          Linked metric: <span className={goalStyles.goalMetaValue}>{metricLabel}</span>
+                          Linked metric:{" "}
+                          <span className={goalStyles.goalMetaValue}>{metricLabel}</span>
                           {autoUpdateNote && (
                             <span className={goalStyles.autoUpdateNote}> · {autoUpdateNote}</span>
                           )}
@@ -96,10 +111,7 @@ export default async function GoalsPage() {
                           {pct !== null ? (
                             <>
                               <div className={styles.progressTrack}>
-                                <div
-                                  className={styles.progressFill}
-                                  style={{ width: `${pct}%` }}
-                                />
+                                <div className={styles.progressFill} style={{ width: `${pct}%` }} />
                               </div>
                               <p className={styles.progressLabel}>{goalProgressLabel(pct)}</p>
                             </>
@@ -128,9 +140,7 @@ export default async function GoalsPage() {
                         </div>
                       )}
 
-                      {goal.notes && (
-                        <p className={goalStyles.goalNotes}>{goal.notes}</p>
-                      )}
+                      {goal.notes && <p className={goalStyles.goalNotes}>{goal.notes}</p>}
                     </div>
                   );
                 })}
@@ -149,13 +159,9 @@ export default async function GoalsPage() {
                       <span className={styles.pillTeal}>Completed</span>
                     </div>
                     {goal.completedAt && (
-                      <p className={styles.meta}>
-                        Completed {formatDateLong(goal.completedAt)}
-                      </p>
+                      <p className={styles.meta}>Completed {formatDateLong(goal.completedAt)}</p>
                     )}
-                    {goal.notes && (
-                      <p className={goalStyles.goalNotes}>{goal.notes}</p>
-                    )}
+                    {goal.notes && <p className={goalStyles.goalNotes}>{goal.notes}</p>}
                   </div>
                 ))}
               </div>

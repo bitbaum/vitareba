@@ -62,7 +62,7 @@ export async function PATCH(req: Request) {
     console.error("[api/clinician/profile] PATCH failed:", err);
     return NextResponse.json(
       { success: false, error: "Could not save — please try again" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 

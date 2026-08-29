@@ -61,7 +61,10 @@
   font-size: 0.82rem;
   color: var(--muted);
   font-family: var(--font-dm-sans), sans-serif;
-  transition: border-color var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast),
+    color var(--transition-fast);
   line-height: 1;
   min-width: 2.75rem;
   min-height: 2.75rem; /* 44px minimum touch target */

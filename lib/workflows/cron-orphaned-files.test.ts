@@ -2,9 +2,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { mockFindMany, mockListLocal, mockDelLocal } = vi.hoisted(() => ({
-  mockFindMany:  vi.fn(),
+  mockFindMany: vi.fn(),
   mockListLocal: vi.fn(),
-  mockDelLocal:  vi.fn(),
+  mockDelLocal: vi.fn(),
 }));
 
 vi.mock("@/lib/db", () => ({ db: { query: { documents: { findMany: mockFindMany } } } }));

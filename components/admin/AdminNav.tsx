@@ -17,75 +17,156 @@ import {
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
 
 const IcoToday = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="1.5" y="1.5" width="5" height="5" rx="1"/>
-    <rect x="9.5" y="1.5" width="5" height="5" rx="1"/>
-    <rect x="1.5" y="9.5" width="5" height="5" rx="1"/>
-    <rect x="9.5" y="9.5" width="5" height="5" rx="1"/>
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="1.5" y="1.5" width="5" height="5" rx="1" />
+    <rect x="9.5" y="1.5" width="5" height="5" rx="1" />
+    <rect x="1.5" y="9.5" width="5" height="5" rx="1" />
+    <rect x="9.5" y="9.5" width="5" height="5" rx="1" />
   </svg>
 );
 
 const IcoPatients = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="5.5" cy="5" r="2.25"/>
-    <path d="M1.5 14c0-2.5 1.8-4.5 4-4.5s4 2 4 4.5"/>
-    <circle cx="11.5" cy="4.5" r="1.75"/>
-    <path d="M9.5 9.2c1.9.15 3.5 1.9 3.5 4.3"/>
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="5.5" cy="5" r="2.25" />
+    <path d="M1.5 14c0-2.5 1.8-4.5 4-4.5s4 2 4 4.5" />
+    <circle cx="11.5" cy="4.5" r="1.75" />
+    <path d="M9.5 9.2c1.9.15 3.5 1.9 3.5 4.3" />
   </svg>
 );
 
 const IcoBookings = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="1.5" y="3.5" width="13" height="11" rx="1.5"/>
-    <line x1="1.5" y1="7.5" x2="14.5" y2="7.5"/>
-    <line x1="5" y1="1.5" x2="5" y2="5.5"/>
-    <line x1="11" y1="1.5" x2="11" y2="5.5"/>
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="1.5" y="3.5" width="13" height="11" rx="1.5" />
+    <line x1="1.5" y1="7.5" x2="14.5" y2="7.5" />
+    <line x1="5" y1="1.5" x2="5" y2="5.5" />
+    <line x1="11" y1="1.5" x2="11" y2="5.5" />
   </svg>
 );
 
 const IcoMessages = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M2.5 2h11a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H5.5l-3 2.5V3a1 1 0 0 1 1-1z"/>
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M2.5 2h11a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H5.5l-3 2.5V3a1 1 0 0 1 1-1z" />
   </svg>
 );
 
 const IcoDocuments = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M9.5 1.5H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5.5L9.5 1.5z"/>
-    <polyline points="9.5,1.5 9.5,5.5 13.5,5.5"/>
-    <line x1="5" y1="8.5" x2="11" y2="8.5"/>
-    <line x1="5" y1="11" x2="8.5" y2="11"/>
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M9.5 1.5H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5.5L9.5 1.5z" />
+    <polyline points="9.5,1.5 9.5,5.5 13.5,5.5" />
+    <line x1="5" y1="8.5" x2="11" y2="8.5" />
+    <line x1="5" y1="11" x2="8.5" y2="11" />
   </svg>
 );
 
 const IcoApplications = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M1.5 9.5 4 3.5a1 1 0 0 1 .9-.6h6.2a1 1 0 0 1 .9.6l2.5 6"/>
-    <path d="M1.5 9.5v3a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-3h-3.3a2 2 0 0 1-1.9 1.4H6.7a2 2 0 0 1-1.9-1.4H1.5z"/>
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M1.5 9.5 4 3.5a1 1 0 0 1 .9-.6h6.2a1 1 0 0 1 .9.6l2.5 6" />
+    <path d="M1.5 9.5v3a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-3h-3.3a2 2 0 0 1-1.9 1.4H6.7a2 2 0 0 1-1.9-1.4H1.5z" />
   </svg>
 );
 
 const IcoReports = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="1.5" y1="14" x2="14.5" y2="14"/>
-    <rect x="3" y="8.5" width="2.5" height="5.5" rx="0.5"/>
-    <rect x="6.75" y="5.5" width="2.5" height="8.5" rx="0.5"/>
-    <rect x="10.5" y="2.5" width="2.5" height="11.5" rx="0.5"/>
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <line x1="1.5" y1="14" x2="14.5" y2="14" />
+    <rect x="3" y="8.5" width="2.5" height="5.5" rx="0.5" />
+    <rect x="6.75" y="5.5" width="2.5" height="8.5" rx="0.5" />
+    <rect x="10.5" y="2.5" width="2.5" height="11.5" rx="0.5" />
   </svg>
 );
 
 const IcoProfile = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="8" cy="5.5" r="3"/>
-    <path d="M1.5 14.5c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6"/>
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="8" cy="5.5" r="3" />
+    <path d="M1.5 14.5c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6" />
   </svg>
 );
 
 const IcoMore = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="3" cy="8" r="1.1" fill="currentColor" stroke="none"/>
-    <circle cx="8" cy="8" r="1.1" fill="currentColor" stroke="none"/>
-    <circle cx="13" cy="8" r="1.1" fill="currentColor" stroke="none"/>
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="3" cy="8" r="1.1" fill="currentColor" stroke="none" />
+    <circle cx="8" cy="8" r="1.1" fill="currentColor" stroke="none" />
+    <circle cx="13" cy="8" r="1.1" fill="currentColor" stroke="none" />
   </svg>
 );
 
@@ -96,14 +177,14 @@ const IcoMore = () => (
  * taking down the whole admin layout.
  */
 const ROUTE_ICONS: Record<AdminRoute, React.ComponentType> = {
-  [ADMIN_ROUTES.root]:         IcoToday,
-  [ADMIN_ROUTES.patients]:     IcoPatients,
-  [ADMIN_ROUTES.bookings]:     IcoBookings,
-  [ADMIN_ROUTES.messages]:     IcoMessages,
-  [ADMIN_ROUTES.documents]:    IcoDocuments,
+  [ADMIN_ROUTES.root]: IcoToday,
+  [ADMIN_ROUTES.patients]: IcoPatients,
+  [ADMIN_ROUTES.bookings]: IcoBookings,
+  [ADMIN_ROUTES.messages]: IcoMessages,
+  [ADMIN_ROUTES.documents]: IcoDocuments,
   [ADMIN_ROUTES.applications]: IcoApplications,
-  [ADMIN_ROUTES.reports]:      IcoReports,
-  [ADMIN_ROUTES.profile]:      IcoProfile,
+  [ADMIN_ROUTES.reports]: IcoReports,
+  [ADMIN_ROUTES.profile]: IcoProfile,
 };
 
 type BadgeKey = "messages" | "bookings" | "patients";
@@ -168,7 +249,9 @@ export function AdminNav(props: AdminBadgeProps) {
                 className={active ? `${styles.navItem} ${styles.navItemActive}` : styles.navItem}
                 aria-current={active ? "page" : undefined}
               >
-                <span className={styles.navIcon}><Icon /></span>
+                <span className={styles.navIcon}>
+                  <Icon />
+                </span>
                 <span className={styles.navLabel}>{ADMIN_ROUTE_LABELS[href]}</span>
                 {count > 0 && (
                   <span
@@ -220,7 +303,11 @@ export function AdminBottomNav(props: AdminBadgeProps) {
             <Link
               key={href}
               href={href}
-              className={active ? `${styles.bottomNavItem} ${styles.bottomNavItemActive}` : styles.bottomNavItem}
+              className={
+                active
+                  ? `${styles.bottomNavItem} ${styles.bottomNavItemActive}`
+                  : styles.bottomNavItem
+              }
               aria-current={active ? "page" : undefined}
               onClick={() => setMoreOpen(false)}
             >
@@ -273,7 +360,9 @@ export function AdminBottomNav(props: AdminBadgeProps) {
                   className={styles.moreSheetItem}
                   onClick={() => setMoreOpen(false)}
                 >
-                  <span className={styles.navIcon}><Icon /></span>
+                  <span className={styles.navIcon}>
+                    <Icon />
+                  </span>
                   <span className={styles.navLabel}>{ADMIN_ROUTE_LABELS[href]}</span>
                   {count > 0 && (
                     <span className={urgent ? styles.navBadgeUrgent : styles.navBadge}>

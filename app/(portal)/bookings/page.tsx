@@ -42,7 +42,10 @@ function BookingsView() {
     setLoadError(false);
     try {
       const res = await fetch("/api/bookings");
-      if (!res.ok) { setLoadError(true); return; }
+      if (!res.ok) {
+        setLoadError(true);
+        return;
+      }
       const data = await res.json();
       setBookings(data.data ?? []);
     } catch {
@@ -52,7 +55,9 @@ function BookingsView() {
     }
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   // ── Slot picker state ──────────────────────────────────────────────────────
   const [slots, setSlots] = useState<string[]>([]);
@@ -94,7 +99,9 @@ function BookingsView() {
     }
   }, []);
 
-  useEffect(() => { loadSlots(initialClinicianId); }, [loadSlots, initialClinicianId]);
+  useEffect(() => {
+    loadSlots(initialClinicianId);
+  }, [loadSlots, initialClinicianId]);
 
   function selectClinician(id: string) {
     if (id === clinicianId) return;
@@ -113,8 +120,8 @@ function BookingsView() {
     slotsByDay.set(day, list);
   }
   const dayKeys = [...slotsByDay.keys()];
-  const activeDay = selectedDay && slotsByDay.has(selectedDay) ? selectedDay : dayKeys[0] ?? null;
-  const activeSlots = activeDay ? slotsByDay.get(activeDay) ?? [] : [];
+  const activeDay = selectedDay && slotsByDay.has(selectedDay) ? selectedDay : (dayKeys[0] ?? null);
+  const activeSlots = activeDay ? (slotsByDay.get(activeDay) ?? []) : [];
 
   // Within a day, split into morning / afternoon / evening so the grid reads
   // as a schedule instead of an undifferentiated wall of times.
@@ -162,18 +169,20 @@ function BookingsView() {
         setSlotError(
           data.code === "slot_taken"
             ? "That slot was just taken — the list has been refreshed, please pick another."
-            // The server is the authority here, not just the disabled button
-            // above — a doctor can close intake between page load and click,
-            // and that message ("not accepting new patients right now") is
-            // more useful than a generic failure.
-            : (data.error ?? "Booking failed. Please try again.")
+            : // The server is the authority here, not just the disabled button
+              // above — a doctor can close intake between page load and click,
+              // and that message ("not accepting new patients right now") is
+              // more useful than a generic failure.
+              (data.error ?? "Booking failed. Please try again."),
         );
         loadSlots(clinicianId);
         setSelectedSlot(null);
         return;
       }
       const doc = clinicians.find((c) => c.id === clinicianId);
-      setSlotSuccess(`${formatSlotDay(selectedSlot)}, ${formatSlotTime(selectedSlot)}${doc ? ` with ${doc.name}` : ""}`);
+      setSlotSuccess(
+        `${formatSlotDay(selectedSlot)}, ${formatSlotTime(selectedSlot)}${doc ? ` with ${doc.name}` : ""}`,
+      );
       setMovingBooking(null);
       setSelectedSlot(null);
       loadSlots(clinicianId);
@@ -237,10 +246,18 @@ function BookingsView() {
   return (
     <div>
       <PortalPageHeader
-        title={<>My <em>Bookings</em></>}
+        title={
+          <>
+            My <em>Bookings</em>
+          </>
+        }
         subtitle="Consultation requests and appointments"
         action={
-          <button type="button" className={styles.btnPrimary} onClick={() => setShowForm(!showForm)}>
+          <button
+            type="button"
+            className={styles.btnPrimary}
+            onClick={() => setShowForm(!showForm)}
+          >
             + Request booking
           </button>
         }
@@ -253,8 +270,8 @@ function BookingsView() {
         </p>
         {movingBooking && (
           <p className={styles.formHint}>
-            Choosing a time moves your existing appointment — you will not end up with two.
-            You can pick a different clinician above as well.{" "}
+            Choosing a time moves your existing appointment — you will not end up with two. You can
+            pick a different clinician above as well.{" "}
             <button type="button" className={styles.btnText} onClick={() => setMovingBooking(null)}>
               Keep the current time
             </button>
@@ -275,13 +292,18 @@ function BookingsView() {
 
             {dayKeys.length === 0 ? (
               <p className={styles.meta}>
-                No open slots with {clinicianLabel} at the moment — send a request below and the clinic will find a time with you.
+                No open slots with {clinicianLabel} at the moment — send a request below and the
+                clinic will find a time with you.
               </p>
             ) : (
               <>
                 <div className={bookingStyles.pickerStep}>
                   <p className={bookingStyles.stepLabel}>2 · Pick a day</p>
-                  <div className={bookingStyles.dateRail} role="tablist" aria-label="Available days">
+                  <div
+                    className={bookingStyles.dateRail}
+                    role="tablist"
+                    aria-label="Available days"
+                  >
                     {dayKeys.map((day) => {
                       const daySlots = slotsByDay.get(day) ?? [];
                       const { weekday, day: dayNum, month } = slotParts(daySlots[0]);
@@ -293,14 +315,15 @@ function BookingsView() {
                           role="tab"
                           aria-selected={active}
                           className={`${bookingStyles.dateCell}${active ? ` ${bookingStyles.dateCellActive}` : ""}`}
-                          onClick={() => { setSelectedDay(day); setSelectedSlot(null); }}
+                          onClick={() => {
+                            setSelectedDay(day);
+                            setSelectedSlot(null);
+                          }}
                         >
                           <span className={bookingStyles.dateWeekday}>{weekday}</span>
                           <span className={bookingStyles.dateDay}>{dayNum}</span>
                           <span className={bookingStyles.dateMonth}>{month}</span>
-                          <span className={bookingStyles.dateCount}>
-                            {daySlots.length} free
-                          </span>
+                          <span className={bookingStyles.dateCount}>{daySlots.length} free</span>
                         </button>
                       );
                     })}
@@ -380,7 +403,10 @@ function BookingsView() {
       {submitSuccess && (
         <div className={bookingStyles.successBanner}>
           <p className={bookingStyles.bannerTitle}>Booking request submitted</p>
-          <p>A clinician reviews every request personally and will be in touch within 24 hours to confirm your appointment.</p>
+          <p>
+            A clinician reviews every request personally and will be in touch within 24 hours to
+            confirm your appointment.
+          </p>
         </div>
       )}
 
@@ -397,7 +423,10 @@ function BookingsView() {
           submitting={submitting}
           submitError={submitError}
           onSubmit={handleSubmit}
-          onCancel={() => { setShowForm(false); resetForm(); }}
+          onCancel={() => {
+            setShowForm(false);
+            resetForm();
+          }}
         />
       )}
 

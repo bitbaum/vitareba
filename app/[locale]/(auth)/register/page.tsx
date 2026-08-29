@@ -63,9 +63,7 @@ function RegisterForm() {
 
   return (
     <>
-      {hasAssessment && (
-        <div className={styles.contextBanner}>{t("assessmentBanner")}</div>
-      )}
+      {hasAssessment && <div className={styles.contextBanner}>{t("assessmentBanner")}</div>}
       <h2 className={styles.title}>
         {t("title")}
         <br />
@@ -75,7 +73,9 @@ function RegisterForm() {
 
       <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.field}>
-          <label className={styles.label} htmlFor="email">{t("emailLabel")}</label>
+          <label className={styles.label} htmlFor="email">
+            {t("emailLabel")}
+          </label>
           <input
             id="email"
             className={styles.input}
@@ -90,7 +90,9 @@ function RegisterForm() {
           {errors.email && <p className={styles.error}>{errors.email[0]}</p>}
         </div>
         <div className={styles.field}>
-          <label className={styles.label} htmlFor="password">{t("passwordLabel")}</label>
+          <label className={styles.label} htmlFor="password">
+            {t("passwordLabel")}
+          </label>
           <input
             id="password"
             className={styles.input}

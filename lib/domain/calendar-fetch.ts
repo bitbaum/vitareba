@@ -23,10 +23,7 @@
 
 import { lookup } from "node:dns/promises";
 import { isIP } from "node:net";
-import {
-  CALENDAR_FETCH_TIMEOUT_MS,
-  CALENDAR_MAX_BYTES,
-} from "@/lib/config/calendar-sync";
+import { CALENDAR_FETCH_TIMEOUT_MS, CALENDAR_MAX_BYTES } from "@/lib/config/calendar-sync";
 
 export type UrlProblem = { ok: false; error: string };
 export type UrlOk = { ok: true; url: string };
@@ -60,7 +57,8 @@ export function normaliseCalendarUrl(raw: string): UrlOk | UrlProblem {
   if (url.protocol !== "https:") {
     return {
       ok: false,
-      error: "Only https and webcal links are accepted — a plain http link would be readable in transit.",
+      error:
+        "Only https and webcal links are accepted — a plain http link would be readable in transit.",
     };
   }
   if (!url.hostname) return { ok: false, error: "That link has no address in it." };
@@ -87,24 +85,24 @@ function isPublicIpv4(address: string): boolean {
   const p = address.split(".").map(Number);
   if (p.length !== 4 || p.some((n) => Number.isNaN(n) || n < 0 || n > 255)) return false;
   const [a, b] = p;
-  if (a === 0) return false;                     // "this network"
-  if (a === 10) return false;                    // private
-  if (a === 127) return false;                   // loopback
-  if (a === 169 && b === 254) return false;      // link-local — cloud metadata lives here
+  if (a === 0) return false; // "this network"
+  if (a === 10) return false; // private
+  if (a === 127) return false; // loopback
+  if (a === 169 && b === 254) return false; // link-local — cloud metadata lives here
   if (a === 172 && b >= 16 && b <= 31) return false; // private
-  if (a === 192 && b === 168) return false;      // private
+  if (a === 192 && b === 168) return false; // private
   if (a === 100 && b >= 64 && b <= 127) return false; // carrier-grade NAT
-  if (a === 192 && b === 0) return false;        // IETF protocol assignments
-  if (a >= 224) return false;                    // multicast and reserved
+  if (a === 192 && b === 0) return false; // IETF protocol assignments
+  if (a >= 224) return false; // multicast and reserved
   return true;
 }
 
 function isPublicIpv6(address: string): boolean {
   const a = address.toLowerCase();
-  if (a === "::" || a === "::1") return false;           // unspecified, loopback
-  if (a.startsWith("fe80")) return false;                // link-local
+  if (a === "::" || a === "::1") return false; // unspecified, loopback
+  if (a.startsWith("fe80")) return false; // link-local
   if (a.startsWith("fc") || a.startsWith("fd")) return false; // unique local
-  if (a.startsWith("ff")) return false;                  // multicast
+  if (a.startsWith("ff")) return false; // multicast
   // ::ffff:127.0.0.1 — an IPv4 address in IPv6 clothing, and a classic bypass.
   const mapped = a.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
   if (mapped) return isPublicIpv4(mapped[1]);

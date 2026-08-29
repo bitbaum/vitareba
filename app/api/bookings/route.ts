@@ -10,7 +10,11 @@ import { bookingRequestAdminEmail, bookingConfirmedEmail } from "@/lib/email/tem
 import { PORTAL_URL, COMPANY, getAdminEmails } from "@/lib/config/company";
 import { ADMIN_ROUTES, PORTAL_ROUTES } from "@/lib/config/routes";
 import { USER_ROLE } from "@/lib/config/auth";
-import { bookingCreateSchema, adminBookingCreateSchema, slotBookingSchema } from "@/lib/domain/bookings";
+import {
+  bookingCreateSchema,
+  adminBookingCreateSchema,
+  slotBookingSchema,
+} from "@/lib/domain/bookings";
 import { getClinicianAvailability } from "@/lib/domain/clinician-profile";
 import { isBookableSlot } from "@/lib/domain/scheduling";
 import { getBusyIntervals } from "@/lib/domain/scheduling-data";
@@ -18,7 +22,11 @@ import { canPatientChooseClinician } from "@/lib/domain/care-team";
 import { buildIcsInvite } from "@/lib/domain/ics";
 import { bookingIcsEvent } from "@/lib/domain/booking-calendar";
 
-import { BOOKING_STATUS, BOOKING_TYPE_CONFIG, MACHINE_TYPE_CONFIG } from "@/lib/config/booking-status";
+import {
+  BOOKING_STATUS,
+  BOOKING_TYPE_CONFIG,
+  MACHINE_TYPE_CONFIG,
+} from "@/lib/config/booking-status";
 import { runAfterResponse } from "@/lib/utils/post-response";
 import { serviceUnavailable } from "@/lib/utils/api-response";
 import { displayName, formatDateISO, formatSlotDay, formatSlotTime } from "@/lib/utils/format";
@@ -40,9 +48,8 @@ export async function GET() {
   if (guard.error) return guard.error;
   const { session } = guard;
 
-  const where = session.user.role === USER_ROLE.admin
-    ? undefined
-    : eq(bookings.userId, session.user.id);
+  const where =
+    session.user.role === USER_ROLE.admin ? undefined : eq(bookings.userId, session.user.id);
 
   let results;
   try {
@@ -110,7 +117,10 @@ export async function POST(req: Request) {
         .returning();
     } catch (err) {
       console.error("[api/bookings] admin insert failed:", err);
-      return NextResponse.json({ success: false, error: "Failed to create booking — please try again" }, { status: 500 });
+      return NextResponse.json(
+        { success: false, error: "Failed to create booking — please try again" },
+        { status: 500 },
+      );
     }
 
     runAfterResponse(async () => {
@@ -120,8 +130,12 @@ export async function POST(req: Request) {
       });
       if (!patient?.email) return;
       const bookingTypeLabel = BOOKING_TYPE_CONFIG[fields.bookingType ?? "consultation"].label;
-      const machineLabel = fields.machineType ? MACHINE_TYPE_CONFIG[fields.machineType].label : null;
-      const sessionLabel = machineLabel ? `${bookingTypeLabel} — ${machineLabel}` : bookingTypeLabel;
+      const machineLabel = fields.machineType
+        ? MACHINE_TYPE_CONFIG[fields.machineType].label
+        : null;
+      const sessionLabel = machineLabel
+        ? `${bookingTypeLabel} — ${machineLabel}`
+        : bookingTypeLabel;
       await sendEmail({
         to: patient.email,
         subject: `Your ${sessionLabel.toLowerCase()} has been confirmed — ${COMPANY.shortName}`,
@@ -142,7 +156,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, data: booking }, { status: 201 });
   }
 
-
   // ── Patient booking request ────────────────────────────────────────────────
   const parsed = bookingCreateSchema.safeParse(body);
   if (!parsed.success) {
@@ -157,7 +170,10 @@ export async function POST(req: Request) {
       .returning();
   } catch (err) {
     console.error("[api/bookings] insert failed:", err);
-    return NextResponse.json({ success: false, error: "Failed to create booking — please try again" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "Failed to create booking — please try again" },
+      { status: 500 },
+    );
   }
 
   const adminEmails = getAdminEmails();
@@ -196,7 +212,6 @@ export async function POST(req: Request) {
   return NextResponse.json({ success: true, data: booking }, { status: 201 });
 }
 
-
 /**
  * Book one exact slot.
  *
@@ -209,182 +224,195 @@ export async function POST(req: Request) {
 async function bookSlot(
   body: unknown,
   session: { user: { id: string; email?: string | null; role?: string | null } },
-  isAdmin: boolean
+  isAdmin: boolean,
 ): Promise<NextResponse> {
-    const slotParsed = slotBookingSchema.safeParse(body);
-    if (!slotParsed.success) {
-      return NextResponse.json({ success: false, error: "Invalid data" }, { status: 400 });
-    }
-    const slot = new Date(slotParsed.data.slot);
-    const now = new Date();
+  const slotParsed = slotBookingSchema.safeParse(body);
+  if (!slotParsed.success) {
+    return NextResponse.json({ success: false, error: "Invalid data" }, { status: 400 });
+  }
+  const slot = new Date(slotParsed.data.slot);
+  const now = new Date();
 
-    // Who the appointment is for. Booking for yourself needs no permission;
-    // booking for someone else is an admin act, and a patient who tries it is
-    // told nothing about the field existing.
-    const requestedFor = slotParsed.data.patientId;
-    if (requestedFor && requestedFor !== session.user.id && !isAdmin) {
-      return NextResponse.json({ success: false, error: "Invalid data" }, { status: 400 });
-    }
-    const patientId = requestedFor ?? session.user.id;
+  // Who the appointment is for. Booking for yourself needs no permission;
+  // booking for someone else is an admin act, and a patient who tries it is
+  // told nothing about the field existing.
+  const requestedFor = slotParsed.data.patientId;
+  if (requestedFor && requestedFor !== session.user.id && !isAdmin) {
+    return NextResponse.json({ success: false, error: "Invalid data" }, { status: 400 });
+  }
+  const patientId = requestedFor ?? session.user.id;
 
-    // The chosen doctor must exist and actually be a clinician
-    let clinician;
+  // The chosen doctor must exist and actually be a clinician
+  let clinician;
+  try {
+    clinician = await db.query.users.findFirst({
+      where: and(eq(users.id, slotParsed.data.clinicianId), eq(users.isClinician, true)),
+      columns: { id: true, name: true, email: true },
+    });
+  } catch (err) {
+    console.error("[api/bookings] clinician lookup failed:", err);
+    return serviceUnavailable();
+  }
+  if (!clinician) {
+    return NextResponse.json({ success: false, error: "Unknown clinician" }, { status: 400 });
+  }
+
+  // A patient starting a NEW relationship with a clinician who has closed
+  // intake is refused here — the same rule the care-team picker enforces, so
+  // "not accepting" means the same thing whichever door a patient tries.
+  // Staff booking on a patient's behalf may override: a clinician can always
+  // choose to make an exception, and that choice is the admin picking up the
+  // phone, not a patient finding a workaround.
+  if (!isAdmin) {
     try {
-      clinician = await db.query.users.findFirst({
-        where: and(eq(users.id, slotParsed.data.clinicianId), eq(users.isClinician, true)),
-        columns: { id: true, name: true, email: true },
-      });
+      const eligible = await canPatientChooseClinician(patientId, clinician.id);
+      if (!eligible.ok) {
+        return NextResponse.json({ success: false, error: eligible.error }, { status: 409 });
+      }
     } catch (err) {
-      console.error("[api/bookings] clinician lookup failed:", err);
+      console.error("[api/bookings] eligibility check failed:", err);
       return serviceUnavailable();
     }
-    if (!clinician) {
-      return NextResponse.json({ success: false, error: "Unknown clinician" }, { status: 400 });
-    }
+  }
 
-    // A patient starting a NEW relationship with a clinician who has closed
-    // intake is refused here — the same rule the care-team picker enforces, so
-    // "not accepting" means the same thing whichever door a patient tries.
-    // Staff booking on a patient's behalf may override: a clinician can always
-    // choose to make an exception, and that choice is the admin picking up the
-    // phone, not a patient finding a workaround.
-    if (!isAdmin) {
-      try {
-        const eligible = await canPatientChooseClinician(patientId, clinician.id);
-        if (!eligible.ok) {
-          return NextResponse.json({ success: false, error: eligible.error }, { status: 409 });
-        }
-      } catch (err) {
-        console.error("[api/bookings] eligibility check failed:", err);
-        return serviceUnavailable();
-      }
-    }
-
-    // Engine re-check: the slot must still be one we'd offer right now
-    const rules = await getClinicianAvailability(clinician.id);
-    try {
-      const busy = await getBusyIntervals(now, clinician.id, rules);
-      if (!isBookableSlot(slot, { now, rules, busy })) {
-        return NextResponse.json(
-          { success: false, error: "This slot is no longer available", code: "slot_taken" },
-          { status: 409 }
-        );
-      }
-    } catch (err) {
-      console.error("[api/bookings] slot re-check failed:", err);
-      return serviceUnavailable();
-    }
-
-    let booking: typeof bookings.$inferSelect;
-    try {
-      [booking] = await db
-        .insert(bookings)
-        .values({
-          userId: patientId,
-          status: BOOKING_STATUS.confirmed,
-          bookingType: slotParsed.data.bookingType,
-          machineType: slotParsed.data.machineType,
-          clinicianId: clinician.id,
-          scheduledAt: slot,
-          preferredDate: formatDateISO(slot),
-          notes: slotParsed.data.notes,
-        })
-        .returning();
-    } catch (err) {
-      // Two patients picked the same slot — the partial unique index on
-      // scheduled_at rejects the loser. Surface it as "taken", not a 500.
-      if ((err as { code?: string })?.code === "23505") {
-        return NextResponse.json(
-          { success: false, error: "This slot was just taken — please pick another", code: "slot_taken" },
-          { status: 409 }
-        );
-      }
-      console.error("[api/bookings] slot insert failed:", err);
-      return NextResponse.json({ success: false, error: "Failed to book — please try again" }, { status: 500 });
-    }
-
-    const bookingTypeLabel = BOOKING_TYPE_CONFIG[slotParsed.data.bookingType].label;
-    const machineLabel = slotParsed.data.machineType
-      ? MACHINE_TYPE_CONFIG[slotParsed.data.machineType].label
-      : null;
-    const sessionLabel = machineLabel ? `${bookingTypeLabel} — ${machineLabel}` : bookingTypeLabel;
-    const slotLabel = `${formatSlotDay(slot)}, ${formatSlotTime(slot)} with ${displayName(clinician.name, clinician.email)}`;
-
-    runAfterResponse(async () => {
-      const patient = await db.query.users.findFirst({
-        where: eq(users.id, patientId),
-        columns: { name: true, email: true },
-      });
-
-      // The appointment as a calendar invite. Attaching it is what turns a
-      // confirmation email into a calendar entry in one tap — on any provider,
-      // with no integration to configure.
-      const invite = patient?.email
-        ? buildIcsInvite(
-            bookingIcsEvent({
-              bookingId: booking.id,
-              start: slot,
-              slotMinutes: rules.slotMinutes,
-              status: BOOKING_STATUS.confirmed,
-              patient: { name: patient.name, email: patient.email },
-              clinician: { name: clinician.name, email: clinician.email },
-              sessionLabel,
-              createdAt: booking.createdAt,
-            })
-          )
-        : null;
-      const attachments = invite
-        ? [{ filename: "appointment.ics", content: invite, contentType: "text/calendar; method=REQUEST" }]
-        : undefined;
-
-      if (patient?.email) {
-        await sendEmail({
-          to: patient.email,
-          subject: `Confirmed: ${sessionLabel.toLowerCase()} on ${slotLabel} — ${COMPANY.shortName}`,
-          html: bookingConfirmedEmail({
-            patientName: displayName(patient.name, patient.email),
-            sessionLabel: `${sessionLabel} · ${slotLabel}`,
-            portalUrl: `${PORTAL_URL}${PORTAL_ROUTES.bookings}`,
-          }),
-          attachments,
-        });
-      }
-      await createNotification({
-        userId: patientId,
-        type: NOTIFICATION_TYPE.bookingConfirmed,
-        title: `Confirmed: ${sessionLabel.toLowerCase()} on ${slotLabel}`,
-        href: PORTAL_ROUTES.bookings,
-      });
-
-      // Notify the clinician whose calendar this lands in — not just whoever
-      // happens to be in ADMIN_EMAILS. Admins still get it (clinic oversight),
-      // deduplicated so a clinician who is also an admin isn't emailed twice.
-      const recipients = Array.from(
-        new Set([clinician.email, ...getAdminEmails()].map((e) => e.toLowerCase()))
+  // Engine re-check: the slot must still be one we'd offer right now
+  const rules = await getClinicianAvailability(clinician.id);
+  try {
+    const busy = await getBusyIntervals(now, clinician.id, rules);
+    if (!isBookableSlot(slot, { now, rules, busy })) {
+      return NextResponse.json(
+        { success: false, error: "This slot is no longer available", code: "slot_taken" },
+        { status: 409 },
       );
-      if (recipients.length > 0) {
-        await sendEmail({
-          to: recipients,
-          subject: `New appointment: ${slotLabel} — ${displayName(patient?.name, patient?.email ?? session.user.email ?? undefined)}`,
-          html: bookingRequestAdminEmail({
-            patientName: displayName(patient?.name, patient?.email, "Unknown"),
-            patientEmail: patient?.email ?? "",
-            bookingTypeLabel: `${bookingTypeLabel} (booked slot: ${slotLabel})`,
-            machineTypeLabel: machineLabel,
-            notes: slotParsed.data.notes,
-            preferredDate: formatDateISO(slot),
-            adminUrl: `${PORTAL_URL}${ADMIN_ROUTES.patients}/${patientId}`,
-          }),
-          attachments,
-        });
-      }
-      const adminIds = await getAdminUserIds();
-      await createNotificationForMany(Array.from(new Set([clinician.id, ...adminIds])), {
-        type: NOTIFICATION_TYPE.bookingConfirmed,
-        title: `New appointment: ${slotLabel} — ${displayName(patient?.name, patient?.email, "Unknown")}`,
-        href: `${ADMIN_ROUTES.patients}/${patientId}`,
-      });
-    }, "[api/bookings] slot booking emails failed:");
+    }
+  } catch (err) {
+    console.error("[api/bookings] slot re-check failed:", err);
+    return serviceUnavailable();
+  }
 
-    return NextResponse.json({ success: true, data: booking }, { status: 201 });
+  let booking: typeof bookings.$inferSelect;
+  try {
+    [booking] = await db
+      .insert(bookings)
+      .values({
+        userId: patientId,
+        status: BOOKING_STATUS.confirmed,
+        bookingType: slotParsed.data.bookingType,
+        machineType: slotParsed.data.machineType,
+        clinicianId: clinician.id,
+        scheduledAt: slot,
+        preferredDate: formatDateISO(slot),
+        notes: slotParsed.data.notes,
+      })
+      .returning();
+  } catch (err) {
+    // Two patients picked the same slot — the partial unique index on
+    // scheduled_at rejects the loser. Surface it as "taken", not a 500.
+    if ((err as { code?: string })?.code === "23505") {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "This slot was just taken — please pick another",
+          code: "slot_taken",
+        },
+        { status: 409 },
+      );
+    }
+    console.error("[api/bookings] slot insert failed:", err);
+    return NextResponse.json(
+      { success: false, error: "Failed to book — please try again" },
+      { status: 500 },
+    );
+  }
+
+  const bookingTypeLabel = BOOKING_TYPE_CONFIG[slotParsed.data.bookingType].label;
+  const machineLabel = slotParsed.data.machineType
+    ? MACHINE_TYPE_CONFIG[slotParsed.data.machineType].label
+    : null;
+  const sessionLabel = machineLabel ? `${bookingTypeLabel} — ${machineLabel}` : bookingTypeLabel;
+  const slotLabel = `${formatSlotDay(slot)}, ${formatSlotTime(slot)} with ${displayName(clinician.name, clinician.email)}`;
+
+  runAfterResponse(async () => {
+    const patient = await db.query.users.findFirst({
+      where: eq(users.id, patientId),
+      columns: { name: true, email: true },
+    });
+
+    // The appointment as a calendar invite. Attaching it is what turns a
+    // confirmation email into a calendar entry in one tap — on any provider,
+    // with no integration to configure.
+    const invite = patient?.email
+      ? buildIcsInvite(
+          bookingIcsEvent({
+            bookingId: booking.id,
+            start: slot,
+            slotMinutes: rules.slotMinutes,
+            status: BOOKING_STATUS.confirmed,
+            patient: { name: patient.name, email: patient.email },
+            clinician: { name: clinician.name, email: clinician.email },
+            sessionLabel,
+            createdAt: booking.createdAt,
+          }),
+        )
+      : null;
+    const attachments = invite
+      ? [
+          {
+            filename: "appointment.ics",
+            content: invite,
+            contentType: "text/calendar; method=REQUEST",
+          },
+        ]
+      : undefined;
+
+    if (patient?.email) {
+      await sendEmail({
+        to: patient.email,
+        subject: `Confirmed: ${sessionLabel.toLowerCase()} on ${slotLabel} — ${COMPANY.shortName}`,
+        html: bookingConfirmedEmail({
+          patientName: displayName(patient.name, patient.email),
+          sessionLabel: `${sessionLabel} · ${slotLabel}`,
+          portalUrl: `${PORTAL_URL}${PORTAL_ROUTES.bookings}`,
+        }),
+        attachments,
+      });
+    }
+    await createNotification({
+      userId: patientId,
+      type: NOTIFICATION_TYPE.bookingConfirmed,
+      title: `Confirmed: ${sessionLabel.toLowerCase()} on ${slotLabel}`,
+      href: PORTAL_ROUTES.bookings,
+    });
+
+    // Notify the clinician whose calendar this lands in — not just whoever
+    // happens to be in ADMIN_EMAILS. Admins still get it (clinic oversight),
+    // deduplicated so a clinician who is also an admin isn't emailed twice.
+    const recipients = Array.from(
+      new Set([clinician.email, ...getAdminEmails()].map((e) => e.toLowerCase())),
+    );
+    if (recipients.length > 0) {
+      await sendEmail({
+        to: recipients,
+        subject: `New appointment: ${slotLabel} — ${displayName(patient?.name, patient?.email ?? session.user.email ?? undefined)}`,
+        html: bookingRequestAdminEmail({
+          patientName: displayName(patient?.name, patient?.email, "Unknown"),
+          patientEmail: patient?.email ?? "",
+          bookingTypeLabel: `${bookingTypeLabel} (booked slot: ${slotLabel})`,
+          machineTypeLabel: machineLabel,
+          notes: slotParsed.data.notes,
+          preferredDate: formatDateISO(slot),
+          adminUrl: `${PORTAL_URL}${ADMIN_ROUTES.patients}/${patientId}`,
+        }),
+        attachments,
+      });
+    }
+    const adminIds = await getAdminUserIds();
+    await createNotificationForMany(Array.from(new Set([clinician.id, ...adminIds])), {
+      type: NOTIFICATION_TYPE.bookingConfirmed,
+      title: `New appointment: ${slotLabel} — ${displayName(patient?.name, patient?.email, "Unknown")}`,
+      href: `${ADMIN_ROUTES.patients}/${patientId}`,
+    });
+  }, "[api/bookings] slot booking emails failed:");
+
+  return NextResponse.json({ success: true, data: booking }, { status: 201 });
 }

@@ -31,7 +31,11 @@ export default async function LabsPage() {
   return (
     <div>
       <PortalPageHeader
-        title={<>Labs &amp; <em>Vitals</em></>}
+        title={
+          <>
+            Labs &amp; <em>Vitals</em>
+          </>
+        }
         subtitle="Everything measured about you, and which way it is moving. Blood pressure, weight, sleep and anything else you track yourself can be added here — your clinician sees it the moment you save it."
       />
 
@@ -42,8 +46,8 @@ export default async function LabsPage() {
         <p className={styles.pageSub}>
           Have a laboratory report we have not entered yet?{" "}
           <Link href={PORTAL_ROUTES.documents}>Upload it under Documents</Link> or{" "}
-          <Link href={PORTAL_ROUTES.messages}>send it in a message</Link> and your clinician
-          will add the values so they can be tracked.
+          <Link href={PORTAL_ROUTES.messages}>send it in a message</Link> and your clinician will
+          add the values so they can be tracked.
         </p>
       </div>
     </div>

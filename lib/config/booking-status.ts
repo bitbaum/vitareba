@@ -46,7 +46,7 @@ export type BookingType = (typeof BOOKING_TYPE_VALUES)[number];
 
 export const BOOKING_TYPE_CONFIG: Record<BookingType, { label: string }> = {
   consultation: { label: "Consultation" },
-  machine:      { label: "Technology Session" },
+  machine: { label: "Technology Session" },
 };
 
 /** Canonical machine type values */
@@ -60,11 +60,11 @@ export const MACHINE_TYPE_VALUES = [
 export type MachineType = (typeof MACHINE_TYPE_VALUES)[number];
 
 export const MACHINE_TYPE_CONFIG: Record<MachineType, { label: string }> = {
-  h2_therapy:     { label: "H₂ Therapy" },
-  ihht:           { label: "IHHT" },
-  pemf:           { label: "PEMF" },
-  infrared:       { label: "Infrared" },
-  hrv_biofeedback:{ label: "HRV Biofeedback" },
+  h2_therapy: { label: "H₂ Therapy" },
+  ihht: { label: "IHHT" },
+  pemf: { label: "PEMF" },
+  infrared: { label: "Infrared" },
+  hrv_biofeedback: { label: "HRV Biofeedback" },
 };
 
 /** Serialised booking row returned by API endpoints (dates are strings, not Date objects) */
@@ -90,8 +90,8 @@ export type BookingRowWithUser = BookingRow & {
 };
 
 export const BOOKING_STATUS_CONFIG: Record<BookingStatus, { label: string; badgeClass: string }> = {
-  pending:   { label: "Pending",   badgeClass: "booking-status-pending"   },
+  pending: { label: "Pending", badgeClass: "booking-status-pending" },
   confirmed: { label: "Confirmed", badgeClass: "booking-status-confirmed" },
-  attended:  { label: "Attended",  badgeClass: "booking-status-attended"  },
+  attended: { label: "Attended", badgeClass: "booking-status-attended" },
   cancelled: { label: "Cancelled", badgeClass: "booking-status-cancelled" },
 };

@@ -102,12 +102,12 @@ export function CalendarSubscriptions({ clinicianId }: { clinicianId?: string })
       setNotice(
         body?.data?.synced
           ? body.data.intervals === 0
-            // Zero is a real and correct answer — holiday calendars mark every
-            // event as free time. Without saying so, a working subscription
-            // looks broken and gets deleted.
-            ? "Connected — but nothing in it blocks time. Calendars of holidays or birthdays mark their entries as free, so they never take a slot."
+            ? // Zero is a real and correct answer — holiday calendars mark every
+              // event as free time. Without saying so, a working subscription
+              // looks broken and gets deleted.
+              "Connected — but nothing in it blocks time. Calendars of holidays or birthdays mark their entries as free, so they never take a slot."
             : `Connected — ${body.data.intervals} busy period${body.data.intervals === 1 ? "" : "s"} are now blocking slots.`
-          : `Saved, but the first read failed: ${body?.data?.error ?? "unknown reason"}`
+          : `Saved, but the first read failed: ${body?.data?.error ?? "unknown reason"}`,
       );
       await load();
     } catch {
@@ -139,8 +139,8 @@ export function CalendarSubscriptions({ clinicianId }: { clinicianId?: string })
     <div>
       <p className={shared.formHint}>
         Point this at a calendar you already keep — read-only, refreshed every{" "}
-        {CALENDAR_REFRESH_MINUTES} minutes. Only free/busy times are stored, never titles,
-        guests or notes.
+        {CALENDAR_REFRESH_MINUTES} minutes. Only free/busy times are stored, never titles, guests or
+        notes.
       </p>
 
       {rows.length > 0 && (
@@ -197,8 +197,8 @@ export function CalendarSubscriptions({ clinicianId }: { clinicianId?: string })
           <p className={shared.formHint}>
             {/* Say what is true. It is NOT encrypted at rest, and telling a
                 clinician it is would be a security claim we cannot keep. */}
-            Treat this like a password. Once saved it&apos;s never shown again — only used to
-            fetch your free/busy times.
+            Treat this like a password. Once saved it&apos;s never shown again — only used to fetch
+            your free/busy times.
           </p>
         </div>
 

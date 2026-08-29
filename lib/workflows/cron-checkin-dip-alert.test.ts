@@ -21,7 +21,11 @@ vi.mock("@/lib/email/index", () => ({ sendEmail: mockSendEmail }));
 
 vi.mock("@/lib/config/company", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/config/company")>();
-  return { ...actual, getAdminEmails: mockGetAdminEmails, PORTAL_URL: "https://portal.example.com" };
+  return {
+    ...actual,
+    getAdminEmails: mockGetAdminEmails,
+    PORTAL_URL: "https://portal.example.com",
+  };
 });
 
 import { runCronCheckinDipAlert } from "./cron-checkin-dip-alert";
@@ -85,7 +89,10 @@ describe("runCronCheckinDipAlert", () => {
 
   it("skips all patients when no admin emails are configured", async () => {
     mockGetAdminEmails.mockReturnValue([]);
-    mockFindMany.mockResolvedValue([patient(), patient({ id: "patient-2", email: "bob@example.com" })]);
+    mockFindMany.mockResolvedValue([
+      patient(),
+      patient({ id: "patient-2", email: "bob@example.com" }),
+    ]);
     const result = await runCronCheckinDipAlert(NOW);
     expect(result).toEqual({ success: true, alerted: 0, skipped: 2 });
     expect(mockSendEmail).not.toHaveBeenCalled();
@@ -113,9 +120,7 @@ describe("runCronCheckinDipAlert", () => {
   it("skips patients whose dip alert was already sent within the cooldown window", async () => {
     // Alert sent 1 day ago → within CHECKIN_DIP_ALERT_DAYS (3) cooldown → skip
     const recentAlert = new Date(NOW.getTime() - 1 * 24 * 60 * 60 * 1000);
-    mockFindMany.mockResolvedValue([
-      patient({ profile: { dipAlertSentAt: recentAlert } }),
-    ]);
+    mockFindMany.mockResolvedValue([patient({ profile: { dipAlertSentAt: recentAlert } })]);
     const result = await runCronCheckinDipAlert(NOW);
     expect(result).toEqual({ success: true, alerted: 0, skipped: 1 });
     expect(mockSendEmail).not.toHaveBeenCalled();
@@ -131,7 +136,7 @@ describe("runCronCheckinDipAlert", () => {
       expect.objectContaining({
         to: "admin@example.com",
         subject: expect.stringContaining("Alice"),
-      })
+      }),
     );
     expect(mockUpdate).toHaveBeenCalledWith(profiles);
     const setArgs = mockUpdate.mock.results[0].value.set.mock.calls[0][0];
@@ -141,9 +146,7 @@ describe("runCronCheckinDipAlert", () => {
   it("re-alerts when previous dip alert is older than the cooldown window", async () => {
     // Alert sent CHECKIN_DIP_ALERT_DAYS + 1 days ago → cooldown expired → re-alert
     const oldAlert = new Date(NOW.getTime() - (CHECKIN_DIP_ALERT_DAYS + 1) * 24 * 60 * 60 * 1000);
-    mockFindMany.mockResolvedValue([
-      patient({ profile: { dipAlertSentAt: oldAlert } }),
-    ]);
+    mockFindMany.mockResolvedValue([patient({ profile: { dipAlertSentAt: oldAlert } })]);
     const result = await runCronCheckinDipAlert(NOW);
     expect(result).toEqual({ success: true, alerted: 1, skipped: 0 });
     expect(mockSendEmail).toHaveBeenCalledTimes(1);
@@ -168,9 +171,7 @@ describe("runCronCheckinDipAlert", () => {
 
   it("counts alerted only when at least one admin email succeeds", async () => {
     mockGetAdminEmails.mockReturnValue(["admin1@example.com", "admin2@example.com"]);
-    mockSendEmail
-      .mockResolvedValueOnce(undefined)
-      .mockRejectedValueOnce(new Error("inbox full"));
+    mockSendEmail.mockResolvedValueOnce(undefined).mockRejectedValueOnce(new Error("inbox full"));
     mockFindMany.mockResolvedValue([patient()]);
     const result = await runCronCheckinDipAlert(NOW);
     expect(result).toEqual({ success: true, alerted: 1, skipped: 0 });
@@ -179,7 +180,7 @@ describe("runCronCheckinDipAlert", () => {
 
   it("alerts qualifying patients and skips ineligible ones in the same run", async () => {
     mockFindMany.mockResolvedValue([
-      patient(),                                       // qualifies
+      patient(), // qualifies
       patient({ id: "p2", email: "bob@example.com", dailyCheckins: NO_DIP_CHECKINS }), // no dip
       patient({ id: "p3", email: "carol@example.com", dailyCheckins: DIP_CHECKINS.slice(0, 1) }), // too few
     ]);
@@ -187,7 +188,7 @@ describe("runCronCheckinDipAlert", () => {
     expect(result).toEqual({ success: true, alerted: 1, skipped: 2 });
     expect(mockSendEmail).toHaveBeenCalledTimes(1);
     expect(mockSendEmail).toHaveBeenCalledWith(
-      expect.objectContaining({ subject: expect.stringContaining("Alice") })
+      expect.objectContaining({ subject: expect.stringContaining("Alice") }),
     );
   });
 });

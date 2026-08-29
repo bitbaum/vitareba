@@ -11,7 +11,13 @@ type Thread = {
   messages: { body: string; senderId: string | null; readAt: Date | string | null }[];
 };
 
-export function PatientMessagesCard({ threads, patientId }: { threads: Thread[]; patientId: string }) {
+export function PatientMessagesCard({
+  threads,
+  patientId,
+}: {
+  threads: Thread[];
+  patientId: string;
+}) {
   return (
     <div className={styles.card}>
       <p className={styles.cardLabel}>Messages ({threads.length})</p>
@@ -24,15 +30,27 @@ export function PatientMessagesCard({ threads, patientId }: { threads: Thread[];
             // Unread = patient sent the last message and admin hasn't read it yet
             const isUnread = !!lastMsg && lastMsg.senderId === patientId && lastMsg.readAt === null;
             return (
-              <Link key={t.id} href={`${ADMIN_ROUTES.messages}/${t.id}`} className={styles.msgThreadRow}>
+              <Link
+                key={t.id}
+                href={`${ADMIN_ROUTES.messages}/${t.id}`}
+                className={styles.msgThreadRow}
+              >
                 <div>
                   <div className={styles.msgThreadSubjectRow}>
-                    {isUnread && <span className={styles.unreadDot} role="img" aria-label="Unread message from patient" />}
-                    <span className={`${styles.msgThreadSubject}${isUnread ? ` ${styles.unreadSubject}` : ""}`}>{t.subject}</span>
+                    {isUnread && (
+                      <span
+                        className={styles.unreadDot}
+                        role="img"
+                        aria-label="Unread message from patient"
+                      />
+                    )}
+                    <span
+                      className={`${styles.msgThreadSubject}${isUnread ? ` ${styles.unreadSubject}` : ""}`}
+                    >
+                      {t.subject}
+                    </span>
                   </div>
-                  {lastMsg && (
-                    <div className={styles.msgThreadPreview}>{lastMsg.body}</div>
-                  )}
+                  {lastMsg && <div className={styles.msgThreadPreview}>{lastMsg.body}</div>}
                 </div>
                 <span className={styles.msgThreadViewLink}>View →</span>
               </Link>

@@ -2,7 +2,11 @@
 
 import { useRef, useState } from "react";
 import styles from "@/app/(admin)/admin.module.css";
-import { DOCUMENT_MAX_FILE_SIZE_MB, DOCUMENT_TITLE_MAX_LENGTH, SAVED_FEEDBACK_MS } from "@/lib/config/portal";
+import {
+  DOCUMENT_MAX_FILE_SIZE_MB,
+  DOCUMENT_TITLE_MAX_LENGTH,
+  SAVED_FEEDBACK_MS,
+} from "@/lib/config/portal";
 
 export function DocumentAddForm({ patientId }: { patientId: string }) {
   const [title, setTitle] = useState("");
@@ -53,7 +57,9 @@ export function DocumentAddForm({ patientId }: { patientId: string }) {
       <p className={styles.docFormHeading}>Add document</p>
       <div className={styles.formGrid2}>
         <div className={styles.formField}>
-          <label className={styles.formLabel} htmlFor="doc-title">Title</label>
+          <label className={styles.formLabel} htmlFor="doc-title">
+            Title
+          </label>
           <input
             id="doc-title"
             className={styles.formInput}
@@ -65,7 +71,9 @@ export function DocumentAddForm({ patientId }: { patientId: string }) {
           />
         </div>
         <div className={styles.formField}>
-          <label className={styles.formLabel} htmlFor="doc-file">File (max {DOCUMENT_MAX_FILE_SIZE_MB} MB)</label>
+          <label className={styles.formLabel} htmlFor="doc-file">
+            File (max {DOCUMENT_MAX_FILE_SIZE_MB} MB)
+          </label>
           <input
             id="doc-file"
             ref={fileRef}
@@ -89,15 +97,17 @@ export function DocumentAddForm({ patientId }: { patientId: string }) {
           />
         </div>
       </div>
-      {progress === "error" && (
-        <p className={styles.assignError}>{errorMsg}</p>
-      )}
+      {progress === "error" && <p className={styles.assignError}>{errorMsg}</p>}
       <button
         type="submit"
         className={styles.assignSubmit}
         disabled={uploading || !file || !title.trim()}
       >
-        {progress === "uploading" ? "Uploading…" : progress === "done" ? "Uploaded ✓" : "Upload document"}
+        {progress === "uploading"
+          ? "Uploading…"
+          : progress === "done"
+            ? "Uploaded ✓"
+            : "Upload document"}
       </button>
     </form>
   );

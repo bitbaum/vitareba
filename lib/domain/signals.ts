@@ -28,10 +28,10 @@ type AssessmentRow = {
 
 export type SignalInput = {
   registeredAt: Date;
-  checkins: CheckinRow[];       // last N days, descending by date
+  checkins: CheckinRow[]; // last N days, descending by date
   assessments: AssessmentRow[]; // latest 2, descending
   bookings: { id: string; status: BookingStatus; createdAt: Date }[];
-  now?: Date;                   // injectable for tests; defaults to new Date()
+  now?: Date; // injectable for tests; defaults to new Date()
 };
 
 export type SignalResult = {
@@ -53,22 +53,22 @@ export function computePatientSignal({
   bookings,
   now = new Date(),
 }: SignalInput): SignalResult {
-  const daysSinceRegistration = Math.floor(
-    (now.getTime() - registeredAt.getTime()) / DAY_MS
-  );
+  const daysSinceRegistration = Math.floor((now.getTime() - registeredAt.getTime()) / DAY_MS);
 
   // New: registered recently, no activity expected yet
   if (daysSinceRegistration < NEW_PATIENT_GRACE_DAYS) {
-    return { signal: PATIENT_SIGNAL.new, reason: "Registered recently — grace period active", urgency: 0 };
+    return {
+      signal: PATIENT_SIGNAL.new,
+      reason: "Registered recently — grace period active",
+      urgency: 0,
+    };
   }
 
   // Check-in based signals
   if (checkins.length > 0) {
     const sorted = [...checkins].sort((a, b) => b.date.localeCompare(a.date));
     const lastCheckinDate = new Date(sorted[0].date + "T00:00:00");
-    const daysSinceLast = Math.floor(
-      (now.getTime() - lastCheckinDate.getTime()) / DAY_MS
-    );
+    const daysSinceLast = Math.floor((now.getTime() - lastCheckinDate.getTime()) / DAY_MS);
 
     // Critical: has check-in history but gone silent ≥ threshold days
     if (daysSinceLast >= NO_CHECKIN_CRITICAL_DAYS) {
@@ -112,15 +112,23 @@ export function computePatientSignal({
 
   // Attention: registered but never taken assessment
   if (assessments.length === 0) {
-    return { signal: PATIENT_SIGNAL.attention, reason: "No assessment taken yet", urgency: daysSinceRegistration };
+    return {
+      signal: PATIENT_SIGNAL.attention,
+      reason: "No assessment taken yet",
+      urgency: daysSinceRegistration,
+    };
   }
 
   // Attention: has assessment but no active booking (confirmed or attended)
   const hasActiveBooking = bookings.some(
-    (b) => b.status === BOOKING_STATUS.confirmed || b.status === BOOKING_STATUS.attended
+    (b) => b.status === BOOKING_STATUS.confirmed || b.status === BOOKING_STATUS.attended,
   );
   if (!hasActiveBooking) {
-    return { signal: PATIENT_SIGNAL.attention, reason: "Assessment done — no booking yet", urgency: 10 };
+    return {
+      signal: PATIENT_SIGNAL.attention,
+      reason: "Assessment done — no booking yet",
+      urgency: 10,
+    };
   }
 
   // Attention: attended consultation but no confirmed follow-up booking after N days
@@ -129,10 +137,10 @@ export function computePatientSignal({
     const attendedBookings = bookings.filter((b) => b.status === BOOKING_STATUS.attended);
     if (attendedBookings.length > 0) {
       const mostRecentAttended = [...attendedBookings].sort(
-        (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+        (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
       )[0];
       const daysSince = Math.floor(
-        (now.getTime() - mostRecentAttended.createdAt.getTime()) / DAY_MS
+        (now.getTime() - mostRecentAttended.createdAt.getTime()) / DAY_MS,
       );
       if (daysSince > ATTENDED_FOLLOW_UP_DAYS) {
         return {

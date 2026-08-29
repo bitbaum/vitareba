@@ -13,23 +13,18 @@ export default async function Cta() {
         <br />
         <em>{t("headingEm")}</em>
       </div>
-      <p className={styles.sub}>
-        {t("sub")}
-      </p>
+      <p className={styles.sub}>{t("sub")}</p>
       <div className={styles.btns}>
         <a href="?assessment=open" className={styles.btnPrimary}>
           {t("ctaPrimary")}
         </a>
-        <a
-          href={`mailto:${COMPANY.email}`}
-          className={styles.btnOutline}
-        >
+        <a href={`mailto:${COMPANY.email}`} className={styles.btnOutline}>
           {t("ctaSecondary")}
         </a>
       </div>
       <p className={styles.note}>
-        {COMPANY.name} · {COMPANY.address.street} · {COMPANY.address.zip}{" "}
-        {COMPANY.address.city} · {COMPANY.email}
+        {COMPANY.name} · {COMPANY.address.street} · {COMPANY.address.zip} {COMPANY.address.city} ·{" "}
+        {COMPANY.email}
       </p>
     </div>
   );

@@ -5,8 +5,8 @@ const PILLAR_KEYS = ["metabolic", "adhd", "psychedelic"] as const;
 type PillarKey = (typeof PILLAR_KEYS)[number];
 
 const PILLAR_META: Record<PillarKey, { icon: string; featured: boolean }> = {
-  metabolic:   { icon: "🧬", featured: false },
-  adhd:        { icon: "⚡", featured: true },
+  metabolic: { icon: "🧬", featured: false },
+  adhd: { icon: "⚡", featured: true },
   psychedelic: { icon: "🍄", featured: false },
 };
 
@@ -32,10 +32,7 @@ export default async function Pillars() {
             const item = items[key];
             if (!item) return null;
             return (
-              <div
-                key={key}
-                className={`${styles.pillar} ${meta.featured ? styles.featured : ""}`}
-              >
+              <div key={key} className={`${styles.pillar} ${meta.featured ? styles.featured : ""}`}>
                 <div className={styles.icon}>{meta.icon}</div>
                 <div className={styles.name}>{item.name}</div>
                 <p className={styles.desc}>{item.desc}</p>

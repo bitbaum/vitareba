@@ -21,7 +21,7 @@ import {
 export function computeGoalProgress(
   baseline: number | null | undefined,
   current: number | null | undefined,
-  target: number | null | undefined
+  target: number | null | undefined,
 ): number | null {
   if (current == null || target == null) return null;
   const base = baseline ?? 0;
@@ -45,7 +45,7 @@ export function computeGoalProgress(
 export function goalBarGeometry(
   baseline: number | null,
   current: number | null,
-  target: number | null
+  target: number | null,
 ): { fillLeft: number; fillWidth: number; targetPct: number | null } | null {
   if (current == null && target == null) return null;
   const max = Math.max(target ?? 0, current ?? 0, baseline ?? 0, 100);

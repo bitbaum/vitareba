@@ -81,7 +81,9 @@
 
 .chevron {
   opacity: 0.5;
-  transition: transform var(--transition-fast), opacity var(--transition-fast);
+  transition:
+    transform var(--transition-fast),
+    opacity var(--transition-fast);
   flex-shrink: 0;
 }
 
@@ -101,7 +103,10 @@
   opacity: 0;
   visibility: hidden;
   transform: translateX(-50%) translateY(-6px);
-  transition: opacity var(--transition-fast) ease, transform var(--transition-fast) ease, visibility var(--transition-fast);
+  transition:
+    opacity var(--transition-fast) ease,
+    transform var(--transition-fast) ease,
+    visibility var(--transition-fast);
   pointer-events: none;
   min-width: 16rem;
   z-index: var(--z-dropdown);
@@ -140,7 +145,6 @@
   border-top: 1px solid var(--border);
   border-radius: var(--radius-2xs) 0 0 0;
 }
-
 
 /* ─── Programme cards layout ───────────────────────────────────────────────── */
 
@@ -214,7 +218,9 @@
   color: var(--ink2);
   text-decoration: none;
   border-radius: var(--radius-lg);
-  transition: background var(--transition-fast), color var(--transition-fast);
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
   letter-spacing: 0.01em;
 }
 

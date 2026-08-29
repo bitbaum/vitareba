@@ -32,16 +32,17 @@ export async function PATCH(req: Request, { params }: RouteContext) {
       .update(clinicalGoals)
       .set({
         ...rest,
-        ...(completed !== undefined
-          ? { completedAt: completed ? new Date() : null }
-          : {}),
+        ...(completed !== undefined ? { completedAt: completed ? new Date() : null } : {}),
         updatedAt: new Date(),
       })
       .where(eq(clinicalGoals.id, goalId))
       .returning();
   } catch (err) {
     console.error("[api/admin/goals] update failed:", err);
-    return NextResponse.json({ success: false, error: "Failed to update goal — please try again" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "Failed to update goal — please try again" },
+      { status: 500 },
+    );
   }
 
   if (!updated) {
@@ -62,7 +63,10 @@ export async function DELETE(_req: Request, { params }: RouteContext) {
     await db.delete(clinicalGoals).where(eq(clinicalGoals.id, goalId));
   } catch (err) {
     console.error("[api/admin/goals] delete failed:", err);
-    return NextResponse.json({ success: false, error: "Failed to delete goal — please try again" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "Failed to delete goal — please try again" },
+      { status: 500 },
+    );
   }
 
   return NextResponse.json({ success: true });

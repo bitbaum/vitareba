@@ -49,20 +49,9 @@ export const programmePhaseEnum = pgEnum("programme_phase", [
   "review",
   "completed",
 ]);
-export const emailQueueStatusEnum = pgEnum("email_queue_status", [
-  "pending",
-  "sent",
-  "failed",
-]);
-export const bookingTypeEnum = pgEnum("booking_type", [
-  "consultation",
-  "machine",
-]);
-export const biologicalSexEnum = pgEnum("biological_sex", [
-  "female",
-  "male",
-  "unspecified",
-]);
+export const emailQueueStatusEnum = pgEnum("email_queue_status", ["pending", "sent", "failed"]);
+export const bookingTypeEnum = pgEnum("booking_type", ["consultation", "machine"]);
+export const biologicalSexEnum = pgEnum("biological_sex", ["female", "male", "unspecified"]);
 export const machineTypeEnum = pgEnum("machine_type", [
   "h2_therapy",
   "ihht",
@@ -114,9 +103,7 @@ export const accounts = pgTable(
     id_token: text("id_token"),
     session_state: text("session_state"),
   },
-  (account) => [
-    primaryKey({ columns: [account.provider, account.providerAccountId] }),
-  ]
+  (account) => [primaryKey({ columns: [account.provider, account.providerAccountId] })],
 );
 
 export const sessions = pgTable("sessions", {
@@ -134,7 +121,7 @@ export const verificationTokens = pgTable(
     token: text("token").notNull(),
     expires: timestamp("expires", { mode: "date" }).notNull(),
   },
-  (vt) => [primaryKey({ columns: [vt.identifier, vt.token] })]
+  (vt) => [primaryKey({ columns: [vt.identifier, vt.token] })],
 );
 
 // ─── Patient profile ──────────────────────────────────────────────────────────
@@ -218,15 +205,15 @@ export const dailyCheckins = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     date: varchar("date", { length: 10 }).notNull(), // YYYY-MM-DD
-    sleep: integer("sleep").notNull(),   // 1–5
+    sleep: integer("sleep").notNull(), // 1–5
     energy: integer("energy").notNull(), // 1–5
-    mood: integer("mood").notNull(),     // 1–5
-    focus: integer("focus").notNull(),   // 1–5
+    mood: integer("mood").notNull(), // 1–5
+    focus: integer("focus").notNull(), // 1–5
     stress: integer("stress").notNull(), // 1–5 (1 = very low, 5 = very high)
     notes: text("notes"),
     createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
   },
-  (t) => [uniqueIndex("daily_checkins_user_date_idx").on(t.userId, t.date)]
+  (t) => [uniqueIndex("daily_checkins_user_date_idx").on(t.userId, t.date)],
 );
 
 // ─── Clinical measurements ────────────────────────────────────────────────────
@@ -274,7 +261,7 @@ export const measurements = pgTable(
   (t) => [
     // Every read is "this patient, this marker, newest first".
     index("measurements_patient_kind_idx").on(t.patientId, t.kind, t.measuredAt),
-  ]
+  ],
 );
 
 // ─── Assessments ──────────────────────────────────────────────────────────────
@@ -353,7 +340,7 @@ export const bookings = pgTable(
     uniqueIndex("bookings_clinician_slot_idx")
       .on(t.clinicianId, t.scheduledAt)
       .where(sql`${t.status} IN ('pending', 'confirmed') AND ${t.scheduledAt} IS NOT NULL`),
-  ]
+  ],
 );
 
 // ─── Clinician profile & availability ──────────────────────────────────────────
@@ -422,7 +409,7 @@ export const careTeam = pgTable(
       .references(() => users.id, { onDelete: "cascade" }),
     createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
   },
-  (t) => [primaryKey({ columns: [t.clinicianId, t.patientId] })]
+  (t) => [primaryKey({ columns: [t.clinicianId, t.patientId] })],
 );
 
 // ─── External calendars ───────────────────────────────────────────────────────
@@ -488,7 +475,7 @@ export const calendarBusy = pgTable(
     startsAt: timestamp("starts_at", { mode: "date" }).notNull(),
     endsAt: timestamp("ends_at", { mode: "date" }).notNull(),
   },
-  (t) => [index("calendar_busy_clinician_idx").on(t.clinicianId, t.startsAt)]
+  (t) => [index("calendar_busy_clinician_idx").on(t.clinicianId, t.startsAt)],
 );
 
 // ─── Documents ────────────────────────────────────────────────────────────────
@@ -504,8 +491,7 @@ export const documents = pgTable("documents", {
   // leave the patient's record intact rather than deleting their documents.
   // With NO ACTION here, a patient who ever uploaded a file could not be
   // deleted at all — which broke the erasure the product promises.
-  uploadedBy: uuid("uploaded_by")
-    .references(() => users.id, { onDelete: "set null" }),
+  uploadedBy: uuid("uploaded_by").references(() => users.id, { onDelete: "set null" }),
   title: text("title").notNull(),
   fileUrl: text("file_url").notNull(),
   mimeType: varchar("mime_type", { length: 100 }),
@@ -591,7 +577,7 @@ export const threadParticipants = pgTable(
     // Per-participant read high-water mark — one row per person, not per message.
     lastReadAt: timestamp("last_read_at", { mode: "date" }),
   },
-  (t) => [uniqueIndex("thread_participants_thread_actor_idx").on(t.threadId, t.actorId)]
+  (t) => [uniqueIndex("thread_participants_thread_actor_idx").on(t.threadId, t.actorId)],
 );
 
 // ─── Admin notes ──────────────────────────────────────────────────────────────
@@ -637,10 +623,10 @@ export const clinicalGoals = pgTable("clinical_goals", {
     .notNull()
     .references(() => users.id),
   title: text("title").notNull(),
-  metric: varchar("metric", { length: 50 }),   // e.g. "focus", "overallScore", "mood" — optional
-  baseline: integer("baseline"),               // 0–100 reading at intake
-  target: integer("target"),                   // 0–100 goal
-  current: integer("current"),                 // 0–100 most recent reading
+  metric: varchar("metric", { length: 50 }), // e.g. "focus", "overallScore", "mood" — optional
+  baseline: integer("baseline"), // 0–100 reading at intake
+  target: integer("target"), // 0–100 goal
+  current: integer("current"), // 0–100 most recent reading
   notes: text("notes"),
   completedAt: timestamp("completed_at", { mode: "date" }),
   createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
@@ -687,7 +673,7 @@ export const notifications = pgTable(
   (t) => [
     index("notifications_user_read_idx").on(t.userId, t.readAt),
     index("notifications_user_created_idx").on(t.userId, t.createdAt),
-  ]
+  ],
 );
 
 // ─── Assessment leads (anonymous overlay completions for conversion tracking) ──
@@ -731,7 +717,10 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   recordedMeasurements: many(measurements, { relationName: "recorded_measurements" }),
   emailQueue: many(emailQueue),
   assessmentLeads: many(assessmentLeads),
-  clinicianProfile: one(clinicianProfiles, { fields: [users.id], references: [clinicianProfiles.userId] }),
+  clinicianProfile: one(clinicianProfiles, {
+    fields: [users.id],
+    references: [clinicianProfiles.userId],
+  }),
   clinicianApplications: many(clinicianApplications, { relationName: "applicant" }),
   reviewedApplications: many(clinicianApplications, { relationName: "reviewer" }),
 }));
@@ -741,8 +730,16 @@ export const clinicianProfilesRelations = relations(clinicianProfiles, ({ one })
 }));
 
 export const clinicianApplicationsRelations = relations(clinicianApplications, ({ one }) => ({
-  user: one(users, { fields: [clinicianApplications.userId], references: [users.id], relationName: "applicant" }),
-  reviewer: one(users, { fields: [clinicianApplications.reviewedBy], references: [users.id], relationName: "reviewer" }),
+  user: one(users, {
+    fields: [clinicianApplications.userId],
+    references: [users.id],
+    relationName: "applicant",
+  }),
+  reviewer: one(users, {
+    fields: [clinicianApplications.reviewedBy],
+    references: [users.id],
+    relationName: "reviewer",
+  }),
 }));
 
 // Reverse relation for users.assessmentResults `many`. Without it Drizzle's

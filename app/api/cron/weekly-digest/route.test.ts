@@ -2,12 +2,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { mockRequireCron, mockRunCronWeeklyDigest } = vi.hoisted(() => ({
-  mockRequireCron:           vi.fn(),
-  mockRunCronWeeklyDigest:   vi.fn(),
+  mockRequireCron: vi.fn(),
+  mockRunCronWeeklyDigest: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/guards", () => ({ requireCron: mockRequireCron }));
-vi.mock("@/lib/workflows/cron-weekly-digest", () => ({ runCronWeeklyDigest: mockRunCronWeeklyDigest }));
+vi.mock("@/lib/workflows/cron-weekly-digest", () => ({
+  runCronWeeklyDigest: mockRunCronWeeklyDigest,
+}));
 
 import { GET } from "./route";
 

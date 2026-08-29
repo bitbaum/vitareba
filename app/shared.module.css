@@ -20,9 +20,7 @@
      the row scrolling internally (grid items default to min-width: auto). */
   min-width: 0;
   /* Soft teal wash below the header — quiet depth instead of a flat panel */
-  background:
-    linear-gradient(180deg, var(--teal-6) 0%, transparent 220px),
-    var(--off);
+  background: linear-gradient(180deg, var(--teal-6) 0%, transparent 220px), var(--off);
 }
 
 .header {
@@ -286,7 +284,9 @@
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
-  transition: background var(--transition-fast), border-color var(--transition-fast);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
 .btnSecondary:hover,
@@ -352,10 +352,18 @@
   line-height: 1;
 }
 
-.statSm { font-size: 1.4rem; }
-.statMd { font-size: 1.6rem; }
-.statLg { font-size: 2.2rem; }
-.statXl { font-size: 3rem; }
+.statSm {
+  font-size: 1.4rem;
+}
+.statMd {
+  font-size: 1.6rem;
+}
+.statLg {
+  font-size: 2.2rem;
+}
+.statXl {
+  font-size: 3rem;
+}
 
 /* ─── Progress bars ──────────────────────────────────────────────────────── */
 
@@ -816,7 +824,9 @@
 
 .mRow {
   display: grid;
-  grid-template-columns: minmax(9rem, 1.6fr) minmax(6rem, auto) minmax(5rem, auto) minmax(6rem, 1fr) auto;
+  grid-template-columns:
+    minmax(9rem, 1.6fr) minmax(6rem, auto) minmax(5rem, auto) minmax(6rem, 1fr)
+    auto;
   align-items: baseline;
   gap: 0.5rem 1rem;
   padding: 0.6rem 0;
@@ -907,9 +917,15 @@
   white-space: nowrap;
 }
 
-.mTrendImproving { color: var(--teal); }
-.mTrendWorsening { color: var(--warn); }
-.mTrendSteady { color: var(--muted); }
+.mTrendImproving {
+  color: var(--teal);
+}
+.mTrendWorsening {
+  color: var(--warn);
+}
+.mTrendSteady {
+  color: var(--muted);
+}
 
 .mDetail {
   padding: 0.9rem 0 1.1rem;

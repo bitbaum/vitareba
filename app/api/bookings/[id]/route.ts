@@ -169,7 +169,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     console.error("[api/bookings/id] update failed:", err);
     return NextResponse.json(
       { success: false, error: "Failed to update booking — please try again" },
-      { status: 500 }
+      { status: 500 },
     );
   }
   if (!updated) return notFound();
@@ -244,7 +244,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
     console.error("[api/bookings/id] cancel failed:", err);
     return NextResponse.json(
       { success: false, error: "Failed to cancel — please try again" },
-      { status: 500 }
+      { status: 500 },
     );
   }
   if (!updated) return notFound();
@@ -260,7 +260,7 @@ async function reschedule(
   body: unknown,
   booking: BookingRow,
   session: { user: { id: string; role?: string | null } },
-  isAdmin: boolean
+  isAdmin: boolean,
 ): Promise<NextResponse> {
   const parsed = reschedulePatchSchema.safeParse(body);
   if (!parsed.success) return badRequest("Invalid time");
@@ -311,12 +311,12 @@ async function reschedule(
     // The appointment's OWN current slot must not block its move — otherwise
     // every reschedule collides with the booking being rescheduled.
     const others = busy.filter(
-      (b) => !booking.scheduledAt || b.start.getTime() !== booking.scheduledAt.getTime()
+      (b) => !booking.scheduledAt || b.start.getTime() !== booking.scheduledAt.getTime(),
     );
     if (!isBookableSlot(slot, { now, rules, busy: others })) {
       return NextResponse.json(
         { success: false, error: "That time is no longer available", code: "slot_taken" },
-        { status: 409 }
+        { status: 409 },
       );
     }
   } catch (err) {
@@ -343,14 +343,18 @@ async function reschedule(
   } catch (err) {
     if ((err as { code?: string })?.code === "23505") {
       return NextResponse.json(
-        { success: false, error: "That time was just taken — please pick another", code: "slot_taken" },
-        { status: 409 }
+        {
+          success: false,
+          error: "That time was just taken — please pick another",
+          code: "slot_taken",
+        },
+        { status: 409 },
       );
     }
     console.error("[api/bookings/id] reschedule failed:", err);
     return NextResponse.json(
       { success: false, error: "Failed to move — please try again" },
-      { status: 500 }
+      { status: 500 },
     );
   }
   if (!updated) return notFound();
@@ -380,11 +384,17 @@ async function reschedule(
               sessionLabel,
               createdAt: new Date(),
               revision: updated.revision,
-            })
+            }),
           )
         : null;
     const attachments = invite
-      ? [{ filename: "appointment.ics", content: invite, contentType: "text/calendar; method=REQUEST" }]
+      ? [
+          {
+            filename: "appointment.ics",
+            content: invite,
+            contentType: "text/calendar; method=REQUEST",
+          },
+        ]
       : undefined;
 
     if (patient?.email) {
@@ -449,8 +459,8 @@ function clinicRecipients(clinicianEmail?: string | null): string[] {
     new Set(
       [clinicianEmail, ...getAdminEmails()]
         .filter((e): e is string => Boolean(e))
-        .map((e) => e.toLowerCase())
-    )
+        .map((e) => e.toLowerCase()),
+    ),
   );
 }
 
@@ -458,8 +468,8 @@ function notifyPatient(
   booking: BookingRow,
   build: (
     patient: { name: string | null; email: string },
-    sessionLabel: string
-  ) => Promise<{ subject: string; html: string }>
+    sessionLabel: string,
+  ) => Promise<{ subject: string; html: string }>,
 ) {
   runAfterResponse(async () => {
     const sessionLabel = labelFor(booking);
@@ -476,7 +486,7 @@ function notifyPatient(
     if (!patient?.email) return;
     const { subject, html } = await build(
       { name: patient.name, email: patient.email },
-      sessionLabel
+      sessionLabel,
     );
     await sendEmail({ to: patient.email, subject, html });
   }, "[api/bookings/id] patient email failed:");
@@ -523,10 +533,14 @@ function announceCancellation(booking: BookingRow, actorId: string, reason: stri
           sessionLabel,
           createdAt: new Date(),
           revision: booking.revision,
-        })
+        }),
       );
       attachments = [
-        { filename: "appointment.ics", content: invite, contentType: "text/calendar; method=CANCEL" },
+        {
+          filename: "appointment.ics",
+          content: invite,
+          contentType: "text/calendar; method=CANCEL",
+        },
       ];
     }
 
@@ -567,7 +581,9 @@ function announceCancellation(booking: BookingRow, actorId: string, reason: stri
           detailLines: [
             `When: ${whenLabel}`,
             sessionLabel,
-            booking.lateCancellation ? "Late cancellation — inside the notice window." : "Cancelled with notice.",
+            booking.lateCancellation
+              ? "Late cancellation — inside the notice window."
+              : "Cancelled with notice.",
             ...(reason ? [`Reason given: ${reason}`] : []),
           ],
           adminUrl: `${PORTAL_URL}${ADMIN_ROUTES.patients}/${booking.userId}`,

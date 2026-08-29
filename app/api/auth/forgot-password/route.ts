@@ -9,7 +9,11 @@ import { users, verificationTokens } from "@/lib/db/schema";
 import { sendEmail, isEmailConfigured } from "@/lib/email";
 import { passwordResetEmail } from "@/lib/email/templates";
 import { PORTAL_URL, COMPANY } from "@/lib/config/company";
-import { PASSWORD_RESET_TOKEN_EXPIRY_MS, RESET_RATE_LIMIT_MS, RESET_TOKEN_IDENTIFIER_PREFIX } from "@/lib/config/auth";
+import {
+  PASSWORD_RESET_TOKEN_EXPIRY_MS,
+  RESET_RATE_LIMIT_MS,
+  RESET_TOKEN_IDENTIFIER_PREFIX,
+} from "@/lib/config/auth";
 import { emailField } from "@/lib/domain/auth";
 
 const schema = z.object({ email: emailField() });
@@ -25,7 +29,7 @@ export async function POST(req: Request) {
     console.error("[api/auth/forgot-password] email provider not configured — reset unavailable");
     return NextResponse.json(
       { success: false, error: "Password reset temporarily unavailable" },
-      { status: 503 }
+      { status: 503 },
     );
   }
 
@@ -68,7 +72,9 @@ export async function POST(req: Request) {
 
   // Invalidate any existing reset token for this email
   try {
-    await db.delete(verificationTokens).where(eq(verificationTokens.identifier, `${RESET_TOKEN_IDENTIFIER_PREFIX}${email}`));
+    await db
+      .delete(verificationTokens)
+      .where(eq(verificationTokens.identifier, `${RESET_TOKEN_IDENTIFIER_PREFIX}${email}`));
 
     const token = randomBytes(32).toString("hex");
     const expires = new Date(Date.now() + PASSWORD_RESET_TOKEN_EXPIRY_MS);

@@ -32,7 +32,7 @@ export async function GET() {
     if (problems.length > 0) {
       console.error(
         "[api/health] schema not usable by the application role:",
-        problems.map((p) => `${p.table}: ${p.problem}`).join(", ")
+        problems.map((p) => `${p.table}: ${p.problem}`).join(", "),
       );
       return NextResponse.json({ ok: false, error: "schema not usable" }, { status: 503 });
     }

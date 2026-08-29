@@ -23,7 +23,9 @@ export function PrivacyCard() {
       .then((data) => {
         if (data?.data?.aiConsentAt) setAiConsent(true);
       })
-      .catch(() => {/* card still works; toggle just starts unchecked */});
+      .catch(() => {
+        /* card still works; toggle just starts unchecked */
+      });
   }, []);
 
   async function toggleConsent(next: boolean) {
@@ -112,8 +114,8 @@ export function PrivacyCard() {
       </div>
       {deletionState === "sent" && (
         <p className={profileStyles.checkboxHint}>
-          Request sent. The clinic must respond within one month (GDPR Art. 12(3)); clinical
-          records may fall under the Swiss 10-year retention duty — see the regulatory ledger.
+          Request sent. The clinic must respond within one month (GDPR Art. 12(3)); clinical records
+          may fall under the Swiss 10-year retention duty — see the regulatory ledger.
         </p>
       )}
       {error && <p className={shared.formErrorTop}>{error}</p>}

@@ -9,11 +9,7 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: "*",
         allow: "/",
         // Keep portal and admin out of search indices — derived from PORTAL_ROUTES and ADMIN_ROUTES SSOT
-        disallow: [
-          ...Object.values(PORTAL_ROUTES),
-          ADMIN_ROUTES.root,
-          "/api/",
-        ],
+        disallow: [...Object.values(PORTAL_ROUTES), ADMIN_ROUTES.root, "/api/"],
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,

@@ -17,8 +17,7 @@ import { RegulationNotice } from "@/components/RegulationNotice";
  */
 
 type Gate = { blockId: string } & (
-  | { code: "ai_not_configured" }
-  | { code: "no_consent"; consentIsYours: boolean }
+  { code: "ai_not_configured" } | { code: "no_consent"; consentIsYours: boolean }
 );
 
 export function AskAssistant({

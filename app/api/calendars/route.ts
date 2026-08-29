@@ -22,10 +22,7 @@ import { db } from "@/lib/db";
 import { clinicianCalendars, users } from "@/lib/db/schema";
 import { badRequest, serviceUnavailable } from "@/lib/utils/api-response";
 import { UUID_RE } from "@/lib/utils/validate";
-import {
-  CALENDAR_LABEL_MAX,
-  CALENDAR_MAX_PER_CLINICIAN,
-} from "@/lib/config/calendar-sync";
+import { CALENDAR_LABEL_MAX, CALENDAR_MAX_PER_CLINICIAN } from "@/lib/config/calendar-sync";
 import { normaliseCalendarUrl } from "@/lib/domain/calendar-fetch";
 import { syncOneCalendar } from "@/lib/domain/calendar-sync";
 import { USER_ROLE } from "@/lib/config/auth";
@@ -52,7 +49,7 @@ const notFound = () => NextResponse.json({ success: false, error: "Not found" },
 
 async function resolveOwner(
   session: { user: { id: string; role?: string | null } },
-  requested?: string
+  requested?: string,
 ): Promise<{ ok: true; clinicianId: string } | { ok: false; res: NextResponse }> {
   const isAdmin = session.user.role === USER_ROLE.admin;
   const clinicianId = requested ?? session.user.id;
@@ -142,7 +139,9 @@ export async function POST(req: Request) {
       columns: { id: true },
     });
     if (existing.length >= CALENDAR_MAX_PER_CLINICIAN) {
-      return badRequest(`That is the most calendars one clinician can subscribe (${CALENDAR_MAX_PER_CLINICIAN}).`);
+      return badRequest(
+        `That is the most calendars one clinician can subscribe (${CALENDAR_MAX_PER_CLINICIAN}).`,
+      );
     }
 
     [created] = await db
@@ -157,7 +156,7 @@ export async function POST(req: Request) {
     console.error("[api/calendars] insert failed:", err);
     return NextResponse.json(
       { success: false, error: "Could not save that calendar — please try again" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -171,7 +170,13 @@ export async function POST(req: Request) {
     icsUrl: created.icsUrl,
   }).catch((err) => {
     console.error("[api/calendars] first sync failed:", err);
-    return { calendarId: created.id, label: created.label, ok: false, intervals: 0, error: "Could not read that calendar." };
+    return {
+      calendarId: created.id,
+      label: created.label,
+      ok: false,
+      intervals: 0,
+      error: "Could not read that calendar.",
+    };
   });
 
   return NextResponse.json(
@@ -187,7 +192,7 @@ export async function POST(req: Request) {
         error: outcome.ok ? null : outcome.error,
       },
     },
-    { status: 201 }
+    { status: 201 },
   );
 }
 
@@ -221,7 +226,7 @@ export async function DELETE(req: Request) {
     console.error("[api/calendars] delete failed:", err);
     return NextResponse.json(
       { success: false, error: "Could not remove that calendar — please try again" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 

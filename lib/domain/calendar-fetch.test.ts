@@ -68,7 +68,9 @@ describe("what counts as reachable from the internet", () => {
 
 describe("normalising what somebody pasted", () => {
   it("accepts an https calendar link", () => {
-    const r = normaliseCalendarUrl("https://calendar.google.com/calendar/ical/x/private-abc/basic.ics");
+    const r = normaliseCalendarUrl(
+      "https://calendar.google.com/calendar/ical/x/private-abc/basic.ics",
+    );
     expect(r.ok).toBe(true);
   });
 

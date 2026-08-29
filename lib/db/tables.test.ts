@@ -18,9 +18,7 @@ import { appTableNames } from "./tables";
 const SCHEMA_SOURCE = readFileSync(join(process.cwd(), "lib/db/schema.ts"), "utf8");
 
 /** Every table name that appears in a pgTable(...) call in the schema file. */
-const declared = [...SCHEMA_SOURCE.matchAll(/pgTable\(\s*"([a-z_]+)"/g)]
-  .map((m) => m[1])
-  .sort();
+const declared = [...SCHEMA_SOURCE.matchAll(/pgTable\(\s*"([a-z_]+)"/g)].map((m) => m[1]).sort();
 
 describe("derived table list", () => {
   it("finds tables at all", () => {
@@ -35,7 +33,7 @@ describe("derived table list", () => {
     const missing = declared.filter((name) => !derived.includes(name));
     expect(
       missing,
-      `declared in schema.ts but not exported, so no check can see them: ${missing.join(", ")}`
+      `declared in schema.ts but not exported, so no check can see them: ${missing.join(", ")}`,
     ).toEqual([]);
   });
 

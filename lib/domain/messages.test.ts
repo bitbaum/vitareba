@@ -10,13 +10,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
  * actually applies the filter rather than loading a thread and forgetting to.
  */
 
-const { mockThreadFindFirst, mockParticipantsFindMany, mockMessagesFindMany } = vi.hoisted(
-  () => ({
-    mockThreadFindFirst: vi.fn(),
-    mockParticipantsFindMany: vi.fn(),
-    mockMessagesFindMany: vi.fn(),
-  })
-);
+const { mockThreadFindFirst, mockParticipantsFindMany, mockMessagesFindMany } = vi.hoisted(() => ({
+  mockThreadFindFirst: vi.fn(),
+  mockParticipantsFindMany: vi.fn(),
+  mockMessagesFindMany: vi.fn(),
+}));
 
 vi.mock("@/lib/db", () => ({
   db: {
@@ -132,9 +130,7 @@ describe("getThreadForActor", () => {
   });
 
   it("stops delivering to someone who has left, without erasing what they saw", async () => {
-    mockParticipantsFindMany.mockResolvedValue([
-      participant({ actorId: "locum", leftAt: T2 }),
-    ]);
+    mockParticipantsFindMany.mockResolvedValue([participant({ actorId: "locum", leftAt: T2 })]);
     mockMessagesFindMany.mockResolvedValue([
       message({ id: "m1", createdAt: T1 }),
       message({ id: "m2", createdAt: T3 }),

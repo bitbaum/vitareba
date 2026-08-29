@@ -66,7 +66,9 @@ function ResetPasswordForm() {
         <h1 className={styles.title}>{t("invalidTitle")}</h1>
         <p className={styles.subtitle}>{t("invalidSub")}</p>
         <div className={styles.linkRow}>
-          <Link className={styles.link} href={AUTH_ROUTES.forgotPassword}>{t("requestNew")}</Link>
+          <Link className={styles.link} href={AUTH_ROUTES.forgotPassword}>
+            {t("requestNew")}
+          </Link>
         </div>
       </>
     );
@@ -79,7 +81,9 @@ function ResetPasswordForm() {
 
       <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.field}>
-          <label className={styles.label} htmlFor="password">{t("newPasswordLabel")}</label>
+          <label className={styles.label} htmlFor="password">
+            {t("newPasswordLabel")}
+          </label>
           <input
             id="password"
             className={styles.input}
@@ -93,7 +97,9 @@ function ResetPasswordForm() {
           />
         </div>
         <div className={styles.field}>
-          <label className={styles.label} htmlFor="confirm">{t("confirmPasswordLabel")}</label>
+          <label className={styles.label} htmlFor="confirm">
+            {t("confirmPasswordLabel")}
+          </label>
           <input
             id="confirm"
             className={styles.input}

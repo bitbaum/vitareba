@@ -21,8 +21,7 @@ const FILE_HEADERS = {
 // A document that exists but belongs to someone else answers exactly like one
 // that does not exist. A 403 would confirm the id is real, which is itself a
 // disclosure about another patient.
-const notFound = () =>
-  NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
+const notFound = () => NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
 
 /**
  * Stream a patient document to someone allowed to see it.
@@ -32,10 +31,7 @@ const notFound = () =>
  * (or guessing) the URL could read a patient's medical records, forever, and
  * the URL leaks through browser history, referrers and forwarded emails.
  */
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const guard = await requireSession();
   if (guard.error) return guard.error;
   const { session } = guard;
@@ -73,7 +69,7 @@ export async function GET(
     console.error("[api/documents/file] read failed:", err);
     return NextResponse.json(
       { success: false, error: "File is no longer available" },
-      { status: 410 }
+      { status: 410 },
     );
   }
 

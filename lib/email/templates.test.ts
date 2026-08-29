@@ -43,32 +43,65 @@ describe("email templates — structure", () => {
   });
 
   it("bookingCancelledAdminEmail returns html", () => {
-    expect(isHtml(bookingCancelledAdminEmail({
-      patientName: "Anna Müller",
-      patientEmail: "anna@example.com",
-      bookingTypeLabel: "Consultation",
-      adminUrl: "https://vitareba.ch/admin/patients/1",
-    }))).toBe(true);
+    expect(
+      isHtml(
+        bookingCancelledAdminEmail({
+          patientName: "Anna Müller",
+          patientEmail: "anna@example.com",
+          bookingTypeLabel: "Consultation",
+          adminUrl: "https://vitareba.ch/admin/patients/1",
+        }),
+      ),
+    ).toBe(true);
   });
 
   it("bookingConfirmedEmail returns html", () => {
-    expect(isHtml(bookingConfirmedEmail({ patientName: "Anna", sessionLabel: "Consultation", portalUrl: "https://p.example.com" }))).toBe(true);
+    expect(
+      isHtml(
+        bookingConfirmedEmail({
+          patientName: "Anna",
+          sessionLabel: "Consultation",
+          portalUrl: "https://p.example.com",
+        }),
+      ),
+    ).toBe(true);
   });
 
   it("bookingCancelledEmail returns html", () => {
-    expect(isHtml(bookingCancelledEmail({ patientName: "Anna", sessionLabel: "Consultation", portalUrl: "https://p.example.com" }))).toBe(true);
+    expect(
+      isHtml(
+        bookingCancelledEmail({
+          patientName: "Anna",
+          sessionLabel: "Consultation",
+          portalUrl: "https://p.example.com",
+        }),
+      ),
+    ).toBe(true);
   });
 
   it("passwordResetEmail returns html", () => {
-    expect(isHtml(passwordResetEmail({ resetUrl: "https://p.example.com/reset?token=abc" }))).toBe(true);
+    expect(isHtml(passwordResetEmail({ resetUrl: "https://p.example.com/reset?token=abc" }))).toBe(
+      true,
+    );
   });
 
   it("newMessageEmail returns html", () => {
-    expect(isHtml(newMessageEmail({ recipientName: "Anna", senderName: "Manuel", subject: "Intake", portalUrl: "https://p.example.com" }))).toBe(true);
+    expect(
+      isHtml(
+        newMessageEmail({
+          recipientName: "Anna",
+          senderName: "Manuel",
+          subject: "Intake",
+          portalUrl: "https://p.example.com",
+        }),
+      ),
+    ).toBe(true);
   });
 
   it("welcomePatientEmail returns html", () => {
-    expect(isHtml(welcomePatientEmail({ patientName: "Anna", portalUrl: "https://p.example.com" }))).toBe(true);
+    expect(
+      isHtml(welcomePatientEmail({ patientName: "Anna", portalUrl: "https://p.example.com" })),
+    ).toBe(true);
   });
 
   it("assessmentResultsEmail returns html", () => {
@@ -77,34 +110,46 @@ describe("email templates — structure", () => {
       overallScore: 72,
       verdictName: "Asymmetric Performance",
       verdictText: "Your profile shows...",
-      dimensions: [{ icon: "⚡", name: "Arousal", score: 65, interpretation: "Moderate activation barrier." }],
+      dimensions: [
+        { icon: "⚡", name: "Arousal", score: 65, interpretation: "Moderate activation barrier." },
+      ],
       portalUrl: "https://p.example.com",
     });
     expect(isHtml(html)).toBe(true);
   });
 
   it("weeklyDigestEmail returns html", () => {
-    expect(isHtml(weeklyDigestEmail({
-      patientName: "Anna",
-      thisWeekAvgs: null,
-      prevWeekAvgs: null,
-      latestScore: null,
-      verdictName: null,
-      nextBookingStatus: null,
-      portalUrl: "https://p.example.com",
-    }))).toBe(true);
+    expect(
+      isHtml(
+        weeklyDigestEmail({
+          patientName: "Anna",
+          thisWeekAvgs: null,
+          prevWeekAvgs: null,
+          latestScore: null,
+          verdictName: null,
+          nextBookingStatus: null,
+          portalUrl: "https://p.example.com",
+        }),
+      ),
+    ).toBe(true);
   });
 
   it("profileCompletionEmail returns html", () => {
-    expect(isHtml(profileCompletionEmail({ patientName: "Anna", portalUrl: "https://p.example.com" }))).toBe(true);
+    expect(
+      isHtml(profileCompletionEmail({ patientName: "Anna", portalUrl: "https://p.example.com" })),
+    ).toBe(true);
   });
 
   it("assessmentCtaEmail returns html", () => {
-    expect(isHtml(assessmentCtaEmail({ patientName: "Anna", portalUrl: "https://p.example.com" }))).toBe(true);
+    expect(
+      isHtml(assessmentCtaEmail({ patientName: "Anna", portalUrl: "https://p.example.com" })),
+    ).toBe(true);
   });
 
   it("assessmentMeaningEmail returns html", () => {
-    expect(isHtml(assessmentMeaningEmail({ patientName: "Anna", portalUrl: "https://p.example.com" }))).toBe(true);
+    expect(
+      isHtml(assessmentMeaningEmail({ patientName: "Anna", portalUrl: "https://p.example.com" })),
+    ).toBe(true);
   });
 });
 
@@ -143,7 +188,12 @@ describe("email templates — personalisation", () => {
 
   it("bookingRequestAdminEmail includes adminUrl as link href", () => {
     const adminUrl = "https://vitareba.ch/admin/patients/42";
-    const html = bookingRequestAdminEmail({ patientName: "Anna", patientEmail: "anna@example.com", bookingTypeLabel: "Consultation", adminUrl });
+    const html = bookingRequestAdminEmail({
+      patientName: "Anna",
+      patientEmail: "anna@example.com",
+      bookingTypeLabel: "Consultation",
+      adminUrl,
+    });
     expect(html).toContain(adminUrl);
   });
 
@@ -173,13 +223,21 @@ describe("email templates — personalisation", () => {
   });
 
   it("bookingConfirmedEmail includes patient name and session label", () => {
-    const html = bookingConfirmedEmail({ patientName: "Jakob", sessionLabel: "Consultation", portalUrl: "https://p.example.com" });
+    const html = bookingConfirmedEmail({
+      patientName: "Jakob",
+      sessionLabel: "Consultation",
+      portalUrl: "https://p.example.com",
+    });
     expect(html).toContain("Jakob");
     expect(html).toContain("Consultation");
   });
 
   it("bookingCancelledEmail includes patient name and session label", () => {
-    const html = bookingCancelledEmail({ patientName: "Lisa", sessionLabel: "PEMF session", portalUrl: "https://p.example.com" });
+    const html = bookingCancelledEmail({
+      patientName: "Lisa",
+      sessionLabel: "PEMF session",
+      portalUrl: "https://p.example.com",
+    });
     expect(html).toContain("Lisa");
     expect(html).toContain("PEMF session");
   });
@@ -283,7 +341,10 @@ describe("email templates — personalisation", () => {
   });
 
   it("profileCompletionEmail includes patient name and profile link", () => {
-    const html = profileCompletionEmail({ patientName: "Sophie", portalUrl: "https://p.example.com" });
+    const html = profileCompletionEmail({
+      patientName: "Sophie",
+      portalUrl: "https://p.example.com",
+    });
     expect(html).toContain("Sophie");
     expect(html).toContain("https://p.example.com/profile");
   });
@@ -295,7 +356,10 @@ describe("email templates — personalisation", () => {
   });
 
   it("assessmentMeaningEmail includes patient name and all five dimension names", () => {
-    const html = assessmentMeaningEmail({ patientName: "Maria", portalUrl: "https://p.example.com" });
+    const html = assessmentMeaningEmail({
+      patientName: "Maria",
+      portalUrl: "https://p.example.com",
+    });
     expect(html).toContain("Maria");
     expect(html).toContain("Arousal");
     expect(html).toContain("Divergent");
@@ -333,7 +397,11 @@ describe("weeklyDigestEmail — conditional sections", () => {
   });
 
   it("includes assessment score and verdict when provided", () => {
-    const html = weeklyDigestEmail({ ...base, latestScore: 70, verdictName: "Asymmetric Performance" });
+    const html = weeklyDigestEmail({
+      ...base,
+      latestScore: 70,
+      verdictName: "Asymmetric Performance",
+    });
     expect(html).toContain("70/100");
     expect(html).toContain("Asymmetric Performance");
   });
@@ -428,7 +496,10 @@ describe("checkinReminderEmail", () => {
   });
 
   it("includes patient name", () => {
-    const html = checkinReminderEmail({ patientName: "Tobias", portalUrl: "https://p.example.com" });
+    const html = checkinReminderEmail({
+      patientName: "Tobias",
+      portalUrl: "https://p.example.com",
+    });
     expect(html).toContain("Tobias");
   });
 
@@ -449,30 +520,50 @@ describe("checkinReminderEmail", () => {
   });
 
   it("no streak: shows generic body, no streak copy", () => {
-    const html = checkinReminderEmail({ patientName: "Anna", portalUrl: "https://p.example.com", atRiskStreak: 0 });
+    const html = checkinReminderEmail({
+      patientName: "Anna",
+      portalUrl: "https://p.example.com",
+      atRiskStreak: 0,
+    });
     expect(html).toContain("30 seconds");
     expect(html).not.toContain("streak");
   });
 
   it("streak of 1: treated as no streak (threshold is 2)", () => {
-    const html = checkinReminderEmail({ patientName: "Anna", portalUrl: "https://p.example.com", atRiskStreak: 1 });
+    const html = checkinReminderEmail({
+      patientName: "Anna",
+      portalUrl: "https://p.example.com",
+      atRiskStreak: 1,
+    });
     expect(html).not.toContain("streak");
   });
 
   it("streak of 2: shows streak count in copy", () => {
-    const html = checkinReminderEmail({ patientName: "Anna", portalUrl: "https://p.example.com", atRiskStreak: 2 });
+    const html = checkinReminderEmail({
+      patientName: "Anna",
+      portalUrl: "https://p.example.com",
+      atRiskStreak: 2,
+    });
     expect(html).toContain("2");
     expect(html).toContain("streak");
   });
 
   it("streak of 14: shows exact count prominently", () => {
-    const html = checkinReminderEmail({ patientName: "Anna", portalUrl: "https://p.example.com", atRiskStreak: 14 });
+    const html = checkinReminderEmail({
+      patientName: "Anna",
+      portalUrl: "https://p.example.com",
+      atRiskStreak: 14,
+    });
     expect(html).toContain("14");
     expect(html).toContain("streak");
   });
 
   it("streak path: still includes opt-out link", () => {
-    const html = checkinReminderEmail({ patientName: "Anna", portalUrl: "https://p.example.com", atRiskStreak: 7 });
+    const html = checkinReminderEmail({
+      patientName: "Anna",
+      portalUrl: "https://p.example.com",
+      atRiskStreak: 7,
+    });
     expect(html).toContain("#email-preferences");
   });
 });

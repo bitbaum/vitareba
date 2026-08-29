@@ -2,12 +2,7 @@
 
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { useMessages } from "next-intl";
-import {
-  DIMENSIONS,
-  QUESTIONS,
-  computeScores,
-  type DimensionId,
-} from "@/lib/assessment/data";
+import { DIMENSIONS, QUESTIONS, computeScores, type DimensionId } from "@/lib/assessment/data";
 import { COMPANY } from "@/lib/config/company";
 import { STORAGE_KEYS, safeSessionSet } from "@/lib/utils/storage";
 import ResultsScreen from "./ResultsScreen";
@@ -79,7 +74,7 @@ export default function Assessment({ onClose, onComplete, embedded = false }: Pr
         return next;
       });
     },
-    [currentQ]
+    [currentQ],
   );
 
   const goNext = useCallback(() => {
@@ -89,7 +84,6 @@ export default function Assessment({ onClose, onComplete, embedded = false }: Pr
       setScreen("results");
     }
   }, [currentQ]);
-
 
   const goPrev = useCallback(() => {
     if (currentQ > 0) setCurrentQ((q) => q - 1);
@@ -101,14 +95,13 @@ export default function Assessment({ onClose, onComplete, embedded = false }: Pr
     setAnswers(emptyAnswers());
   }, []);
 
-  const { scores: dimScores, overallScore } = useMemo(
-    () => computeScores(answers),
-    [answers]
-  );
+  const { scores: dimScores, overallScore } = useMemo(() => computeScores(answers), [answers]);
 
   // Keep ref in sync with latest onComplete (avoids stale closure without re-subscribing)
   const onCompleteRef = useRef(onComplete);
-  useEffect(() => { onCompleteRef.current = onComplete; }, [onComplete]);
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
   useEffect(() => {
     if (screen !== "results") return;
     // Notify parent (portal assessment page) if a callback is provided
@@ -161,7 +154,7 @@ export default function Assessment({ onClose, onComplete, embedded = false }: Pr
         goNext();
       }
     },
-    [currentQ, answered, goNext]
+    [currentQ, answered, goNext],
   );
 
   const introText = i18n.intro
@@ -179,12 +172,7 @@ export default function Assessment({ onClose, onComplete, embedded = false }: Pr
         <div
           className={styles.ovPbFill}
           style={{
-            width:
-              screen === "results"
-                ? "100%"
-                : screen === "question"
-                ? `${progress}%`
-                : "0%",
+            width: screen === "results" ? "100%" : screen === "question" ? `${progress}%` : "0%",
           }}
         />
       </div>
@@ -245,19 +233,12 @@ export default function Assessment({ onClose, onComplete, embedded = false }: Pr
           <div className={styles.qDimLabel}>
             {dim.icon} {i18n.dimensions[dim.id] ?? dim.id}
           </div>
-          <div
-            className={styles.qProg}
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            {currentQ + 1} / {QUESTIONS.length} · {i18n.progressLabel} {dimIndex + 1} {i18n.progressOf}{" "}
-            {DIMENSIONS.length}
+          <div className={styles.qProg} aria-live="polite" aria-atomic="true">
+            {currentQ + 1} / {QUESTIONS.length} · {i18n.progressLabel} {dimIndex + 1}{" "}
+            {i18n.progressOf} {DIMENSIONS.length}
           </div>
           <div className={styles.qTrack}>
-            <div
-              className={styles.qTrackFill}
-              style={{ width: `${progress}%` }}
-            />
+            <div className={styles.qTrackFill} style={{ width: `${progress}%` }} />
           </div>
           <div className={styles.qText}>{i18n.questions[currentQ] ?? q.text}</div>
           <div className={styles.qBtns} onKeyDown={handleAnswerKey}>
@@ -301,11 +282,7 @@ export default function Assessment({ onClose, onComplete, embedded = false }: Pr
 
       {/* RESULTS */}
       {screen === "results" && (
-        <ResultsScreen
-          scores={dimScores}
-          overall={overallScore}
-          onRestart={restart}
-        />
+        <ResultsScreen scores={dimScores} overall={overallScore} onRestart={restart} />
       )}
     </div>
   );

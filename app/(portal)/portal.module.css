@@ -5,102 +5,262 @@
 
 /* ─── Shared primitive re-exports ────────────────────────────────────────── */
 
-.mainWrap { composes: mainWrap from "../shared.module.css"; }
-.header { composes: header from "../shared.module.css"; }
-.headerActions { composes: headerActions from "../shared.module.css"; }
-.main { composes: main from "../shared.module.css"; }
-.roleSwitch { composes: roleSwitch from "../shared.module.css"; }
+.mainWrap {
+  composes: mainWrap from "../shared.module.css";
+}
+.header {
+  composes: header from "../shared.module.css";
+}
+.headerActions {
+  composes: headerActions from "../shared.module.css";
+}
+.main {
+  composes: main from "../shared.module.css";
+}
+.roleSwitch {
+  composes: roleSwitch from "../shared.module.css";
+}
 
-.pageEyebrow { composes: pageEyebrow from "../shared.module.css"; }
-.pageTitle { composes: pageTitle from "../shared.module.css"; }
-.pageSub { composes: pageSub from "../shared.module.css"; }
-.pageHeader { composes: pageHeader from "../shared.module.css"; }
+.pageEyebrow {
+  composes: pageEyebrow from "../shared.module.css";
+}
+.pageTitle {
+  composes: pageTitle from "../shared.module.css";
+}
+.pageSub {
+  composes: pageSub from "../shared.module.css";
+}
+.pageHeader {
+  composes: pageHeader from "../shared.module.css";
+}
 
-.darkBanner { composes: darkBanner from "../shared.module.css"; }
-.darkBannerEyebrow { composes: darkBannerEyebrow from "../shared.module.css"; }
-.darkBannerTitle { composes: darkBannerTitle from "../shared.module.css"; }
-.darkBannerBody { composes: darkBannerBody from "../shared.module.css"; }
-.darkBannerLinkPrimary { composes: darkBannerLinkPrimary from "../shared.module.css"; }
-.darkBannerLinkMuted { composes: darkBannerLinkMuted from "../shared.module.css"; }
+.darkBanner {
+  composes: darkBanner from "../shared.module.css";
+}
+.darkBannerEyebrow {
+  composes: darkBannerEyebrow from "../shared.module.css";
+}
+.darkBannerTitle {
+  composes: darkBannerTitle from "../shared.module.css";
+}
+.darkBannerBody {
+  composes: darkBannerBody from "../shared.module.css";
+}
+.darkBannerLinkPrimary {
+  composes: darkBannerLinkPrimary from "../shared.module.css";
+}
+.darkBannerLinkMuted {
+  composes: darkBannerLinkMuted from "../shared.module.css";
+}
 
-.card { composes: card from "../shared.module.css"; }
-.cardMb { composes: cardMb from "../shared.module.css"; }
-.cardGap { composes: cardGap from "../shared.module.css"; }
-.cardMuted { composes: cardMuted from "../shared.module.css"; }
-.cardWarn { composes: cardWarn from "../shared.module.css"; }
-.cardTight { composes: cardTight from "../shared.module.css"; }
-.cardTitle { composes: cardTitle from "../shared.module.css"; }
-.cardTitleFlush { composes: cardTitleFlush from "../shared.module.css"; }
-.sectionLabel { composes: sectionLabel from "../shared.module.css"; }
+.card {
+  composes: card from "../shared.module.css";
+}
+.cardMb {
+  composes: cardMb from "../shared.module.css";
+}
+.cardGap {
+  composes: cardGap from "../shared.module.css";
+}
+.cardMuted {
+  composes: cardMuted from "../shared.module.css";
+}
+.cardWarn {
+  composes: cardWarn from "../shared.module.css";
+}
+.cardTight {
+  composes: cardTight from "../shared.module.css";
+}
+.cardTitle {
+  composes: cardTitle from "../shared.module.css";
+}
+.cardTitleFlush {
+  composes: cardTitleFlush from "../shared.module.css";
+}
+.sectionLabel {
+  composes: sectionLabel from "../shared.module.css";
+}
 
-.btnPrimary { composes: btnPrimary from "../shared.module.css"; }
-.btnSm { composes: btnSm from "../shared.module.css"; }
-.btnBlock { composes: btnBlock from "../shared.module.css"; }
-.btnSecondary { composes: btnSecondary from "../shared.module.css"; }
-.btnText { composes: btnText from "../shared.module.css"; }
+.btnPrimary {
+  composes: btnPrimary from "../shared.module.css";
+}
+.btnSm {
+  composes: btnSm from "../shared.module.css";
+}
+.btnBlock {
+  composes: btnBlock from "../shared.module.css";
+}
+.btnSecondary {
+  composes: btnSecondary from "../shared.module.css";
+}
+.btnText {
+  composes: btnText from "../shared.module.css";
+}
 
-.pill { composes: pill from "../shared.module.css"; }
-.pillTeal { composes: pillTeal from "../shared.module.css"; }
-.pillGold { composes: pillGold from "../shared.module.css"; }
+.pill {
+  composes: pill from "../shared.module.css";
+}
+.pillTeal {
+  composes: pillTeal from "../shared.module.css";
+}
+.pillGold {
+  composes: pillGold from "../shared.module.css";
+}
 
-.statValue { composes: statValue from "../shared.module.css"; }
-.statSm { composes: statSm from "../shared.module.css"; }
-.statMd { composes: statMd from "../shared.module.css"; }
-.statLg { composes: statLg from "../shared.module.css"; }
-.statXl { composes: statXl from "../shared.module.css"; }
+.statValue {
+  composes: statValue from "../shared.module.css";
+}
+.statSm {
+  composes: statSm from "../shared.module.css";
+}
+.statMd {
+  composes: statMd from "../shared.module.css";
+}
+.statLg {
+  composes: statLg from "../shared.module.css";
+}
+.statXl {
+  composes: statXl from "../shared.module.css";
+}
 
-.progressTrack { composes: progressTrack from "../shared.module.css"; }
-.progressFill { composes: progressFill from "../shared.module.css"; }
-.progressLabel { composes: progressLabel from "../shared.module.css"; }
+.progressTrack {
+  composes: progressTrack from "../shared.module.css";
+}
+.progressFill {
+  composes: progressFill from "../shared.module.css";
+}
+.progressLabel {
+  composes: progressLabel from "../shared.module.css";
+}
 
-.emptyState { composes: emptyState from "../shared.module.css"; }
-.emptyTitle { composes: emptyTitle from "../shared.module.css"; }
-.emptyBody { composes: emptyBody from "../shared.module.css"; }
-.emptyAction { composes: emptyAction from "../shared.module.css"; }
+.emptyState {
+  composes: emptyState from "../shared.module.css";
+}
+.emptyTitle {
+  composes: emptyTitle from "../shared.module.css";
+}
+.emptyBody {
+  composes: emptyBody from "../shared.module.css";
+}
+.emptyAction {
+  composes: emptyAction from "../shared.module.css";
+}
 
-.checkCircle { composes: checkCircle from "../shared.module.css"; }
+.checkCircle {
+  composes: checkCircle from "../shared.module.css";
+}
 
-.formStack { composes: formStack from "../shared.module.css"; }
-.formTextarea { composes: formTextarea from "../shared.module.css"; }
-.formTextareaLg { composes: formTextareaLg from "../shared.module.css"; }
-.formError { composes: formError from "../shared.module.css"; }
-.formErrorTop { composes: formErrorTop from "../shared.module.css"; }
-.formHint { composes: formHint from "../shared.module.css"; }
-.formActions { composes: formActions from "../shared.module.css"; }
+.formStack {
+  composes: formStack from "../shared.module.css";
+}
+.formTextarea {
+  composes: formTextarea from "../shared.module.css";
+}
+.formTextareaLg {
+  composes: formTextareaLg from "../shared.module.css";
+}
+.formError {
+  composes: formError from "../shared.module.css";
+}
+.formErrorTop {
+  composes: formErrorTop from "../shared.module.css";
+}
+.formHint {
+  composes: formHint from "../shared.module.css";
+}
+.formActions {
+  composes: formActions from "../shared.module.css";
+}
 
-.listStack { composes: listStack from "../shared.module.css"; }
-.meta { composes: meta from "../shared.module.css"; }
-.metaSm { composes: metaSm from "../shared.module.css"; }
+.listStack {
+  composes: listStack from "../shared.module.css";
+}
+.meta {
+  composes: meta from "../shared.module.css";
+}
+.metaSm {
+  composes: metaSm from "../shared.module.css";
+}
 
-.docList { composes: docList from "../shared.module.css"; }
-.docRow { composes: docRow from "../shared.module.css"; }
-.docTitle { composes: docTitle from "../shared.module.css"; }
-.docMeta { composes: docMeta from "../shared.module.css"; }
-.docLink { composes: docLink from "../shared.module.css"; }
+.docList {
+  composes: docList from "../shared.module.css";
+}
+.docRow {
+  composes: docRow from "../shared.module.css";
+}
+.docTitle {
+  composes: docTitle from "../shared.module.css";
+}
+.docMeta {
+  composes: docMeta from "../shared.module.css";
+}
+.docLink {
+  composes: docLink from "../shared.module.css";
+}
 
-.msgList { composes: msgList from "../shared.module.css"; }
-.msgRow { composes: msgRow from "../shared.module.css"; }
-.msgRowEnd { composes: msgRowEnd from "../shared.module.css"; }
-.msgBubbleAccent { composes: msgBubbleAccent from "../shared.module.css"; }
-.msgBubbleNeutral { composes: msgBubbleNeutral from "../shared.module.css"; }
-.msgMeta { composes: msgMeta from "../shared.module.css"; }
-.msgRead { composes: msgRead from "../shared.module.css"; }
-.composeForm { composes: composeForm from "../shared.module.css"; }
-.composeRow { composes: composeRow from "../shared.module.css"; }
-.composeTextarea { composes: composeTextarea from "../shared.module.css"; }
-.sendBtn { composes: sendBtn from "../shared.module.css"; }
-.unreadDot { composes: unreadDot from "../shared.module.css"; }
-.backLink { composes: backLink from "../shared.module.css"; }
+.msgList {
+  composes: msgList from "../shared.module.css";
+}
+.msgRow {
+  composes: msgRow from "../shared.module.css";
+}
+.msgRowEnd {
+  composes: msgRowEnd from "../shared.module.css";
+}
+.msgBubbleAccent {
+  composes: msgBubbleAccent from "../shared.module.css";
+}
+.msgBubbleNeutral {
+  composes: msgBubbleNeutral from "../shared.module.css";
+}
+.msgMeta {
+  composes: msgMeta from "../shared.module.css";
+}
+.msgRead {
+  composes: msgRead from "../shared.module.css";
+}
+.composeForm {
+  composes: composeForm from "../shared.module.css";
+}
+.composeRow {
+  composes: composeRow from "../shared.module.css";
+}
+.composeTextarea {
+  composes: composeTextarea from "../shared.module.css";
+}
+.sendBtn {
+  composes: sendBtn from "../shared.module.css";
+}
+.unreadDot {
+  composes: unreadDot from "../shared.module.css";
+}
+.backLink {
+  composes: backLink from "../shared.module.css";
+}
 
-.errorPage { composes: errorPage from "../shared.module.css"; }
-.errorTitle { composes: errorTitle from "../shared.module.css"; }
-.errorBody { composes: errorBody from "../shared.module.css"; }
-.errorActions { composes: errorActions from "../shared.module.css"; }
-.errorRetry { composes: errorRetry from "../shared.module.css"; }
-.errorHome { composes: errorHome from "../shared.module.css"; }
+.errorPage {
+  composes: errorPage from "../shared.module.css";
+}
+.errorTitle {
+  composes: errorTitle from "../shared.module.css";
+}
+.errorBody {
+  composes: errorBody from "../shared.module.css";
+}
+.errorActions {
+  composes: errorActions from "../shared.module.css";
+}
+.errorRetry {
+  composes: errorRetry from "../shared.module.css";
+}
+.errorHome {
+  composes: errorHome from "../shared.module.css";
+}
 
 /* Aliases kept for existing call sites */
-.retryBtn { composes: btnText from "../shared.module.css"; }
+.retryBtn {
+  composes: btnText from "../shared.module.css";
+}
 
 /* ─── Portal shell ───────────────────────────────────────────────────────── */
 
@@ -168,7 +328,9 @@
   text-decoration: none;
   font-size: 0.82rem;
   letter-spacing: 0.01em;
-  transition: background var(--transition-fast), color var(--transition-fast);
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
   position: relative;
 }
 
@@ -226,8 +388,13 @@
 }
 
 @keyframes navDotPulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.35; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
 }
 
 /* Bottom nav: small dot positioned over the icon */

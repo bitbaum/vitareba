@@ -132,7 +132,7 @@ describe("single events", () => {
   it("takes a plain event as busy", () => {
     const busy = parseBusyIntervals(
       event(["DTSTART:20260615T090000Z", "DTEND:20260615T100000Z"]),
-      WINDOW
+      WINDOW,
     );
     expect(busy).toHaveLength(1);
     expect(busy[0].start.toISOString()).toBe("2026-06-15T09:00:00.000Z");
@@ -140,19 +140,13 @@ describe("single events", () => {
   });
 
   it("uses DURATION when there is no DTEND", () => {
-    const busy = parseBusyIntervals(
-      event(["DTSTART:20260615T090000Z", "DURATION:PT45M"]),
-      WINDOW
-    );
+    const busy = parseBusyIntervals(event(["DTSTART:20260615T090000Z", "DURATION:PT45M"]), WINDOW);
     expect(busy[0].end.toISOString()).toBe("2026-06-15T09:45:00.000Z");
   });
 
   it("blocks a whole day for an all-day event", () => {
     // "Away on the 14th" means the 14th, not a zero-length moment at midnight.
-    const busy = parseBusyIntervals(
-      event(["DTSTART;VALUE=DATE:20260615"]),
-      WINDOW
-    );
+    const busy = parseBusyIntervals(event(["DTSTART;VALUE=DATE:20260615"]), WINDOW);
     expect(busy).toHaveLength(1);
     expect(busy[0].end.getTime() - busy[0].start.getTime()).toBe(DAY_MS);
   });
@@ -162,7 +156,7 @@ describe("single events", () => {
     // Treating it as busy would block a week for nothing.
     const busy = parseBusyIntervals(
       event(["DTSTART:20260615T090000Z", "DTEND:20260615T100000Z", "TRANSP:TRANSPARENT"]),
-      WINDOW
+      WINDOW,
     );
     expect(busy).toHaveLength(0);
   });
@@ -170,7 +164,7 @@ describe("single events", () => {
   it("ignores a cancelled event", () => {
     const busy = parseBusyIntervals(
       event(["DTSTART:20260615T090000Z", "DTEND:20260615T100000Z", "STATUS:CANCELLED"]),
-      WINDOW
+      WINDOW,
     );
     expect(busy).toHaveLength(0);
   });
@@ -180,7 +174,7 @@ describe("single events", () => {
     // morning. Containment instead of overlap loses exactly these.
     const busy = parseBusyIntervals(
       event(["DTSTART:20260531T230000Z", "DTEND:20260601T030000Z"]),
-      WINDOW
+      WINDOW,
     );
     expect(busy).toHaveLength(1);
   });
@@ -188,7 +182,7 @@ describe("single events", () => {
   it("drops an event entirely outside the window", () => {
     const busy = parseBusyIntervals(
       event(["DTSTART:20250101T090000Z", "DTEND:20250101T100000Z"]),
-      WINDOW
+      WINDOW,
     );
     expect(busy).toHaveLength(0);
   });
@@ -205,7 +199,7 @@ describe("single events", () => {
         "DTSTART:20260615T090000Z",
         "DTEND:20260615T100000Z",
         "END:VEVENT",
-      ].join("\r\n")
+      ].join("\r\n"),
     );
     expect(parseBusyIntervals(doc, WINDOW)).toHaveLength(1);
   });
@@ -219,12 +213,8 @@ describe("single events", () => {
 describe("recurrence", () => {
   it("expands a weekly meeting across the window", () => {
     const busy = parseBusyIntervals(
-      event([
-        "DTSTART:20260601T090000Z",
-        "DTEND:20260601T100000Z",
-        "RRULE:FREQ=WEEKLY;COUNT=5",
-      ]),
-      WINDOW
+      event(["DTSTART:20260601T090000Z", "DTEND:20260601T100000Z", "RRULE:FREQ=WEEKLY;COUNT=5"]),
+      WINDOW,
     );
     expect(busy).toHaveLength(5);
   });
@@ -236,7 +226,7 @@ describe("recurrence", () => {
         "DTEND:20260601T100000Z",
         "RRULE:FREQ=WEEKLY;UNTIL=20260615T000000Z",
       ]),
-      WINDOW
+      WINDOW,
     );
     expect(busy).toHaveLength(2);
   });
@@ -248,7 +238,7 @@ describe("recurrence", () => {
         "DTEND:20260601T100000Z",
         "RRULE:FREQ=WEEKLY;INTERVAL=2;COUNT=3",
       ]),
-      WINDOW
+      WINDOW,
     );
     expect(busy).toHaveLength(3);
     expect(busy[1].start.getTime() - busy[0].start.getTime()).toBe(14 * DAY_MS);
@@ -261,7 +251,7 @@ describe("recurrence", () => {
         "DTEND:20260601T093000Z",
         "RRULE:FREQ=WEEKLY;BYDAY=MO,WE;COUNT=4",
       ]),
-      WINDOW
+      WINDOW,
     );
     expect(busy).toHaveLength(4);
   });
@@ -276,7 +266,7 @@ describe("recurrence", () => {
         "RRULE:FREQ=WEEKLY;COUNT=3",
         "EXDATE:20260608T090000Z",
       ]),
-      WINDOW
+      WINDOW,
     );
     expect(busy).toHaveLength(2);
   });
@@ -285,7 +275,7 @@ describe("recurrence", () => {
     // FREQ=DAILY with no COUNT and no UNTIL is genuinely infinite.
     const busy = parseBusyIntervals(
       event(["DTSTART:20260601T090000Z", "DTEND:20260601T093000Z", "RRULE:FREQ=DAILY"]),
-      WINDOW
+      WINDOW,
     );
     expect(busy.length).toBeGreaterThan(30);
     expect(busy.length).toBeLessThan(400);
@@ -297,7 +287,7 @@ describe("recurrence", () => {
       new Date("2026-06-01T09:00:00Z"),
       rule,
       WINDOW.windowStart,
-      WINDOW.windowEnd
+      WINDOW.windowEnd,
     );
     expect(out.length).toBeLessThanOrEqual(1);
   });
@@ -373,7 +363,7 @@ describe("what the parser deliberately does not keep", () => {
         "DESCRIPTION:Very private",
         "ATTENDEE:mailto:someone@example.com",
       ]),
-      WINDOW
+      WINDOW,
     );
     expect(busy).toHaveLength(1);
     expect(Object.keys(busy[0]).sort()).toEqual(["end", "start"]);

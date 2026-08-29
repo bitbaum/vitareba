@@ -33,13 +33,13 @@ export function RegulationNotice({
       ? "It needs your explicit consent first (GDPR Art. 9). One click below records it — timestamped, withdrawable any time in your profile."
       : reason === "no_patient_consent"
         ? "This patient has not given explicit consent for AI processing of their health data (GDPR Art. 9). Consent is theirs alone to give — you cannot record it on their behalf. They can switch it on in their profile privacy settings."
-      : reason === "ai_not_configured"
-        ? "No AI provider is connected yet — a technical gap, not a legal one. Once the clinic sets one up, this runs (with a warning if the provider lacks an EU data-processing agreement)."
-        : reason === "device_warning"
-          ? "This output is NOT a diagnosis and this software is NOT a CE-marked medical device (MDR 2017/745 / Swiss MedDO). It surfaces hypotheses; clinical judgment and full responsibility remain with the clinician reading it."
-          : reason === "dpa_warning"
-            ? "This ran on an AI provider without a signed EU/CH data-processing agreement. Your health data crossed that line with your consent — GDPR Ch. V and Schrems II are why this warning exists."
-            : block.statusDetail;
+        : reason === "ai_not_configured"
+          ? "No AI provider is connected yet — a technical gap, not a legal one. Once the clinic sets one up, this runs (with a warning if the provider lacks an EU data-processing agreement)."
+          : reason === "device_warning"
+            ? "This output is NOT a diagnosis and this software is NOT a CE-marked medical device (MDR 2017/745 / Swiss MedDO). It surfaces hypotheses; clinical judgment and full responsibility remain with the clinician reading it."
+            : reason === "dpa_warning"
+              ? "This ran on an AI provider without a signed EU/CH data-processing agreement. Your health data crossed that line with your consent — GDPR Ch. V and Schrems II are why this warning exists."
+              : block.statusDetail;
 
   return (
     <div className={shared.legalNotice} role="note">

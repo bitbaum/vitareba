@@ -14,7 +14,9 @@ export type CronCheckinReminderResult =
   | { success: true; sent: number; skipped: number }
   | { success: false; error: "Database unavailable" };
 
-export async function runCronCheckinReminder(now: Date = new Date()): Promise<CronCheckinReminderResult> {
+export async function runCronCheckinReminder(
+  now: Date = new Date(),
+): Promise<CronCheckinReminderResult> {
   const today = formatDateISO(now);
   const historyStart = new Date(now);
   historyStart.setDate(historyStart.getDate() - CHECKIN_HISTORY_DAYS);
@@ -46,7 +48,7 @@ export async function runCronCheckinReminder(now: Date = new Date()): Promise<Cr
       patient.email &&
       !patient.profile?.reminderOptOut &&
       patient.assessmentResults.length > 0 &&
-      !patient.dailyCheckins.some((checkin) => checkin.date === today)
+      !patient.dailyCheckins.some((checkin) => checkin.date === today),
   );
   const skipped = patients.length - sendable.length;
 
@@ -60,12 +62,13 @@ export async function runCronCheckinReminder(now: Date = new Date()): Promise<Cr
       const clinician = await clinicianLabelFor(patient.id);
       return sendEmail({
         to: patient.email!,
-        subject: atRiskStreak >= 2
-          ? `🔥 ${atRiskStreak}-day streak — log today to keep it alive`
-          : "How are you doing today?",
+        subject:
+          atRiskStreak >= 2
+            ? `🔥 ${atRiskStreak}-day streak — log today to keep it alive`
+            : "How are you doing today?",
         html: checkinReminderEmail({ patientName, portalUrl: PORTAL_URL, atRiskStreak, clinician }),
       });
-    })
+    }),
   );
 
   let sent = 0;

@@ -10,17 +10,25 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
  * disowning them.
  */
 
-const { mockRequireSession, mockUserFindFirst, mockUserFindMany, mockCareTeamFindMany, mockCareTeamFindFirst, mockBookingFindFirst, mockInsert, mockDelete } =
-  vi.hoisted(() => ({
-    mockRequireSession: vi.fn(),
-    mockUserFindFirst: vi.fn(),
-    mockUserFindMany: vi.fn(),
-    mockCareTeamFindMany: vi.fn(),
-    mockCareTeamFindFirst: vi.fn(),
-    mockBookingFindFirst: vi.fn(),
-    mockInsert: vi.fn(),
-    mockDelete: vi.fn(),
-  }));
+const {
+  mockRequireSession,
+  mockUserFindFirst,
+  mockUserFindMany,
+  mockCareTeamFindMany,
+  mockCareTeamFindFirst,
+  mockBookingFindFirst,
+  mockInsert,
+  mockDelete,
+} = vi.hoisted(() => ({
+  mockRequireSession: vi.fn(),
+  mockUserFindFirst: vi.fn(),
+  mockUserFindMany: vi.fn(),
+  mockCareTeamFindMany: vi.fn(),
+  mockCareTeamFindFirst: vi.fn(),
+  mockBookingFindFirst: vi.fn(),
+  mockInsert: vi.fn(),
+  mockDelete: vi.fn(),
+}));
 
 vi.mock("@/lib/auth/guards", () => ({ requireSession: mockRequireSession }));
 

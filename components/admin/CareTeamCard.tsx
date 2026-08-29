@@ -56,7 +56,11 @@ export function CareTeamCard({
             return (
               <div key={c.id} className={styles.careTeamRow}>
                 <span className={styles.cellName}>{c.name ?? "Clinician"}</span>
-                {isMember && <span className={styles.badge} data-signal="active">Treating</span>}
+                {isMember && (
+                  <span className={styles.badge} data-signal="active">
+                    Treating
+                  </span>
+                )}
                 <button
                   type="button"
                   // Add and remove are not the same weight of action — both

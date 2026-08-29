@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { mockRequireAdmin, mockFindMany } = vi.hoisted(() => ({
   mockRequireAdmin: vi.fn(),
-  mockFindMany:     vi.fn(),
+  mockFindMany: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/guards", () => ({ requireAdmin: mockRequireAdmin }));
@@ -20,11 +20,15 @@ vi.mock("@/lib/db", () => ({
 import { GET } from "./route";
 
 const ADMIN_SESSION = { session: { user: { id: "admin-1", role: "admin" } }, error: null };
-const UNAUTH        = { session: null, error: new Response(null, { status: 401 }) };
+const UNAUTH = { session: null, error: new Response(null, { status: 401 }) };
 
 const PATIENT = {
-  id: "patient-1", name: "Alice", email: "alice@example.com", role: "patient",
-  profile: null, assessmentResults: [],
+  id: "patient-1",
+  name: "Alice",
+  email: "alice@example.com",
+  role: "patient",
+  profile: null,
+  assessmentResults: [],
 };
 
 describe("GET /api/admin/patients", () => {

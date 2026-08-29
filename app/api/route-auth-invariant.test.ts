@@ -66,9 +66,7 @@ describe("middleware/route auth alignment", () => {
   for (const file of files) {
     const route = routePath(file);
     const src = readFileSync(file, "utf8");
-    const isPublic = PUBLIC_API_PREFIXES.some(
-      (p) => route === p || route.startsWith(p + "/"),
-    );
+    const isPublic = PUBLIC_API_PREFIXES.some((p) => route === p || route.startsWith(p + "/"));
 
     if (isPublic) {
       it(`${route} (public prefix) authenticates itself`, () => {

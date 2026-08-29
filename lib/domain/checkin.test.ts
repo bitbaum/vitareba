@@ -50,8 +50,11 @@ describe("computeStreak", () => {
   it("counts only from the most recent contiguous block", () => {
     // 3 days, gap, then 2 more — streak should be 3
     const checkins = [
-      { date: d(0) }, { date: d(-1) }, { date: d(-2) },
-      { date: d(-5) }, { date: d(-6) },
+      { date: d(0) },
+      { date: d(-1) },
+      { date: d(-2) },
+      { date: d(-5) },
+      { date: d(-6) },
     ];
     expect(computeStreak(checkins, TODAY)).toBe(3);
   });
@@ -106,13 +109,9 @@ describe("computeStreak", () => {
 describe("checkinSchema (future-date guard)", () => {
   const validMetrics = { sleep: 3, energy: 3, mood: 3, focus: 3, stress: 3 };
   const today = new Date().toISOString().slice(0, 10);
-  const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000)
-    .toISOString()
-    .slice(0, 10);
+  const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
   const farFuture = "2099-12-31";
-  const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
-    .toISOString()
-    .slice(0, 10);
+  const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 
   it("accepts today", () => {
     expect(checkinSchema.safeParse({ date: today, ...validMetrics }).success).toBe(true);

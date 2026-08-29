@@ -59,10 +59,18 @@
 }
 
 /* Shared form primitives — single definition in app/forms.module.css */
-.field  { composes: field from "../../forms.module.css"; }
-.label  { composes: label from "../../forms.module.css"; }
-.input  { composes: input from "../../forms.module.css"; }
-.submit { composes: submit from "../../forms.module.css"; }
+.field {
+  composes: field from "../../forms.module.css";
+}
+.label {
+  composes: label from "../../forms.module.css";
+}
+.input {
+  composes: input from "../../forms.module.css";
+}
+.submit {
+  composes: submit from "../../forms.module.css";
+}
 
 .error {
   font-size: 0.75rem;

@@ -26,7 +26,7 @@ function labelFor(
   actorId: string,
   kind: string,
   role: string | null,
-  names: Map<string, ActorInfo>
+  names: Map<string, ActorInfo>,
 ): string {
   if (kind === "ai") return COMPANY.assistantName;
   const name = names.get(actorId)?.name;
@@ -57,7 +57,7 @@ export async function serializeThread(
   thread: Thread,
   messages: Message[],
   viewerId: string,
-  row: { patientId: string }
+  row: { patientId: string },
 ): Promise<ThreadDetail> {
   const humanIds = [
     ...new Set([
@@ -70,9 +70,7 @@ export async function serializeThread(
 
   // Unread comes from threadkit so the badge and the message list can never
   // disagree about what "unread" means.
-  const unreadIds = new Set(
-    unreadMessages(thread, viewerId, messages).map((m) => m.id)
-  );
+  const unreadIds = new Set(unreadMessages(thread, viewerId, messages).map((m) => m.id));
 
   const participants: ThreadParticipantView[] = thread.participants.map((p) => ({
     actorId: p.actorId,
@@ -88,7 +86,7 @@ export async function serializeThread(
   // Everyone still in the thread who is not the viewer — the audience a "read"
   // tick is a claim about.
   const otherActiveHumans = thread.participants.filter(
-    (p) => p.actorId !== viewerId && p.kind === "human" && !p.leftAt
+    (p) => p.actorId !== viewerId && p.kind === "human" && !p.leftAt,
   ).length;
 
   const rows: MessageRow[] = messages.map((m) => {
@@ -143,12 +141,12 @@ export async function serializeThreadList(
     row: { id: string; patientId: string; subject: string; createdAt: Date; lastMessageAt: Date };
     latest: Message | undefined;
     unread: number;
-  }[]
+  }[],
 ): Promise<ThreadListItem[]> {
   const humanIds = [
     ...new Set([
       ...entries.flatMap((e) =>
-        e.thread.participants.filter((p) => p.kind === "human").map((p) => p.actorId)
+        e.thread.participants.filter((p) => p.kind === "human").map((p) => p.actorId),
       ),
       // The patient a thread is about may not be a participant on legacy rows.
       ...entries.map((e) => e.row.patientId),
@@ -158,9 +156,7 @@ export async function serializeThreadList(
 
   return entries.map((e) => {
     const byActor = new Map(e.thread.participants.map((p) => [p.actorId, p]));
-    const clinician = e.thread.participants.find(
-      (p) => p.role === PARTICIPANT_ROLE.clinician
-    );
+    const clinician = e.thread.participants.find((p) => p.role === PARTICIPANT_ROLE.clinician);
     const author = e.latest ? byActor.get(e.latest.authorId) : undefined;
 
     return {
@@ -184,7 +180,7 @@ export async function serializeThreadList(
               e.latest.authorId,
               author?.kind ?? "human",
               author?.role ?? null,
-              names
+              names,
             ),
             createdAt: e.latest.createdAt.toISOString(),
           }

@@ -47,7 +47,10 @@ function MessagesView() {
     setLoadError(false);
     try {
       const res = await fetch("/api/messages");
-      if (!res.ok) { setLoadError(true); return; }
+      if (!res.ok) {
+        setLoadError(true);
+        return;
+      }
       const data = await res.json();
       setThreads(data.data ?? []);
     } catch {
@@ -57,7 +60,9 @@ function MessagesView() {
     }
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   useEffect(() => {
     (async () => {
@@ -116,10 +121,18 @@ function MessagesView() {
   return (
     <div>
       <PortalPageHeader
-        title={<>My <em>Messages</em></>}
+        title={
+          <>
+            My <em>Messages</em>
+          </>
+        }
         subtitle={`Direct line to ${selectedName ?? UNKNOWN_CLINICIAN} — secure and asynchronous`}
         action={
-          <button type="button" className={styles.btnPrimary} onClick={() => setShowForm(!showForm)}>
+          <button
+            type="button"
+            className={styles.btnPrimary}
+            onClick={() => setShowForm(!showForm)}
+          >
             + New message
           </button>
         }
@@ -129,13 +142,15 @@ function MessagesView() {
         <div className={`${styles.card} ${styles.cardGap}`}>
           <p className={styles.cardTitle}>New message</p>
           <p className={styles.formHint}>
-            Goes straight to {selectedName ?? UNKNOWN_RECIPIENT}, who reads and responds
-            personally — typically within 24 hours on weekdays.
+            Goes straight to {selectedName ?? UNKNOWN_RECIPIENT}, who reads and responds personally
+            — typically within 24 hours on weekdays.
           </p>
           <form onSubmit={handleSubmit} className={styles.formStack}>
             {recipients.length > 0 && (
               <div className={authStyles.field}>
-                <label className={authStyles.label} htmlFor="recipient">To</label>
+                <label className={authStyles.label} htmlFor="recipient">
+                  To
+                </label>
                 <select
                   id="recipient"
                   className={authStyles.input}
@@ -143,7 +158,9 @@ function MessagesView() {
                   onChange={(e) => setRecipientId(e.target.value)}
                 >
                   {recipients.map((c) => (
-                    <option key={c.id} value={c.id}>{c.name ?? "Clinician"}</option>
+                    <option key={c.id} value={c.id}>
+                      {c.name ?? "Clinician"}
+                    </option>
                   ))}
                 </select>
                 {!hasCareTeam && (
@@ -154,11 +171,23 @@ function MessagesView() {
               </div>
             )}
             <div className={authStyles.field}>
-              <label className={authStyles.label} htmlFor="subject">Subject</label>
-              <input id="subject" className={authStyles.input} value={subject} onChange={(e) => setSubject(e.target.value)} required maxLength={MESSAGE_SUBJECT_MAX_LENGTH} placeholder="e.g. Question about my medication protocol" />
+              <label className={authStyles.label} htmlFor="subject">
+                Subject
+              </label>
+              <input
+                id="subject"
+                className={authStyles.input}
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                required
+                maxLength={MESSAGE_SUBJECT_MAX_LENGTH}
+                placeholder="e.g. Question about my medication protocol"
+              />
             </div>
             <div className={authStyles.field}>
-              <label className={authStyles.label} htmlFor="body">Message</label>
+              <label className={authStyles.label} htmlFor="body">
+                Message
+              </label>
               <textarea
                 id="body"
                 className={styles.formTextarea}
@@ -171,7 +200,11 @@ function MessagesView() {
             </div>
             {submitError && <p className={styles.formError}>{submitError}</p>}
             <div className={styles.formActions}>
-              <button type="submit" className={`${styles.btnPrimary} ${styles.formActionPrimary}`} disabled={submitting}>
+              <button
+                type="submit"
+                className={`${styles.btnPrimary} ${styles.formActionPrimary}`}
+                disabled={submitting}
+              >
                 {submitting ? "Sending…" : "Send message"}
               </button>
               <button type="button" onClick={() => setShowForm(false)} className={styles.cancelBtn}>
@@ -197,12 +230,12 @@ function MessagesView() {
         <div className={styles.card}>
           <div className={styles.emptyState}>
             <p className={styles.emptyTitle}>No messages yet</p>
-            <p>This is your direct line to your care team at {COMPANY.shortName}. Use it for questions between sessions, updates on how you&apos;re responding to your programme, or anything you&apos;d want your clinician to know.</p>
-            <button
-              type="button"
-              className={styles.emptyAction}
-              onClick={() => setShowForm(true)}
-            >
+            <p>
+              This is your direct line to your care team at {COMPANY.shortName}. Use it for
+              questions between sessions, updates on how you&apos;re responding to your programme,
+              or anything you&apos;d want your clinician to know.
+            </p>
+            <button type="button" className={styles.emptyAction} onClick={() => setShowForm(true)}>
               Send a message →
             </button>
           </div>
@@ -215,27 +248,29 @@ function MessagesView() {
             // not inferred from a flag on the message that anyone could clear.
             const isUnread = t.unread > 0;
             return (
-              <Link key={t.id} href={`${PORTAL_ROUTES.messages}/${t.id}`} className={msgStyles.threadLink}>
+              <Link
+                key={t.id}
+                href={`${PORTAL_ROUTES.messages}/${t.id}`}
+                className={msgStyles.threadLink}
+              >
                 <div className={styles.card}>
                   <div className={msgStyles.threadRow}>
                     <div className={msgStyles.threadSubjectRow}>
-                      {isUnread && <span className={styles.unreadDot} role="img" aria-label="Unread" />}
-                      <p className={`${msgStyles.threadSubject}${isUnread ? ` ${msgStyles.threadSubjectUnread}` : ""}`}>
+                      {isUnread && (
+                        <span className={styles.unreadDot} role="img" aria-label="Unread" />
+                      )}
+                      <p
+                        className={`${msgStyles.threadSubject}${isUnread ? ` ${msgStyles.threadSubjectUnread}` : ""}`}
+                      >
                         {t.subject}
                       </p>
                     </div>
-                    <p className={msgStyles.threadDate}>
-                      {formatDateNumeric(t.lastMessageAt)}
-                    </p>
+                    <p className={msgStyles.threadDate}>{formatDateNumeric(t.lastMessageAt)}</p>
                   </div>
                   {t.clinician?.name && (
                     <p className={msgStyles.threadRecipient}>with {t.clinician.name}</p>
                   )}
-                  {lastMsg && (
-                    <p className={msgStyles.threadPreview}>
-                      {lastMsg.body}
-                    </p>
-                  )}
+                  {lastMsg && <p className={msgStyles.threadPreview}>{lastMsg.body}</p>}
                 </div>
               </Link>
             );

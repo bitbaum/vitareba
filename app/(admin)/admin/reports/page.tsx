@@ -2,16 +2,38 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { patientScope } from "@/lib/domain/patients";
-import { users, assessmentResults, bookings, dailyCheckins, assessmentLeads } from "@/lib/db/schema";
+import {
+  users,
+  assessmentResults,
+  bookings,
+  dailyCheckins,
+  assessmentLeads,
+} from "@/lib/db/schema";
 import { eq, desc, gte, isNotNull, count } from "drizzle-orm";
 import styles from "../../admin.module.css";
 import { computePatientSignal } from "@/lib/domain/signals";
-import { SIGNAL_LABELS, SIGNAL_COLORS, SIGNAL_SORT_ORDER, SIGNAL_CHECKIN_WINDOW_DAYS, type PatientSignal } from "@/lib/config/admin";
+import {
+  SIGNAL_LABELS,
+  SIGNAL_COLORS,
+  SIGNAL_SORT_ORDER,
+  SIGNAL_CHECKIN_WINDOW_DAYS,
+  type PatientSignal,
+} from "@/lib/config/admin";
 import { USER_ROLE } from "@/lib/config/auth";
 import { PORTAL_ROUTES, ADMIN_ROUTES } from "@/lib/config/routes";
-import { PROGRAMME_CONFIG, PHASE_CONFIG, type ProgrammeKey, type PhaseKey } from "@/lib/config/programmes";
+import {
+  PROGRAMME_CONFIG,
+  PHASE_CONFIG,
+  type ProgrammeKey,
+  type PhaseKey,
+} from "@/lib/config/programmes";
 import { VERDICT_TIERS, getVerdictName, scoreClass } from "@/lib/assessment/data";
-import { formatDateShort, formatDateISO, formatDateMonthDay, displayName } from "@/lib/utils/format";
+import {
+  formatDateShort,
+  formatDateISO,
+  formatDateMonthDay,
+  displayName,
+} from "@/lib/utils/format";
 import { CHECKIN_METRICS, CHECKIN_DISPLAY_DAYS, type MetricKey } from "@/lib/config/portal";
 import { CheckinTrendChart } from "@/components/portal/CheckinTrendChart";
 import Link from "next/link";
@@ -91,8 +113,15 @@ export default async function ReportsPage() {
     }),
     // Inflection Edge conversion funnel
     Promise.all([
-      db.select({ value: count() }).from(assessmentLeads).then((r) => r[0]?.value ?? 0),
-      db.select({ value: count() }).from(assessmentLeads).where(isNotNull(assessmentLeads.convertedUserId)).then((r) => r[0]?.value ?? 0),
+      db
+        .select({ value: count() })
+        .from(assessmentLeads)
+        .then((r) => r[0]?.value ?? 0),
+      db
+        .select({ value: count() })
+        .from(assessmentLeads)
+        .where(isNotNull(assessmentLeads.convertedUserId))
+        .then((r) => r[0]?.value ?? 0),
     ]),
     // Programme assignments
     db.query.programmeAssignments.findMany(),
@@ -109,7 +138,10 @@ export default async function ReportsPage() {
     const { signal, reason } = computePatientSignal({
       registeredAt: p.createdAt,
       checkins: p.dailyCheckins,
-      assessments: p.assessmentResults.map((a) => ({ overallScore: a.overallScore, completedAt: a.completedAt })),
+      assessments: p.assessmentResults.map((a) => ({
+        overallScore: a.overallScore,
+        completedAt: a.completedAt,
+      })),
       bookings: p.bookings,
       now,
     });
@@ -127,7 +159,9 @@ export default async function ReportsPage() {
       : null;
   const tierCounts = VERDICT_TIERS.map((tier) => ({
     name: tier.name,
-    count: allAssessments.filter((a) => a.overallScore >= tier.minScore && a.overallScore <= tier.maxScore).length,
+    count: allAssessments.filter(
+      (a) => a.overallScore >= tier.minScore && a.overallScore <= tier.maxScore,
+    ).length,
     color: tier.color,
   }));
 
@@ -139,7 +173,10 @@ export default async function ReportsPage() {
   // Population wellness trend — group by date and compute per-metric averages
   const byDate = new Map<string, { sums: Record<MetricKey, number>; count: number }>();
   for (const c of populationCheckins) {
-    const entry = byDate.get(c.date) ?? { sums: { sleep: 0, energy: 0, mood: 0, focus: 0, stress: 0 }, count: 0 };
+    const entry = byDate.get(c.date) ?? {
+      sums: { sleep: 0, energy: 0, mood: 0, focus: 0, stress: 0 },
+      count: 0,
+    };
     for (const { key } of CHECKIN_METRICS) {
       entry.sums[key] += c[key];
     }
@@ -150,12 +187,13 @@ export default async function ReportsPage() {
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([date, { sums, count }]) => ({
       date: formatDateMonthDay(date + "T00:00:00"),
-      ...Object.fromEntries(CHECKIN_METRICS.map(({ key }) => [key, Math.round((sums[key] / count) * 10) / 10])) as Record<MetricKey, number>,
+      ...(Object.fromEntries(
+        CHECKIN_METRICS.map(({ key }) => [key, Math.round((sums[key] / count) * 10) / 10]),
+      ) as Record<MetricKey, number>),
     }));
 
   // Conversion funnel rate
-  const conversionRate =
-    totalLeads > 0 ? Math.round((convertedLeads / totalLeads) * 100) : null;
+  const conversionRate = totalLeads > 0 ? Math.round((convertedLeads / totalLeads) * 100) : null;
 
   // Programme distribution
   const programmeCounts: Partial<Record<ProgrammeKey, number>> = {};
@@ -166,7 +204,7 @@ export default async function ReportsPage() {
   }
 
   const SIGNAL_ORDER = (Object.keys(SIGNAL_SORT_ORDER) as PatientSignal[]).sort(
-    (a, b) => SIGNAL_SORT_ORDER[a] - SIGNAL_SORT_ORDER[b]
+    (a, b) => SIGNAL_SORT_ORDER[a] - SIGNAL_SORT_ORDER[b],
   );
 
   return (
@@ -221,7 +259,6 @@ export default async function ReportsPage() {
       )}
 
       <div className={styles.twoColGrid}>
-
         {/* ── Signal breakdown ─────────────────────────────────────────── */}
         <div className={styles.card}>
           <p className={styles.sectionLabel}>Patient signals</p>
@@ -262,12 +299,17 @@ export default async function ReportsPage() {
           ) : (
             <div className={styles.barRow}>
               {tierCounts.map((tier) => {
-                const pct = allAssessments.length > 0 ? Math.round((tier.count / allAssessments.length) * 100) : 0;
+                const pct =
+                  allAssessments.length > 0
+                    ? Math.round((tier.count / allAssessments.length) * 100)
+                    : 0;
                 return (
                   <div key={tier.name}>
                     <div className={styles.barRowItem}>
                       <span className={styles.tierName}>{tier.name}</span>
-                      <span className={styles.tierCount}>{tier.count} ({pct}%)</span>
+                      <span className={styles.tierCount}>
+                        {tier.count} ({pct}%)
+                      </span>
                     </div>
                     <div className={styles.barTrack}>
                       <div
@@ -280,7 +322,9 @@ export default async function ReportsPage() {
               })}
               {avgScore !== null && (
                 <p className={styles.avgNote}>
-                  Population average: <strong className={scoreClass(avgScore)}>{avgScore}/100</strong> — {getVerdictName(avgScore)}
+                  Population average:{" "}
+                  <strong className={scoreClass(avgScore)}>{avgScore}/100</strong> —{" "}
+                  {getVerdictName(avgScore)}
                 </p>
               )}
             </div>
@@ -298,8 +342,12 @@ export default async function ReportsPage() {
                 <tbody>
                   {Object.entries(programmeCounts).map(([key, count]) => (
                     <tr key={key}>
-                      <td className={styles.tableCellName}>{PROGRAMME_CONFIG[key as ProgrammeKey]?.label ?? key}</td>
-                      <td className={styles.tableCellCount}>{count} patient{count !== 1 ? "s" : ""}</td>
+                      <td className={styles.tableCellName}>
+                        {PROGRAMME_CONFIG[key as ProgrammeKey]?.label ?? key}
+                      </td>
+                      <td className={styles.tableCellCount}>
+                        {count} patient{count !== 1 ? "s" : ""}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -309,7 +357,9 @@ export default async function ReportsPage() {
                 <tbody>
                   {Object.entries(phaseCounts).map(([key, count]) => (
                     <tr key={key}>
-                      <td className={styles.tableCellName}>{PHASE_CONFIG[key as PhaseKey]?.label ?? key}</td>
+                      <td className={styles.tableCellName}>
+                        {PHASE_CONFIG[key as PhaseKey]?.label ?? key}
+                      </td>
                       <td className={styles.tableCellCount}>{count}</td>
                     </tr>
                   ))}
@@ -338,34 +388,34 @@ export default async function ReportsPage() {
                 {allAssessments.slice(0, 10).map((a) => (
                   <tr key={a.id}>
                     <td>
-                      <Link href={`${ADMIN_ROUTES.patients}/${a.userId}`} className={styles.adherenceLink}>
+                      <Link
+                        href={`${ADMIN_ROUTES.patients}/${a.userId}`}
+                        className={styles.adherenceLink}
+                      >
                         {displayName(a.userName, a.userEmail)}
                       </Link>
                     </td>
                     <td>
-                      <span
-                        className={`${styles.scoreChipLarge} ${scoreClass(a.overallScore)}`}
-                      >
+                      <span className={`${styles.scoreChipLarge} ${scoreClass(a.overallScore)}`}>
                         {a.overallScore}
                       </span>
                     </td>
                     <td className={styles.tableTierCell}>{getVerdictName(a.overallScore)}</td>
-                    <td className={styles.tableDateCell}>
-                      {formatDateShort(a.completedAt)}
-                    </td>
+                    <td className={styles.tableDateCell}>{formatDateShort(a.completedAt)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           )}
         </div>
-
       </div>
 
       {/* ── Population wellness trend ────────────────────────────────────── */}
       {populationTrend.length > 1 && (
         <div className={`${styles.card} ${styles.adherenceSection}`}>
-          <p className={styles.sectionLabel}>Population wellness trend — last 30 days (avg across all patients)</p>
+          <p className={styles.sectionLabel}>
+            Population wellness trend — last 30 days (avg across all patients)
+          </p>
           <CheckinTrendChart data={populationTrend} />
         </div>
       )}
@@ -373,7 +423,9 @@ export default async function ReportsPage() {
       {/* ── Per-patient check-in adherence ───────────────────────────────── */}
       {patients.length > 0 && (
         <div className={`${styles.card} ${styles.adherenceSection}`}>
-          <p className={styles.sectionLabel}>Check-in adherence — last {SIGNAL_CHECKIN_WINDOW_DAYS} days</p>
+          <p className={styles.sectionLabel}>
+            Check-in adherence — last {SIGNAL_CHECKIN_WINDOW_DAYS} days
+          </p>
           <table className={styles.adherenceTable}>
             <thead>
               <tr>
@@ -390,12 +442,15 @@ export default async function ReportsPage() {
                   weekCheckins === 0
                     ? "var(--danger)"
                     : weekCheckins < 4
-                    ? "var(--warn)"
-                    : "var(--teal)";
+                      ? "var(--warn)"
+                      : "var(--teal)";
                 return (
                   <tr key={id} className={styles.adherenceRow}>
                     <td className={styles.adherenceName}>
-                      <Link href={`${ADMIN_ROUTES.patients}/${id}`} className={styles.adherenceLink}>
+                      <Link
+                        href={`${ADMIN_ROUTES.patients}/${id}`}
+                        className={styles.adherenceLink}
+                      >
                         {name}
                       </Link>
                     </td>
@@ -422,7 +477,6 @@ export default async function ReportsPage() {
           </table>
         </div>
       )}
-
     </div>
   );
 }

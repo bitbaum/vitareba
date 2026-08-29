@@ -122,7 +122,7 @@ describe("POST /api/messages", () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
-      })
+      }),
     );
   };
 
@@ -173,7 +173,7 @@ describe("POST /api/messages", () => {
     const OTHER_PATIENT = "b1eebc99-9c0b-4ef8-bb6d-6bb9bd380a22";
     const res = await create(
       { subject: "Focus", body: "Hello", patientId: OTHER_PATIENT },
-      ADMIN_SESSION
+      ADMIN_SESSION,
     );
     expect(res.status).toBe(201);
 
@@ -185,7 +185,7 @@ describe("POST /api/messages", () => {
   it("posts the opening message as the author", async () => {
     await create({ subject: "Focus concerns", body: "Hello" });
     expect(mockPostMessage).toHaveBeenCalledWith(
-      expect.objectContaining({ actorId: "patient-1", body: "Hello" })
+      expect.objectContaining({ actorId: "patient-1", body: "Hello" }),
     );
   });
 

@@ -41,14 +41,14 @@ describe("document storage discipline", () => {
 
   it("no component links a document's raw storage URL", () => {
     const offenders = FILES.filter((file) =>
-      /href=\{[^}]*\.fileUrl[^}]*\}/.test(stripComments(readFileSync(file, "utf8")))
+      /href=\{[^}]*\.fileUrl[^}]*\}/.test(stripComments(readFileSync(file, "utf8"))),
     );
     expect(offenders, "link via documentFileUrl(doc.id) instead of doc.fileUrl").toEqual([]);
   });
 
   it("no source builds an /uploads/ link by hand", () => {
     const offenders = FILES.filter((file) =>
-      /["'`]\/uploads\//.test(stripComments(readFileSync(file, "utf8")))
+      /["'`]\/uploads\//.test(stripComments(readFileSync(file, "utf8"))),
     );
     expect(offenders, "storage paths belong to lib/storage.ts").toEqual([]);
   });

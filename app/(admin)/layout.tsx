@@ -58,7 +58,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       .where(
         bookingsSeenAt
           ? and(inArray(bookings.status, activeStatuses), gt(bookings.createdAt, bookingsSeenAt))
-          : inArray(bookings.status, activeStatuses)
+          : inArray(bookings.status, activeStatuses),
       )
       .then((r) => r[0]?.value ?? 0),
     db
@@ -66,8 +66,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       .from(profiles)
       .where(
         patientsSeenAt
-          ? and(inArray(profiles.lastKnownSignal, urgentSignals), gt(profiles.lastKnownSignalAt, patientsSeenAt))
-          : inArray(profiles.lastKnownSignal, urgentSignals)
+          ? and(
+              inArray(profiles.lastKnownSignal, urgentSignals),
+              gt(profiles.lastKnownSignalAt, patientsSeenAt),
+            )
+          : inArray(profiles.lastKnownSignal, urgentSignals),
       )
       .then((r) => r[0]?.value ?? 0),
   ]);

@@ -8,7 +8,9 @@
 
 /* ─── Hero card (dark, assessment result or CTA) ────────────────────────── */
 
-.heroCard { composes: darkBanner from "../../shared.module.css"; }
+.heroCard {
+  composes: darkBanner from "../../shared.module.css";
+}
 
 .heroCardHead {
   display: flex;
@@ -17,9 +19,15 @@
   margin-bottom: 0.75rem;
 }
 
-.heroEyebrow { composes: darkBannerEyebrow from "../../shared.module.css"; }
-.heroTitle { composes: darkBannerTitle from "../../shared.module.css"; }
-.heroBody { composes: darkBannerBody from "../../shared.module.css"; }
+.heroEyebrow {
+  composes: darkBannerEyebrow from "../../shared.module.css";
+}
+.heroTitle {
+  composes: darkBannerTitle from "../../shared.module.css";
+}
+.heroBody {
+  composes: darkBannerBody from "../../shared.module.css";
+}
 
 .heroLinks {
   margin-top: 1.25rem;
@@ -28,8 +36,12 @@
   flex-wrap: wrap;
 }
 
-.heroLinkPrimary { composes: darkBannerLinkPrimary from "../../shared.module.css"; }
-.heroLinkMuted { composes: darkBannerLinkMuted from "../../shared.module.css"; }
+.heroLinkPrimary {
+  composes: darkBannerLinkPrimary from "../../shared.module.css";
+}
+.heroLinkMuted {
+  composes: darkBannerLinkMuted from "../../shared.module.css";
+}
 
 /* ─── Score block ────────────────────────────────────────────────────────── */
 
@@ -431,7 +443,9 @@
   border-radius: var(--radius-xl);
   text-decoration: none;
   min-height: 44px;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
 .nextStep {

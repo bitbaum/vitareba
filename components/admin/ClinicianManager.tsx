@@ -30,7 +30,10 @@ export function ClinicianManager() {
     setLoadError(false);
     try {
       const res = await fetch("/api/admin/clinicians");
-      if (!res.ok) { setLoadError(true); return; }
+      if (!res.ok) {
+        setLoadError(true);
+        return;
+      }
       const body = await res.json();
       setRows(body.data ?? []);
     } catch {
@@ -38,7 +41,9 @@ export function ClinicianManager() {
     }
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
@@ -102,7 +107,9 @@ export function ClinicianManager() {
       {loadError && (
         <div className={styles.emptyState}>
           Could not load clinicians.{" "}
-          <button type="button" onClick={load} className={shared.btnText}>Retry</button>
+          <button type="button" onClick={load} className={shared.btnText}>
+            Retry
+          </button>
         </div>
       )}
       {rows !== null && rows.length === 0 && (
@@ -117,7 +124,9 @@ export function ClinicianManager() {
               <div className={styles.rowBetween}>
                 <div>
                   <p className={styles.cardTitle}>{c.name ?? c.email}</p>
-                  <p className={shared.metaSm}>{c.email} · joined {formatDateLong(c.createdAt)}</p>
+                  <p className={shared.metaSm}>
+                    {c.email} · joined {formatDateLong(c.createdAt)}
+                  </p>
                 </div>
                 <button
                   type="button"

@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { mockRequireSession, mockFindMany } = vi.hoisted(() => ({
   mockRequireSession: vi.fn(),
-  mockFindMany:       vi.fn(),
+  mockFindMany: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/guards", () => ({ requireSession: mockRequireSession }));
@@ -15,9 +15,16 @@ vi.mock("@/lib/db", () => ({
 import { GET } from "./route";
 
 const PATIENT_SESSION = { session: { user: { id: "patient-1", role: "patient" } }, error: null };
-const UNAUTH          = { session: null, error: new Response(null, { status: 401 }) };
+const UNAUTH = { session: null, error: new Response(null, { status: 401 }) };
 
-const GOAL = { id: "goal-1", patientId: "patient-1", title: "Improve focus", baseline: 40, current: 55, target: 80 };
+const GOAL = {
+  id: "goal-1",
+  patientId: "patient-1",
+  title: "Improve focus",
+  baseline: 40,
+  current: 55,
+  target: 80,
+};
 
 describe("GET /api/goals", () => {
   beforeEach(() => {

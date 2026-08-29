@@ -7,10 +7,7 @@ import Logo from "@/components/Logo";
 import styles from "./Footer.module.css";
 
 export default async function Footer() {
-  const [tFooter, tNav] = await Promise.all([
-    getTranslations("footer"),
-    getTranslations("nav"),
-  ]);
+  const [tFooter, tNav] = await Promise.all([getTranslations("footer"), getTranslations("nav")]);
 
   return (
     <footer className={styles.footer}>

@@ -7,8 +7,7 @@ import { users } from "@/lib/db/schema";
 import { USER_ROLE } from "@/lib/config/auth";
 
 export async function requireSession(): Promise<
-  | { session: Session; error: null }
-  | { session: null; error: NextResponse }
+  { session: Session; error: null } | { session: null; error: NextResponse }
 > {
   const session = await auth();
   if (!session) {
@@ -36,8 +35,7 @@ export function requireCron(req: Request): NextResponse | null {
 }
 
 export async function requireAdmin(): Promise<
-  | { session: Session; error: null }
-  | { session: null; error: NextResponse }
+  { session: Session; error: null } | { session: null; error: NextResponse }
 > {
   const session = await auth();
   if (!session || session.user.role !== USER_ROLE.admin) {

@@ -24,10 +24,7 @@ export function NextStepCard({ step }: { step: NextStep }) {
     );
   }
   return (
-    <Link
-      href={step.href}
-      className={step.urgent ? styles.nextStepUrgent : styles.nextStep}
-    >
+    <Link href={step.href} className={step.urgent ? styles.nextStepUrgent : styles.nextStep}>
       <span>
         <span className={styles.nextStepEyebrow}>Next step</span>
         <span className={styles.nextStepLabel}>{step.label}</span>

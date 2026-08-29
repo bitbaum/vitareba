@@ -91,7 +91,10 @@ export function InlineMessageCompose({ patientId }: { patientId: string }) {
         </button>
         <button
           type="button"
-          onClick={() => { setExpanded(false); setError(""); }}
+          onClick={() => {
+            setExpanded(false);
+            setError("");
+          }}
           aria-label="Discard message and close compose form"
           className={styles.composeCancel}
         >

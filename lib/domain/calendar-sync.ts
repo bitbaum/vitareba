@@ -38,7 +38,7 @@ export type CalendarSyncResult = {
 /** Refresh one calendar. Exported so "test this link" and the cron share a path. */
 export async function syncOneCalendar(
   calendar: { id: string; clinicianId: string; label: string; icsUrl: string },
-  now = new Date()
+  now = new Date(),
 ): Promise<CalendarSyncOutcome> {
   const windowStart = new Date(now.getTime() - DAY_MS);
   const windowEnd = new Date(now.getTime() + CALENDAR_SYNC_HORIZON_DAYS * DAY_MS);
@@ -46,7 +46,13 @@ export async function syncOneCalendar(
   const fetched = await fetchCalendarText(calendar.icsUrl);
   if (!fetched.ok) {
     await recordFailure(calendar.id, fetched.error);
-    return { calendarId: calendar.id, label: calendar.label, ok: false, intervals: 0, error: fetched.error };
+    return {
+      calendarId: calendar.id,
+      label: calendar.label,
+      ok: false,
+      intervals: 0,
+      error: fetched.error,
+    };
   }
 
   let intervals: BusyInterval[];
@@ -56,7 +62,13 @@ export async function syncOneCalendar(
     const message = "That calendar could not be read.";
     console.error("[calendar-sync] parse failed:", err);
     await recordFailure(calendar.id, message);
-    return { calendarId: calendar.id, label: calendar.label, ok: false, intervals: 0, error: message };
+    return {
+      calendarId: calendar.id,
+      label: calendar.label,
+      ok: false,
+      intervals: 0,
+      error: message,
+    };
   }
 
   try {
@@ -65,7 +77,13 @@ export async function syncOneCalendar(
     console.error("[calendar-sync] store failed:", err);
     const message = "Could not store this calendar's times.";
     await recordFailure(calendar.id, message).catch(() => {});
-    return { calendarId: calendar.id, label: calendar.label, ok: false, intervals: 0, error: message };
+    return {
+      calendarId: calendar.id,
+      label: calendar.label,
+      ok: false,
+      intervals: 0,
+      error: message,
+    };
   }
 
   return { calendarId: calendar.id, label: calendar.label, ok: true, intervals: intervals.length };
@@ -82,7 +100,7 @@ async function replaceBusy(
   intervals: BusyInterval[],
   windowStart: Date,
   windowEnd: Date,
-  now: Date
+  now: Date,
 ): Promise<void> {
   await db.transaction(async (tx) => {
     await tx
@@ -91,8 +109,8 @@ async function replaceBusy(
         and(
           eq(calendarBusy.calendarId, calendar.id),
           gte(calendarBusy.endsAt, windowStart),
-          lte(calendarBusy.startsAt, windowEnd)
-        )
+          lte(calendarBusy.startsAt, windowEnd),
+        ),
       );
 
     if (intervals.length > 0) {
@@ -102,7 +120,7 @@ async function replaceBusy(
           clinicianId: calendar.clinicianId,
           startsAt: i.start,
           endsAt: i.end,
-        }))
+        })),
       );
     }
 
@@ -151,16 +169,10 @@ export async function syncAllCalendars(now = new Date()): Promise<CalendarSyncRe
  * Reads the cache only — never the network — so slot generation stays fast and
  * keeps working when a calendar host is down.
  */
-export async function getExternalBusy(
-  clinicianIds: string[],
-  from: Date
-): Promise<BusyInterval[]> {
+export async function getExternalBusy(clinicianIds: string[], from: Date): Promise<BusyInterval[]> {
   if (clinicianIds.length === 0) return [];
   const rows = await db.query.calendarBusy.findMany({
-    where: and(
-      inArray(calendarBusy.clinicianId, clinicianIds),
-      gte(calendarBusy.endsAt, from)
-    ),
+    where: and(inArray(calendarBusy.clinicianId, clinicianIds), gte(calendarBusy.endsAt, from)),
     columns: { startsAt: true, endsAt: true },
   });
   return rows.map((r) => ({ start: r.startsAt, end: r.endsAt }));

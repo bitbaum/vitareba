@@ -22,12 +22,8 @@ export default async function Addiction() {
           </div>
 
           <div>
-            <p className={styles.body}>
-              {t("body1")}
-            </p>
-            <p className={`${styles.body} ${styles.bodyMb}`}>
-              {t("body2")}
-            </p>
+            <p className={styles.body}>{t("body1")}</p>
+            <p className={`${styles.body} ${styles.bodyMb}`}>{t("body2")}</p>
 
             <div className={styles.cards}>
               {cards.map((card) => (
@@ -38,10 +34,7 @@ export default async function Addiction() {
               ))}
             </div>
 
-            <a
-              href={`mailto:${COMPANY.email}`}
-              className={styles.enquireLink}
-            >
+            <a href={`mailto:${COMPANY.email}`} className={styles.enquireLink}>
               {t("enquire")}
             </a>
           </div>

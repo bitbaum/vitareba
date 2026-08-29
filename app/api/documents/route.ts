@@ -69,8 +69,7 @@ export async function POST(req: Request) {
 
   // Same ownership rule as /api/documents/upload: only an admin may name the
   // owner — everybody else files documents against their own record.
-  const ownerId =
-    session.user.role === USER_ROLE.admin ? parsed.data.userId : session.user.id;
+  const ownerId = session.user.role === USER_ROLE.admin ? parsed.data.userId : session.user.id;
 
   let doc: typeof documents.$inferSelect;
   try {
@@ -80,14 +79,22 @@ export async function POST(req: Request) {
       .returning();
   } catch (err) {
     console.error("[api/documents] insert failed:", err);
-    return NextResponse.json({ success: false, error: "Failed to save document — please try again" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "Failed to save document — please try again" },
+      { status: 500 },
+    );
   }
 
   // Schedule the notification after the response so the work is not dropped
   // when the request lifecycle ends.
   runAfterResponse(
-    () => notifyDocumentAdded({ patientId: ownerId, uploaderId: session.user.id, title: parsed.data.title }),
-    "[api/documents] notification failed:"
+    () =>
+      notifyDocumentAdded({
+        patientId: ownerId,
+        uploaderId: session.user.id,
+        title: parsed.data.title,
+      }),
+    "[api/documents] notification failed:",
   );
 
   return NextResponse.json({ success: true, data: doc }, { status: 201 });

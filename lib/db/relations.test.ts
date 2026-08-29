@@ -26,9 +26,11 @@ const db = drizzle(new Pool({ connectionString: "postgresql://x:x@localhost:1/x"
 });
 
 // Drizzle's internal relational config: table key → { relations: {...} }
-const tablesConfig = (db as unknown as {
-  _: { schema: Record<string, { relations: Record<string, unknown> }> };
-})._.schema;
+const tablesConfig = (
+  db as unknown as {
+    _: { schema: Record<string, { relations: Record<string, unknown> }> };
+  }
+)._.schema;
 
 describe("drizzle relation integrity", () => {
   const tables = Object.entries(tablesConfig);

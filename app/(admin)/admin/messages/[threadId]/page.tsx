@@ -24,7 +24,10 @@ export default function AdminThreadPage() {
   const load = useCallback(async () => {
     try {
       const res = await fetch(`/api/messages/${threadId}`);
-      if (!res.ok) { setLoadError(true); return; }
+      if (!res.ok) {
+        setLoadError(true);
+        return;
+      }
       const data = await res.json();
       setThread(data.data);
     } catch {
@@ -32,7 +35,9 @@ export default function AdminThreadPage() {
     }
   }, [threadId]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   // Poll for new messages while the tab is focused — matches portal thread behaviour
   useEffect(() => {
@@ -42,7 +47,9 @@ export default function AdminThreadPage() {
     return () => clearInterval(interval);
   }, [load]);
 
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [thread?.messages.length]);
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [thread?.messages.length]);
 
   async function handleSend(e: React.FormEvent) {
     e.preventDefault();
@@ -55,7 +62,10 @@ export default function AdminThreadPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ body }),
       });
-      if (!res.ok) { setSendError("Failed to send. Please try again."); return; }
+      if (!res.ok) {
+        setSendError("Failed to send. Please try again.");
+        return;
+      }
       setBody("");
       load();
     } catch {
@@ -65,7 +75,8 @@ export default function AdminThreadPage() {
     }
   }
 
-  if (loadError) return <div className={styles.emptyState}>Failed to load thread. Please refresh the page.</div>;
+  if (loadError)
+    return <div className={styles.emptyState}>Failed to load thread. Please refresh the page.</div>;
   if (!thread) return <LoadingState />;
 
   return (
@@ -80,7 +91,10 @@ export default function AdminThreadPage() {
           Patient: {thread.patient.name ?? thread.patient.email}
           {thread.patient.name && ` · ${thread.patient.email}`}
           {" · "}
-          <Link href={`${ADMIN_ROUTES.patients}/${thread.patient.id}`} className={styles.threadPatientLink}>
+          <Link
+            href={`${ADMIN_ROUTES.patients}/${thread.patient.id}`}
+            className={styles.threadPatientLink}
+          >
             View profile →
           </Link>
           {thread.clinician?.name && ` · → ${thread.clinician.name}`}
@@ -124,7 +138,12 @@ export default function AdminThreadPage() {
             onChange={(e) => setBody(e.target.value)}
             maxLength={MESSAGE_BODY_MAX_LENGTH}
             placeholder="Reply to patient…"
-            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(e); } }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSend(e);
+              }
+            }}
           />
           <button type="submit" className={styles.sendBtn} disabled={sending || !body.trim()}>
             {sending ? "Sending…" : "Send"}

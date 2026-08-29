@@ -43,7 +43,9 @@ export function PasswordForm() {
       <p className={styles.cardTitle}>Change password</p>
       <form onSubmit={handlePasswordChange} className={profileStyles.pwForm}>
         <div className={authStyles.field}>
-          <label className={authStyles.label} htmlFor="currentPassword">Current password</label>
+          <label className={authStyles.label} htmlFor="currentPassword">
+            Current password
+          </label>
           <input
             id="currentPassword"
             type="password"
@@ -54,7 +56,9 @@ export function PasswordForm() {
           />
         </div>
         <div className={authStyles.field}>
-          <label className={authStyles.label} htmlFor="newPassword">New password</label>
+          <label className={authStyles.label} htmlFor="newPassword">
+            New password
+          </label>
           <input
             id="newPassword"
             type="password"

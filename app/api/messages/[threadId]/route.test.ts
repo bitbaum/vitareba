@@ -122,7 +122,7 @@ describe("POST /api/messages/[threadId]", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       }),
-      PARAMS
+      PARAMS,
     );
 
   it("refuses an unauthenticated request", async () => {

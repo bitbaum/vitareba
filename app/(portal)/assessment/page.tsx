@@ -23,7 +23,7 @@ export default function AssessmentPage() {
         router.push(PORTAL_ROUTES.assessments);
       }
     },
-    [router]
+    [router],
   );
 
   const handleClose = useCallback(() => {

@@ -131,65 +131,173 @@ export function AdminProfileEditForm({
       <p className={styles.sectionEyebrow}>Personal</p>
       <div className={styles.formGrid2}>
         <div>
-          <label className={styles.assignLabel} htmlFor="ap-name">Full name</label>
-          <input id="ap-name" className={styles.assignField} value={form.name} onChange={set("name")} maxLength={PROFILE_NAME_MAX_LENGTH} />
+          <label className={styles.assignLabel} htmlFor="ap-name">
+            Full name
+          </label>
+          <input
+            id="ap-name"
+            className={styles.assignField}
+            value={form.name}
+            onChange={set("name")}
+            maxLength={PROFILE_NAME_MAX_LENGTH}
+          />
         </div>
         <div>
-          <label className={styles.assignLabel} htmlFor="ap-dob">Date of birth</label>
-          <input id="ap-dob" className={styles.assignField} type="date" value={form.dateOfBirth} onChange={set("dateOfBirth")} maxLength={PROFILE_DOB_MAX_LENGTH} />
+          <label className={styles.assignLabel} htmlFor="ap-dob">
+            Date of birth
+          </label>
+          <input
+            id="ap-dob"
+            className={styles.assignField}
+            type="date"
+            value={form.dateOfBirth}
+            onChange={set("dateOfBirth")}
+            maxLength={PROFILE_DOB_MAX_LENGTH}
+          />
         </div>
         <div>
           {/* Recorded for reference intervals only — ferritin, testosterone,
               haemoglobin and creatinine are read against different ranges, and
               a single range mislabels real patients. */}
-          <label className={styles.assignLabel} htmlFor="ap-sex">Sex (for reference ranges)</label>
-          <select id="ap-sex" className={styles.assignField} value={form.biologicalSex} onChange={set("biologicalSex")}>
+          <label className={styles.assignLabel} htmlFor="ap-sex">
+            Sex (for reference ranges)
+          </label>
+          <select
+            id="ap-sex"
+            className={styles.assignField}
+            value={form.biologicalSex}
+            onChange={set("biologicalSex")}
+          >
             <option value="">Not recorded</option>
             {BIOLOGICAL_SEX_VALUES.map((v) => (
-              <option key={v} value={v}>{BIOLOGICAL_SEX_LABELS[v]}</option>
+              <option key={v} value={v}>
+                {BIOLOGICAL_SEX_LABELS[v]}
+              </option>
             ))}
           </select>
         </div>
         <div>
-          <label className={styles.assignLabel} htmlFor="ap-phone">Phone</label>
-          <input id="ap-phone" className={styles.assignField} type="tel" value={form.phone} onChange={set("phone")} maxLength={PROFILE_PHONE_MAX_LENGTH} placeholder="+41 79 000 00 00" />
+          <label className={styles.assignLabel} htmlFor="ap-phone">
+            Phone
+          </label>
+          <input
+            id="ap-phone"
+            className={styles.assignField}
+            type="tel"
+            value={form.phone}
+            onChange={set("phone")}
+            maxLength={PROFILE_PHONE_MAX_LENGTH}
+            placeholder="+41 79 000 00 00"
+          />
         </div>
         <div>
-          <label className={styles.assignLabel} htmlFor="ap-city">City</label>
-          <input id="ap-city" className={styles.assignField} value={form.city} onChange={set("city")} maxLength={PROFILE_CITY_MAX_LENGTH} placeholder="Zürich" />
+          <label className={styles.assignLabel} htmlFor="ap-city">
+            City
+          </label>
+          <input
+            id="ap-city"
+            className={styles.assignField}
+            value={form.city}
+            onChange={set("city")}
+            maxLength={PROFILE_CITY_MAX_LENGTH}
+            placeholder="Zürich"
+          />
         </div>
         <div>
-          <label className={styles.assignLabel} htmlFor="ap-occupation">Occupation</label>
-          <input id="ap-occupation" className={styles.assignField} value={form.occupation} onChange={set("occupation")} maxLength={PROFILE_OCCUPATION_MAX_LENGTH} placeholder="Founder, executive…" />
+          <label className={styles.assignLabel} htmlFor="ap-occupation">
+            Occupation
+          </label>
+          <input
+            id="ap-occupation"
+            className={styles.assignField}
+            value={form.occupation}
+            onChange={set("occupation")}
+            maxLength={PROFILE_OCCUPATION_MAX_LENGTH}
+            placeholder="Founder, executive…"
+          />
         </div>
         <div>
-          <label className={styles.assignLabel} htmlFor="ap-referral">Referral source</label>
-          <input id="ap-referral" className={styles.assignField} value={form.referralSource} onChange={set("referralSource")} maxLength={PROFILE_REFERRAL_SOURCE_MAX_LENGTH} placeholder="Referral, social media…" />
+          <label className={styles.assignLabel} htmlFor="ap-referral">
+            Referral source
+          </label>
+          <input
+            id="ap-referral"
+            className={styles.assignField}
+            value={form.referralSource}
+            onChange={set("referralSource")}
+            maxLength={PROFILE_REFERRAL_SOURCE_MAX_LENGTH}
+            placeholder="Referral, social media…"
+          />
         </div>
       </div>
 
       {/* Clinical */}
       <p className={styles.sectionEyebrow}>Clinical</p>
       <div>
-        <label className={styles.assignLabel} htmlFor="ap-concern">Main concern</label>
-        <textarea id="ap-concern" className={styles.assignFieldTextarea} rows={2} value={form.mainConcern} onChange={set("mainConcern")} maxLength={PATIENT_NOTE_MAX_LENGTH} />
+        <label className={styles.assignLabel} htmlFor="ap-concern">
+          Main concern
+        </label>
+        <textarea
+          id="ap-concern"
+          className={styles.assignFieldTextarea}
+          rows={2}
+          value={form.mainConcern}
+          onChange={set("mainConcern")}
+          maxLength={PATIENT_NOTE_MAX_LENGTH}
+        />
       </div>
       <div>
-        <label className={styles.assignLabel} htmlFor="ap-goals">Goals</label>
-        <textarea id="ap-goals" className={styles.assignFieldTextarea} rows={2} value={form.goals} onChange={set("goals")} maxLength={PATIENT_NOTE_MAX_LENGTH} />
+        <label className={styles.assignLabel} htmlFor="ap-goals">
+          Goals
+        </label>
+        <textarea
+          id="ap-goals"
+          className={styles.assignFieldTextarea}
+          rows={2}
+          value={form.goals}
+          onChange={set("goals")}
+          maxLength={PATIENT_NOTE_MAX_LENGTH}
+        />
       </div>
       <div>
-        <label className={styles.assignLabel} htmlFor="ap-diagnosis">Diagnosis history</label>
-        <textarea id="ap-diagnosis" className={styles.assignFieldTextarea} rows={2} value={form.diagnosisHistory} onChange={set("diagnosisHistory")} maxLength={PATIENT_NOTE_MAX_LENGTH} />
+        <label className={styles.assignLabel} htmlFor="ap-diagnosis">
+          Diagnosis history
+        </label>
+        <textarea
+          id="ap-diagnosis"
+          className={styles.assignFieldTextarea}
+          rows={2}
+          value={form.diagnosisHistory}
+          onChange={set("diagnosisHistory")}
+          maxLength={PATIENT_NOTE_MAX_LENGTH}
+        />
       </div>
       <div className={styles.formGrid2}>
         <div>
-          <label className={styles.assignLabel} htmlFor="ap-meds">Current medications</label>
-          <textarea id="ap-meds" className={styles.assignFieldTextarea} rows={2} value={form.currentMedications} onChange={set("currentMedications")} maxLength={PATIENT_NOTE_MAX_LENGTH} />
+          <label className={styles.assignLabel} htmlFor="ap-meds">
+            Current medications
+          </label>
+          <textarea
+            id="ap-meds"
+            className={styles.assignFieldTextarea}
+            rows={2}
+            value={form.currentMedications}
+            onChange={set("currentMedications")}
+            maxLength={PATIENT_NOTE_MAX_LENGTH}
+          />
         </div>
         <div>
-          <label className={styles.assignLabel} htmlFor="ap-supps">Current supplements</label>
-          <textarea id="ap-supps" className={styles.assignFieldTextarea} rows={2} value={form.currentSupplements} onChange={set("currentSupplements")} maxLength={PATIENT_NOTE_MAX_LENGTH} />
+          <label className={styles.assignLabel} htmlFor="ap-supps">
+            Current supplements
+          </label>
+          <textarea
+            id="ap-supps"
+            className={styles.assignFieldTextarea}
+            rows={2}
+            value={form.currentSupplements}
+            onChange={set("currentSupplements")}
+            maxLength={PATIENT_NOTE_MAX_LENGTH}
+          />
         </div>
       </div>
 
@@ -197,15 +305,35 @@ export function AdminProfileEditForm({
       <p className={styles.sectionEyebrow}>Lifestyle</p>
       <div className={styles.formGrid2}>
         <div>
-          <label className={styles.assignLabel} htmlFor="ap-sleep">Avg sleep (hours/night)</label>
-          <input id="ap-sleep" className={styles.assignField} type="number" min={SLEEP_HOURS_MIN} max={SLEEP_HOURS_MAX} value={form.sleepHoursAvg} onChange={set("sleepHoursAvg")} placeholder="7" />
+          <label className={styles.assignLabel} htmlFor="ap-sleep">
+            Avg sleep (hours/night)
+          </label>
+          <input
+            id="ap-sleep"
+            className={styles.assignField}
+            type="number"
+            min={SLEEP_HOURS_MIN}
+            max={SLEEP_HOURS_MAX}
+            value={form.sleepHoursAvg}
+            onChange={set("sleepHoursAvg")}
+            placeholder="7"
+          />
         </div>
         <div>
-          <label className={styles.assignLabel} htmlFor="ap-exercise">Exercise frequency</label>
-          <select id="ap-exercise" className={styles.assignField} value={form.exerciseFrequency} onChange={set("exerciseFrequency")}>
+          <label className={styles.assignLabel} htmlFor="ap-exercise">
+            Exercise frequency
+          </label>
+          <select
+            id="ap-exercise"
+            className={styles.assignField}
+            value={form.exerciseFrequency}
+            onChange={set("exerciseFrequency")}
+          >
             <option value="">Select…</option>
             {EXERCISE_FREQUENCY_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
             ))}
           </select>
         </div>
@@ -213,8 +341,18 @@ export function AdminProfileEditForm({
 
       {/* Patient notes field */}
       <div>
-        <label className={styles.assignLabel} htmlFor="ap-notes">Patient notes</label>
-        <textarea id="ap-notes" className={styles.assignFieldTextarea} rows={3} value={form.notes} onChange={set("notes")} maxLength={PATIENT_NOTE_MAX_LENGTH} placeholder="Anything the patient shared outside of the portal…" />
+        <label className={styles.assignLabel} htmlFor="ap-notes">
+          Patient notes
+        </label>
+        <textarea
+          id="ap-notes"
+          className={styles.assignFieldTextarea}
+          rows={3}
+          value={form.notes}
+          onChange={set("notes")}
+          maxLength={PATIENT_NOTE_MAX_LENGTH}
+          placeholder="Anything the patient shared outside of the portal…"
+        />
       </div>
 
       {error && <p className={styles.assignError}>{error}</p>}

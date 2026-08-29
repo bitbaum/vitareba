@@ -10,7 +10,12 @@ import { PORTAL_URL, COMPANY } from "@/lib/config/company";
 import { formatDateISO, displayName } from "@/lib/utils/format";
 import { clinicianLabelFor } from "@/lib/domain/clinician-label";
 import { USER_ROLE } from "@/lib/config/auth";
-import { CHECKIN_METRICS, DAYS_PER_WEEK, WEEKLY_DIGEST_STREAK_WINDOW_DAYS, type MetricKey } from "@/lib/config/portal";
+import {
+  CHECKIN_METRICS,
+  DAYS_PER_WEEK,
+  WEEKLY_DIGEST_STREAK_WINDOW_DAYS,
+  type MetricKey,
+} from "@/lib/config/portal";
 import { BOOKING_STATUS, BOOKING_STATUS_CONFIG } from "@/lib/config/booking-status";
 
 type WeekAvgs = Record<MetricKey, number> | null;
@@ -73,10 +78,7 @@ export async function runCronWeeklyDigest(now: Date = new Date()): Promise<CronW
         .select()
         .from(dailyCheckins)
         .where(
-          and(
-            inArray(dailyCheckins.userId, patientIds),
-            gte(dailyCheckins.date, streakWindowISO)
-          )
+          and(inArray(dailyCheckins.userId, patientIds), gte(dailyCheckins.date, streakWindowISO)),
         );
     } catch (err) {
       console.error("[cron/weekly-digest] checkins DB read failed:", err);
@@ -105,7 +107,7 @@ export async function runCronWeeklyDigest(now: Date = new Date()): Promise<CronW
       const recentCheckins = checkinsByPatient.get(patient.id) ?? [];
       const thisWeekCheckins = recentCheckins.filter((checkin) => checkin.date >= thisWeekISO);
       const prevWeekCheckins = recentCheckins.filter(
-        (checkin) => checkin.date >= prevWeekISO && checkin.date < thisWeekISO
+        (checkin) => checkin.date >= prevWeekISO && checkin.date < thisWeekISO,
       );
 
       const latestAssessment = patient.assessmentResults[0];
@@ -118,7 +120,12 @@ export async function runCronWeeklyDigest(now: Date = new Date()): Promise<CronW
           current: goal.current as number,
           target: goal.target as number,
         }))
-        .filter((goal) => goal.pct !== null) as { title: string; pct: number; current: number; target: number }[];
+        .filter((goal) => goal.pct !== null) as {
+        title: string;
+        pct: number;
+        current: number;
+        target: number;
+      }[];
 
       const streak = computeStreak(recentCheckins, now);
       const html = weeklyDigestEmail({
@@ -141,7 +148,7 @@ export async function runCronWeeklyDigest(now: Date = new Date()): Promise<CronW
         subject: `Your ${COMPANY.shortName} weekly summary`,
         html,
       });
-    })
+    }),
   );
 
   let sent = 0;

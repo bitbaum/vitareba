@@ -27,7 +27,7 @@ vi.mock("@/lib/db", () => ({
   db: {
     query: {
       programmeAssignments: { findFirst: mockAssignmentFindFirst },
-      users:                 { findFirst: mockUserFindFirst },
+      users: { findFirst: mockUserFindFirst },
     },
     update: mockUpdate,
     insert: mockInsert,
@@ -47,13 +47,20 @@ import { GET, PATCH } from "./route";
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
-const ADMIN_SESSION = { session: { user: { id: "admin-1", role: "admin", email: "admin@example.com" } }, error: null };
-const UNAUTH        = { session: null, error: new Response(null, { status: 401 }) };
+const ADMIN_SESSION = {
+  session: { user: { id: "admin-1", role: "admin", email: "admin@example.com" } },
+  error: null,
+};
+const UNAUTH = { session: null, error: new Response(null, { status: 401 }) };
 
 const ASSIGNMENT = {
-  id: "assign-1", patientId: "patient-1",
-  programme: "edge_diagnostic", phase: "intake",
-  startDate: null, notes: null, assignedBy: "admin-1",
+  id: "assign-1",
+  patientId: "patient-1",
+  programme: "edge_diagnostic",
+  phase: "intake",
+  startDate: null,
+  notes: null,
+  assignedBy: "admin-1",
   createdAt: new Date("2026-05-07T00:00:00.000Z"),
   updatedAt: new Date("2026-05-07T00:00:00.000Z"),
 };
@@ -151,11 +158,14 @@ describe("PATCH /api/admin/patients/[id]/programme", () => {
 
   it("returns 400 for an invalid programme value", async () => {
     mockRequireAdmin.mockResolvedValue(ADMIN_SESSION);
-    const res = await PATCH(new Request("https://example.com", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ programme: "invalid_programme", phase: "intake" }),
-    }), PARAMS);
+    const res = await PATCH(
+      new Request("https://example.com", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ programme: "invalid_programme", phase: "intake" }),
+      }),
+      PARAMS,
+    );
     expect(res.status).toBe(400);
   });
 
@@ -171,11 +181,14 @@ describe("PATCH /api/admin/patients/[id]/programme", () => {
     mockAssignmentFindFirst.mockResolvedValue(ASSIGNMENT); // existing → update path
     setupUpdate([{ ...ASSIGNMENT, phase: "active" }]);
 
-    const res = await PATCH(new Request("https://example.com", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ programme: "edge_diagnostic", phase: "active" }),
-    }), PARAMS);
+    const res = await PATCH(
+      new Request("https://example.com", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ programme: "edge_diagnostic", phase: "active" }),
+      }),
+      PARAMS,
+    );
     expect(res.status).toBe(200);
     expect(mockRunAfterResponse).not.toHaveBeenCalled();
   });
@@ -194,7 +207,7 @@ describe("PATCH /api/admin/patients/[id]/programme", () => {
       expect.objectContaining({
         to: "alice@example.com",
         subject: expect.stringContaining("Edge Diagnostic"),
-      })
+      }),
     );
   });
 

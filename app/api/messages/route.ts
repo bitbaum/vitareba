@@ -11,11 +11,7 @@ import { USER_ROLE } from "@/lib/config/auth";
 import { PARTICIPANT_ROLE } from "@/lib/config/messages";
 import { runAfterResponse } from "@/lib/utils/post-response";
 import { serviceUnavailable, badRequest } from "@/lib/utils/api-response";
-import {
-  addParticipant,
-  listThreadsForActor,
-  postMessage,
-} from "@/lib/domain/messages";
+import { addParticipant, listThreadsForActor, postMessage } from "@/lib/domain/messages";
 import { serializeThreadList } from "@/lib/domain/messages-view";
 import { notifyThreadParticipants } from "@/lib/domain/message-notifications";
 import {
@@ -138,13 +134,13 @@ export async function POST(req: Request) {
     console.error("[api/messages] thread creation failed:", err);
     return NextResponse.json(
       { success: false, error: "Failed to send message — please try again" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
   runAfterResponse(
     () => notifyThreadParticipants(thread.id, actorId),
-    "[api/messages] notification failed:"
+    "[api/messages] notification failed:",
   );
 
   return NextResponse.json({ success: true, data: thread }, { status: 201 });

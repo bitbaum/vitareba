@@ -49,9 +49,7 @@ describe("runCronCheckinReminder", () => {
         email: "bob@example.com",
         profile: { reminderOptOut: false },
         assessmentResults: [{ id: "assessment-2" }],
-        dailyCheckins: [
-          { date: "2026-05-03", sleep: 4, energy: 4, mood: 4, focus: 4, stress: 2 },
-        ],
+        dailyCheckins: [{ date: "2026-05-03", sleep: 4, energy: 4, mood: 4, focus: 4, stress: 2 }],
       },
     ]);
     mockSendEmail.mockRejectedValue(new Error("smtp down"));
@@ -68,7 +66,7 @@ describe("runCronCheckinReminder", () => {
       expect.objectContaining({
         to: "alice@example.com",
         subject: "🔥 2-day streak — log today to keep it alive",
-      })
+      }),
     );
   });
 });

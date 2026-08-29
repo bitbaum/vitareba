@@ -37,7 +37,7 @@ interface AssessmentSectionProps {
 
 function getLowestDimension(scores: Record<string, number>) {
   return DIMENSIONS.reduce((min, dim) =>
-    (scores[dim.id] ?? 0) < (scores[min.id] ?? 0) ? dim : min
+    (scores[dim.id] ?? 0) < (scores[min.id] ?? 0) ? dim : min,
   );
 }
 
@@ -123,11 +123,7 @@ export function AssessmentSection({
               {(() => {
                 const s =
                   BOOKING_STATUS_CONFIG[latestBooking.status] ?? BOOKING_STATUS_CONFIG.pending;
-                return (
-                  <span className={`${shared.pill} ${s.badgeClass}`}>
-                    {s.label}
-                  </span>
-                );
+                return <span className={`${shared.pill} ${s.badgeClass}`}>{s.label}</span>;
               })()}
               {latestBooking.scheduledAt ? (
                 <p className={styles.bookingDate}>
@@ -158,7 +154,9 @@ export function AssessmentSection({
 
       {/* Messages row */}
       {threadCount > 0 && (
-        <div className={`${styles.messagesRow}${unreadMessageCount > 0 ? ` ${styles.messagesRowUnread}` : ""}`}>
+        <div
+          className={`${styles.messagesRow}${unreadMessageCount > 0 ? ` ${styles.messagesRowUnread}` : ""}`}
+        >
           <div>
             <p className={shared.cardTitle}>Messages</p>
             <p className={styles.messagesBody}>

@@ -45,7 +45,7 @@ export async function listClinicians(): Promise<ClinicianRow[]> {
  */
 export async function grantClinicianByEmail(
   email: string,
-  grantedBy: string
+  grantedBy: string,
 ): Promise<ClinicianActionResult> {
   const user = await db.query.users.findFirst({
     where: eq(users.email, email.toLowerCase().trim()),

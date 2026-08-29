@@ -1,6 +1,10 @@
 /// <reference types="vitest/globals" />
 import { computePatientSignal, wellnessAvg, sparkLevel } from "./signals";
-import { NEW_PATIENT_GRACE_DAYS, NO_CHECKIN_CRITICAL_DAYS, SCORE_DROP_CRITICAL } from "@/lib/config/admin";
+import {
+  NEW_PATIENT_GRACE_DAYS,
+  NO_CHECKIN_CRITICAL_DAYS,
+  SCORE_DROP_CRITICAL,
+} from "@/lib/config/admin";
 import { formatDateISO } from "@/lib/utils/format";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -54,12 +58,16 @@ describe("wellnessAvg", () => {
 
   it("stress is inverted: high stress (5) drags the score down", () => {
     // sleep=5, energy=5, mood=5, focus=5, stress=5 → (5+5+5+5+(6-5))/5 = 21/5 = 4.2
-    expect(wellnessAvg({ date: D, sleep: 5, energy: 5, mood: 5, focus: 5, stress: 5 })).toBeCloseTo(4.2);
+    expect(wellnessAvg({ date: D, sleep: 5, energy: 5, mood: 5, focus: 5, stress: 5 })).toBeCloseTo(
+      4.2,
+    );
   });
 
   it("computes a mixed-value average correctly", () => {
     // (4+3+2+5+(6-2))/5 = 18/5 = 3.6
-    expect(wellnessAvg({ date: D, sleep: 4, energy: 3, mood: 2, focus: 5, stress: 2 })).toBeCloseTo(3.6);
+    expect(wellnessAvg({ date: D, sleep: 4, energy: 3, mood: 2, focus: 5, stress: 2 })).toBeCloseTo(
+      3.6,
+    );
   });
 });
 
@@ -143,8 +151,8 @@ describe("computePatientSignal", () => {
       registeredAt: daysAgo(30),
       checkins: [checkin(0, 3)],
       assessments: [
-        LOW_ASSESSMENT,   // latest — dropped
-        GOOD_ASSESSMENT,  // previous — was high
+        LOW_ASSESSMENT, // latest — dropped
+        GOOD_ASSESSMENT, // previous — was high
       ],
       bookings: [{ id: "b1", status: "confirmed" as const, createdAt: daysAgo(5) }],
       now: NOW,
@@ -329,7 +337,7 @@ describe("computePatientSignal", () => {
       checkins: [checkin(0, 3)],
       assessments: [GOOD_ASSESSMENT],
       bookings: [
-        { id: "b2", status: "attended" as const, createdAt: daysAgo(5) },  // recent
+        { id: "b2", status: "attended" as const, createdAt: daysAgo(5) }, // recent
         { id: "b1", status: "attended" as const, createdAt: daysAgo(60) }, // old
       ],
       now: NOW,

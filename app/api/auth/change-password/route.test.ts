@@ -43,8 +43,11 @@ import { POST } from "./route";
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
-const SESSION = { session: { user: { id: "user-1", role: "patient", email: "alice@example.com" } }, error: null };
-const UNAUTH  = { session: null, error: new Response(null, { status: 401 }) };
+const SESSION = {
+  session: { user: { id: "user-1", role: "patient", email: "alice@example.com" } },
+  error: null,
+};
+const UNAUTH = { session: null, error: new Response(null, { status: 401 }) };
 
 const USER_WITH_PASSWORD = {
   password: "$2b$12$hashedcurrentpassword",
@@ -97,20 +100,24 @@ describe("POST /api/auth/change-password", () => {
   });
 
   it("returns 400 when body is missing required fields", async () => {
-    const res = await POST(new Request("https://example.com/api/auth/change-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ currentPassword: "OldPassword1!" }), // newPassword missing
-    }));
+    const res = await POST(
+      new Request("https://example.com/api/auth/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPassword: "OldPassword1!" }), // newPassword missing
+      }),
+    );
     expect(res.status).toBe(400);
   });
 
   it("returns 400 when newPassword is shorter than the minimum", async () => {
-    const res = await POST(new Request("https://example.com/api/auth/change-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ currentPassword: "OldPassword1!", newPassword: "short" }),
-    }));
+    const res = await POST(
+      new Request("https://example.com/api/auth/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPassword: "OldPassword1!", newPassword: "short" }),
+      }),
+    );
     expect(res.status).toBe(400);
   });
 

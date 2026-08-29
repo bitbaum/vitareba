@@ -43,7 +43,10 @@ export async function POST(req: Request) {
     // Closed intake is enforced HERE, at the moment of choosing — never by
     // hiding the clinician from the roster (an existing patient must still be
     // able to find their own doctor in the same list).
-    const eligible = await canPatientChooseClinician(guard.session.user.id, parsed.data.clinicianId);
+    const eligible = await canPatientChooseClinician(
+      guard.session.user.id,
+      parsed.data.clinicianId,
+    );
     if (!eligible.ok) return badRequest(eligible.error);
 
     const result = await addCareTeamMember(parsed.data.clinicianId, guard.session.user.id);

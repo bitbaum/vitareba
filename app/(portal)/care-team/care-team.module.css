@@ -11,11 +11,25 @@
   gap: 0.75rem;
 }
 
-.clinicianCard { composes: clinicianCard from "../bookings/bookings.module.css"; cursor: default; align-items: flex-start; }
-.clinicianCardClosed { composes: clinicianCardClosed from "../bookings/bookings.module.css"; }
-.clinicianAvatar { composes: clinicianAvatar from "../bookings/bookings.module.css"; margin-top: 0.15rem; }
-.clinicianText { composes: clinicianText from "../bookings/bookings.module.css"; }
-.clinicianName { composes: clinicianName from "../bookings/bookings.module.css"; font-size: 0.95rem; }
+.clinicianCard {
+  composes: clinicianCard from "../bookings/bookings.module.css";
+  cursor: default;
+  align-items: flex-start;
+}
+.clinicianCardClosed {
+  composes: clinicianCardClosed from "../bookings/bookings.module.css";
+}
+.clinicianAvatar {
+  composes: clinicianAvatar from "../bookings/bookings.module.css";
+  margin-top: 0.15rem;
+}
+.clinicianText {
+  composes: clinicianText from "../bookings/bookings.module.css";
+}
+.clinicianName {
+  composes: clinicianName from "../bookings/bookings.module.css";
+  font-size: 0.95rem;
+}
 
 .clinicianNameLink {
   color: inherit;
@@ -28,9 +42,15 @@
   text-decoration: underline;
   outline: none;
 }
-.clinicianMeta { composes: clinicianMeta from "../bookings/bookings.module.css"; }
-.clinicianBadge { composes: clinicianBadge from "../bookings/bookings.module.css"; }
-.clinicianBadgeWarn { composes: clinicianBadgeWarn from "../bookings/bookings.module.css"; }
+.clinicianMeta {
+  composes: clinicianMeta from "../bookings/bookings.module.css";
+}
+.clinicianBadge {
+  composes: clinicianBadge from "../bookings/bookings.module.css";
+}
+.clinicianBadgeWarn {
+  composes: clinicianBadgeWarn from "../bookings/bookings.module.css";
+}
 
 .clinicianBody {
   display: flex;

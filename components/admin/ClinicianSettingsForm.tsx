@@ -47,7 +47,10 @@ export function ClinicianSettingsForm() {
     setLoadError(false);
     try {
       const res = await fetch("/api/clinician/profile");
-      if (!res.ok) { setLoadError(true); return; }
+      if (!res.ok) {
+        setLoadError(true);
+        return;
+      }
       const body = await res.json();
       setData(body.data);
     } catch {
@@ -57,14 +60,22 @@ export function ClinicianSettingsForm() {
     }
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   function addSpecialty() {
     const value = specialtyDraft.trim();
     if (!data || !value) return;
     if (data.specialties.length >= CLINICIAN_SPECIALTIES_MAX_COUNT) return;
-    if (data.specialties.includes(value)) { setSpecialtyDraft(""); return; }
-    setData({ ...data, specialties: [...data.specialties, value.slice(0, CLINICIAN_SPECIALTY_MAX_LENGTH)] });
+    if (data.specialties.includes(value)) {
+      setSpecialtyDraft("");
+      return;
+    }
+    setData({
+      ...data,
+      specialties: [...data.specialties, value.slice(0, CLINICIAN_SPECIALTY_MAX_LENGTH)],
+    });
     setSpecialtyDraft("");
   }
 
@@ -114,7 +125,9 @@ export function ClinicianSettingsForm() {
     return (
       <div className={styles.emptyState}>
         Could not load your settings.{" "}
-        <button type="button" onClick={load} className={shared.btnText}>Retry</button>
+        <button type="button" onClick={load} className={shared.btnText}>
+          Retry
+        </button>
       </div>
     );
   }
@@ -125,11 +138,14 @@ export function ClinicianSettingsForm() {
         <p className={styles.cardTitle}>Who patients see</p>
         {data.usingDefaults && (
           <p className={shared.formHint}>
-            You haven&apos;t set a bio yet — patients viewing your Care Team profile see your name only, until you save one here.
+            You haven&apos;t set a bio yet — patients viewing your Care Team profile see your name
+            only, until you save one here.
           </p>
         )}
         <div className={forms.field}>
-          <label className={forms.label} htmlFor="title">Title</label>
+          <label className={forms.label} htmlFor="title">
+            Title
+          </label>
           <input
             id="title"
             className={forms.input}
@@ -140,7 +156,9 @@ export function ClinicianSettingsForm() {
           />
         </div>
         <div className={forms.field}>
-          <label className={forms.label} htmlFor="bio">Bio</label>
+          <label className={forms.label} htmlFor="bio">
+            Bio
+          </label>
           <textarea
             id="bio"
             className={shared.formTextareaLg}
@@ -151,12 +169,19 @@ export function ClinicianSettingsForm() {
           />
         </div>
         <div className={forms.field}>
-          <label className={forms.label} htmlFor="specialty-draft">Specialties</label>
+          <label className={forms.label} htmlFor="specialty-draft">
+            Specialties
+          </label>
           <div className="tags">
             {data.specialties.map((s) => (
               <span key={s} className="tag">
                 {s}{" "}
-                <button type="button" onClick={() => removeSpecialty(s)} aria-label={`Remove ${s}`} className={shared.btnText}>
+                <button
+                  type="button"
+                  onClick={() => removeSpecialty(s)}
+                  aria-label={`Remove ${s}`}
+                  className={shared.btnText}
+                >
                   ×
                 </button>
               </span>
@@ -169,13 +194,18 @@ export function ClinicianSettingsForm() {
               value={specialtyDraft}
               onChange={(e) => setSpecialtyDraft(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === ",") { e.preventDefault(); addSpecialty(); }
+                if (e.key === "Enter" || e.key === ",") {
+                  e.preventDefault();
+                  addSpecialty();
+                }
               }}
               maxLength={CLINICIAN_SPECIALTY_MAX_LENGTH}
               placeholder="ADHD, metabolic psychiatry…"
               disabled={data.specialties.length >= CLINICIAN_SPECIALTIES_MAX_COUNT}
             />
-            <button type="button" className={shared.btnSecondary} onClick={addSpecialty}>Add</button>
+            <button type="button" className={shared.btnSecondary} onClick={addSpecialty}>
+              Add
+            </button>
           </div>
         </div>
       </div>
@@ -184,39 +214,88 @@ export function ClinicianSettingsForm() {
         <p className={styles.cardTitle}>Working hours</p>
         {data.usingDefaults && (
           <p className={shared.formHint}>
-            You&apos;re currently using the clinic&apos;s default hours. Set your real hours below — this is what patients are actually offered.
+            You&apos;re currently using the clinic&apos;s default hours. Set your real hours below —
+            this is what patients are actually offered.
           </p>
         )}
-        <WeeklyHoursEditor value={data.weeklyHours} onChange={(weeklyHours) => setData({ ...data, weeklyHours })} />
+        <WeeklyHoursEditor
+          value={data.weeklyHours}
+          onChange={(weeklyHours) => setData({ ...data, weeklyHours })}
+        />
       </div>
 
       <div className={styles.cardMb}>
         <p className={styles.cardTitle}>Booking rules</p>
         <div className={styles.hoursGrid}>
           <div className={forms.field}>
-            <label className={forms.label} htmlFor="slotMinutes">Appointment length (minutes)</label>
-            <input id="slotMinutes" type="number" min={5} max={240} className={forms.input}
-              value={data.slotMinutes} onChange={(e) => setData({ ...data, slotMinutes: Number(e.target.value) })} />
+            <label className={forms.label} htmlFor="slotMinutes">
+              Appointment length (minutes)
+            </label>
+            <input
+              id="slotMinutes"
+              type="number"
+              min={5}
+              max={240}
+              className={forms.input}
+              value={data.slotMinutes}
+              onChange={(e) => setData({ ...data, slotMinutes: Number(e.target.value) })}
+            />
           </div>
           <div className={forms.field}>
-            <label className={forms.label} htmlFor="bufferMinutes">Buffer after each appointment (minutes)</label>
-            <input id="bufferMinutes" type="number" min={0} max={120} className={forms.input}
-              value={data.bufferMinutes} onChange={(e) => setData({ ...data, bufferMinutes: Number(e.target.value) })} />
+            <label className={forms.label} htmlFor="bufferMinutes">
+              Buffer after each appointment (minutes)
+            </label>
+            <input
+              id="bufferMinutes"
+              type="number"
+              min={0}
+              max={120}
+              className={forms.input}
+              value={data.bufferMinutes}
+              onChange={(e) => setData({ ...data, bufferMinutes: Number(e.target.value) })}
+            />
           </div>
           <div className={forms.field}>
-            <label className={forms.label} htmlFor="leadTimeHours">Earliest bookable slot (hours from now)</label>
-            <input id="leadTimeHours" type="number" min={0} max={720} className={forms.input}
-              value={data.leadTimeHours} onChange={(e) => setData({ ...data, leadTimeHours: Number(e.target.value) })} />
+            <label className={forms.label} htmlFor="leadTimeHours">
+              Earliest bookable slot (hours from now)
+            </label>
+            <input
+              id="leadTimeHours"
+              type="number"
+              min={0}
+              max={720}
+              className={forms.input}
+              value={data.leadTimeHours}
+              onChange={(e) => setData({ ...data, leadTimeHours: Number(e.target.value) })}
+            />
           </div>
           <div className={forms.field}>
-            <label className={forms.label} htmlFor="horizonDays">How far ahead patients can book (days)</label>
-            <input id="horizonDays" type="number" min={1} max={180} className={forms.input}
-              value={data.horizonDays} onChange={(e) => setData({ ...data, horizonDays: Number(e.target.value) })} />
+            <label className={forms.label} htmlFor="horizonDays">
+              How far ahead patients can book (days)
+            </label>
+            <input
+              id="horizonDays"
+              type="number"
+              min={1}
+              max={180}
+              className={forms.input}
+              value={data.horizonDays}
+              onChange={(e) => setData({ ...data, horizonDays: Number(e.target.value) })}
+            />
           </div>
           <div className={forms.field}>
-            <label className={forms.label} htmlFor="maxPerDay">Maximum appointments per day</label>
-            <input id="maxPerDay" type="number" min={1} max={48} className={forms.input}
-              value={data.maxPerDay} onChange={(e) => setData({ ...data, maxPerDay: Number(e.target.value) })} />
+            <label className={forms.label} htmlFor="maxPerDay">
+              Maximum appointments per day
+            </label>
+            <input
+              id="maxPerDay"
+              type="number"
+              min={1}
+              max={48}
+              className={forms.input}
+              value={data.maxPerDay}
+              onChange={(e) => setData({ ...data, maxPerDay: Number(e.target.value) })}
+            />
           </div>
         </div>
       </div>

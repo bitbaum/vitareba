@@ -13,7 +13,11 @@ import {
 import { eq, asc, desc, and, isNull, gte, inArray, count } from "drizzle-orm";
 import { BOOKING_STATUS } from "@/lib/config/booking-status";
 import styles from "./dashboard.module.css";
-import { RECENT_ASSESSMENTS_LIMIT, DASHBOARD_TREND_DAYS, CHECKIN_HISTORY_DAYS } from "@/lib/config/portal";
+import {
+  RECENT_ASSESSMENTS_LIMIT,
+  DASHBOARD_TREND_DAYS,
+  CHECKIN_HISTORY_DAYS,
+} from "@/lib/config/portal";
 import { COMPANY } from "@/lib/config/company";
 import { formatDateISO } from "@/lib/utils/format";
 import { computeStreak } from "@/lib/domain/checkin";
@@ -66,7 +70,7 @@ export default async function DashboardPage() {
       // appear as "your consultation" in the dashboard card.
       where: and(
         eq(bookings.userId, session.user.id),
-        inArray(bookings.status, [BOOKING_STATUS.pending, BOOKING_STATUS.confirmed])
+        inArray(bookings.status, [BOOKING_STATUS.pending, BOOKING_STATUS.confirmed]),
       ),
       // Soonest APPOINTMENT first, not most recently created. A patient with a
       // consultation on Monday and a request typed yesterday was shown the
@@ -74,17 +78,18 @@ export default async function DashboardPage() {
       orderBy: [asc(bookings.scheduledAt), desc(bookings.createdAt)],
       with: { clinician: { columns: { id: true, name: true } } },
     }),
-    db.select({ value: count() }).from(threads).where(eq(threads.patientId, session.user.id)).then((r) => r[0]?.value ?? 0),
+    db
+      .select({ value: count() })
+      .from(threads)
+      .where(eq(threads.patientId, session.user.id))
+      .then((r) => r[0]?.value ?? 0),
     getUnreadThreadCount(session.user.id),
     db.query.users.findFirst({
       where: eq(users.id, session.user.id),
       columns: { name: true },
     }),
     db.query.dailyCheckins.findFirst({
-      where: and(
-        eq(dailyCheckins.userId, session.user.id),
-        eq(dailyCheckins.date, today)
-      ),
+      where: and(eq(dailyCheckins.userId, session.user.id), eq(dailyCheckins.date, today)),
     }),
     db.query.programmeAssignments.findFirst({
       where: eq(programmeAssignments.patientId, session.user.id),
@@ -93,15 +98,12 @@ export default async function DashboardPage() {
       where: eq(profiles.userId, session.user.id),
     }),
     db.query.clinicalGoals.findMany({
-      where: and(
-        eq(clinicalGoals.patientId, session.user.id),
-        isNull(clinicalGoals.completedAt)
-      ),
+      where: and(eq(clinicalGoals.patientId, session.user.id), isNull(clinicalGoals.completedAt)),
     }),
     db.query.dailyCheckins.findMany({
       where: and(
         eq(dailyCheckins.userId, session.user.id),
-        gte(dailyCheckins.date, historyStartISO)
+        gte(dailyCheckins.date, historyStartISO),
       ),
       orderBy: [desc(dailyCheckins.date)],
     }),
@@ -112,8 +114,7 @@ export default async function DashboardPage() {
 
   const isNewPatient = recentAssessments.length === 0 && !programmeAssignment;
 
-  const firstName =
-    dbUser?.name?.split(" ")[0] ?? session.user.email?.split("@")[0] ?? "there";
+  const firstName = dbUser?.name?.split(" ")[0] ?? session.user.email?.split("@")[0] ?? "there";
   const profilePct = computeProfileCompleteness(profile as Record<string, unknown> | null);
   const missingProfileFields = getMissingProfileFields(profile as Record<string, unknown> | null);
   const checkinStreak = computeStreak(recentCheckins);
@@ -142,7 +143,11 @@ export default async function DashboardPage() {
     <div>
       <PendingAssessmentSaver />
       <PortalPageHeader
-        title={<>{isNewPatient ? "Welcome" : "Welcome back"}, <em>{firstName}</em></>}
+        title={
+          <>
+            {isNewPatient ? "Welcome" : "Welcome back"}, <em>{firstName}</em>
+          </>
+        }
         subtitle={`Your ${COMPANY.shortName} patient portal`}
       />
 

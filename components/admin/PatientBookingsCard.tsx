@@ -1,5 +1,10 @@
 import styles from "@/app/(admin)/admin.module.css";
-import { BOOKING_STATUS_CONFIG, BOOKING_TYPE_CONFIG, MACHINE_TYPE_CONFIG, type BookingRow } from "@/lib/config/booking-status";
+import {
+  BOOKING_STATUS_CONFIG,
+  BOOKING_TYPE_CONFIG,
+  MACHINE_TYPE_CONFIG,
+  type BookingRow,
+} from "@/lib/config/booking-status";
 import { formatDateLong, formatSlotDay, formatSlotTime } from "@/lib/utils/format";
 
 // Loosen date-ish fields: this card is called from both the server (Drizzle
@@ -40,9 +45,7 @@ export function PatientBookingsCard({ bookings }: { bookings: PatientBooking[] }
                   )}
                   {b.notes && <div className={styles.bookingNotes}>{b.notes}</div>}
                 </div>
-                <span className={`${styles.badge} ${s.badgeClass}`}>
-                  {s.label}
-                </span>
+                <span className={`${styles.badge} ${s.badgeClass}`}>{s.label}</span>
               </div>
             );
           })}

@@ -67,11 +67,17 @@ vi.mock("@/lib/domain/notifications", () => ({
 
 vi.mock("@/lib/email/index", () => ({ sendEmail: mockSendEmail }));
 vi.mock("@/lib/domain/scheduling-data", () => ({ getBusyIntervals: mockGetBusyIntervals }));
-vi.mock("@/lib/domain/clinician-profile", () => ({ getClinicianAvailability: mockGetClinicianAvailability }));
+vi.mock("@/lib/domain/clinician-profile", () => ({
+  getClinicianAvailability: mockGetClinicianAvailability,
+}));
 
 vi.mock("@/lib/config/company", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/config/company")>();
-  return { ...actual, getAdminEmails: mockGetAdminEmails, PORTAL_URL: "https://portal.example.com" };
+  return {
+    ...actual,
+    getAdminEmails: mockGetAdminEmails,
+    PORTAL_URL: "https://portal.example.com",
+  };
 });
 
 vi.mock("@/lib/utils/post-response", () => ({ runAfterResponse: mockRunAfterResponse }));
@@ -84,9 +90,18 @@ import { HOUR_MS } from "@/lib/utils/format";
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
-const ADMIN_SESSION = { session: { user: { id: "admin-1", role: "admin", email: "admin@example.com" } }, error: null };
-const PATIENT_SESSION = { session: { user: { id: "patient-1", role: "patient", email: "alice@example.com" } }, error: null };
-const OTHER_PATIENT = { session: { user: { id: "patient-2", role: "patient", email: "bob@example.com" } }, error: null };
+const ADMIN_SESSION = {
+  session: { user: { id: "admin-1", role: "admin", email: "admin@example.com" } },
+  error: null,
+};
+const PATIENT_SESSION = {
+  session: { user: { id: "patient-1", role: "patient", email: "alice@example.com" } },
+  error: null,
+};
+const OTHER_PATIENT = {
+  session: { user: { id: "patient-2", role: "patient", email: "bob@example.com" } },
+  error: null,
+};
 const UNAUTH = { session: null, error: new Response(null, { status: 401 }) };
 
 const CLINICIAN_ID = "11111111-1111-4111-8111-111111111111";
@@ -216,7 +231,7 @@ describe("DELETE — cancelling", () => {
     // The policy in one assertion: inside the window it is RECORDED, not refused.
     mockRequireSession.mockResolvedValue(PATIENT_SESSION);
     mockBookingFindFirst.mockResolvedValue(
-      booking({ scheduledAt: new Date(Date.now() + (CANCELLATION_NOTICE_HOURS - 2) * HOUR_MS) })
+      booking({ scheduledAt: new Date(Date.now() + (CANCELLATION_NOTICE_HOURS - 2) * HOUR_MS) }),
     );
     const res = await DELETE(req(), PARAMS);
     expect(res.status).toBe(200);
@@ -236,7 +251,7 @@ describe("DELETE — cancelling", () => {
     // record whether it was attended.
     mockRequireSession.mockResolvedValue(PATIENT_SESSION);
     mockBookingFindFirst.mockResolvedValue(
-      booking({ scheduledAt: new Date(Date.now() - 2 * HOUR_MS) })
+      booking({ scheduledAt: new Date(Date.now() - 2 * HOUR_MS) }),
     );
     const res = await DELETE(req(), PARAMS);
     expect(res.status).toBe(409);
@@ -253,7 +268,7 @@ describe("DELETE — cancelling", () => {
     // No agreed time means no notice window to be inside.
     mockRequireSession.mockResolvedValue(PATIENT_SESSION);
     mockBookingFindFirst.mockResolvedValue(
-      booking({ status: "pending", scheduledAt: null, preferredDate: "2026-09-01" })
+      booking({ status: "pending", scheduledAt: null, preferredDate: "2026-09-01" }),
     );
     const res = await DELETE(req(), PARAMS);
     expect(res.status).toBe(200);
@@ -342,7 +357,7 @@ describe("PATCH — moving an appointment", () => {
   it("refuses to move an appointment that already started", async () => {
     mockRequireSession.mockResolvedValue(PATIENT_SESSION);
     mockBookingFindFirst.mockResolvedValue(
-      booking({ scheduledAt: new Date(Date.now() - HOUR_MS) })
+      booking({ scheduledAt: new Date(Date.now() - HOUR_MS) }),
     );
     expect((await PATCH(req({ slot: FREE_SLOT.toISOString() }), PARAMS)).status).toBe(409);
   });

@@ -3,7 +3,13 @@ import createIntlMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
 import { NextResponse } from "next/server";
 import { USER_ROLE } from "@/lib/config/auth";
-import { PORTAL_ROUTES, ADMIN_ROUTES, AUTH_ROUTES, PUBLIC_API_PREFIXES, LOCALE_HEADER } from "@/lib/config/routes";
+import {
+  PORTAL_ROUTES,
+  ADMIN_ROUTES,
+  AUTH_ROUTES,
+  PUBLIC_API_PREFIXES,
+  LOCALE_HEADER,
+} from "@/lib/config/routes";
 
 const intlMiddleware = createIntlMiddleware(routing);
 
@@ -29,14 +35,14 @@ function detectLocale(pathname: string): string {
 export default auth((req) => {
   const { pathname } = req.nextUrl;
   const session = req.auth;
-  const dest = session?.user.role === USER_ROLE.admin ? ADMIN_ROUTES.patients : PORTAL_ROUTES.dashboard;
+  const dest =
+    session?.user.role === USER_ROLE.admin ? ADMIN_ROUTES.patients : PORTAL_ROUTES.dashboard;
 
   // Inject URL-derived locale as a request header so the root layout can set
   // <html lang> from the actual URL (not from a cookie that crawlers don't carry).
   const locale = detectLocale(pathname);
   req.headers.set(LOCALE_HEADER, locale);
-  const passThrough = () =>
-    NextResponse.next({ request: { headers: req.headers } });
+  const passThrough = () => NextResponse.next({ request: { headers: req.headers } });
 
   // Public API surface (auth endpoints, registration, webhooks, cron, health):
   // each of these routes authenticates itself — the session gate must not
@@ -68,11 +74,12 @@ export default auth((req) => {
 
   // ── Locale-prefixed portal paths: redirect to canonical ───────────────
   // e.g. /en/dashboard → /dashboard, /de/profile → /profile
-  const localePortalMatch = routing.locales.flatMap((locale) =>
-    PORTAL_PREFIXES.map((p) => ({ locale, prefix: p })),
-  ).find(({ locale, prefix }) =>
-    pathname === `/${locale}${prefix}` || pathname.startsWith(`/${locale}${prefix}/`),
-  );
+  const localePortalMatch = routing.locales
+    .flatMap((locale) => PORTAL_PREFIXES.map((p) => ({ locale, prefix: p })))
+    .find(
+      ({ locale, prefix }) =>
+        pathname === `/${locale}${prefix}` || pathname.startsWith(`/${locale}${prefix}/`),
+    );
   if (localePortalMatch) {
     const stripped = pathname.slice(localePortalMatch.locale.length + 1); // remove /locale
     return NextResponse.redirect(new URL(stripped, req.url));
@@ -83,9 +90,7 @@ export default auth((req) => {
   // Redirect logged-in users away from locale-prefixed auth pages
   const isLocaleAuthPath = LOCALE_AUTH_SUFFIXES.some((suffix) =>
     routing.locales.some(
-      (locale) =>
-        pathname === `/${locale}${suffix}` ||
-        pathname.startsWith(`/${locale}${suffix}/`),
+      (locale) => pathname === `/${locale}${suffix}` || pathname.startsWith(`/${locale}${suffix}/`),
     ),
   );
   if (session && isLocaleAuthPath) {

@@ -18,6 +18,6 @@ import { USER_ROLE } from "@/lib/config/auth";
 export function patientScope(): SQL {
   return or(
     eq(users.role, USER_ROLE.patient),
-    inArray(users.id, db.select({ id: careTeam.patientId }).from(careTeam))
+    inArray(users.id, db.select({ id: careTeam.patientId }).from(careTeam)),
   )!;
 }

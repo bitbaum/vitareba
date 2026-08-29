@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { mockRequireAdmin, mockFindFirst } = vi.hoisted(() => ({
   mockRequireAdmin: vi.fn(),
-  mockFindFirst:    vi.fn(),
+  mockFindFirst: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/guards", () => ({ requireAdmin: mockRequireAdmin }));
@@ -15,11 +15,18 @@ vi.mock("@/lib/db", () => ({
 import { GET } from "./route";
 
 const ADMIN_SESSION = { session: { user: { id: "admin-1", role: "admin" } }, error: null };
-const UNAUTH        = { session: null, error: new Response(null, { status: 401 }) };
+const UNAUTH = { session: null, error: new Response(null, { status: 401 }) };
 
 const PATIENT = {
-  id: "patient-1", name: "Alice", email: "alice@example.com", role: "patient",
-  profile: null, assessmentResults: [], bookings: [], documents: [], threads: [],
+  id: "patient-1",
+  name: "Alice",
+  email: "alice@example.com",
+  role: "patient",
+  profile: null,
+  assessmentResults: [],
+  bookings: [],
+  documents: [],
+  threads: [],
 };
 
 const VALID_PATIENT_ID = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11";

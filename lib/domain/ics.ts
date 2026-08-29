@@ -14,7 +14,10 @@ const CRLF = "\r\n";
 
 /** RFC 5545 §3.3.5 — UTC timestamp form: 20260814T093000Z */
 export function toIcsUtc(date: Date): string {
-  return date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  return date
+    .toISOString()
+    .replace(/[-:]/g, "")
+    .replace(/\.\d{3}/, "");
 }
 
 /** RFC 5545 §3.3.11 — backslash, semicolon, comma and newline are special. */
@@ -65,7 +68,10 @@ export type IcsEvent = {
   now?: Date;
 };
 
-function contactLine(prop: "ORGANIZER" | "ATTENDEE", c: { name?: string | null; email: string }): string {
+function contactLine(
+  prop: "ORGANIZER" | "ATTENDEE",
+  c: { name?: string | null; email: string },
+): string {
   const cn = c.name ? `;CN=${escapeIcsText(c.name)}` : "";
   return `${prop}${cn}:mailto:${c.email}`;
 }
@@ -111,9 +117,7 @@ function wrapCalendar(inner: string[], extraHeaders: string[] = []): string {
  * treating the file as an anonymous download.
  */
 export function buildIcsInvite(event: IcsEvent): string {
-  return wrapCalendar(eventLines(event), [
-    event.cancelled ? "METHOD:CANCEL" : "METHOD:REQUEST",
-  ]);
+  return wrapCalendar(eventLines(event), [event.cancelled ? "METHOD:CANCEL" : "METHOD:REQUEST"]);
 }
 
 /**

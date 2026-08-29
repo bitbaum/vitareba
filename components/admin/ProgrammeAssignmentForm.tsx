@@ -3,7 +3,13 @@
 import { useState } from "react";
 import styles from "@/app/(admin)/admin.module.css";
 import { SAVED_FEEDBACK_MS, PATIENT_NOTE_MAX_LENGTH } from "@/lib/config/portal";
-import { PROGRAMME_CONFIG, PHASE_CONFIG, PROGRAMME_ENUM_VALUES, PHASE_ENUM_VALUES, phaseDescription } from "@/lib/config/programmes";
+import {
+  PROGRAMME_CONFIG,
+  PHASE_CONFIG,
+  PROGRAMME_ENUM_VALUES,
+  PHASE_ENUM_VALUES,
+  phaseDescription,
+} from "@/lib/config/programmes";
 import type { ProgrammeKey, PhaseKey } from "@/lib/config/programmes";
 
 type Assignment = {
@@ -68,7 +74,9 @@ export function ProgrammeAssignmentForm({
     <form onSubmit={handleSubmit} className={styles.formStack}>
       <div className={styles.formGrid2}>
         <div>
-          <label htmlFor="prog-programme" className={styles.assignLabel}>Programme</label>
+          <label htmlFor="prog-programme" className={styles.assignLabel}>
+            Programme
+          </label>
           <select
             id="prog-programme"
             value={programme}
@@ -77,13 +85,17 @@ export function ProgrammeAssignmentForm({
           >
             <option value="">Select programme…</option>
             {PROGRAMME_ENUM_VALUES.map((key) => (
-              <option key={key} value={key}>{PROGRAMME_CONFIG[key].label}</option>
+              <option key={key} value={key}>
+                {PROGRAMME_CONFIG[key].label}
+              </option>
             ))}
           </select>
         </div>
 
         <div>
-          <label htmlFor="prog-phase" className={styles.assignLabel}>Phase</label>
+          <label htmlFor="prog-phase" className={styles.assignLabel}>
+            Phase
+          </label>
           <select
             id="prog-phase"
             value={phase}
@@ -92,14 +104,18 @@ export function ProgrammeAssignmentForm({
           >
             <option value="">Select phase…</option>
             {PHASE_ENUM_VALUES.map((key) => (
-              <option key={key} value={key}>{PHASE_CONFIG[key].label}</option>
+              <option key={key} value={key}>
+                {PHASE_CONFIG[key].label}
+              </option>
             ))}
           </select>
         </div>
       </div>
 
       <div>
-        <label htmlFor="prog-start-date" className={styles.assignLabel}>Start date (optional)</label>
+        <label htmlFor="prog-start-date" className={styles.assignLabel}>
+          Start date (optional)
+        </label>
         <input
           id="prog-start-date"
           type="date"
@@ -110,7 +126,9 @@ export function ProgrammeAssignmentForm({
       </div>
 
       <div>
-        <label htmlFor="prog-notes" className={styles.assignLabel}>Notes (optional)</label>
+        <label htmlFor="prog-notes" className={styles.assignLabel}>
+          Notes (optional)
+        </label>
         <textarea
           id="prog-notes"
           value={notes}
@@ -124,7 +142,9 @@ export function ProgrammeAssignmentForm({
 
       {programme && phase && (
         <div className={styles.assignPreview}>
-          <strong className={styles.assignPreviewLabel}>{PROGRAMME_CONFIG[programme as ProgrammeKey]?.label}</strong>
+          <strong className={styles.assignPreviewLabel}>
+            {PROGRAMME_CONFIG[programme as ProgrammeKey]?.label}
+          </strong>
           {" — "}
           {phaseDescription(phase as PhaseKey, clinician)}
         </div>
@@ -137,7 +157,13 @@ export function ProgrammeAssignmentForm({
         disabled={saving || !programme || !phase}
         className={styles.assignSubmit}
       >
-        {saving ? "Saving…" : saved ? "Saved ✓" : initial ? "Update assignment" : "Assign programme"}
+        {saving
+          ? "Saving…"
+          : saved
+            ? "Saved ✓"
+            : initial
+              ? "Update assignment"
+              : "Assign programme"}
       </button>
     </form>
   );

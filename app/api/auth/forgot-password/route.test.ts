@@ -21,7 +21,7 @@ const {
 vi.mock("@/lib/db", () => ({
   db: {
     query: {
-      users:              { findFirst: mockUserFindFirst },
+      users: { findFirst: mockUserFindFirst },
       verificationTokens: { findFirst: mockTokenFindFirst },
     },
     insert: mockInsert,
@@ -44,7 +44,12 @@ import { POST } from "./route";
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
 // User with a password hash — eligible for reset
-const USER_WITH_PASSWORD = { id: "user-1", name: "Alice", email: "alice@example.com", password: "$2b$12$hashed" };
+const USER_WITH_PASSWORD = {
+  id: "user-1",
+  name: "Alice",
+  email: "alice@example.com",
+  password: "$2b$12$hashed",
+};
 
 function makeRequest(email?: string) {
   return new Request("https://example.com/api/auth/forgot-password", {
@@ -141,7 +146,7 @@ describe("POST /api/auth/forgot-password", () => {
       expect.objectContaining({
         to: "alice@example.com",
         subject: expect.stringContaining("password"),
-      })
+      }),
     );
     // Token saved to DB
     expect(mockInsert).toHaveBeenCalled();
@@ -150,13 +155,15 @@ describe("POST /api/auth/forgot-password", () => {
   it("deletes stale token and sends new email when rate-limit window has passed", async () => {
     mockUserFindFirst.mockResolvedValue(USER_WITH_PASSWORD);
     // Token expires in 1 hour but was created RESET_RATE_LIMIT_MS + 1 min ago → old enough
-    const oldExpiry = new Date(Date.now() + PASSWORD_RESET_TOKEN_EXPIRY_MS - RESET_RATE_LIMIT_MS - 60_000);
+    const oldExpiry = new Date(
+      Date.now() + PASSWORD_RESET_TOKEN_EXPIRY_MS - RESET_RATE_LIMIT_MS - 60_000,
+    );
     mockTokenFindFirst.mockResolvedValue({ expires: oldExpiry });
     const res = await POST(makeRequest("alice@example.com"));
     expect(res.status).toBe(200);
     expect(mockDelete).toHaveBeenCalled();
     expect(mockSendEmail).toHaveBeenCalledWith(
-      expect.objectContaining({ to: "alice@example.com" })
+      expect.objectContaining({ to: "alice@example.com" }),
     );
   });
 });

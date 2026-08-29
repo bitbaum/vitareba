@@ -12,7 +12,8 @@ export default function AdminProfilePage() {
         My <em>Profile</em>
       </h1>
       <p className={styles.pageSub}>
-        What patients see about you, when you actually work, and which of your real calendars block time here.
+        What patients see about you, when you actually work, and which of your real calendars block
+        time here.
       </p>
 
       {/* Was five stacked cards in one unbroken scroll — one screen at a time

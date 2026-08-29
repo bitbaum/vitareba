@@ -51,7 +51,7 @@ export type AccessViewer = { id: string; role?: string | null };
  */
 export async function getPatientAccess(
   viewer: AccessViewer,
-  patientId: string
+  patientId: string,
 ): Promise<PatientAccess> {
   if (!viewer?.id || !patientId) return NO_ACCESS;
 

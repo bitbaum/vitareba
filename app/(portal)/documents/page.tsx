@@ -41,13 +41,19 @@ export default async function DocumentsPage() {
   return (
     <div>
       <PortalPageHeader
-        title={<>My <em>Documents</em></>}
+        title={
+          <>
+            My <em>Documents</em>
+          </>
+        }
         subtitle="Everything on file for your care — lab results, reports and programme materials shared by your care team, plus anything you add yourself."
       />
 
       {loadError ? (
         <div className={styles.card}>
-          <div className={styles.emptyState}>Couldn&apos;t load your documents right now — please refresh.</div>
+          <div className={styles.emptyState}>
+            Couldn&apos;t load your documents right now — please refresh.
+          </div>
         </div>
       ) : (
         <>
@@ -58,9 +64,9 @@ export default async function DocumentsPage() {
               <div className={styles.emptyState}>
                 <p className={styles.emptyTitle}>No documents yet</p>
                 <p className={styles.emptyBody}>
-                  Your care team will share lab results, assessment reports and programme materials here.
-                  You can also add your own — a lab result from elsewhere, a referral letter, a photo of a
-                  prescription.
+                  Your care team will share lab results, assessment reports and programme materials
+                  here. You can also add your own — a lab result from elsewhere, a referral letter,
+                  a photo of a prescription.
                 </p>
               </div>
             </div>

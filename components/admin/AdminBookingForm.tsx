@@ -20,7 +20,8 @@ export function AdminBookingForm({
   onAdded?: (booking: BookingRow) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const [bookingType, setBookingType] = useState<(typeof BOOKING_TYPE_VALUES)[number]>("consultation");
+  const [bookingType, setBookingType] =
+    useState<(typeof BOOKING_TYPE_VALUES)[number]>("consultation");
   const [machineType, setMachineType] = useState("");
   const [preferredDate, setPreferredDate] = useState("");
   const [status, setStatus] = useState<"confirmed" | "attended">(BOOKING_STATUS.confirmed);
@@ -77,7 +78,9 @@ export function AdminBookingForm({
     <form onSubmit={handleSubmit} className={styles.composeForm}>
       <div className={styles.goalFormGrid3}>
         <div>
-          <label className={styles.formLabel} htmlFor="ab-type">Type</label>
+          <label className={styles.formLabel} htmlFor="ab-type">
+            Type
+          </label>
           <select
             id="ab-type"
             value={bookingType}
@@ -88,14 +91,18 @@ export function AdminBookingForm({
             className={styles.goalFormSelect}
           >
             {BOOKING_TYPE_VALUES.map((t) => (
-              <option key={t} value={t}>{BOOKING_TYPE_CONFIG[t].label}</option>
+              <option key={t} value={t}>
+                {BOOKING_TYPE_CONFIG[t].label}
+              </option>
             ))}
           </select>
         </div>
 
         {bookingType === "machine" && (
           <div>
-            <label className={styles.formLabel} htmlFor="ab-machine">Machine</label>
+            <label className={styles.formLabel} htmlFor="ab-machine">
+              Machine
+            </label>
             <select
               id="ab-machine"
               value={machineType}
@@ -104,14 +111,18 @@ export function AdminBookingForm({
             >
               <option value="">Select…</option>
               {MACHINE_TYPE_VALUES.map((m) => (
-                <option key={m} value={m}>{MACHINE_TYPE_CONFIG[m].label}</option>
+                <option key={m} value={m}>
+                  {MACHINE_TYPE_CONFIG[m].label}
+                </option>
               ))}
             </select>
           </div>
         )}
 
         <div>
-          <label className={styles.formLabel} htmlFor="ab-status">Status</label>
+          <label className={styles.formLabel} htmlFor="ab-status">
+            Status
+          </label>
           <select
             id="ab-status"
             value={status}
@@ -124,7 +135,9 @@ export function AdminBookingForm({
         </div>
 
         <div>
-          <label className={styles.formLabel} htmlFor="ab-date">Date</label>
+          <label className={styles.formLabel} htmlFor="ab-date">
+            Date
+          </label>
           <input
             id="ab-date"
             type="date"
@@ -149,12 +162,19 @@ export function AdminBookingForm({
       {error && <p className={styles.assignError}>{error}</p>}
 
       <div className={styles.goalFormActions}>
-        <button type="submit" disabled={saving || (bookingType === "machine" && !machineType)} className={styles.goalFormSubmit}>
+        <button
+          type="submit"
+          disabled={saving || (bookingType === "machine" && !machineType)}
+          className={styles.goalFormSubmit}
+        >
           {saving ? "Saving…" : "Log booking"}
         </button>
         <button
           type="button"
-          onClick={() => { setExpanded(false); setError(""); }}
+          onClick={() => {
+            setExpanded(false);
+            setError("");
+          }}
           aria-label="Cancel logging booking"
           className={styles.goalFormCancel}
         >

@@ -44,7 +44,7 @@ vi.mock("@/lib/db", () => ({
   db: {
     query: {
       bookings: { findMany: mockBookingFindMany, findFirst: mockBookingFindFirst },
-      users:    { findFirst: mockUserFindFirst, findMany: mockUserFindMany },
+      users: { findFirst: mockUserFindFirst, findMany: mockUserFindMany },
       careTeam: { findFirst: mockCareTeamFindFirst },
       calendarBusy: { findMany: mockCalendarBusyFindMany },
       clinicianProfiles: { findFirst: mockClinicianProfileFindFirst },
@@ -62,7 +62,11 @@ vi.mock("@/lib/email/index", () => ({ sendEmail: mockSendEmail }));
 
 vi.mock("@/lib/config/company", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/config/company")>();
-  return { ...actual, getAdminEmails: mockGetAdminEmails, PORTAL_URL: "https://portal.example.com" };
+  return {
+    ...actual,
+    getAdminEmails: mockGetAdminEmails,
+    PORTAL_URL: "https://portal.example.com",
+  };
 });
 
 vi.mock("@/lib/utils/post-response", () => ({ runAfterResponse: mockRunAfterResponse }));
@@ -75,16 +79,27 @@ import { DEFAULT_AVAILABILITY } from "@/lib/config/scheduling";
 
 // Real UUIDs: "who is this booking for" is a uuid-validated field, so a
 // placeholder id would fail the schema and hide the permission check behind it.
-const PATIENT_ID_SELF  = "b1111111-1111-4111-8111-111111111111";
+const PATIENT_ID_SELF = "b1111111-1111-4111-8111-111111111111";
 const OTHER_PATIENT_ID = "c2222222-2222-4222-8222-222222222222";
-const PATIENT_SESSION = { session: { user: { id: PATIENT_ID_SELF, role: "patient", email: "alice@example.com" } }, error: null };
-const ADMIN_SESSION   = { session: { user: { id: "admin-1", role: "admin",   email: "admin@example.com" } }, error: null };
-const UNAUTH          = { session: null, error: new Response(null, { status: 401 }) };
+const PATIENT_SESSION = {
+  session: { user: { id: PATIENT_ID_SELF, role: "patient", email: "alice@example.com" } },
+  error: null,
+};
+const ADMIN_SESSION = {
+  session: { user: { id: "admin-1", role: "admin", email: "admin@example.com" } },
+  error: null,
+};
+const UNAUTH = { session: null, error: new Response(null, { status: 401 }) };
 
 const BOOKING = {
-  id: "booking-1", userId: PATIENT_ID_SELF, status: "pending",
-  bookingType: "consultation", machineType: null,
-  preferredDate: null, notes: null, createdAt: new Date("2026-05-07T00:00:00.000Z"),
+  id: "booking-1",
+  userId: PATIENT_ID_SELF,
+  status: "pending",
+  bookingType: "consultation",
+  machineType: null,
+  preferredDate: null,
+  notes: null,
+  createdAt: new Date("2026-05-07T00:00:00.000Z"),
 };
 
 const VALID_PATIENT_POST = {
@@ -161,11 +176,13 @@ describe("POST /api/bookings (patient)", () => {
 
   it("returns 400 for an invalid booking type", async () => {
     mockRequireSession.mockResolvedValue(PATIENT_SESSION);
-    const res = await POST(new Request("https://example.com/api/bookings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ bookingType: "invalid_type" }),
-    }));
+    const res = await POST(
+      new Request("https://example.com/api/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookingType: "invalid_type" }),
+      }),
+    );
     expect(res.status).toBe(400);
   });
 
@@ -201,7 +218,7 @@ describe("POST /api/bookings (patient)", () => {
       expect.objectContaining({
         to: ["admin@example.com"],
         subject: expect.stringContaining("consultation request"),
-      })
+      }),
     );
   });
 });
@@ -264,7 +281,9 @@ describe("POST /api/bookings (patient, slot)", () => {
     mockRequireSession.mockResolvedValue(PATIENT_SESSION);
     mockInsert.mockImplementation(() => ({
       values: vi.fn(() => ({
-        returning: vi.fn().mockRejectedValue(Object.assign(new Error("duplicate"), { code: "23505" })),
+        returning: vi
+          .fn()
+          .mockRejectedValue(Object.assign(new Error("duplicate"), { code: "23505" })),
       })),
     }));
     const res = await POST(slotReq(NOW_SLOT.toISOString()));
@@ -467,22 +486,26 @@ describe("POST /api/bookings (admin)", () => {
     // could not request their own appointment, at a practice where clinicians
     // are patients by design. Naming nobody means naming yourself.
     mockRequireSession.mockResolvedValue(ADMIN_SESSION);
-    const res = await POST(new Request("https://example.com/api/bookings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ bookingType: "consultation" }),
-    }));
+    const res = await POST(
+      new Request("https://example.com/api/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookingType: "consultation" }),
+      }),
+    );
     expect(res.status).toBe(201);
     expect(insertedValues()).toMatchObject({ userId: ADMIN_SESSION.session.user.id });
   });
 
   it("refuses a patient who names someone else, without a fixed time", async () => {
     mockRequireSession.mockResolvedValue(PATIENT_SESSION);
-    const res = await POST(new Request("https://example.com/api/bookings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ patientId: PATIENT_ID, bookingType: "consultation" }),
-    }));
+    const res = await POST(
+      new Request("https://example.com/api/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ patientId: PATIENT_ID, bookingType: "consultation" }),
+      }),
+    );
     expect(res.status).toBe(400);
     expect(mockInsert).not.toHaveBeenCalled();
   });
@@ -494,11 +517,13 @@ describe("POST /api/bookings (admin)", () => {
         returning: vi.fn().mockRejectedValue(new Error("db down")),
       }),
     });
-    const res = await POST(new Request("https://example.com/api/bookings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ patientId: PATIENT_ID, bookingType: "consultation" }),
-    }));
+    const res = await POST(
+      new Request("https://example.com/api/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ patientId: PATIENT_ID, bookingType: "consultation" }),
+      }),
+    );
     expect(res.status).toBe(500);
   });
 
@@ -506,11 +531,13 @@ describe("POST /api/bookings (admin)", () => {
     mockRequireSession.mockResolvedValue(ADMIN_SESSION);
     mockUserFindFirst.mockResolvedValue({ name: "Alice", email: "alice@example.com" });
 
-    const res = await POST(new Request("https://example.com/api/bookings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ patientId: PATIENT_ID, bookingType: "consultation" }),
-    }));
+    const res = await POST(
+      new Request("https://example.com/api/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ patientId: PATIENT_ID, bookingType: "consultation" }),
+      }),
+    );
     expect(res.status).toBe(201);
     expect(mockRunAfterResponse).toHaveBeenCalledTimes(1);
     await mockRunAfterResponse.mock.calls[0][0]();
@@ -518,7 +545,7 @@ describe("POST /api/bookings (admin)", () => {
       expect.objectContaining({
         to: "alice@example.com",
         subject: expect.stringContaining("confirmed"),
-      })
+      }),
     );
   });
 });

@@ -41,7 +41,11 @@ export default async function AssessmentsPage({
   return (
     <div>
       <PortalPageHeader
-        title={<>My <em>Results</em></>}
+        title={
+          <>
+            My <em>Results</em>
+          </>
+        }
         subtitle="Your Inflection Edge assessment history"
       />
 
@@ -67,10 +71,14 @@ export default async function AssessmentsPage({
             </p>
           </div>
           <p className={assessStyles.savedBody}>
-            This is your baseline. Every check-in, every retake builds on it — showing you exactly how your biology and performance evolve over time. {sentenceCase(clinician)} reviews this data before every consultation to design your programme around your actual profile, not a generic template.
+            This is your baseline. Every check-in, every retake builds on it — showing you exactly
+            how your biology and performance evolve over time. {sentenceCase(clinician)} reviews
+            this data before every consultation to design your programme around your actual profile,
+            not a generic template.
           </p>
           <p className={assessStyles.savedBody}>
-            The single highest-leverage next step: a 30-minute discovery call with {clinician} to translate your scores into a concrete plan.
+            The single highest-leverage next step: a 30-minute discovery call with {clinician} to
+            translate your scores into a concrete plan.
           </p>
           <div className={assessStyles.savedActions}>
             <Link href={PORTAL_ROUTES.bookings} className="btn-dark">
@@ -103,9 +111,7 @@ export default async function AssessmentsPage({
                     <p className={styles.cardTitle}>
                       {i === 0 ? "Latest assessment" : `Assessment ${results.length - i}`}
                     </p>
-                    <p className={styles.meta}>
-                      {formatDateLong(result.completedAt)}
-                    </p>
+                    <p className={styles.meta}>{formatDateLong(result.completedAt)}</p>
                   </div>
                   <div className={assessStyles.overallBlock}>
                     <span
@@ -123,7 +129,9 @@ export default async function AssessmentsPage({
                     return (
                       <div key={dim.id} className={assessStyles.dimCell}>
                         <div className={assessStyles.dimIcon}>{dim.icon}</div>
-                        <div className={`${styles.statValue} ${styles.statMd} ${scoreClass(score)}`}>
+                        <div
+                          className={`${styles.statValue} ${styles.statMd} ${scoreClass(score)}`}
+                        >
                           {score}
                         </div>
                         <div className={assessStyles.dimName}>{dim.name}</div>
@@ -145,7 +153,9 @@ export default async function AssessmentsPage({
                     return (
                       <div key={dim.id} className={assessStyles.interpRow}>
                         <div className={assessStyles.interpMeta}>
-                          <span className={`${styles.statValue} ${styles.statSm} ${scoreClass(score)}`}>
+                          <span
+                            className={`${styles.statValue} ${styles.statSm} ${scoreClass(score)}`}
+                          >
                             {score}
                           </span>
                           <span className={assessStyles.interpDimName}>{dim.name}</span>
@@ -163,7 +173,8 @@ export default async function AssessmentsPage({
 
       <div className={assessStyles.retakeCta}>
         <p className={assessStyles.retakeHint}>
-          Retake every {ASSESSMENT_STALE_DAYS} days to see how your profile shifts with your programme.
+          Retake every {ASSESSMENT_STALE_DAYS} days to see how your profile shifts with your
+          programme.
         </p>
         <Link href={PORTAL_ROUTES.assessment} className={`btn-outline ${assessStyles.retakeBtn}`}>
           Retake assessment →

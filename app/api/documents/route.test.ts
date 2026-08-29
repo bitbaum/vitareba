@@ -12,14 +12,14 @@ const {
   mockSendEmail,
   mockRunAfterResponse,
 } = vi.hoisted(() => ({
-  mockRequireSession:   vi.fn(),
-  mockFindMany:         vi.fn(),
-  mockUserFindFirst:    vi.fn(),
-  mockUserFindMany:     vi.fn(),
-  mockGetCareTeamIds:   vi.fn(),
-  mockInsert:           vi.fn(),
-  mockValues:           vi.fn(),
-  mockSendEmail:        vi.fn(),
+  mockRequireSession: vi.fn(),
+  mockFindMany: vi.fn(),
+  mockUserFindFirst: vi.fn(),
+  mockUserFindMany: vi.fn(),
+  mockGetCareTeamIds: vi.fn(),
+  mockInsert: vi.fn(),
+  mockValues: vi.fn(),
+  mockSendEmail: vi.fn(),
   mockRunAfterResponse: vi.fn(),
 }));
 
@@ -31,7 +31,7 @@ vi.mock("@/lib/db", () => ({
   db: {
     query: {
       documents: { findMany: mockFindMany },
-      users:     { findFirst: mockUserFindFirst, findMany: mockUserFindMany },
+      users: { findFirst: mockUserFindFirst, findMany: mockUserFindMany },
     },
     insert: mockInsert,
   },
@@ -49,18 +49,26 @@ import { GET, POST } from "./route";
 
 const VALID_PATIENT_ID = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11";
 const OTHER_PATIENT_ID = "b1ffcd88-8d1a-4fa7-aa5c-5aa8ac270b22";
-const ADMIN_ID         = "c2aade77-7e2b-4b96-99b4-49b79b160c33";
+const ADMIN_ID = "c2aade77-7e2b-4b96-99b4-49b79b160c33";
 
-const PATIENT_SESSION = { session: { user: { id: VALID_PATIENT_ID, role: "patient" } }, error: null };
-const ADMIN_SESSION   = { session: { user: { id: ADMIN_ID,         role: "admin"   } }, error: null };
-const UNAUTH          = { session: null, error: new Response(null, { status: 401 }) };
+const PATIENT_SESSION = {
+  session: { user: { id: VALID_PATIENT_ID, role: "patient" } },
+  error: null,
+};
+const ADMIN_SESSION = { session: { user: { id: ADMIN_ID, role: "admin" } }, error: null };
+const UNAUTH = { session: null, error: new Response(null, { status: 401 }) };
 
-const DOC = { id: "doc-1", userId: VALID_PATIENT_ID, title: "Lab results", fileUrl: "https://blob.example.com/file.pdf" };
+const DOC = {
+  id: "doc-1",
+  userId: VALID_PATIENT_ID,
+  title: "Lab results",
+  fileUrl: "https://blob.example.com/file.pdf",
+};
 
 const VALID_POST_BODY = {
-  userId:   VALID_PATIENT_ID,
-  title:    "Lab results",
-  fileUrl:  "https://blob.example.com/file.pdf",
+  userId: VALID_PATIENT_ID,
+  title: "Lab results",
+  fileUrl: "https://blob.example.com/file.pdf",
   mimeType: "application/pdf",
 };
 
@@ -202,7 +210,7 @@ describe("POST /api/documents", () => {
       expect.objectContaining({
         to: "alice@example.com",
         subject: expect.stringContaining("Lab results"),
-      })
+      }),
     );
   });
 

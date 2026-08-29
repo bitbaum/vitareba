@@ -43,11 +43,7 @@
         "Psychedelic-assisted Therapy",
         "International Patients"
       ],
-      "diagnostics": [
-        "Full Metabolic Workup",
-        "Neuropsychological Testing",
-        "Home Test Kits"
-      ]
+      "diagnostics": ["Full Metabolic Workup", "Neuropsychological Testing", "Home Test Kits"]
     }
   },
   "hero": {
@@ -124,12 +120,7 @@
       "adhd": {
         "name": "ADHD for High Performers",
         "desc": "Our flagship programme featuring the proprietary SYL Clock — mapping your symptoms across four life dimensions: health, mindset, relationships and career. Formal diagnosis, metabolic workup, longevity medicine and 90 days of Surf Your Life transformation coaching.",
-        "tags": [
-          "SYL Clock",
-          "4 Dimensions",
-          "90-Day Coaching",
-          "Surf Your Life"
-        ]
+        "tags": ["SYL Clock", "4 Dimensions", "90-Day Coaching", "Surf Your Life"]
       },
       "psychedelic": {
         "name": "Psychedelic Readiness",
@@ -177,66 +168,37 @@
         "sub": "Entry Point",
         "title": "Inflection Edge Assessment",
         "text": "Our proprietary 30-question, 5-dimension performance instrument. Produces your Neurotype Blueprint and frames the entire diagnostic conversation.",
-        "tags": [
-          "Online · Free",
-          "5 Dimensions",
-          "Performance Blueprint"
-        ]
+        "tags": ["Online · Free", "5 Dimensions", "Performance Blueprint"]
       },
       {
         "sub": "Clinical Diagnosis",
         "title": "Formal ADHD Diagnostic",
         "text": "Comprehensive psychiatric assessment by our metabolic psychiatrist. Beyond checklists — we assess ADHD type, comorbidities, rejection sensitivity, executive function, and your specific performance phenotype.",
-        "tags": [
-          "DSM-5 / ICD-11",
-          "Comorbidity Mapping",
-          "Medication Review"
-        ]
+        "tags": ["DSM-5 / ICD-11", "Comorbidity Mapping", "Medication Review"]
       },
       {
         "sub": "Biological Layer",
         "title": "Full Metabolic Workup",
         "text": "The assessment that sets Vita apart. We examine the biological systems driving your presentation — gut-brain axis, neurotransmitters, mitochondrial function, hormones, micronutrients, toxins, HRV, circadian rhythm and more.",
-        "tags": [
-          "Gut · Brain Axis",
-          "Mitochondrial",
-          "HRV · Circadian",
-          "Toxins"
-        ]
+        "tags": ["Gut · Brain Axis", "Mitochondrial", "HRV · Circadian", "Toxins"]
       },
       {
         "sub": "Neuroplasticity & Longevity",
         "title": "Psychedelic-State Therapy",
         "text": "Ketamine-assisted therapy and structured breathwork protocols inducing non-ordinary states — creating windows of heightened neuroplasticity. Research now shows psychedelics also preserve telomere length, upregulate longevity genes (SIRT1), and reduce oxidative stress at the cellular level.",
-        "tags": [
-          "Ketamine-Assisted",
-          "Breathwork",
-          "Neuroplasticity",
-          "Longevity",
-          "Swiss Law"
-        ]
+        "tags": ["Ketamine-Assisted", "Breathwork", "Neuroplasticity", "Longevity", "Swiss Law"]
       },
       {
         "sub": "Longevity Medicine",
         "title": "Vita Technology Protocol",
         "text": "ADHD reduces life expectancy by up to 13 years. Our longevity medicine technologies directly address this — mitochondrial health, nervous system recovery, cellular longevity, and the biological foundations of sustained cognitive performance.",
-        "tags": [
-          "H₂ Therapy",
-          "IHHT",
-          "PEMF",
-          "Infrared",
-          "HRV Biofeedback"
-        ]
+        "tags": ["H₂ Therapy", "IHHT", "PEMF", "Infrared", "HRV Biofeedback"]
       },
       {
         "sub": "Performance Architecture",
         "title": "Surf Your Life + Home Harmony",
         "text": "The coaching layer that converts clinical insights into daily architecture. You redesign how you work, lead, decide and recover — based on your specific neurotype. Includes a full audit of your personal and professional environments.",
-        "tags": [
-          "Surf Your Life",
-          "Home Harmony",
-          "90-Day Programme"
-        ]
+        "tags": ["Surf Your Life", "Home Harmony", "90-Day Programme"]
       }
     ]
   },

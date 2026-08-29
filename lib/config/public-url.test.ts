@@ -31,7 +31,7 @@ function collect(dir: string): string[] {
 }
 
 const FILES = ROOTS.flatMap((r) => collect(join(process.cwd(), r))).map((f) =>
-  f.replace(`${process.cwd()}/`, "")
+  f.replace(`${process.cwd()}/`, ""),
 );
 
 /**
@@ -39,7 +39,10 @@ const FILES = ROOTS.flatMap((r) => collect(join(process.cwd(), r))).map((f) =>
  * a reverse proxy, or with something a caller can forge.
  */
 const FORBIDDEN = [
-  { pattern: /new URL\(\s*req(uest)?\.url\s*\)\.origin/, why: "req.url is the internal proxy target" },
+  {
+    pattern: /new URL\(\s*req(uest)?\.url\s*\)\.origin/,
+    why: "req.url is the internal proxy target",
+  },
   { pattern: /headers\(\)\.get\(\s*["']host["']\s*\)/, why: "Host is the proxy's host, or forged" },
   { pattern: /["']x-forwarded-host["']/i, why: "X-Forwarded-Host is attacker-controlled" },
   { pattern: /["']x-forwarded-proto["']/i, why: "X-Forwarded-Proto is attacker-controlled" },
@@ -69,7 +72,7 @@ describe("user-facing links come from configuration, not the request", () => {
     const offenders = FILES.filter((f) => f !== SELF && pattern.test(codeOf(f)));
     expect(
       offenders,
-      `${offenders.join(", ")} builds a URL from the request — ${why}. Use PORTAL_URL.`
+      `${offenders.join(", ")} builds a URL from the request — ${why}. Use PORTAL_URL.`,
     ).toEqual([]);
   });
 });
@@ -78,7 +81,7 @@ describe("the configured public origin is actually public", () => {
   it("is not a loopback or internal address", () => {
     for (const url of [PORTAL_URL, SITE_URL]) {
       expect(url, `${url} is not reachable by a patient`).not.toMatch(
-        /localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\]/
+        /localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\]/,
       );
     }
   });

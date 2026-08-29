@@ -49,9 +49,7 @@ export default async function AdminTodayPage() {
 
   return (
     <div>
-      <h1 className={styles.pageTitle}>
-        Today
-      </h1>
+      <h1 className={styles.pageTitle}>Today</h1>
       <p className={styles.pageSub}>
         {inbox.total === 0
           ? "Nothing is waiting on you."
@@ -62,8 +60,8 @@ export default async function AdminTodayPage() {
         <div className={`${styles.card} ${styles.inboxClear}`}>
           <p className={styles.inboxClearTitle}>Everyone is accounted for.</p>
           <p className={styles.inboxClearBody}>
-            No result outside a range that can wait, no unanswered message, no booking
-            unconfirmed, and nobody without a next step.
+            No result outside a range that can wait, no unanswered message, no booking unconfirmed,
+            and nobody without a next step.
           </p>
         </div>
       ) : (
@@ -92,9 +90,7 @@ function Section({ section }: { section: InboxSection }) {
       <div className={styles.inboxHeader}>
         <h2 className={titleClass}>{section.label}</h2>
         {section.items.length > 0 && (
-          <span className={styles.inboxCount}>
-            {section.items.length + section.overflow}
-          </span>
+          <span className={styles.inboxCount}>{section.items.length + section.overflow}</span>
         )}
       </div>
 

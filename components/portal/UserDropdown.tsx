@@ -57,14 +57,26 @@ export function UserDropdown({ name, email, role, context = "portal" }: Props) {
               </Link>
             )}
             {context === "admin" && (
-              <Link href={PORTAL_ROUTES.dashboard} className={styles.item} onClick={() => setOpen(false)}>
+              <Link
+                href={PORTAL_ROUTES.dashboard}
+                className={styles.item}
+                onClick={() => setOpen(false)}
+              >
                 Patient portal ↗
               </Link>
             )}
-            <Link href={PORTAL_ROUTES.checkin} className={styles.item} onClick={() => setOpen(false)}>
+            <Link
+              href={PORTAL_ROUTES.checkin}
+              className={styles.item}
+              onClick={() => setOpen(false)}
+            >
               Daily check-in
             </Link>
-            <Link href={PORTAL_ROUTES.profile} className={styles.item} onClick={() => setOpen(false)}>
+            <Link
+              href={PORTAL_ROUTES.profile}
+              className={styles.item}
+              onClick={() => setOpen(false)}
+            >
               Profile settings
             </Link>
           </div>

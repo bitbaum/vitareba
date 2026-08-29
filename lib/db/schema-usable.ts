@@ -55,13 +55,13 @@ export function unusableTablesQuery(names: readonly string[]) {
   // does not exist raises rather than answering false.
   const privilegeChecks = REQUIRED_PRIVILEGES.map(
     (verb) =>
-      sql`when not has_table_privilege(current_user, 'public.' || quote_ident(n), ${verb}) then ${`no ${verb.toLowerCase()} privilege`}`
+      sql`when not has_table_privilege(current_user, 'public.' || quote_ident(n), ${verb}) then ${`no ${verb.toLowerCase()} privilege`}`,
   );
 
   // Each name is its own bound parameter inside a real array constructor.
   const nameArray = sql.join(
     names.map((n) => sql`${n}`),
-    sql`, `
+    sql`, `,
   );
 
   return sql`
@@ -80,7 +80,7 @@ export async function findUnusableTables(): Promise<SchemaProblem[]> {
   if (names.length === 0) return [];
 
   const result = await db.execute<{ n: string; problem: string | null }>(
-    unusableTablesQuery(names)
+    unusableTablesQuery(names),
   );
 
   // node-postgres hands back a QueryResult; some drivers hand back the rows.

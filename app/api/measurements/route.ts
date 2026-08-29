@@ -64,7 +64,7 @@ export async function GET(req: Request) {
       where: and(
         eq(measurements.patientId, patientId),
         gte(measurements.measuredAt, cutoff),
-        requested.length > 0 ? inArray(measurements.kind, requested) : undefined
+        requested.length > 0 ? inArray(measurements.kind, requested) : undefined,
       ),
       orderBy: [desc(measurements.measuredAt)],
     });
@@ -116,7 +116,7 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json(
       { success: false, error: "Invalid measurement", details: parsed.error.flatten() },
-      { status: 400 }
+      { status: 400 },
     );
   }
   const { measuredAt, source, entries } = parsed.data;
@@ -135,7 +135,7 @@ export async function POST(req: Request) {
           error: "Laboratory results are recorded by your clinician",
           details: { kinds: notAllowed },
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
     if (!(SELF_RECORDED_SOURCES as readonly string[]).includes(source)) {
@@ -157,7 +157,7 @@ export async function POST(req: Request) {
           // removing a clinician never deletes a patient's results.
           recordedBy: session.user.id,
           note: e.note ?? null,
-        }))
+        })),
       )
       .returning({ id: measurements.id });
 
@@ -166,7 +166,7 @@ export async function POST(req: Request) {
     console.error("[api/measurements] POST failed:", err);
     return NextResponse.json(
       { success: false, error: "Could not save — please try again" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -37,8 +37,8 @@ export async function POST(req: Request) {
       .where(
         and(
           eq(assessmentLeads.id, parsed.data.leadId),
-          isNull(assessmentLeads.convertedUserId) // idempotent — skip if already attributed
-        )
+          isNull(assessmentLeads.convertedUserId), // idempotent — skip if already attributed
+        ),
       );
   } catch (err) {
     console.error("[api/assessment-leads/convert] update failed:", err);

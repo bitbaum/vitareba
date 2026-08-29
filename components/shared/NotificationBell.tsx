@@ -74,7 +74,9 @@ export function NotificationBell({ initialUnreadCount }: { initialUnreadCount: n
 
   async function markAllRead() {
     setUnreadCount(0);
-    setItems((prev) => prev?.map((n) => ({ ...n, readAt: n.readAt ?? new Date().toISOString() })) ?? prev);
+    setItems(
+      (prev) => prev?.map((n) => ({ ...n, readAt: n.readAt ?? new Date().toISOString() })) ?? prev,
+    );
     try {
       await fetch("/api/notifications/mark-all-read", { method: "PATCH" });
     } catch {
@@ -84,8 +86,11 @@ export function NotificationBell({ initialUnreadCount }: { initialUnreadCount: n
   }
 
   async function markOneRead(id: string) {
-    setItems((prev) =>
-      prev?.map((n) => (n.id === id && !n.readAt ? { ...n, readAt: new Date().toISOString() } : n)) ?? prev
+    setItems(
+      (prev) =>
+        prev?.map((n) =>
+          n.id === id && !n.readAt ? { ...n, readAt: new Date().toISOString() } : n,
+        ) ?? prev,
     );
     setUnreadCount((c) => Math.max(0, c - 1));
     try {
@@ -137,7 +142,11 @@ export function NotificationBell({ initialUnreadCount }: { initialUnreadCount: n
             <ul className={styles.list}>
               {items.map((n) => (
                 <li key={n.id}>
-                  <NotificationRow item={n} onOpen={() => markOneRead(n.id)} onClose={() => setOpen(false)} />
+                  <NotificationRow
+                    item={n}
+                    onOpen={() => markOneRead(n.id)}
+                    onClose={() => setOpen(false)}
+                  />
                 </li>
               ))}
             </ul>
@@ -164,7 +173,9 @@ function NotificationRow({
       <span className={styles.rowBody}>
         <span className={styles.rowTitle}>{item.title}</span>
         {item.body && <span className={styles.rowMeta}>{item.body}</span>}
-        <span className={styles.rowTime}>{formatRelativeTime(new Date(item.createdAt), new Date())}</span>
+        <span className={styles.rowTime}>
+          {formatRelativeTime(new Date(item.createdAt), new Date())}
+        </span>
       </span>
     </>
   );

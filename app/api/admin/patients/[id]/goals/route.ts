@@ -63,7 +63,10 @@ export async function POST(req: Request, { params }: RouteContext) {
       .returning();
   } catch (err) {
     console.error("[api/admin/goals] insert failed:", err);
-    return NextResponse.json({ success: false, error: "Failed to create goal — please try again" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "Failed to create goal — please try again" },
+      { status: 500 },
+    );
   }
 
   return NextResponse.json({ success: true, data: goal }, { status: 201 });

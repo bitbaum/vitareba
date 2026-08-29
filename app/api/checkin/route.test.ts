@@ -52,8 +52,11 @@ import { GET, POST } from "./route";
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
-const SESSION = { session: { user: { id: "user-1", role: "patient", email: "alice@example.com" } }, error: null };
-const UNAUTH  = { session: null, error: new Response(null, { status: 401 }) };
+const SESSION = {
+  session: { user: { id: "user-1", role: "patient", email: "alice@example.com" } },
+  error: null,
+};
+const UNAUTH = { session: null, error: new Response(null, { status: 401 }) };
 
 // Fixed "now" so relative date assertions are deterministic
 const NOW = new Date("2026-05-07T09:00:00.000Z");
@@ -63,8 +66,12 @@ const VALID_CHECKIN = { date: TODAY, sleep: 4, energy: 4, mood: 4, focus: 4, str
 
 // 7 consecutive check-ins ending today → CHECKIN_STREAK_MILESTONES includes 7 → email fires
 const SEVEN_DAY_STREAK = [
-  { date: "2026-05-07" }, { date: "2026-05-06" }, { date: "2026-05-05" },
-  { date: "2026-05-04" }, { date: "2026-05-03" }, { date: "2026-05-02" },
+  { date: "2026-05-07" },
+  { date: "2026-05-06" },
+  { date: "2026-05-05" },
+  { date: "2026-05-04" },
+  { date: "2026-05-03" },
+  { date: "2026-05-02" },
   { date: "2026-05-01" },
 ];
 
@@ -126,9 +133,7 @@ describe("GET /api/checkin", () => {
     mockRequireSession.mockResolvedValue(SESSION);
     mockCheckinFindMany.mockResolvedValue([]);
     await GET(new Request("https://example.com/api/checkin?days=14"));
-    expect(mockCheckinFindMany).toHaveBeenCalledWith(
-      expect.objectContaining({ limit: 14 })
-    );
+    expect(mockCheckinFindMany).toHaveBeenCalledWith(expect.objectContaining({ limit: 14 }));
   });
 });
 
@@ -158,21 +163,25 @@ describe("POST /api/checkin", () => {
 
   it("returns 401 when unauthenticated", async () => {
     mockRequireSession.mockResolvedValue(UNAUTH);
-    const res = await POST(new Request("https://example.com/api/checkin", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(VALID_CHECKIN),
-    }));
+    const res = await POST(
+      new Request("https://example.com/api/checkin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(VALID_CHECKIN),
+      }),
+    );
     expect(res.status).toBe(401);
   });
 
   it("returns 400 for invalid check-in data", async () => {
     mockRequireSession.mockResolvedValue(SESSION);
-    const res = await POST(new Request("https://example.com/api/checkin", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ date: TODAY, sleep: 6, energy: 4, mood: 4, focus: 4, stress: 2 }), // sleep out of range
-    }));
+    const res = await POST(
+      new Request("https://example.com/api/checkin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date: TODAY, sleep: 6, energy: 4, mood: 4, focus: 4, stress: 2 }), // sleep out of range
+      }),
+    );
     expect(res.status).toBe(400);
     const json = await res.json();
     expect(json.success).toBe(false);
@@ -182,11 +191,13 @@ describe("POST /api/checkin", () => {
   it("returns 500 when the DB save throws", async () => {
     mockRequireSession.mockResolvedValue(SESSION);
     mockCheckinFindFirst.mockRejectedValue(new Error("db down"));
-    const res = await POST(new Request("https://example.com/api/checkin", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(VALID_CHECKIN),
-    }));
+    const res = await POST(
+      new Request("https://example.com/api/checkin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(VALID_CHECKIN),
+      }),
+    );
     expect(res.status).toBe(500);
   });
 
@@ -194,11 +205,13 @@ describe("POST /api/checkin", () => {
     mockRequireSession.mockResolvedValue(SESSION);
     mockCheckinFindFirst.mockResolvedValue({ id: "existing-1", date: TODAY }); // already exists
 
-    const res = await POST(new Request("https://example.com/api/checkin", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(VALID_CHECKIN),
-    }));
+    const res = await POST(
+      new Request("https://example.com/api/checkin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(VALID_CHECKIN),
+      }),
+    );
     expect(res.status).toBe(200);
     expect(mockUpdate).toHaveBeenCalled();
     expect(mockInsert).not.toHaveBeenCalled();
@@ -210,15 +223,21 @@ describe("POST /api/checkin", () => {
     mockCheckinFindFirst.mockResolvedValue(null); // no existing check-in
     // Streak check fetches history — return 6 days (not a milestone)
     mockCheckinFindMany.mockResolvedValue([
-      { date: "2026-05-06" }, { date: "2026-05-05" }, { date: "2026-05-04" },
-      { date: "2026-05-03" }, { date: "2026-05-02" }, { date: "2026-05-01" },
+      { date: "2026-05-06" },
+      { date: "2026-05-05" },
+      { date: "2026-05-04" },
+      { date: "2026-05-03" },
+      { date: "2026-05-02" },
+      { date: "2026-05-01" },
     ]);
 
-    const res = await POST(new Request("https://example.com/api/checkin", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(VALID_CHECKIN),
-    }));
+    const res = await POST(
+      new Request("https://example.com/api/checkin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(VALID_CHECKIN),
+      }),
+    );
     expect(res.status).toBe(200);
     expect(mockInsert).toHaveBeenCalled();
     expect(mockUpdate).not.toHaveBeenCalled();
@@ -234,11 +253,13 @@ describe("POST /api/checkin", () => {
     mockCheckinFindMany.mockResolvedValue(SEVEN_DAY_STREAK);
     mockUserFindFirst.mockResolvedValue({ name: "Alice", email: "alice@example.com" });
 
-    const res = await POST(new Request("https://example.com/api/checkin", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(VALID_CHECKIN),
-    }));
+    const res = await POST(
+      new Request("https://example.com/api/checkin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(VALID_CHECKIN),
+      }),
+    );
     expect(res.status).toBe(200);
     // Run the captured callback to trigger the streak check
     await mockRunAfterResponse.mock.calls[0][0]();
@@ -246,7 +267,7 @@ describe("POST /api/checkin", () => {
       expect.objectContaining({
         to: "alice@example.com",
         subject: expect.stringContaining("7-day streak"),
-      })
+      }),
     );
   });
 
@@ -255,15 +276,20 @@ describe("POST /api/checkin", () => {
     mockCheckinFindFirst.mockResolvedValue(null);
     // 5 consecutive days — not in CHECKIN_STREAK_MILESTONES [7, 30, 100]
     mockCheckinFindMany.mockResolvedValue([
-      { date: "2026-05-07" }, { date: "2026-05-06" }, { date: "2026-05-05" },
-      { date: "2026-05-04" }, { date: "2026-05-03" },
+      { date: "2026-05-07" },
+      { date: "2026-05-06" },
+      { date: "2026-05-05" },
+      { date: "2026-05-04" },
+      { date: "2026-05-03" },
     ]);
 
-    await POST(new Request("https://example.com/api/checkin", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(VALID_CHECKIN),
-    }));
+    await POST(
+      new Request("https://example.com/api/checkin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(VALID_CHECKIN),
+      }),
+    );
     await mockRunAfterResponse.mock.calls[0][0]();
     expect(mockSendEmail).not.toHaveBeenCalled();
   });
@@ -274,11 +300,13 @@ describe("POST /api/checkin", () => {
     mockCheckinFindMany.mockResolvedValue(SEVEN_DAY_STREAK);
     mockUserFindFirst.mockResolvedValue(null); // user not found
 
-    await POST(new Request("https://example.com/api/checkin", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(VALID_CHECKIN),
-    }));
+    await POST(
+      new Request("https://example.com/api/checkin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(VALID_CHECKIN),
+      }),
+    );
     await mockRunAfterResponse.mock.calls[0][0]();
     expect(mockSendEmail).not.toHaveBeenCalled();
   });
