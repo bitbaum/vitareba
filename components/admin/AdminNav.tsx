@@ -353,11 +353,17 @@ export function AdminBottomNav(props: AdminBadgeProps) {
               const Icon = ROUTE_ICONS[href];
               const count = badgeCount(href, badges);
               const urgent = ROUTE_BADGE_KEYS[href] === "patients";
+              // The sidebar and the bottom bar both announce the current page.
+              // The overflow sheet did not — so the destinations that happened
+              // to land behind "More" were the ones a screen-reader user could
+              // not locate themselves in.
+              const active = isActive(pathname, href);
               return (
                 <Link
                   key={href}
                   href={href}
                   className={styles.moreSheetItem}
+                  aria-current={active ? "page" : undefined}
                   onClick={() => setMoreOpen(false)}
                 >
                   <span className={styles.navIcon}>

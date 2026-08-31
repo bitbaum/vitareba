@@ -2181,6 +2181,11 @@
     display: flex;
     align-items: center;
     gap: 0.65rem;
+    /* 0.65rem of padding around 0.85rem text lands near 41px at this root
+       size — just under the floor .bottomNavItem already states explicitly.
+       The overflow sheet is a touch surface like any other; say the minimum
+       rather than arriving near it by arithmetic. */
+    min-height: 44px;
     padding: 0.65rem 0.85rem;
     border-radius: var(--radius-lg);
     color: var(--white-90);
@@ -2188,10 +2193,18 @@
     font-size: 0.85rem;
   }
 
-  .moreSheetItem:hover,
+  .moreSheetItem:hover {
+    background: var(--white-7);
+  }
+
+  /* Hover and focus were one rule, so keyboard focus was indicated by a 7%
+     white wash and nothing else — the weakest possible signal, on the surface
+     where a keyboard user most needs to know where they are. Focus gets a real
+     ring; hover keeps the wash. */
   .moreSheetItem:focus-visible {
     background: var(--white-7);
-    outline: none;
+    outline: 2px solid var(--white-90);
+    outline-offset: -2px;
   }
 
   /* Tighter header padding */
