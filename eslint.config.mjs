@@ -13,6 +13,11 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  // eslint-config-next ships `settings.react.version: 'detect'`; detection calls
+  // context.getFilename(), removed in ESLint 10, and throws on every file. Pin the version.
+  {
+    settings: { react: { version: "19.2.8" } },
+  },
   {
     // react-hooks v7 introduced aggressive React Compiler rules that flag
     // valid async data-loading patterns (useCallback + useEffect(() => { load(); }, [load]))
