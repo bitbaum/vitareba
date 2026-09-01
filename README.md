@@ -15,7 +15,7 @@ Clinical patient management platform for **Vita GmbH** — a metabolic psychiatr
 
 ## Hosting
 
-Self-hosted on the Hetzner box ("bitbaum") behind Caddy, served at **https://vitareba.ch**. There is no managed platform — deployment is pull, `pnpm build` (standalone output), and a systemd service restart. Uploaded documents are stored on local disk and served by Caddy under `/uploads/*`. Scheduled `/api/cron/*` jobs run from systemd timers / cron on the box (schedules defined in `CLAUDE.md` → Cron Jobs).
+Self-hosted on the Hetzner box ("bitbaum") behind Caddy, served at **https://vitareba.orangecat.ch** (vitareba.ch is the intended future domain; it has no DNS yet — see lib/config/company.ts). There is no managed platform — deployment is pull, `pnpm build` (standalone output), and a systemd service restart. Uploaded documents are stored on local disk and served by Caddy under `/uploads/*`. Scheduled `/api/cron/*` jobs run from systemd timers / cron on the box (schedules defined in `CLAUDE.md` → Cron Jobs).
 
 ## Getting started
 
