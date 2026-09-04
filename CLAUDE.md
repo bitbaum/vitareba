@@ -6,7 +6,7 @@
 **What this is:** Clinical patient management platform for Vita GmbH — a metabolic psychiatry & systemic longevity clinic in Zürich, founded by Manuel (also founder of Surf Your Life). Flagship programme is ADHD diagnosis and optimisation for high performers.
 
 The platform has two parts:
-1. **Public marketing site** — multilingual (de/en/fr/it), lands at `/de/`, primary CTA is the Inflection Edge self-assessment overlay
+1. **Public marketing site** — multilingual (de/en/fr), lands at `/de/`, primary CTA is the Inflection Edge self-assessment overlay
 2. **Patient portal + admin panel** — authenticated, database-backed, at `/dashboard` (patients) and `/admin` (Manuel)
 
 **Stack:** Next.js 16 (App Router, `standalone` output) · TypeScript strict · Tailwind v4 · self-hosted PostgreSQL (`pg` driver) · Drizzle ORM · NextAuth 5 · Resend email · self-hosted on the Hetzner box ("bitbaum") behind Caddy, served at `vitareba.orangecat.ch` (`vitareba.ch` is the intended
@@ -28,8 +28,7 @@ public domain but is not pointed yet — do not probe it). Scheduled jobs run vi
 proxy.ts                  → Auth guard (portal/admin) + locale routing (marketing) [Next.js middleware]
 
 app/
-  (auth)/                 → Non-localized auth pages (/login, /register, etc.) — portal users
-  [locale]/(auth)/        → Localized auth pages (/de/login, etc.) — marketing site visitors
+  [locale]/(auth)/        → Auth pages, localized (/de/login, etc.) — bare /login is redirected into the default locale
   (portal)/               → Patient-facing authenticated area
     dashboard/            → Patient home: assessment results, goals, check-in prompt, booking
     assessment/           → Take the Inflection Edge questionnaire
@@ -68,13 +67,15 @@ app/
       signals             → Daily 02:00 — compute patient signals, alert on critical
       emails              → Daily 08:00 — process email queue
       weekly-digest       → Sunday 08:00 — weekly summary to patients
-  [locale]/               → Localized marketing site (de/en/fr/it)
+      orphaned-files      → Daily 03:00 — delete stored files no document row points at
+      calendar-sync       → Every 15 min — re-read clinicians' subscribed calendars
+  [locale]/               → Localized marketing site (de/en/fr)
   page.tsx                → Root redirect → /de/
   layout.tsx              → Root layout: fonts, metadata, SessionProvider
   manifest.ts             → PWA manifest (start_url: /dashboard)
 
 components/
-  sections/               → Public marketing page sections (14 files, each with .module.css)
+  sections/               → Public marketing page sections (16 files, most with a co-located .module.css)
   Assessment/             → Inflection Edge overlay (public, no auth required)
   portal/                 → Portal UI: PortalNav, UserDropdown, trend charts
   admin/                  → Admin UI: patient cards, forms, inline compose
@@ -111,15 +112,15 @@ lib/
   i18n/
     navigation.ts         → next-intl locale navigation helpers
 
-i18n/routing.ts           → Locales: de (default), en, fr, it
-messages/                 → Translation files: de.json, en.json, fr.json, it.json
+i18n/routing.ts           → Locales: de (default), en, fr
+messages/                 → Translation files: de.json, en.json, fr.json
 ```
 
 ---
 
 ## Database Schema (Drizzle + self-hosted PostgreSQL)
 
-Tables: `users`, `accounts`, `sessions`, `verificationTokens` (NextAuth), `profiles`, `dailyCheckins` (unique on user_id+date), `assessmentResults`, `bookings`, `documents`, `threads`, `threadMessages`, `threadParticipants`, `patientNotes`, `programmeAssignments`, `clinicalGoals`, `emailQueue`
+Tables: `users`, `accounts`, `sessions`, `verificationTokens` (NextAuth), `profiles`, `dailyCheckins` (unique on user_id+date), `measurements`, `assessmentResults`, `bookings`, `clinicianProfiles`, `clinicianApplications`, `careTeam`, `clinicianCalendars`, `calendarBusy`, `documents`, `threads`, `threadMessages`, `threadParticipants`, `patientNotes`, `programmeAssignments`, `clinicalGoals`, `emailQueue`, `notifications`, `assessmentLeads`
 
 **Migrations (versioned, auto-applied):** after editing `lib/db/schema.ts`, run
 `pnpm db:generate` and COMMIT the new `drizzle/*.sql` — the deploy schema step
@@ -277,7 +278,7 @@ The Inflection Edge runs both as a public overlay (marketing site → conversion
 lib/assessment/data.ts
   DIMENSIONS (5)         → Arousal, Divergent, Hyperfocus, Volatility, Environment
   QUESTIONS (30)         → 6 per dimension
-  VERDICT_TIERS          → 4 tiers: Deep Friction / Managed Tension / Asymmetric Performance / Optimised
+  VERDICT_TIERS          → 4 tiers: Deep Friction / Managed Tension / Asymmetric Performance / Optimised Neurotype
   INTERPRETATIONS        → per-dimension text, 3 tiers each
   scoreColor(score)      → CSS var string for score colouring
 ```
@@ -296,7 +297,7 @@ Vita and Surf Your Life are separate brands — same founder, different platform
 |---|---|---|
 | Domain | Clinical / medical | Coaching / transformation |
 | Audience | ADHD high performers, longevity patients | Burnout recovery, general wellbeing |
-| Contact | `manuel@surfyourlife.org` (SSOT: `lib/config/company.ts`) | Same founder |
+| Contact | `vitareba@hin.ch` (SSOT: `lib/config/company.ts`) | Same founder |
 
 **Do not** merge codebases. **Do not** share components. They share philosophy, not code.
 
@@ -311,18 +312,18 @@ pnpm lint         # eslint
 pnpm db:push      # push schema changes to the self-hosted Postgres
 pnpm db:generate  # generate migration files
 pnpm db:studio    # Drizzle Studio for DB inspection
-pnpm verify       # lint + typecheck + test — the pre-done gate (mirrors CI)
+pnpm verify       # format check + lint + typecheck + test — the pre-done gate (mirrors CI)
 ```
 
 **Before declaring any change done, run `pnpm verify`.** It runs the same
-hermetic gates as CI (lint + typecheck + the full test suite), so green locally
+hermetic gates as CI (format check + lint + typecheck + the full test suite), so green locally
 means green on the shared branch — don't hand work back for manual smoke-testing
 that `verify` already covers. CI (`.github/workflows/ci.yml`) re-runs the same
 gates plus `build` on every push and PR to `main`.
 
 ## Deploy Workflow (self-hosted Hetzner box)
 
-Deployment is a pull-and-restart on the box, not a managed platform push. After `git push`, the box pulls the new commit, runs `pnpm build` (Next.js `standalone` output), and the systemd service is restarted. Verify the site is live before reporting done:
+Deployment is automated CD, not a managed platform push. A push to `main` triggers `.github/workflows/deploy.yml`, which calls the fleet's reusable workflow (`bitbaum/fleetcrown/.github/workflows/selfhost-deploy.yml`): it waits for this commit's own CI to go green, pulls the runtime `.env` from the box (the box stays the env SSOT), builds (Next.js `standalone` output), rsyncs the release to the box, swaps a symlink atomically, restarts the systemd service, and health-checks with auto-rollback. Verify the site is live before reporting done:
 
 ```bash
 # Confirm the app responds after a deploy/restart.

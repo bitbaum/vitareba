@@ -152,7 +152,7 @@ All design tokens live in `app/globals.css` only. There is no `tailwind.config.*
 - Same token defined in 2+ files → consolidate to globals.css
 - Hex values in `lib/config/theme.ts` diverging from `globals.css` → sync them
 
-**Audit:** `grep -r '\[#' src/` — every result is a violation.
+**Audit:** `grep -r '\[#' app/ components/ lib/` (there is no `src/` — code lives at the repo root) — every result is a violation.
 
 ## Codex CLI Baseline
 
