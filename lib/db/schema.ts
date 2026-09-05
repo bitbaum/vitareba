@@ -65,6 +65,51 @@ export const clinicianApplicationStatusEnum = pgEnum("clinician_application_stat
   "declined",
 ]);
 
+// ─── Organisation ─────────────────────────────────────────────────────────────
+
+/**
+ * The practice this deployment serves. One row today, seeded from
+ * `lib/config/company.ts` — see `lib/domain/organization.ts` for why the
+ * constant is still the source of that row and not the other way round.
+ *
+ * It exists as a table because the same lesson has now been learned twice one
+ * level down: `COMPANY.clinicianName` and the hand-authored per-email
+ * scheduling map were both config constants that stopped being true the moment
+ * there were two of the thing they named. "The clinic" is the next constant in
+ * that sequence, and a deployment per clinic (see CLAUDE.md) is only cheap
+ * while clinic identity is a row you can vary, not a literal you must fork.
+ *
+ * Deliberately NOT a tenancy column on the other tables. Isolation between
+ * clinics is a separate database per deployment, which no `WHERE` clause can
+ * forget; adding `org_id` to 24 tables would buy a leak class this schema
+ * currently cannot express.
+ */
+export const organizations = pgTable("organizations", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  /** Stable handle used by config, deploys and `getOrganization()`. */
+  slug: varchar("slug", { length: 64 }).notNull().unique(),
+  /** Legal name, e.g. "Vita GmbH" — used where the entity, not the brand, is meant. */
+  name: varchar("name", { length: 200 }).notNull(),
+  /** Brand name used in running copy and email subjects. */
+  shortName: varchar("short_name", { length: 80 }).notNull(),
+  /** How to name a patient's doctor before a care team exists. Lowercase — appears mid-sentence. */
+  clinicianFallback: varchar("clinician_fallback", { length: 80 }).notNull(),
+  /** Product label for the AI participant. Must stay visibly non-human. */
+  assistantName: varchar("assistant_name", { length: 80 }).notNull(),
+  /** Non-medical sibling brand, where one exists. Nullable: most practices have none. */
+  partnerBrand: varchar("partner_brand", { length: 120 }),
+  email: varchar("email", { length: 255 }).notNull(),
+  phone: varchar("phone", { length: 40 }),
+  addressStreet: varchar("address_street", { length: 200 }),
+  addressZip: varchar("address_zip", { length: 20 }),
+  addressCity: varchar("address_city", { length: 120 }),
+  /** IANA zone — SSOT for every "what day is it?" decision this practice makes. */
+  timezone: varchar("timezone", { length: 64 }).notNull().default("Europe/Zurich"),
+  foundingYear: integer("founding_year"),
+  createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).notNull().defaultNow(),
+});
+
 // ─── Auth tables (required by NextAuth DrizzleAdapter) ───────────────────────
 
 export const users = pgTable("users", {

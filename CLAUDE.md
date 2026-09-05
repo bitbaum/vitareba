@@ -149,6 +149,7 @@ granted automatically, and `/api/health` asserts the property directly
 | Shared utility CSS | `app/globals.css` | Duplicated across modules |
 | Component-specific CSS | Co-located `.module.css` | `globals.css` or inline `style={{}}` |
 | Company info (name, email, PORTAL_URL) | `lib/config/company.ts` | Hardcoded in components |
+| The practice, at runtime | `getOrganization()` (`lib/domain/organization.ts`) | A second literal — the seed is asserted equal to `COMPANY` by `organization.test.ts` |
 | Programme/phase labels | `lib/config/programmes.ts` | Any component |
 | Signal thresholds + labels | `lib/config/admin.ts` | Any component |
 | Assessment questions, scoring | `lib/assessment/data.ts` | Any component |
@@ -161,6 +162,30 @@ granted automatically, and `/api/health` asserts the property directly
 | Auth pages routing | `proxy.ts` (derives from PORTAL_ROUTES) | Scattered guards |
 
 **The 2-file test:** Adding a team member = 1 file. Changing company email = 1 file. Adding a programme phase = 1 file. More than that → architecture is wrong.
+
+---
+
+## One Practice Per Deployment
+
+A second clinic gets its own deployment and its own database — another `app:`
+in the fleetcrown deploy workflow — **not** an `org_id` column on 24 tables.
+
+This is a decision, not a gap. Row-level tenancy would add a leak class this
+schema currently cannot express: every `WHERE` in every query becomes load-
+bearing for confidentiality, and `app/api/user-isolation.test.ts` guards
+patient isolation, not practice isolation. Separate databases cannot leak
+between practices because there is nothing to forget.
+
+What is shared is the *shape*: `organizations` holds this deployment's own
+practice, seeded from `COMPANY` (migration 0016). `COMPANY` remains the source
+of that row because the manifest, OG image and sitemap render at build time
+with no database reachable — a clinic whose name exists only in a row cannot
+render its own favicon. `lib/domain/organization.test.ts` fails if the two
+drift, which is the check `lib/config/theme.ts` still lacks.
+
+Read the practice through `getOrganization()` on any surface that must vary
+per clinic. The ~109 existing `COMPANY.x` reads are correct for a single-
+practice deployment and are converted one surface at a time, not all at once.
 
 ---
 
