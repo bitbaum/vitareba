@@ -1,12 +1,6 @@
 /// <reference types="vitest/globals" />
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("resend", () => ({
-  Resend: class {
-    emails = { send: vi.fn() };
-  },
-}));
-
 import { isEmailConfigured, usesSandboxSender } from "./index";
 
 const ORIGINAL = { ...process.env };
@@ -44,6 +38,13 @@ describe("isEmailConfigured", () => {
 
   it("is true with a key and a real sender", () => {
     expect(isEmailConfigured()).toBe(true);
+  });
+
+  // mail-kit extends the old guard: a placeholder key looks configured and
+  // delivers to nobody, so it counts as unconfigured too.
+  it("is false with a placeholder key", () => {
+    process.env.RESEND_API_KEY = "re_placeholder_123";
+    expect(isEmailConfigured()).toBe(false);
   });
 
   /**

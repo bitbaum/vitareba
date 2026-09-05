@@ -170,7 +170,14 @@ export async function runCronEmails(now: Date = new Date()): Promise<CronEmailsR
         continue;
       }
 
-      const result = await sendEmail({ to: user.email, subject, html });
+      // Keyed by queue row so a crashed run retried next cron can't double-send
+      // an email whose row never got marked sent.
+      const result = await sendEmail({
+        to: user.email,
+        subject,
+        html,
+        idempotencyKey: `email-queue-${item.id}`,
+      });
       if (!result.sent) throw new Error(result.error);
 
       await db

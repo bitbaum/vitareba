@@ -18,3 +18,4 @@ allowBuilds:
 # situation the guard exists for.
 minimumReleaseAgeExclude:
   - threadkit@0.1.0
+  - "@bitbaum/mail-kit"
