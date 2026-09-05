@@ -6,7 +6,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## Design System
 
-**Tailwind version:** v4. No `tailwind.config.*` file exists — Tailwind is imported via `@import "tailwindcss"` in `app/globals.css`. There is no `@theme` block. All design tokens are `:root` CSS custom properties in `globals.css`. Do not create a `tailwind.config.*` file. Components use semantic CSS utility classes from `globals.css` plus standard Tailwind utilities. Never use arbitrary values like `bg-[#hex]`.
+**Tailwind version:** v4. No `tailwind.config.*` file exists — Tailwind is imported via `@import "tailwindcss"` in `app/globals.css`. There is no `@theme` block. All design tokens are `:root` CSS custom properties in `globals.css`. Do not create a `tailwind.config.*` file. Components style themselves with co-located CSS Modules plus the semantic utility classes in `globals.css` — **no Tailwind utility class is used anywhere in this codebase**, and none should be: with no `@theme` block, Tailwind's default palette is what `text-teal-500` would resolve to (`#14b8a6`, not Vita's `--teal` `#2a7a8a`), and no test catches that. Never use arbitrary values like `bg-[#hex]`.
 
 **JS token file:** `lib/config/theme.ts` exports named constants (`COLOR_INK`, `COLOR_TEAL`, etc.) with hex values mirroring `globals.css`. Use only in JS rendering contexts that cannot read CSS vars (Recharts SVG attributes, Satori OG images, PWA manifest). Values must stay in sync with `globals.css` manually — it is NOT auto-derived. Do NOT use these constants in JSX classNames.
 

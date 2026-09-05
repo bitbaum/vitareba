@@ -9,14 +9,14 @@ The platform has two parts:
 1. **Public marketing site** — multilingual (de/en/fr), lands at `/de/`, primary CTA is the Inflection Edge self-assessment overlay
 2. **Patient portal + admin panel** — authenticated, database-backed, at `/dashboard` (patients) and `/admin` (Manuel)
 
-**Stack:** Next.js 16 (App Router, `standalone` output) · TypeScript strict · Tailwind v4 · self-hosted PostgreSQL (`pg` driver) · Drizzle ORM · NextAuth 5 · Resend email · self-hosted on the Hetzner box ("bitbaum") behind Caddy, served at `vitareba.orangecat.ch` (`vitareba.ch` is the intended
+**Stack:** Next.js 16 (App Router, `standalone` output) · TypeScript strict · **CSS Modules** (see Styling below) · self-hosted PostgreSQL (`pg` driver) · Drizzle ORM · NextAuth 5 · Resend email · self-hosted on the Hetzner box ("bitbaum") behind Caddy, served at `vitareba.orangecat.ch` (`vitareba.ch` is the intended
 public domain but is not pointed yet — do not probe it). Scheduled jobs run via systemd timers / cron on the box; documents are stored on local disk and served only through an authenticated route.
 
 ---
 
 ## Mission
 
-**Who:** Manuel Schabus, metabolic psychiatry clinician at Vita Zürich, and his high-performer ADHD patients.
+**Who:** Manuel Riegner, metabolic psychiatry clinician at Vita Zürich, and his high-performer ADHD patients.
 **Problem:** Patients need frictionless daily data collection so their biology is visible; Manuel needs instant clarity on which patients need attention — and the marketing site must let curious visitors experience the Inflection Edge *before* hitting an auth wall.
 **Success:** Manuel opens the admin and knows — without calling anyone — exactly who needs attention today. Patients check in daily because the portal shows them it matters. Visitors complete the Inflection Edge without being asked to register first, then convert because the results made them want to.
 
@@ -138,6 +138,37 @@ Prod now carries `ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO vitareba`, so new tables are
 granted automatically, and `/api/health` asserts the property directly
 (`lib/db/schema-usable.ts`) so a deploy that loses it goes red instead of quiet.
+
+---
+
+## Styling
+
+**CSS Modules, not Tailwind.** 40 `.module.css` files (~9,200 lines) and 1,281
+module class references. **Zero Tailwind utility classes are used anywhere** —
+all 15 literal `className` strings in the codebase are global classes defined in
+`app/globals.css` (`section-inner`, `eyebrow`, `sec-title`, `tag`, `sr-only`…).
+
+Tailwind v4 is still imported (`@import "tailwindcss"` in `globals.css`) with no
+`tailwind.config.*` and no `@theme` block, which means its **default palette is
+live and unguarded**: `text-teal-500` would silently render Tailwind's `#14b8a6`
+rather than Vita's `--teal` `#2a7a8a`, and no test catches it. Don't reach for it.
+
+- Design tokens → `:root` custom properties in `app/globals.css`
+- Shared component classes → `app/shared.module.css` (`composes:` from portal/admin)
+- Everything else → a co-located `.module.css`
+
+`lib/design-discipline.test.ts` fails CI on raw hex, untokenised radii and
+transition durations, stray `style={{}}`, and any `var(--x)` that globals.css
+does not define. `lib/css-order.test.ts` fails when an `@media` block precedes
+a base rule it overrides.
+
+**Open: this diverges from the fleet.** `fleet/STACK.md` blesses Tailwind, and
+its exceptions column records every deliberate departure (orangecat/botsmann on
+supabase-js, evig on Listmonk). Vita's CSS Modules architecture has **no entry
+there**, so it currently reads as drift rather than as a decision — the worst
+of the three states, because every new session re-litigates it. Resolve it one
+way or the other: convert, or record the exception with a reason. Until then,
+do not convert files opportunistically in unrelated PRs.
 
 ---
 
