@@ -60,7 +60,10 @@ export function aiLivenessHandler(request: Request): Promise<Response> {
       });
 
       if (!result.ok) throw new Error(result.error);
-      return { text: result.text, id: process.env.AI_MODEL ?? "clinic-ai" };
+      // The model that ANSWERED, not the AI_MODEL setting: that may list
+      // several, and the chain falls to the second when the first is retired.
+      // Reporting the configuration would state something unobserved.
+      return { text: result.text, id: result.model };
     },
   });
   return handler(request);

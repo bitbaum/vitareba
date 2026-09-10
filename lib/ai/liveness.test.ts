@@ -86,6 +86,8 @@ describe("GET /api/health/ai", () => {
     const res = await handler(new Request("https://v.test/api/health/ai?probe=1&secret=right"));
 
     expect(res.status).toBe(200);
+    // The model that ANSWERED, not the AI_MODEL setting — that may list several.
+    expect((await res.json()).servedBy).toBe("mistral-large-latest");
     // ai-kit's default chain is Groq then OpenRouter, both US-hosted and
     // neither under a DPA with this clinic. A probe that reached them would be
     // a data protection problem even though it carries no patient data — the

@@ -92,7 +92,11 @@ describe("aiChat data residency", () => {
 describe("aiChat request handling", () => {
   it("returns the model's text", async () => {
     const aiChat = await loadAiChat();
-    await expect(aiChat(ASK)).resolves.toEqual({ ok: true, text: "Befund." });
+    await expect(aiChat(ASK)).resolves.toEqual({
+      ok: true,
+      text: "Befund.",
+      model: "mistral-large-latest",
+    });
   });
 
   it("an empty 200 is a failure, never an empty brief handed to a clinician", async () => {
@@ -117,7 +121,13 @@ describe("aiChat request handling", () => {
 
     const res = await aiChat(ASK);
 
-    expect(res).toEqual({ ok: true, text: "Zweites Modell antwortet." });
+    // The SECOND model is named — the whole point of the fallback list is that
+    // the caller can tell which id actually served after the first rotted.
+    expect(res).toEqual({
+      ok: true,
+      text: "Zweites Modell antwortet.",
+      model: "mistral-large-latest",
+    });
     for (const [url] of fetchMock.mock.calls) {
       expect(String(url)).toContain("api.mistral.ai");
     }
