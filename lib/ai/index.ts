@@ -12,10 +12,21 @@
  *   AI_MODEL     e.g. mistral-large-latest (comma-separated for a fallback)
  *
  * ── Why this uses @bitbaum/ai-kit but NOT its default chain ──────────────────
- * The fleet's `freeChain()` is Groq then OpenRouter: both US-hosted, neither
- * under a DPA with this clinic. Pointing patient data at it would be a data
- * protection breach, so the provider stays exactly where the operator put it —
- * one endpoint, chosen deliberately, checked against regulation.ts.
+ * The provider is the OPERATOR's choice, not this file's, and not the fleet's.
+ *
+ * An earlier version of this comment said pointing patient data at the fleet's
+ * `freeChain()` "would be a data protection breach". That overstated it, and
+ * lib/config/regulation.ts is the authority: the `cloud-ai-processing` block is
+ * `gated`, not `blocked`. Health data is GDPR Art. 9 and Swiss Criminal Code
+ * Art. 321 — the strictest rules this product touches — and the lawful path
+ * through them is the one this app already implements: explicit, timestamped,
+ * withdrawable per-patient consent (the Art. 49(1)(a) derogation), plus a
+ * warning on every output naming the line the data crossed.
+ *
+ * So the endpoint is a deployment decision, taken by whoever runs the clinic
+ * and answers for it — not a constant to be hard-coded here. `freeChain()` is
+ * still not used, because it would silently OVERRIDE that decision with a
+ * fleet-wide default the operator never made.
  *
  * What the engine is used for is the REQUEST, which is where the defects were:
  *
@@ -51,7 +62,15 @@ export function isAiDpaSigned(): boolean {
   return process.env.AI_DPA_SIGNED === "true";
 }
 
-export type AiResult = { ok: true; text: string } | { ok: false; error: string };
+export type AiResult =
+  /**
+   * `model` is the id that actually answered, which is not knowable from the
+   * configuration: AI_MODEL may list several, and the chain falls to the second
+   * when the first is retired. A caller reporting the configured LIST as though
+   * it were the responder — the health probe did exactly this — states something
+   * it did not observe.
+   */
+  { ok: true; text: string; model: string } | { ok: false; error: string };
 
 /**
  * The one provider this deployment is allowed to talk to.
@@ -112,7 +131,7 @@ export async function aiChat({
         { role: "user", content: user },
       ],
     });
-    return { ok: true, text: result.text.trim() };
+    return { ok: true, text: result.text.trim(), model: result.link.model };
   } catch (err) {
     if (err instanceof ChainExhaustedError) {
       // Every link's failure, not only the last — the detail belongs in the
