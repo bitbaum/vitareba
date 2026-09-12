@@ -23,7 +23,7 @@
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.3",
     "@bitbaum/ai-kit": "^1.4.0",
-    "@bitbaum/mail-kit": "^0.1.0",
+    "@bitbaum/mail-kit": "^0.1.1",
     "@sentry/nextjs": "^10.73.0",
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.2",
