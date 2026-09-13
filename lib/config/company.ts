@@ -78,7 +78,7 @@ export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://vitareba.or
 // Default "from" address for transactional emails — used as fallback when RESEND_FROM is unset.
 // The domain must be VERIFIED in Resend (https://resend.com/domains) or the provider
 // refuses every recipient except the account owner, which silently strands patients.
-// fleetcrown.orangecat.ch is the verified fleet sending domain; the display name is
+// loki.orangecat.ch is the verified fleet sending domain; the display name is
 // what patients actually see in their inbox. Move to a vitareba.ch sender once that
 // domain is delegated and verified.
 // Never put a sandbox sender (…@resend.dev) here — see isEmailConfigured().
