@@ -124,7 +124,7 @@ Tables: `users`, `accounts`, `sessions`, `verificationTokens` (NextAuth), `profi
 
 **Migrations (versioned, auto-applied):** after editing `lib/db/schema.ts`, run
 `pnpm db:generate` and COMMIT the new `drizzle/*.sql` — the deploy schema step
-(fleetcrown `scripts/hetzner/apply-schema.sh`) applies pending migrations to
+(loki `scripts/hetzner/apply-schema.sh`) applies pending migrations to
 prod automatically on every deploy (additive-only, transactional; destructive
 diffs abort the deploy for a human). `pnpm db:push` is for local dev DBs only —
 never push schema to prod by hand.
@@ -199,7 +199,7 @@ do not convert files opportunistically in unrelated PRs.
 ## One Practice Per Deployment
 
 A second clinic gets its own deployment and its own database — another `app:`
-in the fleetcrown deploy workflow — **not** an `org_id` column on 24 tables.
+in the loki deploy workflow — **not** an `org_id` column on 24 tables.
 
 This is a decision, not a gap. Row-level tenancy would add a leak class this
 schema currently cannot express: every `WHERE` in every query becomes load-
@@ -309,7 +309,7 @@ Goals are set by admin per patient (`/api/admin/patients/[id]/goals`). Each goal
   delivers only to the Resend account owner — in production it silently
   strands every patient (no welcome mail, no reset link, no notifications), so
   `isEmailConfigured()` treats it as unconfigured when `NODE_ENV=production`.
-  Prod currently sends from the verified `fleetcrown.orangecat.ch` with a
+  Prod currently sends from the verified `loki.orangecat.ch` with a
   "Vita" display name; move to a `vitareba.ch` sender once that domain is
   delegated and verified.
 - **Templates:** `lib/email/templates.ts` — all emails defined here, imported by cron routes and API routes
@@ -379,7 +379,7 @@ gates plus `build` on every push and PR to `main`.
 
 ## Deploy Workflow (self-hosted Hetzner box)
 
-Deployment is automated CD, not a managed platform push. A push to `main` triggers `.github/workflows/deploy.yml`, which calls the fleet's reusable workflow (`bitbaum/fleetcrown/.github/workflows/selfhost-deploy.yml`): it waits for this commit's own CI to go green, pulls the runtime `.env` from the box (the box stays the env SSOT), builds (Next.js `standalone` output), rsyncs the release to the box, swaps a symlink atomically, restarts the systemd service, and health-checks with auto-rollback. Verify the site is live before reporting done:
+Deployment is automated CD, not a managed platform push. A push to `main` triggers `.github/workflows/deploy.yml`, which calls the fleet's reusable workflow (`bitbaum/loki/.github/workflows/selfhost-deploy.yml`): it waits for this commit's own CI to go green, pulls the runtime `.env` from the box (the box stays the env SSOT), builds (Next.js `standalone` output), rsyncs the release to the box, swaps a symlink atomically, restarts the systemd service, and health-checks with auto-rollback. Verify the site is live before reporting done:
 
 ```bash
 # Confirm the app responds after a deploy/restart.
@@ -390,7 +390,7 @@ curl -sS -o /dev/null -w '%{http_code}\n' https://vitareba.orangecat.ch/de
 curl -sS https://vitareba.orangecat.ch/api/health   # {"ok":true,"schemaCheck":"passed"}
 ```
 
-If it fails: check the service logs on the box (`journalctl -u <vitareba-service> -n 100`), fix, `pnpm build`, push again. Full migration/runbook: `fleetcrown/docs/infrastructure/hetzner-migration.md`.
+If it fails: check the service logs on the box (`journalctl -u <vitareba-service> -n 100`), fix, `pnpm build`, push again. Full migration/runbook: `loki/docs/infrastructure/hetzner-migration.md`.
 
 ---
 
