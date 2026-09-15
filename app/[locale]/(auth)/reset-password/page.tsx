@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 // Locale-aware router so post-reset push to /login keeps the visitor on /de/login
 import { Link, useRouter } from "@/lib/i18n/navigation";
 import styles from "../auth.module.css";
+import { AuthField, AuthSubmit } from "../AuthFields";
 import { PASSWORD_MIN_LENGTH } from "@/lib/config/auth";
 import { AUTH_ROUTES } from "@/lib/config/routes";
 
@@ -80,37 +81,27 @@ function ResetPasswordForm() {
       <p className={styles.subtitle}>{t("sub")}</p>
 
       <form className={styles.form} onSubmit={handleSubmit}>
-        <div className={styles.field}>
-          <label className={styles.label} htmlFor="password">
-            {t("newPasswordLabel")}
-          </label>
-          <input
-            id="password"
-            className={styles.input}
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder={t("newPasswordPlaceholder")}
-            required
-            minLength={PASSWORD_MIN_LENGTH}
-            autoComplete="new-password"
-          />
-        </div>
-        <div className={styles.field}>
-          <label className={styles.label} htmlFor="confirm">
-            {t("confirmPasswordLabel")}
-          </label>
-          <input
-            id="confirm"
-            className={styles.input}
-            type="password"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-            placeholder={t("confirmPasswordPlaceholder")}
-            required
-            autoComplete="new-password"
-          />
-        </div>
+        <AuthField
+          id="password"
+          label={t("newPasswordLabel")}
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder={t("newPasswordPlaceholder")}
+          required
+          minLength={PASSWORD_MIN_LENGTH}
+          autoComplete="new-password"
+        />
+        <AuthField
+          id="confirm"
+          label={t("confirmPasswordLabel")}
+          type="password"
+          value={confirm}
+          onChange={(e) => setConfirm(e.target.value)}
+          placeholder={t("confirmPasswordPlaceholder")}
+          required
+          autoComplete="new-password"
+        />
         {error && (
           <p className={styles.error} role="alert">
             {error}
@@ -124,9 +115,7 @@ function ResetPasswordForm() {
             )}
           </p>
         )}
-        <button type="submit" className={styles.submit} disabled={loading}>
-          {loading ? t("submitting") : t("submit")}
-        </button>
+        <AuthSubmit loading={loading} label={t("submit")} submittingLabel={t("submitting")} />
       </form>
     </>
   );

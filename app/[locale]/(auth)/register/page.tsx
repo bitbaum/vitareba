@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 // Locale-aware router & Link so /de/register → /de/login (not /register)
 import { Link, useRouter } from "@/lib/i18n/navigation";
 import styles from "../auth.module.css";
+import { AuthField, AuthSubmit } from "../AuthFields";
 import { AUTH_ROUTES, PORTAL_ROUTES } from "@/lib/config/routes";
 import { sanitizeReturnTo } from "@/lib/domain/auth";
 import { STORAGE_KEYS, safeSessionGet } from "@/lib/utils/storage";
@@ -72,42 +73,30 @@ function RegisterForm() {
       <p className={styles.subtitle}>{hasAssessment ? t("subAssessment") : t("sub")}</p>
 
       <form className={styles.form} onSubmit={handleSubmit}>
-        <div className={styles.field}>
-          <label className={styles.label} htmlFor="email">
-            {t("emailLabel")}
-          </label>
-          <input
-            id="email"
-            className={styles.input}
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder={t("emailPlaceholder")}
-            required
-            autoComplete="email"
-            autoFocus
-          />
-          {errors.email && <p className={styles.error}>{errors.email[0]}</p>}
-        </div>
-        <div className={styles.field}>
-          <label className={styles.label} htmlFor="password">
-            {t("passwordLabel")}
-          </label>
-          <input
-            id="password"
-            className={styles.input}
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder={t("passwordPlaceholder")}
-            required
-            autoComplete="new-password"
-          />
-          {errors.password && <p className={styles.error}>{errors.password[0]}</p>}
-        </div>
-        <button type="submit" className={styles.submit} disabled={loading}>
-          {loading ? t("submitting") : t("submit")}
-        </button>
+        <AuthField
+          id="email"
+          label={t("emailLabel")}
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder={t("emailPlaceholder")}
+          required
+          autoComplete="email"
+          autoFocus
+          error={errors.email?.[0]}
+        />
+        <AuthField
+          id="password"
+          label={t("passwordLabel")}
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder={t("passwordPlaceholder")}
+          required
+          autoComplete="new-password"
+          error={errors.password?.[0]}
+        />
+        <AuthSubmit loading={loading} label={t("submit")} submittingLabel={t("submitting")} />
       </form>
 
       <div className={styles.linkRow}>

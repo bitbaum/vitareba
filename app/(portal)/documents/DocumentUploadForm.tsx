@@ -1,65 +1,38 @@
 "use client";
 
-import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "../portal.module.css";
 import formStyles from "../../forms.module.css";
 import docStyles from "./documents.module.css";
 import {
+  DOCUMENT_ACCEPT,
   DOCUMENT_MAX_FILE_SIZE_MB,
   DOCUMENT_TITLE_MAX_LENGTH,
-  SAVED_FEEDBACK_MS,
 } from "@/lib/config/portal";
+import { useDocumentUpload } from "@/lib/hooks/useDocumentUpload";
 
 /**
  * Patients add their own documents here — lab results, referral letters, a
  * photo of a prescription. The server decides who the document belongs to
- * (always the signed-in user), so this form never sends a patient id.
+ * (always the signed-in user), so this form never sends a patient id: it omits
+ * `patientId` from useDocumentUpload, which the clinician's DocumentAddForm
+ * passes. The upload itself is the same one.
  */
 export function DocumentUploadForm() {
   const router = useRouter();
-  const [title, setTitle] = useState("");
-  const [file, setFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [progress, setProgress] = useState<"idle" | "uploading" | "done" | "error">("idle");
-  const [errorMsg, setErrorMsg] = useState("");
-  const fileRef = useRef<HTMLInputElement>(null);
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!file || !title.trim()) return;
-
-    setUploading(true);
-    setProgress("uploading");
-    setErrorMsg("");
-
-    try {
-      const formData = new FormData();
-      formData.set("file", file);
-      formData.set("title", title.trim());
-
-      const res = await fetch("/api/documents/upload", { method: "POST", body: formData });
-      const data = await res.json();
-
-      if (!data.success) {
-        setProgress("error");
-        setErrorMsg(data.error ?? "Upload failed.");
-        return;
-      }
-
-      setTitle("");
-      setFile(null);
-      if (fileRef.current) fileRef.current.value = "";
-      setProgress("done");
-      router.refresh();
-      setTimeout(() => setProgress("idle"), SAVED_FEEDBACK_MS);
-    } catch {
-      setProgress("error");
-      setErrorMsg("Upload failed. Please try again.");
-    } finally {
-      setUploading(false);
-    }
-  }
+  const {
+    title,
+    setTitle,
+    progress,
+    errorMsg,
+    fileRef,
+    handleFileChange,
+    handleSubmit,
+    submitLabel,
+    submitDisabled,
+    // The list this form sits above is server-rendered, so a new document only
+    // appears once the route re-renders.
+  } = useDocumentUpload({ onUploaded: () => router.refresh() });
 
   return (
     <form onSubmit={handleSubmit} className={`${styles.card} ${docStyles.uploadForm}`}>
@@ -91,20 +64,8 @@ export function DocumentUploadForm() {
             ref={fileRef}
             className={docStyles.fileInput}
             type="file"
-            accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx,.xlsx,.csv"
-            onChange={(e) => {
-              const selected = e.target.files?.[0] ?? null;
-              if (selected && selected.size > DOCUMENT_MAX_FILE_SIZE_MB * 1024 * 1024) {
-                setProgress("error");
-                setErrorMsg(`File exceeds the ${DOCUMENT_MAX_FILE_SIZE_MB} MB limit.`);
-                e.target.value = "";
-                setFile(null);
-              } else {
-                setProgress("idle");
-                setErrorMsg("");
-                setFile(selected);
-              }
-            }}
+            accept={DOCUMENT_ACCEPT}
+            onChange={handleFileChange}
             required
           />
         </div>
@@ -113,13 +74,9 @@ export function DocumentUploadForm() {
       <button
         type="submit"
         className={`${styles.btnPrimary} ${docStyles.uploadSubmit}`}
-        disabled={uploading || !file || !title.trim()}
+        disabled={submitDisabled}
       >
-        {progress === "uploading"
-          ? "Uploading…"
-          : progress === "done"
-            ? "Uploaded ✓"
-            : "Upload document"}
+        {submitLabel}
       </button>
     </form>
   );

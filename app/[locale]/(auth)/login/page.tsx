@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 // Locale-aware router & Link so /de/login → /de/register (not /register)
 import { Link, useRouter } from "@/lib/i18n/navigation";
 import styles from "../auth.module.css";
+import { AuthField, AuthSubmit } from "../AuthFields";
 import { ADMIN_ROUTES, AUTH_ROUTES, PORTAL_ROUTES } from "@/lib/config/routes";
 import { USER_ROLE } from "@/lib/config/auth";
 import { sanitizeReturnTo } from "@/lib/domain/auth";
@@ -61,40 +62,28 @@ function LoginForm() {
       <p className={styles.subtitle}>{t("sub")}</p>
 
       <form className={styles.form} onSubmit={handleSubmit}>
-        <div className={styles.field}>
-          <label className={styles.label} htmlFor="email">
-            {t("emailLabel")}
-          </label>
-          <input
-            id="email"
-            className={styles.input}
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder={t("emailPlaceholder")}
-            required
-            autoComplete="email"
-          />
-        </div>
-        <div className={styles.field}>
-          <label className={styles.label} htmlFor="password">
-            {t("passwordLabel")}
-          </label>
-          <input
-            id="password"
-            className={styles.input}
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder={t("passwordPlaceholder")}
-            required
-            autoComplete="current-password"
-          />
-        </div>
+        <AuthField
+          id="email"
+          label={t("emailLabel")}
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder={t("emailPlaceholder")}
+          required
+          autoComplete="email"
+        />
+        <AuthField
+          id="password"
+          label={t("passwordLabel")}
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder={t("passwordPlaceholder")}
+          required
+          autoComplete="current-password"
+        />
         {error && <p className={styles.error}>{error}</p>}
-        <button type="submit" className={styles.submit} disabled={loading}>
-          {loading ? t("submitting") : t("submit")}
-        </button>
+        <AuthSubmit loading={loading} label={t("submit")} submittingLabel={t("submitting")} />
       </form>
 
       <div className={styles.linkRow}>
