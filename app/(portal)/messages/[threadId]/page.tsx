@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import styles from "../../portal.module.css";
 import msgStyles from "../messages.module.css";
 import { formatDateTime } from "@/lib/utils/format";
-import { MESSAGE_POLL_INTERVAL_MS, MESSAGE_BODY_MAX_LENGTH } from "@/lib/config/portal";
+import { MESSAGE_BODY_MAX_LENGTH } from "@/lib/config/portal";
 import { PORTAL_ROUTES } from "@/lib/config/routes";
 import { type ThreadDetail } from "@/lib/config/messages";
+import { useMessageThread } from "@/lib/hooks/useMessageThread";
 import { LoadingState } from "@/components/LoadingState";
 import { AskAssistant } from "@/components/AskAssistant";
 import { PortalPageHeader } from "@/components/portal/PortalPageHeader";
@@ -16,79 +16,26 @@ import { PortalPageHeader } from "@/components/portal/PortalPageHeader";
 export default function ThreadPage() {
   const params = useParams();
   const threadId = params.threadId as string;
-  const [thread, setThread] = useState<ThreadDetail | null>(null);
-  const [loadError, setLoadError] = useState(false);
-  const [body, setBody] = useState("");
-  const [sending, setSending] = useState(false);
-  const [sendError, setSendError] = useState("");
-  const bottomRef = useRef<HTMLDivElement>(null);
-
-  const load = useCallback(async () => {
-    try {
-      const res = await fetch(`/api/messages/${threadId}`);
-      if (!res.ok) {
-        setLoadError(true);
-        return;
-      }
-      const data = await res.json();
-      setThread(data.data);
-    } catch {
-      setLoadError(true);
-    }
-  }, [threadId]);
-
-  useEffect(() => {
-    load();
-  }, [load]);
-
-  // Poll for new messages every 30 s while the tab is focused
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (!document.hidden) load();
-    }, MESSAGE_POLL_INTERVAL_MS);
-    return () => clearInterval(interval);
-  }, [load]);
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [thread?.messages.length]);
-
-  async function handleSend(e: React.FormEvent) {
-    e.preventDefault();
-    if (!body.trim()) return;
-    setSending(true);
-    setSendError("");
-    try {
-      const res = await fetch(`/api/messages/${threadId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ body }),
-      });
-      if (!res.ok) {
-        setSendError("Failed to send. Please try again.");
-        return;
-      }
-      setBody("");
-      load();
-    } catch {
-      setSendError("Failed to send. Please try again.");
-    } finally {
-      setSending(false);
-    }
-  }
+  // Loading, polling and sending are shared with the clinician's view of this
+  // same thread — see lib/hooks/useMessageThread.ts.
+  const {
+    thread,
+    loadError,
+    body,
+    setBody,
+    sending,
+    sendError,
+    bottomRef,
+    load,
+    retry,
+    handleSend,
+  } = useMessageThread<ThreadDetail>(threadId);
 
   if (loadError)
     return (
       <div className={styles.emptyState}>
         Could not load this conversation.{" "}
-        <button
-          type="button"
-          onClick={() => {
-            setLoadError(false);
-            load();
-          }}
-          className={styles.retryBtn}
-        >
+        <button type="button" onClick={retry} className={styles.retryBtn}>
           Retry
         </button>
       </div>
