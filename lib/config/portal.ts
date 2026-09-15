@@ -176,6 +176,13 @@ export const MIME_TYPE_MAX_LENGTH = 100;
 /** Document upload max file size in MB (enforced server-side; shown in upload form label) */
 export const DOCUMENT_MAX_FILE_SIZE_MB = 20;
 
+/**
+ * What a document upload field offers to pick — the `accept` attribute on the
+ * patient's upload form and the clinician's alike. Written out twice before,
+ * which is how one side quietly stops offering a file type the other does.
+ */
+export const DOCUMENT_ACCEPT = ".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx,.xlsx,.csv";
+
 /** Clinical goal title max length (Zod schema + form input) */
 export const GOAL_TITLE_MAX_LENGTH = 300;
 
