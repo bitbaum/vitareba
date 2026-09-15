@@ -16,7 +16,7 @@ import { serviceUnavailable } from "@/lib/utils/api-response";
  * assembled client-side — this route is the one place it becomes visible, and
  * only to the clinician it belongs to.
  */
-export async function GET(req: Request) {
+export async function GET() {
   const guard = await requireSession();
   if (guard.error) return guard.error;
 
@@ -43,7 +43,8 @@ export async function GET(req: Request) {
     return NextResponse.json({ success: true, data: { url: null } });
   }
 
-  // PORTAL_URL, never the request's own URL.
+  // PORTAL_URL, never the request's own URL. That is why this handler takes no
+  // Request at all: nothing on it may decide where a calendar token is sent.
   //
   // This app sits behind Caddy, which proxies to 127.0.0.1:4011 — so `req.url`
   // is the INTERNAL address, and `new URL(req.url).origin` handed every

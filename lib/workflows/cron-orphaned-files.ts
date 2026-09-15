@@ -46,7 +46,7 @@ export async function runCronOrphanedFiles(): Promise<CronOrphanedFilesResult> {
   }
 
   if (deleted > 0) {
-    console.log(`[cron/orphaned-files] deleted ${deleted} orphaned file(s)`);
+    console.warn(`[cron/orphaned-files] deleted ${deleted} orphaned file(s)`);
   }
   return { success: true, deleted, kept: stored.length - deleted };
 }

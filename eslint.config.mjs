@@ -19,6 +19,15 @@ const eslintConfig = defineConfig([
     settings: { react: { version: "19.2.8" } },
   },
   {
+    // Debug logging must not reach production. `warn`/`error` stay allowed:
+    // they are how a degraded state (email provider unconfigured, a file that
+    // would not delete) reaches the systemd journal on the box. Everything
+    // else is a leftover from someone's afternoon.
+    rules: {
+      "no-console": ["error", { allow: ["warn", "error"] }],
+    },
+  },
+  {
     // react-hooks v7 introduced aggressive React Compiler rules that flag
     // valid async data-loading patterns (useCallback + useEffect(() => { load(); }, [load]))
     // and pure server component code (Date.now() calls). Disabling until the
