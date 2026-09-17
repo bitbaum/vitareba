@@ -4,7 +4,24 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import styles from "@/app/(admin)/admin.module.css";
-import { BADGE_MAX_COUNT } from "@/lib/config/portal";
+import {
+  NavSidebar,
+  NavBottomBar,
+  isActive,
+  badgeText,
+  type NavEntry,
+} from "@/components/nav/NavSurfaces";
+import {
+  IcoGrid,
+  IcoPeople,
+  IcoCalendar,
+  IcoChat,
+  IcoDoc,
+  IcoTray,
+  IcoBars,
+  IcoPerson,
+  IcoMore,
+} from "@/components/nav/icons";
 import {
   ADMIN_ROUTES,
   ADMIN_ROUTE_LABELS,
@@ -14,177 +31,22 @@ import {
   type AdminRoute,
 } from "@/lib/config/routes";
 
-// ─── SVG Icons ────────────────────────────────────────────────────────────────
-
-const IcoToday = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 16 16"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect x="1.5" y="1.5" width="5" height="5" rx="1" />
-    <rect x="9.5" y="1.5" width="5" height="5" rx="1" />
-    <rect x="1.5" y="9.5" width="5" height="5" rx="1" />
-    <rect x="9.5" y="9.5" width="5" height="5" rx="1" />
-  </svg>
-);
-
-const IcoPatients = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 16 16"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <circle cx="5.5" cy="5" r="2.25" />
-    <path d="M1.5 14c0-2.5 1.8-4.5 4-4.5s4 2 4 4.5" />
-    <circle cx="11.5" cy="4.5" r="1.75" />
-    <path d="M9.5 9.2c1.9.15 3.5 1.9 3.5 4.3" />
-  </svg>
-);
-
-const IcoBookings = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 16 16"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect x="1.5" y="3.5" width="13" height="11" rx="1.5" />
-    <line x1="1.5" y1="7.5" x2="14.5" y2="7.5" />
-    <line x1="5" y1="1.5" x2="5" y2="5.5" />
-    <line x1="11" y1="1.5" x2="11" y2="5.5" />
-  </svg>
-);
-
-const IcoMessages = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 16 16"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M2.5 2h11a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H5.5l-3 2.5V3a1 1 0 0 1 1-1z" />
-  </svg>
-);
-
-const IcoDocuments = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 16 16"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M9.5 1.5H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5.5L9.5 1.5z" />
-    <polyline points="9.5,1.5 9.5,5.5 13.5,5.5" />
-    <line x1="5" y1="8.5" x2="11" y2="8.5" />
-    <line x1="5" y1="11" x2="8.5" y2="11" />
-  </svg>
-);
-
-const IcoApplications = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 16 16"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M1.5 9.5 4 3.5a1 1 0 0 1 .9-.6h6.2a1 1 0 0 1 .9.6l2.5 6" />
-    <path d="M1.5 9.5v3a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-3h-3.3a2 2 0 0 1-1.9 1.4H6.7a2 2 0 0 1-1.9-1.4H1.5z" />
-  </svg>
-);
-
-const IcoReports = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 16 16"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <line x1="1.5" y1="14" x2="14.5" y2="14" />
-    <rect x="3" y="8.5" width="2.5" height="5.5" rx="0.5" />
-    <rect x="6.75" y="5.5" width="2.5" height="8.5" rx="0.5" />
-    <rect x="10.5" y="2.5" width="2.5" height="11.5" rx="0.5" />
-  </svg>
-);
-
-const IcoProfile = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 16 16"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <circle cx="8" cy="5.5" r="3" />
-    <path d="M1.5 14.5c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6" />
-  </svg>
-);
-
-const IcoMore = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 16 16"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <circle cx="3" cy="8" r="1.1" fill="currentColor" stroke="none" />
-    <circle cx="8" cy="8" r="1.1" fill="currentColor" stroke="none" />
-    <circle cx="13" cy="8" r="1.1" fill="currentColor" stroke="none" />
-  </svg>
-);
-
 /**
  * Icon per route — same exhaustive-typing discipline as PortalNav's
  * ROUTE_ICONS (see its comment): keyed by AdminRoute, not string, so a new
  * admin route with no icon entry is a compile error, not `<undefined />`
- * taking down the whole admin layout.
+ * taking down the whole admin layout. The glyphs themselves are shared with
+ * the portal in components/nav/icons.tsx.
  */
 const ROUTE_ICONS: Record<AdminRoute, React.ComponentType> = {
-  [ADMIN_ROUTES.root]: IcoToday,
-  [ADMIN_ROUTES.patients]: IcoPatients,
-  [ADMIN_ROUTES.bookings]: IcoBookings,
-  [ADMIN_ROUTES.messages]: IcoMessages,
-  [ADMIN_ROUTES.documents]: IcoDocuments,
-  [ADMIN_ROUTES.applications]: IcoApplications,
-  [ADMIN_ROUTES.reports]: IcoReports,
-  [ADMIN_ROUTES.profile]: IcoProfile,
+  [ADMIN_ROUTES.root]: IcoGrid,
+  [ADMIN_ROUTES.patients]: IcoPeople,
+  [ADMIN_ROUTES.bookings]: IcoCalendar,
+  [ADMIN_ROUTES.messages]: IcoChat,
+  [ADMIN_ROUTES.documents]: IcoDoc,
+  [ADMIN_ROUTES.applications]: IcoTray,
+  [ADMIN_ROUTES.reports]: IcoBars,
+  [ADMIN_ROUTES.profile]: IcoPerson,
 };
 
 type BadgeKey = "messages" | "bookings" | "patients";
@@ -197,20 +59,15 @@ const ROUTE_BADGE_KEYS: Partial<Record<AdminRoute, BadgeKey>> = {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function isActive(pathname: string, href: string): boolean {
-  // The root is a page, not a prefix. Without this exception every admin URL
-  // starts with "/admin/" and "Today" would light up on all of them.
-  if (href === ADMIN_ROUTES.root) return pathname === href;
-  return pathname === href || pathname.startsWith(href + "/");
-}
-
 export type AdminBadgeProps = {
   unreadMessages?: number;
   newBookings?: number;
   urgentPatients?: number;
 };
 
-function badgeCount(href: AdminRoute, badges: Record<BadgeKey, number>): number {
+type Badges = Record<BadgeKey, number>;
+
+function badgeCount(href: AdminRoute, badges: Badges): number {
   const key = ROUTE_BADGE_KEYS[href];
   return key ? badges[key] : 0;
 }
@@ -227,46 +84,58 @@ function useBadges(props: AdminBadgeProps) {
   };
 }
 
+/**
+ * Route → what the shared nav renders.
+ *
+ * The sidebar can afford to say what an urgent count MEANS ("3 patients need
+ * attention", in the urgent colour); the bottom bar has room for a dot and a
+ * number, so it announces the plain "3 new" there. That is the only real
+ * difference between the two surfaces, and it lives here rather than in two
+ * copies of the markup.
+ */
+function entries(
+  routes: readonly AdminRoute[],
+  pathname: string,
+  badges: Badges,
+  variant: "sidebar" | "bottom",
+): NavEntry[] {
+  return routes.map((href) => {
+    const count = badgeCount(href, badges);
+    const urgent = ROUTE_BADGE_KEYS[href] === "patients";
+    const sidebar = variant === "sidebar";
+    return {
+      href,
+      label: sidebar
+        ? ADMIN_ROUTE_LABELS[href]
+        : (ADMIN_ROUTE_SHORT_LABELS[href] ?? ADMIN_ROUTE_LABELS[href]),
+      Icon: ROUTE_ICONS[href],
+      active: isActive(pathname, href, ADMIN_ROUTES.root),
+      badge:
+        count > 0
+          ? {
+              text: badgeText(count),
+              className: sidebar && urgent ? styles.navBadgeUrgent : styles.navBadge,
+              ariaLabel: sidebar && urgent ? `${count} patients need attention` : `${count} new`,
+            }
+          : null,
+    };
+  });
+}
+
 // ─── Sidebar nav (desktop) ────────────────────────────────────────────────────
 
 export function AdminNav(props: AdminBadgeProps) {
   const { pathname, badges } = useBadges(props);
 
   return (
-    <nav className={styles.nav} aria-label="Admin navigation">
-      {ADMIN_NAV_GROUPS.map((group, gi) => (
-        <div key={gi} className={styles.navGroup}>
-          {group.label && <div className={styles.navGroupLabel}>{group.label}</div>}
-          {group.routes.map((href) => {
-            const Icon = ROUTE_ICONS[href];
-            const active = isActive(pathname, href);
-            const count = badgeCount(href, badges);
-            const urgent = ROUTE_BADGE_KEYS[href] === "patients";
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={active ? `${styles.navItem} ${styles.navItemActive}` : styles.navItem}
-                aria-current={active ? "page" : undefined}
-              >
-                <span className={styles.navIcon}>
-                  <Icon />
-                </span>
-                <span className={styles.navLabel}>{ADMIN_ROUTE_LABELS[href]}</span>
-                {count > 0 && (
-                  <span
-                    className={urgent ? styles.navBadgeUrgent : styles.navBadge}
-                    aria-label={urgent ? `${count} patients need attention` : `${count} new`}
-                  >
-                    {count > BADGE_MAX_COUNT ? `${BADGE_MAX_COUNT}+` : count}
-                  </span>
-                )}
-              </Link>
-            );
-          })}
-        </div>
-      ))}
-    </nav>
+    <NavSidebar
+      styles={styles}
+      ariaLabel="Admin navigation"
+      groups={ADMIN_NAV_GROUPS.map((group) => ({
+        label: group.label,
+        items: entries(group.routes, pathname, badges, "sidebar"),
+      }))}
+    />
   );
 }
 
@@ -294,37 +163,12 @@ export function AdminBottomNav(props: AdminBadgeProps) {
 
   return (
     <>
-      <nav className={styles.bottomNav} aria-label="Mobile admin navigation">
-        {ADMIN_BOTTOM_NAV.map((href) => {
-          const Icon = ROUTE_ICONS[href];
-          const active = isActive(pathname, href);
-          const count = badgeCount(href, badges);
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={
-                active
-                  ? `${styles.bottomNavItem} ${styles.bottomNavItemActive}`
-                  : styles.bottomNavItem
-              }
-              aria-current={active ? "page" : undefined}
-              onClick={() => setMoreOpen(false)}
-            >
-              <span className={styles.bottomNavIcon}>
-                <Icon />
-                {count > 0 && (
-                  <span className={styles.bottomNavBadge} aria-label={`${count} new`}>
-                    {count > BADGE_MAX_COUNT ? `${BADGE_MAX_COUNT}+` : count}
-                  </span>
-                )}
-              </span>
-              <span className={styles.bottomNavLabel}>
-                {ADMIN_ROUTE_SHORT_LABELS[href] ?? ADMIN_ROUTE_LABELS[href]}
-              </span>
-            </Link>
-          );
-        })}
+      <NavBottomBar
+        styles={styles}
+        ariaLabel="Mobile admin navigation"
+        items={entries(ADMIN_BOTTOM_NAV, pathname, badges, "bottom")}
+        onNavigate={() => setMoreOpen(false)}
+      >
         <button
           type="button"
           className={styles.bottomNavItem}
@@ -338,7 +182,7 @@ export function AdminBottomNav(props: AdminBadgeProps) {
           </span>
           <span className={styles.bottomNavLabel}>More</span>
         </button>
-      </nav>
+      </NavBottomBar>
 
       {moreOpen && (
         <>
@@ -349,35 +193,26 @@ export function AdminBottomNav(props: AdminBadgeProps) {
             onClick={() => setMoreOpen(false)}
           />
           <div id="admin-more-sheet" className={styles.moreSheet} role="dialog" aria-label="More">
-            {rest.map((href) => {
-              const Icon = ROUTE_ICONS[href];
-              const count = badgeCount(href, badges);
-              const urgent = ROUTE_BADGE_KEYS[href] === "patients";
+            {entries(rest, pathname, badges, "sidebar").map((item) => (
               // The sidebar and the bottom bar both announce the current page.
               // The overflow sheet did not — so the destinations that happened
               // to land behind "More" were the ones a screen-reader user could
-              // not locate themselves in.
-              const active = isActive(pathname, href);
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  className={styles.moreSheetItem}
-                  aria-current={active ? "page" : undefined}
-                  onClick={() => setMoreOpen(false)}
-                >
-                  <span className={styles.navIcon}>
-                    <Icon />
-                  </span>
-                  <span className={styles.navLabel}>{ADMIN_ROUTE_LABELS[href]}</span>
-                  {count > 0 && (
-                    <span className={urgent ? styles.navBadgeUrgent : styles.navBadge}>
-                      {count > BADGE_MAX_COUNT ? `${BADGE_MAX_COUNT}+` : count}
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
+              // not locate themselves in. It reuses the sidebar's entries so
+              // that stays true of all three surfaces at once.
+              <Link
+                key={item.href}
+                href={item.href}
+                className={styles.moreSheetItem}
+                aria-current={item.active ? "page" : undefined}
+                onClick={() => setMoreOpen(false)}
+              >
+                <span className={styles.navIcon}>
+                  <item.Icon />
+                </span>
+                <span className={styles.navLabel}>{item.label}</span>
+                {item.badge && <span className={item.badge.className}>{item.badge.text}</span>}
+              </Link>
+            ))}
           </div>
         </>
       )}

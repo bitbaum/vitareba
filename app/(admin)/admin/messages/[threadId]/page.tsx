@@ -1,79 +1,23 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import styles from "../../../admin.module.css";
 import { formatDateTime } from "@/lib/utils/format";
 import { type ThreadDetailWithPatient } from "@/lib/config/messages";
-import { MESSAGE_BODY_MAX_LENGTH, MESSAGE_POLL_INTERVAL_MS } from "@/lib/config/portal";
+import { MESSAGE_BODY_MAX_LENGTH } from "@/lib/config/portal";
 import { ADMIN_ROUTES } from "@/lib/config/routes";
+import { useMessageThread } from "@/lib/hooks/useMessageThread";
 import { LoadingState } from "@/components/LoadingState";
 import { AskAssistant } from "@/components/AskAssistant";
 
 export default function AdminThreadPage() {
   const params = useParams();
   const threadId = params.threadId as string;
-  const [thread, setThread] = useState<ThreadDetailWithPatient | null>(null);
-  const [loadError, setLoadError] = useState(false);
-  const [body, setBody] = useState("");
-  const [sending, setSending] = useState(false);
-  const [sendError, setSendError] = useState("");
-  const bottomRef = useRef<HTMLDivElement>(null);
-
-  const load = useCallback(async () => {
-    try {
-      const res = await fetch(`/api/messages/${threadId}`);
-      if (!res.ok) {
-        setLoadError(true);
-        return;
-      }
-      const data = await res.json();
-      setThread(data.data);
-    } catch {
-      setLoadError(true);
-    }
-  }, [threadId]);
-
-  useEffect(() => {
-    load();
-  }, [load]);
-
-  // Poll for new messages while the tab is focused — matches portal thread behaviour
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (!document.hidden) load();
-    }, MESSAGE_POLL_INTERVAL_MS);
-    return () => clearInterval(interval);
-  }, [load]);
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [thread?.messages.length]);
-
-  async function handleSend(e: React.FormEvent) {
-    e.preventDefault();
-    if (!body.trim()) return;
-    setSending(true);
-    setSendError("");
-    try {
-      const res = await fetch(`/api/messages/${threadId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ body }),
-      });
-      if (!res.ok) {
-        setSendError("Failed to send. Please try again.");
-        return;
-      }
-      setBody("");
-      load();
-    } catch {
-      setSendError("Failed to send. Please try again.");
-    } finally {
-      setSending(false);
-    }
-  }
+  // Loading, polling and sending are shared with the patient's view of this
+  // same thread — see lib/hooks/useMessageThread.ts.
+  const { thread, loadError, body, setBody, sending, sendError, bottomRef, load, handleSend } =
+    useMessageThread<ThreadDetailWithPatient>(threadId);
 
   if (loadError)
     return <div className={styles.emptyState}>Failed to load thread. Please refresh the page.</div>;

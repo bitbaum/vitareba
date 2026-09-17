@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/lib/i18n/navigation";
 import styles from "../auth.module.css";
+import { AuthField, AuthSubmit } from "../AuthFields";
 import { AUTH_ROUTES } from "@/lib/config/routes";
 import { COMPANY } from "@/lib/config/company";
 
@@ -60,29 +61,22 @@ export default function ForgotPasswordPage() {
       <p className={styles.subtitle}>{t("sub")}</p>
 
       <form className={styles.form} onSubmit={handleSubmit}>
-        <div className={styles.field}>
-          <label className={styles.label} htmlFor="email">
-            {t("emailLabel")}
-          </label>
-          <input
-            id="email"
-            className={styles.input}
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder={t("emailPlaceholder")}
-            required
-            autoComplete="email"
-          />
-        </div>
+        <AuthField
+          id="email"
+          label={t("emailLabel")}
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder={t("emailPlaceholder")}
+          required
+          autoComplete="email"
+        />
         {unavailable && (
           <p className={styles.error} role="alert">
             {t("unavailable", { email: COMPANY.email })}
           </p>
         )}
-        <button type="submit" className={styles.submit} disabled={loading}>
-          {loading ? t("submitting") : t("submit")}
-        </button>
+        <AuthSubmit loading={loading} label={t("submit")} submittingLabel={t("submitting")} />
       </form>
 
       <div className={styles.linkRow}>

@@ -59,7 +59,7 @@ export async function sendEmail({
 }: SendOptions): Promise<SendResult> {
   if (!isEmailConfigured()) {
     // Dev/build without key: log so developers see the email content
-    console.log(`[email] To: ${JSON.stringify(to)}\nSubject: ${subject}`);
+    console.warn(`[email] To: ${JSON.stringify(to)}\nSubject: ${subject}`);
   }
   const result = await sendMail(
     {
