@@ -351,7 +351,33 @@
 
 /* ─── Responsive ───────────────────────────────────────────────────────────── */
 
-@media (max-width: 767px) {
+/*
+ * The desktop nav appears at 1220px, not 768px.
+ *
+ * Measured on the live site 2026-09-21, after the fleet UI audit started
+ * rendering more than one width (bitbaum/fleet PR 119). This nav does not fit
+ * anywhere between 768 and 1219, and the audit's single 834px sample was the
+ * mildest point in that range rather than the worst:
+ *
+ *      768px   the page scrolls sideways by 49px
+ *      834px   "ANMELDEN" 19px past the right edge
+ *     1000px   the CTA 117px past it
+ *     1100px   17px past it — the tightening rule below was holding it
+ *     1101px   118px past it, because that rule stops at 1100
+ *     1220px   fits
+ *
+ * The `min-width: 768px and max-width: 1100px` block that used to sit here
+ * was an attempt to buy the room back by shrinking padding and type. It bought
+ * about 100px, which was not enough at any width in its range, and the cliff
+ * at 1101 was it switching off. Compacting a nav until it fits is a fight with
+ * the content; showing the menu that already exists is not.
+ *
+ * Nothing is lost between 768 and 1219: the mobile menu carries the section
+ * links, the blog and NavAuthActions (sign-in and the CTA), which is the same
+ * set it has always served below 768.
+ */
+
+@media (max-width: 1219px) {
   .navBtn,
   .navSignIn {
     display: none;
@@ -362,25 +388,19 @@
   }
 }
 
+/* Page gutter, not a layout switch — it has always widened at 768. */
 @media (min-width: 768px) {
   .nav {
     padding: 1rem 2.5rem;
   }
+}
 
+@media (min-width: 1220px) {
   .navLinks {
     display: flex;
   }
 
   .mobileMenu {
     display: none;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1100px) {
-  /* Tighten spacing on mid-size screens */
-  .navLink,
-  .megaTrigger {
-    padding: 0.5rem 0.6rem;
-    font-size: 0.68rem;
   }
 }
