@@ -24,7 +24,7 @@
     "@auth/drizzle-adapter": "^1.11.3",
     "@bitbaum/ai-kit": "^1.20.1",
     "@bitbaum/mail-kit": "^0.1.1",
-    "@sentry/nextjs": "^10.74.0",
+    "@sentry/nextjs": "^11.5.0",
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.3",
     "next": "16.4.0",
