@@ -1,6 +1,9 @@
 @~/.claude/CLAUDE.md
 @AGENTS.md
 
+Org rules are [bitbaum/fleet AGENTS.md](https://github.com/bitbaum/fleet/blob/main/AGENTS.md): packages by default (say why if you skip one), search through `@bitbaum/searchkit`, chat through `@bitbaum/chatkit`, shared names and the identity contract. Read that file. Do not restate it here.
+
+
 # Vita — Project Standards
 
 **What this is:** Clinical patient management platform for Vita GmbH — a metabolic psychiatry & systemic longevity clinic in Zürich, founded by Manuel (also founder of Surf Your Life). Flagship programme is ADHD diagnosis and optimisation for high performers.
