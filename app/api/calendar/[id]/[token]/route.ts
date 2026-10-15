@@ -99,7 +99,7 @@ export async function GET(_req: Request, { params }: RouteContext) {
     headers: {
       "Content-Type": "text/calendar; charset=utf-8",
       "Cache-Control": "no-store, max-age=0",
-      "Content-Disposition": 'inline; filename="vitareba.ics"',
+      "Content-Disposition": 'inline; filename="vita.ics"',
     },
   });
 }

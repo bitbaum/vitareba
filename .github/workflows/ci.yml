@@ -1,5 +1,5 @@
 # Golden CI floor — see dotfiles/templates/ci/README.md.
-# vitareba: pnpm + vitest. 55 test files / ~798 cases that, until now, never ran
+# Vita: pnpm + vitest. 55 test files / ~798 cases that, until now, never ran
 # on the shared branch. This gate runs them on every push & PR to main.
 name: CI
 

@@ -24,7 +24,7 @@ import {
   goalAchievedPatientEmail,
 } from "./templates";
 
-// All templates return valid HTML wrapping the VitaReBa layout
+// All templates return valid HTML wrapping the Vita layout
 function isHtml(s: string) {
   return s.startsWith("<!DOCTYPE html>") && s.includes("</html>");
 }
