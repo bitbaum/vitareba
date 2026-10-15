@@ -38,7 +38,7 @@ export const COMPANY = {
     zip: "8008",
     city: "Zürich",
   },
-  // VitaReBa GmbH was entered in the Swiss commercial register in 2024.
+  // Vita GmbH was entered in the Swiss commercial register in 2024.
   foundingYear: 2024,
 } as const;
 

@@ -90,7 +90,7 @@ describe("buildIcsInvite", () => {
 describe("buildIcsFeed", () => {
   const feed = buildIcsFeed(
     [base, { ...base, uid: "booking-def@vitareba" }],
-    "VitaReBa — Dr Manuel Schabus",
+    "Vita — Dr Manuel Schabus",
   );
 
   it("holds every event", () => {
@@ -98,7 +98,7 @@ describe("buildIcsFeed", () => {
   });
 
   it("names the calendar and asks clients to re-poll", () => {
-    expect(feed).toContain("X-WR-CALNAME:VitaReBa — Dr Manuel Schabus");
+    expect(feed).toContain("X-WR-CALNAME:Vita — Dr Manuel Schabus");
     expect(feed).toContain("REFRESH-INTERVAL;VALUE=DURATION:PT15M");
   });
 

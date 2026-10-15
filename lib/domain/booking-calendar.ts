@@ -33,7 +33,10 @@ export function bookingIcsEvent(input: BookingCalendarInput): IcsEvent {
 
   return {
     // Stable per booking — this is what lets a later update or cancellation
-    // replace the entry instead of adding a second one.
+    // replace the entry instead of adding a second one. The "@vitareba" suffix
+    // predates the rename to Vita and is kept on purpose: calendars already
+    // subscribed to the feed match events by UID, so changing it would show
+    // every existing booking twice.
     uid: `booking-${input.bookingId}@vitareba`,
     start: input.start,
     end: new Date(input.start.getTime() + input.slotMinutes * 60 * 1000),

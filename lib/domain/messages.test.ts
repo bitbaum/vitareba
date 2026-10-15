@@ -2,7 +2,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 /**
- * Proves vitareba wires threadkit up correctly.
+ * Proves Vita wires threadkit up correctly.
  *
  * The rules themselves (who may read, what counts as unread) are threadkit's
  * and are tested there. What is tested here is the wiring — that this app reads
