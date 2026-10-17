@@ -12,7 +12,7 @@ The platform has two parts:
 1. **Public marketing site** — multilingual (de/en/fr), lands at `/de/`, primary CTA is the Inflection Edge self-assessment overlay
 2. **Patient portal + admin panel** — authenticated, database-backed, at `/dashboard` (patients) and `/admin` (Manuel)
 
-**Stack:** Next.js 16 (App Router, `standalone` output) · TypeScript strict · **CSS Modules** (see Styling below) · self-hosted PostgreSQL (`pg` driver) · Drizzle ORM · NextAuth 5 · Resend email · self-hosted on the Hetzner box ("bitbaum") behind Caddy, served at `vitareba.orangecat.ch` (`vitareba.ch` is the intended
+**Stack:** Next.js 16 (App Router, `standalone` output) · TypeScript strict · **CSS Modules** (see Styling below) · self-hosted PostgreSQL (`pg` driver) · Drizzle ORM · NextAuth 5 · Resend email · self-hosted on the Hetzner box ("bitbaum") behind Caddy, served at `vita.orangecat.ch` (old host `vitareba.orangecat.ch` 308s its pages there, `/api/*` excepted) (`vitareba.ch` is the intended
 public domain but is not pointed yet — do not probe it). Scheduled jobs run via systemd timers / cron on the box; documents are stored on local disk and served only through an authenticated route.
 
 ---
@@ -389,8 +389,8 @@ Deployment is automated CD, not a managed platform push. A push to `main` trigge
 # Use the host it is actually served on. `vitareba.ch` has no DNS record yet
 # (see the sender note under Email), so probing it fails with "could not
 # resolve host" — which reads exactly like an outage and is not one.
-curl -sS -o /dev/null -w '%{http_code}\n' https://vitareba.orangecat.ch/de
-curl -sS https://vitareba.orangecat.ch/api/health   # {"ok":true,"schemaCheck":"passed"}
+curl -sS -o /dev/null -w '%{http_code}\n' https://vita.orangecat.ch/de
+curl -sS https://vita.orangecat.ch/api/health   # {"ok":true,"schemaCheck":"passed"}
 ```
 
 If it fails: check the service logs on the box (`journalctl -u <vitareba-service> -n 100`), fix, `pnpm build`, push again. Full migration/runbook: `loki/docs/infrastructure/hetzner-migration.md`.

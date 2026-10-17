@@ -61,19 +61,26 @@ export const EMERGENCY_CONTACTS = [
  */
 export const CLINIC_TIMEZONE = "Europe/Zurich";
 
+// Where the app is served. vita.orangecat.ch since 2026-10-17 (the practice is
+// Vita; the old Vitareba name is gone). The legacy host still reaches the box so
+// links in emails already sent keep working; proxy.ts sends its PAGES here with
+// a 308 and leaves /api/* alone (cron callers, calendar feeds, auth callbacks).
+export const CANONICAL_HOST = "vita.orangecat.ch";
+export const LEGACY_HOSTS: readonly string[] = ["vitareba.orangecat.ch"];
+
 // Single source of truth for the deployed portal URL used in emails and cron routes.
 // The fallback must be a host that ACTUALLY serves: this is what every password
 // reset link, reminder CTA and digest link in every email is built from, and a
 // link to a domain with no DNS is a patient who cannot get back into their
 // account. vitareba.ch is not delegated yet, so it must not appear here.
 // Point both this and SITE_URL at vitareba.ch on the day that domain goes live.
-export const PORTAL_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://vitareba.orangecat.ch";
+export const PORTAL_URL = process.env.NEXT_PUBLIC_APP_URL ?? `https://${CANONICAL_HOST}`;
 
 // Public-facing marketing site URL used in SEO metadata, robots.txt, and sitemap.
 // Fallback is where the site ACTUALLY serves: vitareba.ch has no DNS A record,
 // so metadataBase, canonical URLs, the sitemap and the generated og:image all
 // named a host that does not resolve. Point it back once that domain is live.
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://vitareba.orangecat.ch";
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? `https://${CANONICAL_HOST}`;
 
 // Default "from" address for transactional emails — used as fallback when RESEND_FROM is unset.
 // The domain must be VERIFIED in Resend (https://resend.com/domains) or the provider
