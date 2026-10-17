@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth/edge";
 import createIntlMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
+import { legacyHostRedirect } from "@/lib/domain/legacy-host";
 import { NextResponse } from "next/server";
 import { USER_ROLE } from "@/lib/config/auth";
 import {
@@ -34,6 +35,15 @@ function detectLocale(pathname: string): string {
 
 export default auth((req) => {
   const { pathname } = req.nextUrl;
+
+  // The practice moved from vitareba.orangecat.ch to vita.orangecat.ch.
+  const moved = legacyHostRedirect(
+    req.headers.get("x-forwarded-host") ?? req.headers.get("host"),
+    pathname,
+    req.nextUrl.search,
+  );
+  if (moved) return NextResponse.redirect(moved, 308);
+
   const session = req.auth;
   const dest =
     session?.user.role === USER_ROLE.admin ? ADMIN_ROUTES.patients : PORTAL_ROUTES.dashboard;
