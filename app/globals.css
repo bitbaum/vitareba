@@ -1,3 +1,4 @@
+@import "@bitbaum/chatkit/styles.css";
 @import "tailwindcss";
 
 /* ─── Design Tokens ────────────────────────────────────── */
@@ -355,4 +356,16 @@ body {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* One chat renderer, this product's palette. */
+:root {
+  --ck-page: var(--off);
+  --ck-bg: var(--white);
+  --ck-raised: var(--light);
+  --ck-fg: var(--ink);
+  --ck-fg-2: var(--ink2);
+  --ck-fg-3: var(--muted);
+  --ck-line: var(--border);
+  --ck-line-2: var(--faint);
 }

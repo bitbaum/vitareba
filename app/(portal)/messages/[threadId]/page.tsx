@@ -1,5 +1,7 @@
 "use client";
 
+import { Markdown } from "@bitbaum/chatkit/react";
+
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
@@ -121,7 +123,7 @@ export default function ThreadPage() {
           // a thread the client can no longer infer it from a role.
           <div key={msg.id} className={msg.mine ? styles.msgRowEnd : styles.msgRow}>
             <div className={msg.mine ? styles.msgBubbleAccent : styles.msgBubbleNeutral}>
-              {msg.body}
+              {msg.authorKind === "ai" ? <Markdown text={msg.body} /> : msg.body}
             </div>
             <p className={styles.msgMeta}>
               {msg.mine ? "You" : msg.authorLabel}
