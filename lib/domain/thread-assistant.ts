@@ -1,3 +1,4 @@
+import { RICH_ANSWERS_INSTRUCTION } from "@bitbaum/chatkit";
 import { eq } from "drizzle-orm";
 import { runAiTurn, type CompleteFn } from "threadkit";
 import { db } from "@/lib/db";
@@ -41,7 +42,9 @@ export function threadAssistantPrompt(): string {
     "If someone describes a medical emergency or intent to harm themselves, do not " +
     "counsel them: tell them to contact emergency services or their clinician now. " +
     "Answer only from what is in this thread — if you do not know, say so rather " +
-    "than guessing."
+    "than guessing.\n\n" +
+    RICH_ANSWERS_INSTRUCTION +
+    "\nUse callouts, diagrams or galleries only when useful. This shared thread has no choice-form submission: ask follow-ups in ordinary prose."
   );
 }
 

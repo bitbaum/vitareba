@@ -1,5 +1,7 @@
 "use client";
 
+import { Markdown } from "@bitbaum/chatkit/react";
+
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
@@ -113,7 +115,7 @@ export default function AdminThreadPage() {
             <div
               className={`${styles.msgBubble} ${msg.mine ? styles.msgBubbleAdmin : styles.msgBubblePatient}`}
             >
-              {msg.body}
+              {msg.authorKind === "ai" ? <Markdown text={msg.body} /> : msg.body}
             </div>
             <p className={styles.msgMeta}>
               {msg.mine ? "You" : msg.authorLabel}

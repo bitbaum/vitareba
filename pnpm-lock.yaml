@@ -14,6 +14,9 @@ importers:
       '@bitbaum/ai-kit':
         specifier: ^1.20.1
         version: 1.20.1(react@19.3.0)
+      '@bitbaum/chatkit':
+        specifier: ^0.11.0
+        version: 0.11.0(react@19.3.0)
       '@bitbaum/mail-kit':
         specifier: ^0.1.1
         version: 0.1.1
@@ -195,6 +198,13 @@ packages:
     peerDependenciesMeta:
       react:
         optional: true
+
+  '@bitbaum/chatkit@0.11.0':
+    resolution: {integrity: sha512-GEYaxT/ibM8qPDL9XlecgEkiv6x16y1DIl/FqqSG/4WLwHkUwjYbCGxw9EPT/r6xzZah9cRTYm6bYJd8XH3dZQ==}
+    engines: {node: '>=20'}
+    hasBin: true
+    peerDependencies:
+      react: '>=18'
 
   '@bitbaum/mail-kit@0.1.1':
     resolution: {integrity: sha512-3JfaeuwkI+8TVGeSDrr8/esaWkv2d7UAcNg1Xu5HHu6k3cBzuSaLGhuzHp0KlAJgGa2QEQIqtE7W1+PosKFOjw==}
@@ -1073,6 +1083,7 @@ packages:
   '@opentelemetry/sdk-trace-base@2.11.0':
     resolution: {integrity: sha512-H19x/TX/LZdqiYOjM7fqtSxwlplC5pgelavqbQdHbhdq0q/AI/TGkM2dfGuuynTXmJPeF2HoZVoPDu+TGoW78A==}
     engines: {node: ^18.19.0 || >=20.6.0}
+    deprecated: Use @opentelemetry/sdk-trace package
     peerDependencies:
       '@opentelemetry/api': '>=1.3.0 <1.10.0'
 
@@ -4327,6 +4338,10 @@ snapshots:
     dependencies:
       ai-forms: 0.1.3(react@19.3.0)
     optionalDependencies:
+      react: 19.3.0
+
+  '@bitbaum/chatkit@0.11.0(react@19.3.0)':
+    dependencies:
       react: 19.3.0
 
   '@bitbaum/mail-kit@0.1.1': {}
