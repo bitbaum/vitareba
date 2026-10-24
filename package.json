@@ -22,17 +22,17 @@
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.3",
-    "@bitbaum/ai-kit": "^1.20.1",
+    "@bitbaum/ai-kit": "^1.21.0",
     "@bitbaum/mail-kit": "^0.1.1",
     "@sentry/nextjs": "^10.74.0",
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.4",
-    "next": "16.4.0",
+    "next": "16.4.2",
     "next-auth": "5.0.0-beta.32",
     "next-intl": "^4.14.9",
     "pg": "^8.23.1",
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "recharts": "^3.10.1",
     "threadkit": "^0.1.1",
     "zod": "^4.6.7",
@@ -48,10 +48,10 @@
     "dotenv-cli": "^11.0.0",
     "drizzle-kit": "^0.31.11",
     "eslint": "^10",
-    "eslint-config-next": "16.4.0",
+    "eslint-config-next": "16.4.2",
     "prettier": "3.9.10",
     "tailwindcss": "^4",
     "typescript": "^6",
-    "vitest": "^5.0.4"
+    "vitest": "^5.0.5"
   }
 }
