@@ -1,6 +1,3 @@
-<!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
-
 <!-- fleet:rules:begin — generated from bitbaum/fleet templates/agent-rules.md; edit it there, not here -->
 
 ## Org rules
@@ -29,6 +26,10 @@ into this file.
   the same check the sweep runs on every pull request.
 
 <!-- fleet:rules:end -->
+
+<!-- BEGIN:nextjs-agent-rules -->
+# This is NOT the Next.js you know
+
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
