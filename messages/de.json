@@ -471,9 +471,6 @@
       "requestNew": "Neuen Link anfordern",
       "expiredError": "Dieser Link ist ungültig oder abgelaufen.",
       "newPasswordLabel": "Neues Passwort",
-      "confirmPasswordLabel": "Passwort bestätigen",
-      "confirmPasswordPlaceholder": "Passwort wiederholen",
-      "mismatchError": "Die Passwörter stimmen nicht überein.",
       "genericError": "Etwas ist schiefgelaufen. Der Link ist möglicherweise abgelaufen.",
       "submit": "Passwort aktualisieren",
       "submitting": "Wird aktualisiert…"

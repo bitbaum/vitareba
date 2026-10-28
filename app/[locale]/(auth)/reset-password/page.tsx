@@ -1,12 +1,13 @@
 "use client";
 
+import "@bitbaum/accountkit/styles.css";
+import { PasswordField } from "@bitbaum/accountkit/auth/password-field";
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 // Locale-aware router so post-reset push to /login keeps the visitor on /de/login
 import { Link, useRouter } from "@/lib/i18n/navigation";
 import styles from "../auth.module.css";
-import { PASSWORD_MIN_LENGTH } from "@/lib/config/auth";
 import { AUTH_ROUTES } from "@/lib/config/routes";
 
 function ResetPasswordForm() {
@@ -17,7 +18,6 @@ function ResetPasswordForm() {
   const email = searchParams.get("email") ?? "";
 
   const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
   // Token failure gets its own recovery path: a "request a new link" action
   const [tokenInvalid, setTokenInvalid] = useState(false);
@@ -25,10 +25,6 @@ function ResetPasswordForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (password !== confirm) {
-      setError(t("mismatchError"));
-      return;
-    }
     setLoading(true);
     setError("");
 
@@ -84,30 +80,11 @@ function ResetPasswordForm() {
           <label className={styles.label} htmlFor="password">
             {t("newPasswordLabel")}
           </label>
-          <input
+          <PasswordField
             id="password"
-            className={styles.input}
-            type="password"
+            classes={{ input: styles.input }}
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={PASSWORD_MIN_LENGTH}
-            autoComplete="new-password"
-          />
-        </div>
-        <div className={styles.field}>
-          <label className={styles.label} htmlFor="confirm">
-            {t("confirmPasswordLabel")}
-          </label>
-          <input
-            id="confirm"
-            className={styles.input}
-            type="password"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-            placeholder={t("confirmPasswordPlaceholder")}
-            required
-            autoComplete="new-password"
+            onChange={setPassword}
           />
         </div>
         {error && (

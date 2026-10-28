@@ -1,5 +1,7 @@
 "use client";
 
+import "@bitbaum/accountkit/styles.css";
+import { PasswordField } from "@bitbaum/accountkit/auth/password-field";
 import { Suspense, useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
@@ -93,14 +95,11 @@ function RegisterForm() {
           <label className={styles.label} htmlFor="password">
             {t("passwordLabel")}
           </label>
-          <input
+          <PasswordField
             id="password"
-            className={styles.input}
-            type="password"
+            classes={{ input: styles.input }}
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            autoComplete="new-password"
+            onChange={setPassword}
           />
           {errors.password && <p className={styles.error}>{errors.password[0]}</p>}
         </div>

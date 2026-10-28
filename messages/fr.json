@@ -478,9 +478,6 @@
       "requestNew": "Demander un nouveau lien",
       "expiredError": "Ce lien est invalide ou a expiré.",
       "newPasswordLabel": "Nouveau mot de passe",
-      "confirmPasswordLabel": "Confirmer le mot de passe",
-      "confirmPasswordPlaceholder": "Répéter le mot de passe",
-      "mismatchError": "Les mots de passe ne correspondent pas.",
       "genericError": "Une erreur s'est produite. Le lien a peut-être expiré.",
       "submit": "Mettre à jour le mot de passe",
       "submitting": "Mise à jour en cours…"
