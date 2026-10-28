@@ -34,10 +34,7 @@ export const loginSchema = z.object({
 
 export const registerSchema = z.object({
   email: emailField({ invalidMessage: "Invalid email address" }),
-  password: z
-    .string()
-    .min(PASSWORD_MIN_LENGTH, `Password must be at least ${PASSWORD_MIN_LENGTH} characters`)
-    .max(PASSWORD_MAX_LENGTH),
+  password: z.string().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH),
 });
 
 /**

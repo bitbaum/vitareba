@@ -84,6 +84,11 @@ describe("registerSchema", () => {
     expect(result.success).toBe(true);
   });
 
+  it("accepts a one-character password (the one bitbaum rule)", () => {
+    const result = registerSchema.safeParse({ email: "user@example.com", password: "x" });
+    expect(result.success).toBe(true);
+  });
+
   it("accepts password above minimum length", () => {
     const result = registerSchema.safeParse({
       email: "user@example.com",
@@ -92,10 +97,10 @@ describe("registerSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("rejects password below minimum length", () => {
+  it("rejects an empty password", () => {
     const result = registerSchema.safeParse({
       email: "user@example.com",
-      password: "a".repeat(PASSWORD_MIN_LENGTH - 1),
+      password: "",
     });
     expect(result.success).toBe(false);
   });

@@ -99,7 +99,6 @@ function RegisterForm() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder={t("passwordPlaceholder")}
             required
             autoComplete="new-password"
           />

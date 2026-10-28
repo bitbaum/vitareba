@@ -72,12 +72,12 @@ describe("POST /api/auth/reset-password", () => {
     expect(res.status).toBe(400);
   });
 
-  it("returns 400 when the password is too short", async () => {
+  it("returns 400 when the password is empty", async () => {
     const res = await POST(
       new Request("https://example.com/api/auth/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...VALID_BODY, password: "short" }), // < 8 chars
+        body: JSON.stringify({ ...VALID_BODY, password: "" }),
       }),
     );
     expect(res.status).toBe(400);
