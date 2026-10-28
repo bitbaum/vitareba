@@ -36,7 +36,7 @@
     "recharts": "^3.10.1",
     "threadkit": "^0.1.1",
     "zod": "^4.6.7",
-    "@bitbaum/chatkit": "^0.21.1"
+    "@bitbaum/chatkit": "github:bitbaum/chatkit#378430bdaa52f11d56bf91880977980c707b86f0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
