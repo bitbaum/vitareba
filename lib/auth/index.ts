@@ -16,11 +16,16 @@ import {
 } from "@/lib/domain/auth";
 import { USER_ROLE, type UserRole } from "@/lib/config/auth";
 import { AUTH_ROUTES } from "@/lib/config/routes";
+import type { NextRequest } from "next/server";
+import type { Session } from "next-auth";
+import { sharedAuth, sharedAuthEnabled } from "./shared/runtime";
+import { sharedSession } from "./shared/session";
+import { nextAuthClientCompat } from "./shared/bridge";
 
 // Functional config pattern — DrizzleAdapter(getInstance()) is only called on the
 // first actual request, never at module evaluation time. This prevents Next.js build
 // from throwing when DATABASE_URL is absent in the CI/build environment.
-export const { handlers, auth, signIn, signOut } = NextAuth(() => {
+const nextAuth = NextAuth(() => {
   const db = getInstance();
   return {
     adapter: DrizzleAdapter(db),
@@ -129,3 +134,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
     },
   };
 });
+
+export const { signIn, signOut } = nextAuth;
+
+/**
+ * Who is signed in. One reader for both runtimes: AccountKit's shared session
+ * with AUTH_RUNTIME=accountkit, NextAuth's JWT otherwise. Same shape either way.
+ */
+export async function auth(): Promise<Session | null> {
+  return sharedAuthEnabled() ? sharedSession() : nextAuth.auth();
+}
+
+/** /api/auth/*: AccountKit's endpoints when the shared runtime is on. */
+export const handlers = {
+  GET: async (request: NextRequest) =>
+    sharedAuthEnabled()
+      ? ((await nextAuthClientCompat(request)) ?? sharedAuth.GET(request))
+      : nextAuth.handlers.GET(request),
+  POST: async (request: NextRequest) =>
+    sharedAuthEnabled()
+      ? ((await nextAuthClientCompat(request)) ?? sharedAuth.POST(request))
+      : nextAuth.handlers.POST(request),
+};

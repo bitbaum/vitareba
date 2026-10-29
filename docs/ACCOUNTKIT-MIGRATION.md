@@ -41,13 +41,32 @@ row. Until Google reaches AccountKit (directly or through the broker with
 account linking), a person who only ever used Google signs in by setting a
 password through recovery to the address already on file.
 
+## Shared runtime (built, off)
+
+With `AUTH_RUNTIME=accountkit` and `BETTER_AUTH_SECRET` set, the runtime in
+`lib/auth/shared/` answers every sign-in; unset, NextAuth answers as today.
+
+- `auth()` keeps today's session shape (id, email, role, emailVerified), read
+  from the shared session and the `users` row on every request, so a deleted
+  account or changed role takes effect at once. Env-listed admins are promoted
+  as before, promote-only. The guards and the proxy use the same reader.
+- The pages keep `next-auth/react`. `/api/auth` answers its few calls
+  (`session`, `csrf`, `providers`, `signout`, `callback/credentials`) from
+  AccountKit and hands every other path to AccountKit itself.
+- Password sign-in keeps Vita's per-account lockout beside AccountKit's
+  limiter. Registration creates the `users` row and the shared account under
+  one id. Forgot, reset and change password go through AccountKit; the mailed
+  link still lands on `/reset-password?email=…&token=…`.
+
+`lib/auth/shared/journeys.test.ts` runs these through the real handlers on the
+migration chain and the real import. Not deployed or browser evidence.
+
 ## Before switching
 
-1. Runtime behind a flag: an `auth()` with today's session shape (id, role,
-   emailVerified) read from the shared session and `users` on every request;
-   the existing guards unchanged; login, register and reset served by
-   AccountKit; the admin-email promotion and per-account lockout kept.
-2. Stop NextAuth writes, import once under locks, switch together. A rollback
+1. Stop NextAuth writes, import once under locks, then set both settings
+   together. Everyone signed in under NextAuth signs in again once. A rollback
    after shared password changes needs credential reconciliation.
-3. Prove sign-in, recovery, Google parity, role changes and revocation on the
-   deployed artifact with an approved test identity.
+2. Decide Google: wait for a Google provider in AccountKit, or accept that
+   Google-only patients recover by email.
+3. Prove sign-in, recovery, role changes and revocation on the deployed
+   artifact with an approved test identity.

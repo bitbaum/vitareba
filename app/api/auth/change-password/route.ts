@@ -14,6 +14,8 @@ import {
   isUserLocked,
   nextLoginAttemptState,
 } from "@/lib/domain/auth";
+import { sharedAuthEnabled } from "@/lib/auth/shared/runtime";
+import { sharedChangePassword } from "@/lib/auth/shared/bridge";
 
 const schema = z.object({
   currentPassword: z.string().min(1).max(PASSWORD_MAX_LENGTH),
@@ -32,6 +34,20 @@ export async function POST(req: Request) {
   }
 
   const { currentPassword, newPassword } = parsed.data;
+
+  // Shared runtime: AccountKit checks the current password and revokes the
+  // account's other sessions.
+  if (sharedAuthEnabled()) {
+    const changed = await sharedChangePassword(req, currentPassword, newPassword);
+    const response = changed.ok
+      ? NextResponse.json({ success: true })
+      : NextResponse.json(
+          { success: false, error: "Current password is incorrect" },
+          { status: 401 },
+        );
+    for (const cookie of changed.cookies) response.headers.append("set-cookie", cookie);
+    return response;
+  }
 
   let user;
   try {

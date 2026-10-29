@@ -7,6 +7,8 @@ import { users, profiles } from "@/lib/db/schema";
 import { registerSchema, hashPassword } from "@/lib/domain/auth";
 import { enqueueWelcomeEmails } from "@/lib/domain/email-queue";
 import { runAfterResponse } from "@/lib/utils/post-response";
+import { sharedAuthEnabled } from "@/lib/auth/shared/runtime";
+import { sharedRegister } from "@/lib/auth/shared/bridge";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -19,6 +21,24 @@ export async function POST(req: Request) {
   }
 
   const { email, password } = parsed.data;
+
+  // Shared runtime: the domain row and the shared account are created together.
+  if (sharedAuthEnabled()) {
+    try {
+      return (await sharedRegister(email, password)) === "created"
+        ? NextResponse.json({ success: true }, { status: 201 })
+        : NextResponse.json(
+            { success: false, error: { email: ["Email already registered"] } },
+            { status: 409 },
+          );
+    } catch (err) {
+      console.error("[api/account] shared registration failed:", err);
+      return NextResponse.json(
+        { success: false, error: "Registration failed — please try again" },
+        { status: 500 },
+      );
+    }
+  }
 
   let existing;
   try {
