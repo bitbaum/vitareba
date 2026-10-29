@@ -5,7 +5,6 @@ import shared from "../portal.module.css";
 import styles from "./dashboard.module.css";
 import { CheckinTrendChart } from "@/components/portal/CheckinTrendChart";
 import { CHECKIN_METRICS, type MetricKey } from "@/lib/config/portal";
-import { formatDateMonthDay } from "@/lib/utils/format";
 import { PORTAL_ROUTES } from "@/lib/config/routes";
 
 type CheckinRow = {
@@ -22,7 +21,7 @@ export function CheckinMiniTrend({ checkins }: { checkins: CheckinRow[] }) {
 
   // Checkins arrive newest-first from the DB; chart expects oldest-first
   const data = [...checkins].reverse().map((c) => ({
-    date: formatDateMonthDay(c.date + "T00:00:00"),
+    date: c.date,
     ...(Object.fromEntries(CHECKIN_METRICS.map(({ key }) => [key, c[key as MetricKey]])) as Record<
       MetricKey,
       number

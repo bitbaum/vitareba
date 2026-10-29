@@ -14,8 +14,10 @@ import {
   SIGNAL_LABELS,
   SIGNAL_CHECKIN_WINDOW_DAYS,
   PATIENT_SIGNAL,
+  SPARK_LEVEL_TONES,
   type PatientSignal,
 } from "@/lib/config/admin";
+import { Sparkline } from "@bitbaum/chartkit/react";
 import { PROGRAMME_CONFIG, PHASE_CONFIG } from "@/lib/config/programmes";
 import { formatDateISO, relativeDate } from "@/lib/utils/format";
 import { USER_ROLE } from "@/lib/config/auth";
@@ -217,22 +219,33 @@ export default async function PatientsPage() {
                       {lastCheckin ? relativeDate(lastCheckin.date, now) : "Never"}
                     </td>
 
-                    {/* 7-day sparkline */}
+                    {/* 7-day sparkline: one point a day, toned by wellness level, a gap where none was logged */}
                     <td>
-                      <div className={styles.sparkline}>
-                        {sparkDates.map((date) => {
+                      {(() => {
+                        const days = sparkDates.map((date) => {
                           const c = checkinMap.get(date);
-                          const level = c ? sparkLevel(wellnessAvg(c)) : "empty";
-                          return (
-                            <span
-                              key={date}
-                              className={styles.sparkDot}
-                              data-level={level}
-                              title={c ? `${date}: ${wellnessAvg(c).toFixed(1)}` : date}
-                            />
-                          );
-                        })}
-                      </div>
+                          const avg = c ? wellnessAvg(c) : null;
+                          return { date, avg, level: avg == null ? null : sparkLevel(avg) };
+                        });
+                        const count = (level: string) =>
+                          days.filter((d) => d.level === level).length;
+                        const missed = days.filter((d) => d.avg == null).length;
+                        if (missed === days.length) {
+                          return <span className={styles.cellMuted}>No check-ins</span>;
+                        }
+                        return (
+                          <Sparkline
+                            points={days.map((d) => ({
+                              x: d.date,
+                              y: d.avg,
+                              tone: d.level ? SPARK_LEVEL_TONES[d.level] : undefined,
+                            }))}
+                            label={`Wellness, last ${days.length} days: ${count("high")} good, ${count("mid")} middling, ${count("low")} low, ${missed} without a check-in`}
+                            width={72}
+                            height={24}
+                          />
+                        );
+                      })()}
                     </td>
 
                     {/* Score */}

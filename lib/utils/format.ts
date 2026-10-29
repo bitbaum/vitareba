@@ -5,7 +5,7 @@ import { CLINIC_TIMEZONE } from "@/lib/config/company";
 export const HOUR_MS = 60 * 60 * 1000;
 export const DAY_MS = 24 * HOUR_MS;
 
-const LOCALE = "en-GB";
+export const LOCALE = "en-GB";
 
 /** "2 Apr 2025" */
 export function formatDateShort(date: Date | string): string {
@@ -36,7 +36,7 @@ export function formatDateTime(date: Date | string): string {
   });
 }
 
-/** "2 Apr" — for chart axis labels where year is omitted for compactness */
+/** "2 Apr" — compact day labels where the year is omitted */
 export function formatDateMonthDay(date: Date | string): string {
   const d = typeof date === "string" ? new Date(date) : date;
   return d.toLocaleDateString(LOCALE, { day: "numeric", month: "short" });

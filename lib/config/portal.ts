@@ -26,7 +26,6 @@ export const CHECKIN_METRICS = [
     shortLabel: "Sleep",
     lowLabel: "Poor",
     highLabel: "Excellent",
-    color: "var(--purple)",
   },
   {
     key: "energy",
@@ -34,7 +33,6 @@ export const CHECKIN_METRICS = [
     shortLabel: "Energy",
     lowLabel: "Drained",
     highLabel: "Vibrant",
-    color: "var(--teal)",
   },
   {
     key: "mood",
@@ -42,7 +40,6 @@ export const CHECKIN_METRICS = [
     shortLabel: "Mood",
     lowLabel: "Low",
     highLabel: "Great",
-    color: "var(--gold)",
   },
   {
     key: "focus",
@@ -50,7 +47,6 @@ export const CHECKIN_METRICS = [
     shortLabel: "Focus",
     lowLabel: "Scattered",
     highLabel: "Sharp",
-    color: "var(--teal-dark)",
   },
   {
     key: "stress",
@@ -58,7 +54,6 @@ export const CHECKIN_METRICS = [
     shortLabel: "Stress",
     lowLabel: "None",
     highLabel: "High",
-    color: "var(--danger)",
   },
 ] as const;
 

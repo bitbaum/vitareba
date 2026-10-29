@@ -129,18 +129,8 @@
   margin-top: 0.2rem;
 }
 
-.dimBar {
-  height: 3px;
-  background: var(--border);
-  border-radius: var(--radius-2xs);
+.dimMeter {
   margin-top: 0.4rem;
-  overflow: hidden;
-}
-
-.dimBarFill {
-  height: 100%;
-  border-radius: var(--radius-2xs);
-  background: currentColor;
 }
 
 /* ── Interpretations ────────────────────────────────────────────────────── */

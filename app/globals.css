@@ -24,7 +24,6 @@
   --border: #e5e0d8;
   --warn: #d4820a;
   --danger: #e05a5a;
-  --purple: #6366f1; /* sleep metric in check-in trend chart */
   --white: #ffffff;
   --footer-bg: #111118;
 
@@ -382,4 +381,7 @@ body {
   --ck-down: var(--danger);
   --ck-warning: var(--warn);
   --ck-font: var(--font-dm-sans), "DM Sans", sans-serif;
+  /* Series 4 defaults to --ck-up, which is the accent's teal here: give it the
+     gold so five check-in lines are five colours as well as five dashes. */
+  --ck-series-4: var(--gold);
 }

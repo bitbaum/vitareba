@@ -7,6 +7,7 @@ import {
   ATTENDED_FOLLOW_UP_DAYS,
   SPARKLINE_LOW_THRESHOLD,
   SPARKLINE_MID_THRESHOLD,
+  type SparkLevel,
 } from "@/lib/config/admin";
 import { DAY_MS } from "@/lib/utils/format";
 import { CHECKIN_SCALE_MAX } from "@/lib/config/portal";
@@ -159,7 +160,7 @@ export function computePatientSignal({
  * Maps a wellness average (1–5 scale) to a CSS modifier class token:
  * "low" | "mid" | "high". Thresholds are sourced from admin config SSOT.
  */
-export function sparkLevel(avg: number): "low" | "mid" | "high" {
+export function sparkLevel(avg: number): SparkLevel {
   if (avg < SPARKLINE_LOW_THRESHOLD) return "low";
   if (avg < SPARKLINE_MID_THRESHOLD) return "mid";
   return "high";

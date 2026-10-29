@@ -3,15 +3,16 @@ import { db } from "@/lib/db";
 import { assessmentResults } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import Link from "next/link";
-import { DIMENSIONS, getInterpretation, scoreClass } from "@/lib/assessment/data";
+import { DIMENSIONS, getInterpretation, scoreClass, scoreTone } from "@/lib/assessment/data";
+import { Meter } from "@bitbaum/chartkit/react";
 import { ASSESSMENT_STALE_DAYS } from "@/lib/config/portal";
 import { PORTAL_ROUTES } from "@/lib/config/routes";
-import { formatDateLong, formatDateMonthDay, sentenceCase } from "@/lib/utils/format";
+import { formatDateLong, formatDateISO, sentenceCase } from "@/lib/utils/format";
 import { clinicianLabelFor } from "@/lib/domain/clinician-label";
 import styles from "../portal.module.css";
 import assessStyles from "./assessments.module.css";
 import { PortalPageHeader } from "@/components/portal/PortalPageHeader";
-import { AssessmentTrendChartWrapper } from "./AssessmentTrendChartWrapper";
+import { AssessmentTrendChart } from "@/components/portal/AssessmentTrendChart";
 
 export default async function AssessmentsPage({
   searchParams,
@@ -34,7 +35,7 @@ export default async function AssessmentsPage({
 
   // Build chart data (ascending for chart rendering)
   const chartData = [...results].reverse().map((r) => ({
-    date: formatDateMonthDay(r.completedAt),
+    date: formatDateISO(r.completedAt),
     score: r.overallScore,
   }));
 
@@ -53,7 +54,7 @@ export default async function AssessmentsPage({
       {results.length >= 2 && (
         <div className={styles.cardMb}>
           <p className={styles.cardTitle}>Score trend</p>
-          <AssessmentTrendChartWrapper data={chartData} />
+          <AssessmentTrendChart data={chartData} />
         </div>
       )}
       {results.length === 1 && (
@@ -135,10 +136,13 @@ export default async function AssessmentsPage({
                           {score}
                         </div>
                         <div className={assessStyles.dimName}>{dim.name}</div>
-                        <div className={assessStyles.dimBar}>
-                          <div
-                            className={`${assessStyles.dimBarFill} ${scoreClass(score)}`}
-                            style={{ width: `${score}%` }}
+                        <div className={assessStyles.dimMeter}>
+                          <Meter
+                            value={score}
+                            max={100}
+                            label={dim.name}
+                            tone={scoreTone(score)}
+                            showValue={false}
                           />
                         </div>
                       </div>

@@ -409,17 +409,14 @@
   font-weight: 300;
 }
 
-.rScBar {
-  height: 3px;
-  background: var(--white-5);
-  border-radius: var(--radius-2xs);
-  margin-top: 0.5rem;
+/* ChartKit meters on the dark overlay: the track takes the overlay's hairline. */
+.rScores,
+.rDim {
+  --ck-line: var(--white-5);
 }
 
-.rScFill {
-  height: 100%;
-  border-radius: var(--radius-2xs);
-  transition: width var(--transition-slow);
+.rScMeter {
+  margin-top: 0.5rem;
 }
 
 .rDim {
@@ -444,16 +441,8 @@
   font-size: 1.1rem;
 }
 
-.rDimBar {
-  height: 4px;
-  background: var(--white-5);
-  border-radius: var(--radius-2xs);
+.rDimMeter {
   margin-bottom: 0.6rem;
-}
-
-.rDimFill {
-  height: 100%;
-  border-radius: var(--radius-2xs);
 }
 
 .rDimText {

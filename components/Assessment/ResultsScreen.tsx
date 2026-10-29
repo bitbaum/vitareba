@@ -6,13 +6,14 @@ import {
   DIMENSIONS,
   getVerdict,
   getInterpretationKey,
-  scoreColor,
+  scoreTone,
   scoreClass,
   type DimensionId,
 } from "@/lib/assessment/data";
 import { COMPANY } from "@/lib/config/company";
 import { AUTH_ROUTES } from "@/lib/config/routes";
 import { routing } from "@/i18n/routing";
+import { Meter } from "@bitbaum/chartkit/react";
 import { STORAGE_KEYS, safeSessionSet } from "@/lib/utils/storage";
 import styles from "./Assessment.module.css";
 
@@ -76,10 +77,13 @@ export default function ResultsScreen({ scores, overall, onRestart }: ResultsScr
               <div className={styles.rScIcon}>{dim.icon}</div>
               <div className={styles.rScName}>{i18n.dimensions[dim.id] ?? dim.id}</div>
               <div className={`${styles.rScN} ${scoreClass(score)}`}>{score}</div>
-              <div className={styles.rScBar}>
-                <div
-                  className={styles.rScFill}
-                  style={{ width: `${score}%`, background: scoreColor(score) }}
+              <div className={styles.rScMeter}>
+                <Meter
+                  value={score}
+                  max={100}
+                  label={i18n.dimensions[dim.id] ?? dim.id}
+                  tone={scoreTone(score)}
+                  showValue={false}
                 />
               </div>
             </div>
@@ -100,10 +104,13 @@ export default function ResultsScreen({ scores, overall, onRestart }: ResultsScr
                 </div>
                 <div className={`${styles.rDimScore} ${scoreClass(score)}`}>{score}</div>
               </div>
-              <div className={styles.rDimBar}>
-                <div
-                  className={styles.rDimFill}
-                  style={{ width: `${score}%`, background: scoreColor(score) }}
+              <div className={styles.rDimMeter}>
+                <Meter
+                  value={score}
+                  max={100}
+                  label={i18n.dimensions[dim.id] ?? dim.id}
+                  tone={scoreTone(score)}
+                  showValue={false}
                 />
               </div>
               <div className={styles.rDimText}>{interpText}</div>

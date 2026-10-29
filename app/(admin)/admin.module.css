@@ -342,32 +342,6 @@
   background: var(--muted-8);
 }
 
-/* ─── Sparkline ──────────────────────────────────────────────────────────────── */
-
-.sparkline {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-
-.sparkDot {
-  width: 7px;
-  height: 7px;
-  border-radius: var(--radius-full);
-  background: var(--border);
-  flex-shrink: 0;
-}
-
-.sparkDot[data-level="low"] {
-  background: var(--danger);
-}
-.sparkDot[data-level="mid"] {
-  background: var(--warn);
-}
-.sparkDot[data-level="high"] {
-  background: var(--teal);
-}
-
 /* ─── Card label (used in section headers within detail cards) ─────────────── */
 
 .cardLabel {
@@ -469,20 +443,6 @@
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
-}
-
-/* Adherence progress bar (table cell) */
-.barTrack {
-  height: 4px;
-  background: var(--border);
-  border-radius: var(--radius-2xs);
-  overflow: hidden;
-}
-
-.barFill {
-  height: 100%;
-  border-radius: var(--radius-2xs);
-  transition: width var(--transition-normal);
 }
 
 .avgNote {
