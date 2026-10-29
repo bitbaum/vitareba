@@ -15,6 +15,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
 import type { AdapterAccountType } from "next-auth/adapters";
+import { createAuthTables } from "@bitbaum/accountkit/auth/schema";
 
 // ─── Enums ────────────────────────────────────────────────────────────────────
 
@@ -168,6 +169,23 @@ export const verificationTokens = pgTable(
   },
   (vt) => [primaryKey({ columns: [vt.identifier, vt.token] })],
 );
+
+// ─── Shared accounts (AccountKit), staged beside NextAuth ───────────────────
+//
+// NextAuth already owns `users`, `accounts` and `sessions`, and 31 tables
+// reference `users.id`, so the shared account tables live under `auth_`. The
+// shared user id IS `users.id` (as text): the import keeps it, so nothing in
+// the domain moves. NextAuth stays authoritative until the switch
+// (docs/ACCOUNTKIT-MIGRATION.md).
+export const authTables = createAuthTables("auth_");
+export const {
+  user: authUsers,
+  session: authSessions,
+  account: authAccounts,
+  verification: authVerifications,
+  passkey: authPasskeys,
+  twoFactor: authTwoFactors,
+} = authTables;
 
 // ─── Patient profile ──────────────────────────────────────────────────────────
 
