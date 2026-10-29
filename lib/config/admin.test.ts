@@ -3,7 +3,7 @@ import {
   PATIENT_SIGNAL_VALUES,
   PATIENT_SIGNAL,
   SIGNAL_LABELS,
-  SIGNAL_COLORS,
+  SIGNAL_TONES,
   SIGNAL_SORT_ORDER,
   CHECKIN_GOAL_METRICS,
   NO_CHECKIN_CRITICAL_DAYS,
@@ -55,25 +55,24 @@ describe("SIGNAL_LABELS", () => {
   });
 });
 
-// ─── SIGNAL_COLORS integrity ──────────────────────────────────────────────────
+// ─── SIGNAL_TONES integrity ───────────────────────────────────────────────────
 
-describe("SIGNAL_COLORS", () => {
+describe("SIGNAL_TONES", () => {
   it("has an entry for every PATIENT_SIGNAL_VALUES item", () => {
     for (const signal of PATIENT_SIGNAL_VALUES) {
-      expect(SIGNAL_COLORS).toHaveProperty(signal);
+      expect(SIGNAL_TONES).toHaveProperty(signal);
     }
   });
 
   it("has no extra keys beyond PATIENT_SIGNAL_VALUES", () => {
-    const configKeys = Object.keys(SIGNAL_COLORS).sort();
+    const configKeys = Object.keys(SIGNAL_TONES).sort();
     const valuesKeys = [...PATIENT_SIGNAL_VALUES].sort();
     expect(configKeys).toEqual(valuesKeys);
   });
 
-  it("every color is a non-empty string", () => {
+  it("every tone is a ChartKit bar tone or none", () => {
     for (const signal of PATIENT_SIGNAL_VALUES) {
-      expect(typeof SIGNAL_COLORS[signal]).toBe("string");
-      expect(SIGNAL_COLORS[signal].length).toBeGreaterThan(0);
+      expect([undefined, "positive", "warning", "negative"]).toContain(SIGNAL_TONES[signal]);
     }
   });
 });

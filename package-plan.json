@@ -1,0 +1,40 @@
+{
+  "blocks": {
+    "charts": {
+      "package": "@bitbaum/chartkit",
+      "bindings": [
+        {
+          "file": "app/(admin)/admin/reports/page.tsx",
+          "symbols": ["BarChart"]
+        }
+      ]
+    }
+  },
+  "exceptions": {
+    "daily-trend-charts": {
+      "package": "@bitbaum/chartkit",
+      "status": "product-owned",
+      "files": [
+        "components/portal/CheckinTrendChart.tsx",
+        "components/portal/AssessmentTrendChart.tsx"
+      ],
+      "reason": "The check-in trend (daily, five 1-5 metrics: dashboard, check-in page, patient detail, 30-day population trend) and the assessment score trend (first shown at two results, often weeks apart) regularly span less than a month. ChartKit 0.6.0's LineChart labels its time axis only at month and year starts: timeTicks for 2026-10-01..2026-10-27 returns no tick, so these charts would show no date on the x axis (dates only on hover and in the hidden table). Migrate when LineChart labels days on spans under two months."
+    },
+    "checkin-dot-strip": {
+      "package": "@bitbaum/chartkit",
+      "status": "product-owned",
+      "files": ["app/(admin)/admin/patients/page.tsx"],
+      "reason": "The patients table's 7-day 'sparkline' is a strip of one dot per day, coloured by the day's wellness level (low, mid, high) and empty on a day with no check-in. ChartKit 0.6.0's Sparkline draws a line through the points it is given: it has no per-point tone and no slot for a missing day, so the level colours would be lost and a skipped day would be bridged as if it were recorded."
+    },
+    "score-and-adherence-meters": {
+      "package": "@bitbaum/chartkit",
+      "status": "product-owned",
+      "files": [
+        "app/(portal)/assessments/page.tsx",
+        "components/Assessment/ResultsScreen.tsx",
+        "app/(admin)/admin/reports/page.tsx"
+      ],
+      "reason": "The per-dimension score bars (0-100) and the reports adherence bars (days checked in of 7) are coloured by threshold (teal, warn, danger) and sit next to a figure the layout already prints. ChartKit 0.6.0's Meter takes only value, max, label and href: it has no tone or colour input and always prints its own number beside the track, so it would drop the threshold colour and repeat the figure."
+    }
+  }
+}

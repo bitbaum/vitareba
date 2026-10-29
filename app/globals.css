@@ -1,4 +1,5 @@
 @import "@bitbaum/chatkit/styles.css";
+@import "@bitbaum/chartkit/styles.css";
 @import "tailwindcss";
 
 /* ─── Design Tokens ────────────────────────────────────── */
@@ -368,4 +369,17 @@ body {
   --ck-fg-3: var(--muted);
   --ck-line: var(--border);
   --ck-line-2: var(--faint);
+}
+
+/* One chart renderer (@bitbaum/chartkit), the same palette. It shares --ck-line
+   and --ck-bg with chatkit above; its other defaults expect design-tokens' HSL
+   triplets, which this app does not use, so they are mapped here. */
+:root {
+  --ck-ink: var(--ink);
+  --ck-ink-muted: var(--muted);
+  --ck-accent: var(--teal);
+  --ck-up: var(--teal);
+  --ck-down: var(--danger);
+  --ck-warning: var(--warn);
+  --ck-font: var(--font-dm-sans), "DM Sans", sans-serif;
 }

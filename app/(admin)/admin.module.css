@@ -464,31 +464,14 @@
   margin-bottom: 0.75rem;
 }
 
-/* Bar chart rows */
+/* Tier chart + its average note */
 .barRow {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
 }
 
-.barRowItem {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.25rem;
-}
-
-.barCount {
-  font-size: 0.82rem;
-  color: var(--ink2);
-  font-weight: 400;
-}
-
-.barPct {
-  color: var(--muted);
-  font-size: 0.72rem;
-}
-
+/* Adherence progress bar (table cell) */
 .barTrack {
   height: 4px;
   background: var(--border);
@@ -500,17 +483,6 @@
   height: 100%;
   border-radius: var(--radius-2xs);
   transition: width var(--transition-normal);
-}
-
-/* Tier / assessment rows */
-.tierName {
-  font-size: 0.78rem;
-  color: var(--ink2);
-}
-
-.tierCount {
-  font-size: 0.78rem;
-  color: var(--muted);
 }
 
 .avgNote {
