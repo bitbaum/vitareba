@@ -70,10 +70,13 @@ jobs:
           SMOKE_LABEL=nextauth node scripts/browser-smoke.mjs
           pkill -f next-server || true
 
+      # Only where the shared runtime is staged (lib/auth/shared, the import).
       - name: Import into AccountKit, as the switch would
+        if: hashFiles('scripts/db/accountkit-import.sql') != ''
         run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 --single-transaction -q -f scripts/db/accountkit-import.sql
 
       - name: Journey on AccountKit
+        if: hashFiles('scripts/db/accountkit-import.sql') != ''
         env:
           AUTH_RUNTIME: accountkit
           SMOKE_IMPORTED_EMAIL: smoke-nextauth@example.test
