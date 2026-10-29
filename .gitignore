@@ -43,3 +43,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .playwright-mcp/
+
+# Browser smoke output (.github/workflows/browser-smoke.yml)
+browser-smoke-artifacts/
+server-*.log

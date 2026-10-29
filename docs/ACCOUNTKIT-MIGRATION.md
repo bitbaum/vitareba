@@ -59,7 +59,14 @@ With `AUTH_RUNTIME=accountkit` and `BETTER_AUTH_SECRET` set, the runtime in
   link still lands on `/reset-password?email=…&token=…`.
 
 `lib/auth/shared/journeys.test.ts` runs these through the real handlers on the
-migration chain and the real import. Not deployed or browser evidence.
+migration chain and the real import.
+
+`.github/workflows/browser-smoke.yml` drives Chromium through the patient's way
+in (`scripts/browser-smoke.mjs`) against the production server on a PostgreSQL
+built from `drizzle/`: once on NextAuth, then, after the real import, on
+AccountKit, where the person registered under NextAuth signs in with their old
+password. It also checks the auth pages at 390px. This is CI browser evidence,
+not deployed evidence.
 
 ## Before switching
 
