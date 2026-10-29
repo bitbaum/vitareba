@@ -14,7 +14,7 @@ import styles from "../../admin.module.css";
 import { computePatientSignal } from "@/lib/domain/signals";
 import {
   SIGNAL_LABELS,
-  SIGNAL_COLORS,
+  SIGNAL_TONES,
   SIGNAL_SORT_ORDER,
   SIGNAL_CHECKIN_WINDOW_DAYS,
   type PatientSignal,
@@ -37,6 +37,7 @@ import {
 import { CHECKIN_METRICS, CHECKIN_DISPLAY_DAYS, type MetricKey } from "@/lib/config/portal";
 import { CheckinTrendChart } from "@/components/portal/CheckinTrendChart";
 import Link from "next/link";
+import { BarChart } from "@bitbaum/chartkit/react";
 
 function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
   return (
@@ -162,7 +163,7 @@ export default async function ReportsPage() {
     count: allAssessments.filter(
       (a) => a.overallScore >= tier.minScore && a.overallScore <= tier.maxScore,
     ).length,
-    color: tier.color,
+    tone: tier.tone,
   }));
 
   // Check-in adherence stats
@@ -262,33 +263,18 @@ export default async function ReportsPage() {
         {/* ── Signal breakdown ─────────────────────────────────────────── */}
         <div className={styles.card}>
           <p className={styles.sectionLabel}>Patient signals</p>
-          <div className={styles.barRow}>
-            {SIGNAL_ORDER.map((signal) => {
-              const count = signalCounts[signal];
-              const pct = patients.length > 0 ? Math.round((count / patients.length) * 100) : 0;
-              return (
-                <div key={signal}>
-                  <div className={styles.barRowItem}>
-                    <span className={styles.signalBadge} data-signal={signal}>
-                      {SIGNAL_LABELS[signal]}
-                    </span>
-                    <span className={styles.barCount}>
-                      {count} <span className={styles.barPct}>({pct}%)</span>
-                    </span>
-                  </div>
-                  <div className={styles.barTrack}>
-                    <div
-                      className={styles.barFill}
-                      style={{
-                        width: `${pct}%`,
-                        background: SIGNAL_COLORS[signal as PatientSignal],
-                      }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <BarChart
+            rows={SIGNAL_ORDER.map((signal) => ({
+              label: SIGNAL_LABELS[signal],
+              value: signalCounts[signal],
+              share: patients.length > 0 ? signalCounts[signal] / patients.length : 0,
+              tone: SIGNAL_TONES[signal],
+            }))}
+            max={patients.length}
+            order="input"
+            caption={`Patients by signal, of ${patients.length} registered`}
+            labels={{ row: "Signal", value: "Patients" }}
+          />
         </div>
 
         {/* ── Assessment score distribution ────────────────────────────── */}
@@ -298,28 +284,18 @@ export default async function ReportsPage() {
             <div className={styles.emptyStateInline}>No assessments yet.</div>
           ) : (
             <div className={styles.barRow}>
-              {tierCounts.map((tier) => {
-                const pct =
-                  allAssessments.length > 0
-                    ? Math.round((tier.count / allAssessments.length) * 100)
-                    : 0;
-                return (
-                  <div key={tier.name}>
-                    <div className={styles.barRowItem}>
-                      <span className={styles.tierName}>{tier.name}</span>
-                      <span className={styles.tierCount}>
-                        {tier.count} ({pct}%)
-                      </span>
-                    </div>
-                    <div className={styles.barTrack}>
-                      <div
-                        className={styles.barFill}
-                        style={{ width: `${pct}%`, background: tier.color }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
+              <BarChart
+                rows={tierCounts.map((tier) => ({
+                  label: tier.name,
+                  value: tier.count,
+                  share: tier.count / allAssessments.length,
+                  tone: tier.tone,
+                }))}
+                max={allAssessments.length}
+                order="input"
+                caption={`Assessments by score tier, of ${allAssessments.length} taken`}
+                labels={{ row: "Tier", value: "Assessments" }}
+              />
               {avgScore !== null && (
                 <p className={styles.avgNote}>
                   Population average:{" "}

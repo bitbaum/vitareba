@@ -261,7 +261,8 @@ export interface VerdictTier {
   minScore: number;
   maxScore: number;
   name: string;
-  color: string;
+  /** How the tier reads in the reports chart (ChartKit bar tone). */
+  tone: "positive" | "warning" | "negative";
   text: string;
   /** Key used to look up translated name/text in the assessment i18n namespace. */
   i18nKey: string;
@@ -285,7 +286,7 @@ export const VERDICT_TIERS: VerdictTier[] = [
     minScore: 0,
     maxScore: 35,
     name: "Deep Friction",
-    color: "var(--danger)",
+    tone: "negative",
     text: "Your ADHD profile is producing significant friction across multiple dimensions. The biological and structural interventions are clear — and so is the magnitude of what becomes available when they're addressed.",
     i18nKey: "deepFriction",
   },
@@ -293,7 +294,7 @@ export const VERDICT_TIERS: VerdictTier[] = [
     minScore: 36,
     maxScore: 55,
     name: "Managed Tension",
-    color: "var(--warn)",
+    tone: "warning",
     text: "You have developed coping strategies, but the underlying tension between your neurotype and your environment is still producing real costs. The work is moving from coping to designing.",
     i18nKey: "managedTension",
   },
@@ -301,7 +302,7 @@ export const VERDICT_TIERS: VerdictTier[] = [
     minScore: 56,
     maxScore: 75,
     name: "Asymmetric Performance",
-    color: "var(--teal)",
+    tone: "positive",
     text: "You have significant strengths and specific vulnerabilities. This is the profile most responsive to targeted intervention — because the foundation is already strong.",
     i18nKey: "asymmetricPerformance",
   },
@@ -309,7 +310,7 @@ export const VERDICT_TIERS: VerdictTier[] = [
     minScore: 76,
     maxScore: 100,
     name: "Optimised Neurotype",
-    color: "var(--teal)",
+    tone: "positive",
     text: "Your ADHD profile is largely working for you. The refinement available at this level is precision optimisation — fine-tuning the edges to extract the full potential of your neurotype.",
     i18nKey: "optimisedNeurotype",
   },

@@ -57,10 +57,13 @@ export const CHECKIN_DIP_ALERT_DAYS = 3;
 export const SPARKLINE_LOW_THRESHOLD = 2.5;
 export const SPARKLINE_MID_THRESHOLD = 3.5;
 
-/** CSS variable for each signal severity — SSOT for signal color rendering */
-export const SIGNAL_COLORS: Record<PatientSignal, string> = {
-  critical: "var(--danger)",
-  attention: "var(--warn)",
-  active: "var(--teal)",
-  new: "var(--muted)",
+/** A ChartKit bar tone: drawn in --ck-down / --ck-warning / --ck-up (globals.css). */
+export type ChartTone = "positive" | "warning" | "negative";
+
+/** Chart tone for each signal severity — SSOT for signal colour in charts. `new` has none: neutral ink. */
+export const SIGNAL_TONES: Record<PatientSignal, ChartTone | undefined> = {
+  critical: "negative",
+  attention: "warning",
+  active: "positive",
+  new: undefined,
 };
