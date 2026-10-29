@@ -76,7 +76,7 @@ export const clinicianApplicationStatusEnum = pgEnum("clinician_application_stat
  * level down: `COMPANY.clinicianName` and the hand-authored per-email
  * scheduling map were both config constants that stopped being true the moment
  * there were two of the thing they named. "The clinic" is the next constant in
- * that sequence, and a deployment per clinic (see CLAUDE.md) is only cheap
+ * that sequence, and a deployment per clinic (see AGENTS.md) is only cheap
  * while clinic identity is a row you can vary, not a literal you must fork.
  *
  * Deliberately NOT a tenancy column on the other tables. Isolation between
