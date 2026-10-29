@@ -1,11 +1,12 @@
 "use client";
 
+import "@bitbaum/accountkit/styles.css";
+import { PasswordField } from "@bitbaum/accountkit/auth/password-field";
 import { useState } from "react";
 import styles from "../portal.module.css";
 import profileStyles from "./profile.module.css";
 import authStyles from "../../forms.module.css";
 import { SAVED_FEEDBACK_MS, SAVING_LABEL, SAVED_LABEL } from "@/lib/config/portal";
-import { PASSWORD_MIN_LENGTH } from "@/lib/config/auth";
 
 export function PasswordForm() {
   const [pwForm, setPwForm] = useState({ currentPassword: "", newPassword: "" });
@@ -59,14 +60,11 @@ export function PasswordForm() {
           <label className={authStyles.label} htmlFor="newPassword">
             New password
           </label>
-          <input
+          <PasswordField
             id="newPassword"
-            type="password"
-            className={authStyles.input}
+            classes={{ input: authStyles.input }}
             value={pwForm.newPassword}
-            onChange={(e) => setPwForm((prev) => ({ ...prev, newPassword: e.target.value }))}
-            autoComplete="new-password"
-            minLength={PASSWORD_MIN_LENGTH}
+            onChange={(newPassword) => setPwForm((prev) => ({ ...prev, newPassword }))}
           />
         </div>
         {pwError && <p className={styles.formError}>{pwError}</p>}

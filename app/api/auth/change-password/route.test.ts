@@ -110,12 +110,12 @@ describe("POST /api/auth/change-password", () => {
     expect(res.status).toBe(400);
   });
 
-  it("returns 400 when newPassword is shorter than the minimum", async () => {
+  it("returns 400 when newPassword is empty", async () => {
     const res = await POST(
       new Request("https://example.com/api/auth/change-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ currentPassword: "OldPassword1!", newPassword: "short" }),
+        body: JSON.stringify({ currentPassword: "OldPassword1!", newPassword: "" }),
       }),
     );
     expect(res.status).toBe(400);

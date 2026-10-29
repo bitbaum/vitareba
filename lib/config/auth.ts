@@ -23,14 +23,15 @@ export const SESSION_REVALIDATE_MS = 5 * 60 * 1000; // 5 minutes
 /** bcrypt cost factor used for password hashing — applies to registration, reset, and change-password */
 export const BCRYPT_SALT_ROUNDS = 12;
 
-/** Minimum password length — enforced at registration, reset, and change-password */
-export const PASSWORD_MIN_LENGTH = 8;
-
 /**
- * Maximum password length — bounded to prevent bcrypt DoS via extremely long inputs.
- * bcrypt truncates at 72 bytes internally; 200 chars is generous and safe.
+ * The one bitbaum password rule — non-empty, at most 128 characters — enforced at
+ * registration, reset and change-password. It is decided in @bitbaum/accountkit,
+ * never here: no local number, no strength meter, no hint text.
  */
-export const PASSWORD_MAX_LENGTH = 200;
+export {
+  MAX_PASSWORD_LENGTH as PASSWORD_MAX_LENGTH,
+  MIN_PASSWORD_LENGTH as PASSWORD_MIN_LENGTH,
+} from "@bitbaum/accountkit/auth/password";
 
 /** Maximum email length — matches email varchar(255) DB column */
 export const EMAIL_MAX_LENGTH = 255;
