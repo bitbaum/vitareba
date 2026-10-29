@@ -19,7 +19,7 @@
  * a config constant naming one instance of a thing there will be several of.
  *
  * NOT a tenancy boundary. Two practices get two deployments and two databases
- * (see CLAUDE.md) — isolation no `WHERE` clause can forget. This file answers
+ * (see AGENTS.md) — isolation no `WHERE` clause can forget. This file answers
  * "who are we", never "may this user see that row".
  */
 

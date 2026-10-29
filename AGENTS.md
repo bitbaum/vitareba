@@ -34,6 +34,169 @@ into this file.
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
 
+## What this is
+
+Clinical patient management for Vita GmbH, a metabolic psychiatry and systemic
+longevity clinic in Zürich; the flagship programme is ADHD diagnosis and
+optimisation for high performers. Two parts:
+
+1. **Public marketing site** — multilingual (de default, en, fr), landing at
+   `/de/`. Its primary action is the Inflection Edge self-assessment overlay,
+   which works **without an account**: a visitor experiences the result before
+   any auth wall.
+2. **Patient portal and admin** — authenticated, at `/dashboard` (patients) and
+   `/admin` (clinicians).
+
+Success: a clinician opens the admin and knows, without calling anyone, who
+needs attention today; patients check in daily because the portal shows it
+matters.
+
+Served at `https://vita.orangecat.ch` from the Hetzner box behind Caddy
+(`vitareba.orangecat.ch` 308s its pages there, `/api/*` excepted).
+`vitareba.ch` is the intended domain but has no DNS yet — do not probe it; a
+"could not resolve host" there is not an outage. Stack: Next.js 16 (App
+Router, `standalone`) · TypeScript strict · CSS Modules · self-hosted
+PostgreSQL (`pg`) · Drizzle · NextAuth 5 · Resend · next-intl.
+
+Surf Your Life shares the founder and philosophy, not code: never merge the
+codebases or share components.
+
+## Commands
+
+```bash
+pnpm dev          # localhost:3000
+pnpm build        # production build
+pnpm verify       # format check + lint + typecheck + test — the pre-done gate (mirrors CI)
+pnpm db:generate  # migration after a schema.ts edit — COMMIT the drizzle/*.sql
+pnpm db:push      # local dev databases only, never prod
+pnpm db:studio    # Drizzle Studio
+```
+
+CI (`.github/workflows/ci.yml`) runs the same gates plus `build`. A push to
+`main` triggers `.github/workflows/deploy.yml` (loki's reusable
+`selfhost-deploy.yml`): it waits for CI, builds, rsyncs the release, swaps a
+symlink, restarts the service and health-checks with auto-rollback. Confirm:
+
+```bash
+curl -sS -o /dev/null -w '%{http_code}\n' https://vita.orangecat.ch/de
+curl -sS https://vita.orangecat.ch/api/health   # {"ok":true,"schemaCheck":"passed"}
+```
+
+## Database
+
+- `lib/db/schema.ts` is the SSOT for every table and relation; `lib/db/index.ts`
+  is a lazy Drizzle singleton on a `pg` Pool.
+- Migrations are versioned and auto-applied: the deploy's schema step (loki
+  `scripts/hetzner/apply-schema.sh`) applies pending `drizzle/*.sql` on every
+  deploy, additive-only and transactional; a destructive diff aborts the deploy
+  for a human.
+- **A new table is owned by `postgres`, not the app's role.** Prod carries
+  `ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT,
+  INSERT, UPDATE, DELETE ON TABLES TO vitareba`, and `/api/health` asserts the
+  property (`lib/db/schema-usable.ts`). CI cannot see this — its test user owns
+  everything — and two features once shipped broken on "permission denied".
+- **One practice per deployment.** A second clinic is another deployment with
+  its own database, not an `org_id` column: row-level tenancy would make every
+  `WHERE` load-bearing for confidentiality, which
+  `app/api/user-isolation.test.ts` (patient isolation) does not guard. The
+  `organizations` row is seeded from `COMPANY` (`lib/config/company.ts`),
+  which stays the source because the manifest, OG image and sitemap render at
+  build time with no database; `lib/domain/organization.test.ts` fails if they
+  drift. Read the practice through `getOrganization()`
+  (`lib/domain/organization.ts`) on any surface that must vary per clinic;
+  convert existing `COMPANY.x` reads one surface at a time.
+
+## Routing (`proxy.ts`)
+
+`PUBLIC_API_PREFIXES` (auth, registration, webhooks, cron, health) pass
+through and authenticate themselves. The portal prefixes — derived from
+`PORTAL_ROUTES` in `lib/config/routes.ts`, plus `/admin` and the private API —
+are session-gated with no locale routing: a signed-out API call gets a JSON
+401, a page goes to `/login?returnTo=…`, and a non-admin at `/admin` goes to
+`/dashboard`. Admins are not pushed out of the patient portal (dual-role
+clinicians use both). Locale-prefixed portal paths redirect to the canonical
+one; everything else is next-intl marketing, with auth pages localized under
+`app/[locale]/(auth)/`. **A new portal route is added to
+`PORTAL_ROUTES`** — never to `proxy.ts` — or signed-out users get a 404.
+
+## Where things live
+
+| What | Where |
+| --- | --- |
+| Design tokens | `app/globals.css` `:root` |
+| Company name, email, address, `PORTAL_URL` | `lib/config/company.ts` |
+| Programme and phase labels | `lib/config/programmes.ts` |
+| Signal thresholds, labels | `lib/config/admin.ts` |
+| Assessment questions, dimensions, tiers, scoring | `lib/assessment/data.ts` |
+| Availability and slot rules per clinician | `lib/config/scheduling.ts` |
+| Regulatory blocks (laws, attribution) | `lib/config/regulation.ts` |
+| Portal route paths, `documentFileUrl` | `lib/config/routes.ts` |
+| Email templates | `lib/email/templates.ts` |
+| Who may read a thread | `thread_participants` (threadkit) — never a role check or `threads.patient_id` |
+| Unread state | `thread_participants.last_read_at` |
+
+Adding a team member, changing the company email or adding a programme phase is
+one file each; more means the architecture is wrong.
+
+## Patient signal
+
+`computePatientSignal()` in `lib/domain/signals.ts` is pure and tested; a change
+updates `lib/domain/signals.test.ts`. Signals are `new` (inside
+`NEW_PATIENT_GRACE_DAYS`), `critical` (no check-in for
+`NO_CHECKIN_CRITICAL_DAYS`, consecutive declining wellness, or an assessment
+drop over `SCORE_DROP_CRITICAL`), `attention` (e.g. no assessment, or no
+booking) and `active`; thresholds are in `lib/config/admin.ts`. Used by
+`/admin/patients`, `/admin/reports` and `/api/cron/signals`, which alerts on a
+first transition to `critical`.
+
+Clinical goal progress is `((current - baseline) / (target - baseline)) * 100`,
+never `current / target`. `cron/signals` updates `current` from check-in
+averages or assessment scores when a goal has a `metric`.
+
+The assessment is five dimensions of six questions answered 1–5; a dimension
+scores `(sum / maxPossible) * 100` and the overall score is their mean. Change
+questions or interpretations only in `lib/assessment/data.ts`.
+
+## Roles and AI
+
+- `users.role` (patient/admin) is access; `users.isClinician` marks actual
+  doctors. A clinician can be another clinician's patient (`care_team`).
+- The AI provider (`lib/ai/`) is OpenAI-compatible (`AI_BASE_URL`, `AI_API_KEY`,
+  `AI_MODEL`) and must be EU/CH-hosted under a DPA. AI routes answer **HTTP 451**
+  with a `blockId` into `lib/config/regulation.ts` when gated — no provider, or
+  no explicit consent (`profiles.aiConsentAt`). The Diagnosis Assistant is
+  permanently blocked (MDR/AI Act) and the UI says so.
+
+## Email and documents
+
+- Resend; `RESEND_FROM` must be a domain verified in Resend.
+  `onboarding@resend.dev` delivers only to the account owner, so
+  `isEmailConfigured()` treats it as unconfigured in production.
+  Sequences queue in `emailQueue` and are sent by `cron/emails`; password
+  reset and message notifications send immediately.
+- Documents live on local disk under `UPLOADS_DIR` (`lib/storage.ts`);
+  `documents.fileUrl` is a storage key, not a URL. Nothing serves the uploads
+  directory publicly: link with `documentFileUrl(doc.id)`, served by the
+  session-checked `GET /api/documents/[id]/file`, which answers 404 (never 403)
+  for someone else's document. `lib/storage-discipline.test.ts` enforces it.
+
+## Cron
+
+Every `/api/cron/*` route needs `Authorization: Bearer CRON_SECRET` and is
+called by a systemd timer on the box. Times are Zürich wall-clock
+(`CLINIC_TIMEZONE`; the timer units pin `Europe/Zurich`).
+
+| Route | Schedule | Purpose |
+| --- | --- | --- |
+| `cron/signals` | daily 02:00 | compute signals, email admin on new criticals |
+| `cron/orphaned-files` | daily 03:00 | delete stored files no document row points at |
+| `cron/checkin-reminder` | daily 07:00 | remind patients to check in |
+| `cron/emails` | daily 08:00 | process the email queue |
+| `cron/checkin-dip-alert` | daily 09:00 | alert admin on wellness dips |
+| `cron/weekly-digest` | Sunday 08:00 | weekly summary to patients |
+| `cron/calendar-sync` | every 15 min | re-read clinicians' subscribed calendars so commitments block slots |
+
+
 ## Design System
 
 **Tailwind version:** v4. No `tailwind.config.*` file exists — Tailwind is imported via `@import "tailwindcss"` in `app/globals.css`. There is no `@theme` block. All design tokens are `:root` CSS custom properties in `globals.css`. Do not create a `tailwind.config.*` file. Components style themselves with co-located CSS Modules plus the semantic utility classes in `globals.css` — **no Tailwind utility class is used anywhere in this codebase**, and none should be: with no `@theme` block, Tailwind's default palette is what `text-teal-500` would resolve to (`#14b8a6`, not Vita's `--teal` `#2a7a8a`), and no test catches that. Never use arbitrary values like `bg-[#hex]`.
@@ -162,6 +325,15 @@ Muted:  --muted-8, --muted-10, --muted-12, --muted-18
 **Accessibility:**
 - `.sr-only` — visually hidden, screen-reader accessible
 
+Shared component classes live in `app/shared.module.css` (`composes:` from portal and admin).
+`lib/design-discipline.test.ts` fails CI on raw hex, untokenised radii and transition
+durations, stray `style={{}}`, and any `var(--x)` that `globals.css` does not define;
+`lib/css-order.test.ts` fails when an `@media` block precedes a base rule it overrides.
+
+**Open:** CSS Modules diverge from the fleet's blessed Tailwind (`fleet/STACK.md`), and the
+exceptions column has no entry for it. Resolve it by converting or by recording the exception;
+until then, do not convert files opportunistically in unrelated PRs.
+
 Portal-specific CSS lives in `app/(portal)/portal.module.css`.
 Admin-specific CSS lives in `app/(admin)/admin.module.css`.
 Marketing section CSS: co-located `components/sections/*.module.css`.
@@ -173,7 +345,7 @@ Use `@media (max-width: 767px)` to hide desktop-only elements. Never `max-width:
 
 ### SSOT Rule
 
-All design tokens live in `app/globals.css` only. There is no `tailwind.config.*` (Tailwind v4); if one ever existed it MUST reference CSS vars (`'var(--name)'`), never literal values. Components MUST use semantic CSS classes from `globals.css` or standard Tailwind utilities, never arbitrary values like `bg-[#hex]`.
+All design tokens live in `app/globals.css` only. There is no `tailwind.config.*` (Tailwind v4); if one ever existed it MUST reference CSS vars (`'var(--name)'`), never literal values. Components MUST use co-located CSS Modules and the semantic classes from `globals.css`, never Tailwind utilities or arbitrary values like `bg-[#hex]`.
 
 **Violations to fix when touching UI:**
 - `bg-[#hex]` / `text-[#hex]` in className → CSS var + semantic class
