@@ -12,8 +12,8 @@ importers:
         specifier: ^1.11.3
         version: 1.11.3
       '@bitbaum/ai-kit':
-        specifier: ^1.21.4
-        version: 1.21.4(react@19.3.1)
+        specifier: ^1.21.5
+        version: 1.21.5(react@19.3.1)
       '@bitbaum/chatkit':
         specifier: ^0.21.2
         version: 0.21.2(react@19.3.1)
@@ -193,8 +193,8 @@ packages:
     resolution: {integrity: sha512-Vj1jF3cPfxg7OAfoI7QnVKLoILlm2JF9pnVHrX8qx7AHMiYWT+NDAA7jChlNgRS4WTLc/fD1lXLmPixluj+3Gg==}
     engines: {node: '>=6.9.0'}
 
-  '@bitbaum/ai-kit@1.21.4':
-    resolution: {integrity: sha512-aBK/yh5X74ZPTCURwEznXT5kKbe1GuCc0RUHy+e9v0uVivDERAq67E1LmUpasDZ3G81DB0OdOuIWMjJ+IF6ihA==}
+  '@bitbaum/ai-kit@1.21.5':
+    resolution: {integrity: sha512-TdiPrUdzSnQWDG7XE/iUA+BozJg2+xJMYHb/6ZRtbW4692n1so+jBfb5PGHyxjwiWApbnPg9TUHKv04p87vzvQ==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18'
@@ -4503,7 +4503,7 @@ snapshots:
       '@babel/helper-string-parser': 7.29.7
       '@babel/helper-validator-identifier': 7.29.7
 
-  '@bitbaum/ai-kit@1.21.4(react@19.3.1)':
+  '@bitbaum/ai-kit@1.21.5(react@19.3.1)':
     dependencies:
       '@mozilla/readability': 0.6.0
       ai-forms: 0.1.3(react@19.3.1)
