@@ -116,7 +116,7 @@ export function CheckinForm({ clinician }: { clinician: string }) {
   }
 
   const chartData = history.map((c) => ({
-    date: formatDateMonthDay(c.date + "T00:00:00"),
+    date: c.date,
     ...(Object.fromEntries(CHECKIN_METRICS.map(({ key }) => [key, c[key]])) as Record<
       MetricKey,
       number

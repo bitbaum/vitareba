@@ -28,16 +28,11 @@ import {
   type PhaseKey,
 } from "@/lib/config/programmes";
 import { VERDICT_TIERS, getVerdictName, scoreClass } from "@/lib/assessment/data";
-import {
-  formatDateShort,
-  formatDateISO,
-  formatDateMonthDay,
-  displayName,
-} from "@/lib/utils/format";
+import { formatDateShort, formatDateISO, displayName } from "@/lib/utils/format";
 import { CHECKIN_METRICS, CHECKIN_DISPLAY_DAYS, type MetricKey } from "@/lib/config/portal";
 import { CheckinTrendChart } from "@/components/portal/CheckinTrendChart";
 import Link from "next/link";
-import { BarChart } from "@bitbaum/chartkit/react";
+import { BarChart, Meter } from "@bitbaum/chartkit/react";
 
 function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
   return (
@@ -187,7 +182,7 @@ export default async function ReportsPage() {
   const populationTrend = [...byDate.entries()]
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([date, { sums, count }]) => ({
-      date: formatDateMonthDay(date + "T00:00:00"),
+      date,
       ...(Object.fromEntries(
         CHECKIN_METRICS.map(({ key }) => [key, Math.round((sums[key] / count) * 10) / 10]),
       ) as Record<MetricKey, number>),
@@ -413,13 +408,8 @@ export default async function ReportsPage() {
             </thead>
             <tbody>
               {patientAdherence.map(({ id, name, weekCheckins, signal }) => {
-                const pct = Math.round((weekCheckins / SIGNAL_CHECKIN_WINDOW_DAYS) * 100);
-                const barColor =
-                  weekCheckins === 0
-                    ? "var(--danger)"
-                    : weekCheckins < 4
-                      ? "var(--warn)"
-                      : "var(--teal)";
+                const tone =
+                  weekCheckins === 0 ? "negative" : weekCheckins < 4 ? "warning" : "positive";
                 return (
                   <tr key={id} className={styles.adherenceRow}>
                     <td className={styles.adherenceName}>
@@ -439,12 +429,13 @@ export default async function ReportsPage() {
                       {weekCheckins}/{SIGNAL_CHECKIN_WINDOW_DAYS}
                     </td>
                     <td className={styles.adherenceBarCell}>
-                      <div className={styles.barTrack}>
-                        <div
-                          className={styles.barFill}
-                          style={{ width: `${pct}%`, background: barColor }}
-                        />
-                      </div>
+                      <Meter
+                        value={weekCheckins}
+                        max={SIGNAL_CHECKIN_WINDOW_DAYS}
+                        label={`${name}: days checked in`}
+                        tone={tone}
+                        showValue={false}
+                      />
                     </td>
                   </tr>
                 );

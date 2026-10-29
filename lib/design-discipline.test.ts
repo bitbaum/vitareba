@@ -23,14 +23,11 @@ const ROOTS = ["app", "components", "lib"];
 
 /** TSX files where style={{}} is legitimately data-driven. */
 const STYLE_PROP_ALLOWLIST = new Set([
-  "app/(portal)/assessments/page.tsx", // score bar widths
   "app/(portal)/profile/ProfileForm.tsx", // completeness bar width
   "app/(portal)/goals/page.tsx", // goal progress bar width
   "app/(portal)/dashboard/ProfileCompletenessBar.tsx", // bar width
   "app/(portal)/dashboard/GoalsCard.tsx", // bar width
-  "app/(admin)/admin/reports/page.tsx", // bar widths + signal colors from config
   "components/Assessment/index.tsx", // overlay progress bar width
-  "components/Assessment/ResultsScreen.tsx", // score bar widths
   "components/admin/PatientGoalsCard.tsx", // baseline/target marker positions
   "lib/og/element.tsx", // Satori OG image — no CSS runtime exists there
 ]);

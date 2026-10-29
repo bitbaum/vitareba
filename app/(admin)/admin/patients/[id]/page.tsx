@@ -32,7 +32,7 @@ import { AiBriefCard } from "@/components/admin/AiBriefCard";
 import { MeasurementsPanel } from "@/components/clinical/MeasurementsPanel";
 import { SectionTabs } from "@/components/admin/SectionTabs";
 import { AdminProfileEditForm } from "@/components/admin/AdminProfileEditForm";
-import { formatDateShort, formatDateLong, formatDateMonthDay } from "@/lib/utils/format";
+import { formatDateShort, formatDateLong, formatDateISO } from "@/lib/utils/format";
 import { USER_ROLE } from "@/lib/config/auth";
 import { ADMIN_ROUTES, PORTAL_ROUTES, documentFileUrl } from "@/lib/config/routes";
 import { computePatientSignal } from "@/lib/domain/signals";
@@ -155,7 +155,7 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
                     <p className={styles.cardLabel}>Check-in trend</p>
                     <CheckinTrendChart
                       data={patient.dailyCheckins.map((c) => ({
-                        date: formatDateMonthDay(c.date + "T00:00:00"),
+                        date: c.date,
                         sleep: c.sleep,
                         energy: c.energy,
                         mood: c.mood,
@@ -192,7 +192,7 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
                     <AssessmentTrendChart
                       // results are fetched newest-first; the time axis reads left→right
                       data={patient.assessmentResults.toReversed().map((r) => ({
-                        date: formatDateMonthDay(r.completedAt),
+                        date: formatDateISO(r.completedAt),
                         score: r.overallScore,
                       }))}
                     />

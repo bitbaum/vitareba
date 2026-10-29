@@ -1,3 +1,5 @@
+import type { ChartTone } from "@bitbaum/chartkit/react";
+
 /** Assessment score range — 0–100 normalised integer. Used in Zod schemas and DB column bounds. */
 export const ASSESSMENT_SCORE_MIN = 0;
 export const ASSESSMENT_SCORE_MAX = 100;
@@ -268,10 +270,11 @@ export interface VerdictTier {
   i18nKey: string;
 }
 
-export const scoreColor = (score: number): string => {
-  if (score >= 60) return "var(--teal)";
-  if (score >= 40) return "var(--warn)";
-  return "var(--danger)";
+/** ChartKit tone for a 0–100 score: the same thresholds as scoreClass, drawn in --ck-up / --ck-warning / --ck-down. */
+export const scoreTone = (score: number): ChartTone => {
+  if (score >= 60) return "positive";
+  if (score >= 40) return "warning";
+  return "negative";
 };
 
 /** Global CSS utility class for score colouring — use instead of style={{ color: scoreColor(n) }} */

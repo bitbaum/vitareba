@@ -1,6 +1,6 @@
 /// <reference types="vitest/globals" />
 import {
-  scoreColor,
+  scoreTone,
   getVerdict,
   getVerdictName,
   getInterpretation,
@@ -11,30 +11,30 @@ import {
   computeScores,
 } from "./data";
 
-// ─── scoreColor ───────────────────────────────────────────────────────────────
+// ─── scoreTone ────────────────────────────────────────────────────────────────
 
-describe("scoreColor", () => {
-  it("returns teal at score 60 (lower boundary)", () => {
-    expect(scoreColor(60)).toBe("var(--teal)");
+describe("scoreTone", () => {
+  it("is positive at score 60 (lower boundary)", () => {
+    expect(scoreTone(60)).toBe("positive");
   });
 
-  it("returns teal above 60", () => {
-    expect(scoreColor(100)).toBe("var(--teal)");
-    expect(scoreColor(75)).toBe("var(--teal)");
+  it("is positive above 60", () => {
+    expect(scoreTone(100)).toBe("positive");
+    expect(scoreTone(75)).toBe("positive");
   });
 
-  it("returns warn at score 40 (lower boundary)", () => {
-    expect(scoreColor(40)).toBe("var(--warn)");
+  it("is warning at score 40 (lower boundary)", () => {
+    expect(scoreTone(40)).toBe("warning");
   });
 
-  it("returns warn between 40 and 59", () => {
-    expect(scoreColor(59)).toBe("var(--warn)");
-    expect(scoreColor(50)).toBe("var(--warn)");
+  it("is warning between 40 and 59", () => {
+    expect(scoreTone(59)).toBe("warning");
+    expect(scoreTone(50)).toBe("warning");
   });
 
-  it("returns danger below 40", () => {
-    expect(scoreColor(0)).toBe("var(--danger)");
-    expect(scoreColor(39)).toBe("var(--danger)");
+  it("is negative below 40", () => {
+    expect(scoreTone(0)).toBe("negative");
+    expect(scoreTone(39)).toBe("negative");
   });
 });
 

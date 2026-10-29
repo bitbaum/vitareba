@@ -67,3 +67,13 @@ export const SIGNAL_TONES: Record<PatientSignal, ChartTone | undefined> = {
   active: "positive",
   new: undefined,
 };
+
+/** A day's wellness level in the patients table's check-in sparkline. */
+export type SparkLevel = "low" | "mid" | "high";
+
+/** Sparkline dot tone for each wellness level — the same scale as the signal tones. */
+export const SPARK_LEVEL_TONES: Record<SparkLevel, ChartTone> = {
+  low: "negative",
+  mid: "warning",
+  high: "positive",
+};
