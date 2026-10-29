@@ -1,5 +1,6 @@
 import { z } from "zod";
 import bcrypt from "bcryptjs";
+import { createPasswordHasher } from "@bitbaum/accountkit/auth/hash";
 import { getAdminEmails } from "@/lib/config/company";
 import {
   USER_ROLE,
@@ -34,10 +35,7 @@ export const loginSchema = z.object({
 
 export const registerSchema = z.object({
   email: emailField({ invalidMessage: "Invalid email address" }),
-  password: z
-    .string()
-    .min(PASSWORD_MIN_LENGTH, `Password must be at least ${PASSWORD_MIN_LENGTH} characters`)
-    .max(PASSWORD_MAX_LENGTH),
+  password: z.string().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH),
 });
 
 /**
@@ -115,14 +113,27 @@ export function revalidatedSessionToken<T extends SessionToken>(
   };
 }
 
-/** Hash a plaintext password using the project's standard bcrypt cost factor */
+/**
+ * Password hashing is @bitbaum/accountkit's: bcrypt over the SHA-256 of the
+ * password, so a long password is not cut at bcrypt's 72 bytes. Hashes stored
+ * before that are plain bcrypt; they still verify, and `checkPassword` says
+ * when to store the new form (done at sign-in).
+ */
+const passwordHasher = createPasswordHasher(bcrypt, BCRYPT_SALT_ROUNDS);
+
+/** Hash a plaintext password for storage */
 export function hashPassword(password: string): Promise<string> {
-  return bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
+  return passwordHasher.hash(password);
 }
 
-/** Compare a plaintext password against a stored bcrypt hash */
-export function verifyPassword(password: string, hash: string): Promise<boolean> {
-  return bcrypt.compare(password, hash);
+/** Whether a plaintext password matches a stored hash, and whether the hash is the old form */
+export function checkPassword(password: string, hash: string) {
+  return passwordHasher.verify(password, hash);
+}
+
+/** Compare a plaintext password against a stored hash */
+export async function verifyPassword(password: string, hash: string): Promise<boolean> {
+  return (await passwordHasher.verify(password, hash)).valid;
 }
 
 // ─── Open-redirect prevention ─────────────────────────────────────────────────

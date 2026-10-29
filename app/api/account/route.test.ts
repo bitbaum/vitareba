@@ -92,12 +92,12 @@ describe("POST /api/account", () => {
     expect(json.error.email).toBeDefined();
   });
 
-  it("returns 400 when password is too short", async () => {
+  it("returns 400 when the password is empty", async () => {
     const res = await POST(
       new Request("https://example.com/api/account", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: "alice@example.com", password: "short" }), // < 8 chars
+        body: JSON.stringify({ email: "alice@example.com", password: "" }),
       }),
     );
     expect(res.status).toBe(400);

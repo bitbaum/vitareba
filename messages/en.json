@@ -442,7 +442,6 @@
       "emailLabel": "Email",
       "passwordLabel": "Password",
       "emailPlaceholder": "you@example.com",
-      "passwordPlaceholder": "Min. 8 characters",
       "submit": "Create account",
       "submitting": "Creating account…",
       "hasAccount": "Already have an account?",
@@ -469,10 +468,6 @@
       "requestNew": "Request a new link",
       "expiredError": "This link is invalid or has expired.",
       "newPasswordLabel": "New password",
-      "confirmPasswordLabel": "Confirm password",
-      "newPasswordPlaceholder": "Min. 8 characters",
-      "confirmPasswordPlaceholder": "Repeat password",
-      "mismatchError": "Passwords do not match.",
       "genericError": "Something went wrong. The link may have expired.",
       "submit": "Update password",
       "submitting": "Updating…"

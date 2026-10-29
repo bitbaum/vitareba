@@ -445,7 +445,6 @@
       "emailLabel": "E-Mail",
       "passwordLabel": "Passwort",
       "emailPlaceholder": "sie@beispiel.com",
-      "passwordPlaceholder": "Mind. 8 Zeichen",
       "submit": "Konto erstellen",
       "submitting": "Konto wird erstellt…",
       "hasAccount": "Bereits ein Konto?",
@@ -472,10 +471,6 @@
       "requestNew": "Neuen Link anfordern",
       "expiredError": "Dieser Link ist ungültig oder abgelaufen.",
       "newPasswordLabel": "Neues Passwort",
-      "confirmPasswordLabel": "Passwort bestätigen",
-      "newPasswordPlaceholder": "Mind. 8 Zeichen",
-      "confirmPasswordPlaceholder": "Passwort wiederholen",
-      "mismatchError": "Die Passwörter stimmen nicht überein.",
       "genericError": "Etwas ist schiefgelaufen. Der Link ist möglicherweise abgelaufen.",
       "submit": "Passwort aktualisieren",
       "submitting": "Wird aktualisiert…"

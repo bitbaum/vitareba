@@ -11,9 +11,11 @@ import {
   emailField,
   shouldRevalidateSession,
   revalidatedSessionToken,
+  checkPassword,
 } from "./auth";
 import { SESSION_REVALIDATE_MS, USER_ROLE } from "@/lib/config/auth";
 import { z } from "zod";
+import bcrypt from "bcryptjs";
 
 // bcrypt cost 12 is intentionally slow (production security); use 4 in tests
 vi.mock("@/lib/config/auth", async (importOriginal) => {
@@ -84,6 +86,11 @@ describe("registerSchema", () => {
     expect(result.success).toBe(true);
   });
 
+  it("accepts a one-character password (the one bitbaum rule)", () => {
+    const result = registerSchema.safeParse({ email: "user@example.com", password: "x" });
+    expect(result.success).toBe(true);
+  });
+
   it("accepts password above minimum length", () => {
     const result = registerSchema.safeParse({
       email: "user@example.com",
@@ -92,10 +99,10 @@ describe("registerSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("rejects password below minimum length", () => {
+  it("rejects an empty password", () => {
     const result = registerSchema.safeParse({
       email: "user@example.com",
-      password: "a".repeat(PASSWORD_MIN_LENGTH - 1),
+      password: "",
     });
     expect(result.success).toBe(false);
   });
@@ -169,9 +176,19 @@ describe("resolveRole", () => {
 // ─── hashPassword / verifyPassword ────────────────────────────────────────────
 
 describe("hashPassword", () => {
-  it("returns a bcrypt hash (starts with $2b$)", async () => {
+  it("returns accountkit's hash form: bcrypt over the SHA-256 (starts with $bs1$)", async () => {
     const hash = await hashPassword("secret123");
-    expect(hash).toMatch(/^\$2[ab]\$/);
+    expect(hash).toMatch(/^\$bs1\$\$2[ab]\$/);
+  });
+
+  it("counts every character of a long password, not the first 72 bytes", async () => {
+    const hash = await hashPassword("a".repeat(100) + "X");
+    expect(await verifyPassword("a".repeat(100) + "Y", hash)).toBe(false);
+  });
+
+  it("still verifies a plain bcrypt hash from before, and asks for the new form", async () => {
+    const legacy = await bcrypt.hash("old-password", 4);
+    expect(await checkPassword("old-password", legacy)).toEqual({ valid: true, rehash: true });
   });
 
   it("produces a different hash each call (salted)", async () => {

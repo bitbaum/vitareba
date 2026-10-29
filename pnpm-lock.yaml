@@ -11,6 +11,9 @@ importers:
       '@auth/drizzle-adapter':
         specifier: ^1.11.3
         version: 1.11.3
+      '@bitbaum/accountkit':
+        specifier: ^0.14.0
+        version: 0.14.0(@bitbaum/mail-kit@0.2.0)(drizzle-orm@0.45.4(@neondatabase/serverless@1.0.2)(@opentelemetry/api@1.9.1)(@types/pg@8.23.1)(pg@8.23.1))(next@16.4.2(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react@19.3.1)
       '@bitbaum/ai-kit':
         specifier: ^1.21.5
         version: 1.21.5(react@19.3.1)
@@ -87,6 +90,9 @@ importers:
       eslint-config-next:
         specifier: 16.4.2
         version: 16.4.2(@typescript-eslint/parser@8.72.0(eslint@10.13.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.13.0(jiti@2.7.0))(typescript@6.0.3)
+      playwright-core:
+        specifier: 1.63.0
+        version: 1.63.0
       prettier:
         specifier: 3.9.10
         version: 3.9.10
@@ -192,6 +198,28 @@ packages:
   '@babel/types@7.29.8':
     resolution: {integrity: sha512-Vj1jF3cPfxg7OAfoI7QnVKLoILlm2JF9pnVHrX8qx7AHMiYWT+NDAA7jChlNgRS4WTLc/fD1lXLmPixluj+3Gg==}
     engines: {node: '>=6.9.0'}
+
+  '@bitbaum/accountkit@0.14.0':
+    resolution: {integrity: sha512-WN0M7WrKzMCyPA0y4VMC+dyr4a0cY/swZ7nx5FVGCDBxW0QIn5lecKCTjRYeS+WLDDirKpq9k1BbobpDTfxTJA==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      '@better-auth/passkey': ^1.7.10
+      '@bitbaum/mail-kit': ^0.2.0
+      better-auth: ^1.7.10
+      drizzle-orm: ^0.45.4
+      next: ^16.4.0
+      react: '>=18'
+    peerDependenciesMeta:
+      '@better-auth/passkey':
+        optional: true
+      '@bitbaum/mail-kit':
+        optional: true
+      better-auth:
+        optional: true
+      drizzle-orm:
+        optional: true
+      next:
+        optional: true
 
   '@bitbaum/ai-kit@1.21.5':
     resolution: {integrity: sha512-TdiPrUdzSnQWDG7XE/iUA+BozJg2+xJMYHb/6ZRtbW4692n1so+jBfb5PGHyxjwiWApbnPg9TUHKv04p87vzvQ==}
@@ -3424,6 +3452,10 @@ packages:
     resolution: {integrity: sha512-WkUDrojuJs0xkgGf2udWxa3yGBRxPtxUkB79i6aCZLRgc7PM8fZe9TosfPDcvEpQZbuFASnHYmRLBLUbmLOIIA==}
     engines: {node: '>= 12.0.0'}
 
+  limitkit@0.2.1:
+    resolution: {integrity: sha512-8IBrAi+W9axLDDiUE5F2+wabhLTNs1wpaBSf+RfytdXDm/KpOB6S8Xw7j0uoTQH5ti4A/EiRfyK1DbR6NcY1gA==}
+    engines: {node: '>=20'}
+
   linkedom@0.18.14:
     resolution: {integrity: sha512-BRUnkOm4YR5vo+qI3j0EbungB0vZPSCue5AdnTQRaxAGSbsOZiBFRO0rh4zlo8qXUhli8pxvnpEXDklMnlq2Rg==}
     engines: {node: '>=16'}
@@ -3772,6 +3804,11 @@ packages:
   picomatch@4.0.7:
     resolution: {integrity: sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA==}
     engines: {node: '>=12'}
+
+  playwright-core@1.63.0:
+    resolution: {integrity: sha512-rYCsBF/M5HjUch52bbtVONEFjv6Xu8sm8h72dNlR5bzIE1fvC/bxgspzkjSfU+MweEMmPM8KJebG6nnyxo5mCg==}
+    engines: {node: '>=20'}
+    hasBin: true
 
   po-parser@2.2.0:
     resolution: {integrity: sha512-NdTrKgh0oO7+y+RFX8KKhOB438x/j94UGXEFzl/7pHH0JjWSn42iJ9tgmPksIO6n1JKDHmNDcejPJfKspljB9g==}
@@ -4502,6 +4539,16 @@ snapshots:
     dependencies:
       '@babel/helper-string-parser': 7.29.7
       '@babel/helper-validator-identifier': 7.29.7
+
+  '@bitbaum/accountkit@0.14.0(@bitbaum/mail-kit@0.2.0)(drizzle-orm@0.45.4(@neondatabase/serverless@1.0.2)(@opentelemetry/api@1.9.1)(@types/pg@8.23.1)(pg@8.23.1))(next@16.4.2(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react@19.3.1)':
+    dependencies:
+      limitkit: 0.2.1
+      react: 19.3.1
+      zod: 4.6.7
+    optionalDependencies:
+      '@bitbaum/mail-kit': 0.2.0
+      drizzle-orm: 0.45.4(@neondatabase/serverless@1.0.2)(@opentelemetry/api@1.9.1)(@types/pg@8.23.1)(pg@8.23.1)
+      next: 16.4.2(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
 
   '@bitbaum/ai-kit@1.21.5(react@19.3.1)':
     dependencies:
@@ -7376,6 +7423,8 @@ snapshots:
       lightningcss-win32-arm64-msvc: 1.33.0
       lightningcss-win32-x64-msvc: 1.33.0
 
+  limitkit@0.2.1: {}
+
   linkedom@0.18.14:
     dependencies:
       '@acemir/cssom': 0.9.32
@@ -7660,6 +7709,8 @@ snapshots:
   picomatch@2.3.2: {}
 
   picomatch@4.0.7: {}
+
+  playwright-core@1.63.0: {}
 
   po-parser@2.2.0: {}
 
