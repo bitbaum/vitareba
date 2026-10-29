@@ -13,12 +13,18 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { getTableName } from "drizzle-orm";
 import { appTableNames } from "./tables";
+import { authTables } from "./schema";
 
 const SCHEMA_SOURCE = readFileSync(join(process.cwd(), "lib/db/schema.ts"), "utf8");
 
 /** Every table name that appears in a pgTable(...) call in the schema file. */
-const declared = [...SCHEMA_SOURCE.matchAll(/pgTable\(\s*"([a-z_]+)"/g)].map((m) => m[1]).sort();
+const declared = [
+  ...[...SCHEMA_SOURCE.matchAll(/pgTable\(\s*"([a-z_]+)"/g)].map((m) => m[1]),
+  // The shared account tables are declared by one call, not one pgTable each.
+  ...(/createAuthTables\(/.test(SCHEMA_SOURCE) ? Object.values(authTables).map(getTableName) : []),
+].sort();
 
 describe("derived table list", () => {
   it("finds tables at all", () => {

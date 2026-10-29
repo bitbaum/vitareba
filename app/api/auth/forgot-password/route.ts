@@ -15,6 +15,8 @@ import {
   RESET_TOKEN_IDENTIFIER_PREFIX,
 } from "@/lib/config/auth";
 import { emailField } from "@/lib/domain/auth";
+import { sharedAuthEnabled } from "@/lib/auth/shared/runtime";
+import { sharedForgotPassword } from "@/lib/auth/shared/bridge";
 
 const schema = z.object({ email: emailField() });
 // Always return the same response to prevent email enumeration
@@ -38,6 +40,13 @@ export async function POST(req: Request) {
   if (!parsed.success) return OK;
 
   const { email } = parsed.data;
+
+  // Shared runtime: AccountKit issues, rate-limits and mails the link. The
+  // answer stays OK whatever happened, as below.
+  if (sharedAuthEnabled()) {
+    await sharedForgotPassword(req, email);
+    return OK;
+  }
 
   let user;
   try {

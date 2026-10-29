@@ -2,7 +2,10 @@ import { auth } from "@/lib/auth/edge";
 import createIntlMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
 import { legacyHostRedirect } from "@/lib/domain/legacy-host";
-import { NextResponse } from "next/server";
+import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server";
+import type { Session } from "next-auth";
+import { sharedAuthEnabled } from "@/lib/auth/shared/runtime";
+import { sharedSessionFor } from "@/lib/auth/shared/session";
 import { USER_ROLE } from "@/lib/config/auth";
 import {
   PORTAL_ROUTES,
@@ -33,7 +36,12 @@ function detectLocale(pathname: string): string {
   return (routing.locales as readonly string[]).includes(seg) ? seg : routing.defaultLocale;
 }
 
-export default auth((req) => {
+/**
+ * The routing rules, given the signed-in session (or none). Both runtimes feed
+ * it: NextAuth's JWT through its middleware wrapper, AccountKit's shared session
+ * read from the database (the proxy runs on Node).
+ */
+function route(req: NextRequest, session: Session | null) {
   const { pathname } = req.nextUrl;
 
   // The practice moved from vitareba.orangecat.ch to vita.orangecat.ch.
@@ -44,7 +52,6 @@ export default auth((req) => {
   );
   if (moved) return NextResponse.redirect(moved, 308);
 
-  const session = req.auth;
   const dest =
     session?.user.role === USER_ROLE.admin ? ADMIN_ROUTES.patients : PORTAL_ROUTES.dashboard;
 
@@ -121,7 +128,14 @@ export default auth((req) => {
     if (k !== "x-middleware-rewrite" && k !== "location") wrapped.headers.set(k, v);
   });
   return wrapped;
-});
+}
+
+const legacyProxy = auth((req) => route(req, req.auth));
+
+export default async function proxy(req: NextRequest, event: NextFetchEvent) {
+  if (sharedAuthEnabled()) return route(req, await sharedSessionFor(req.headers));
+  return legacyProxy(req, event as never);
+}
 
 export const config = {
   matcher: [

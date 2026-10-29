@@ -22,12 +22,14 @@
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.3",
+    "@better-auth/passkey": "^1.7.14",
     "@bitbaum/accountkit": "^0.14.0",
     "@bitbaum/ai-kit": "^1.21.5",
     "@bitbaum/chatkit": "^0.21.2",
     "@bitbaum/mail-kit": "^0.2.0",
     "@sentry/nextjs": "^10.74.0",
     "bcryptjs": "^3.0.3",
+    "better-auth": "^1.7.14",
     "drizzle-orm": "^0.45.4",
     "next": "16.4.2",
     "next-auth": "5.0.0-beta.32",
@@ -40,6 +42,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.12",
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^3.0.0",
     "@types/node": "^26",

@@ -22,3 +22,4 @@ minimumReleaseAgeExclude:
   - threadkit@0.1.0
   - "@bitbaum/mail-kit"
   - "@bitbaum/ai-kit"
+  - "@bitbaum/accountkit"

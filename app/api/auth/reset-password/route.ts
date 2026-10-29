@@ -13,6 +13,8 @@ import {
 import { db } from "@/lib/db";
 import { users, verificationTokens } from "@/lib/db/schema";
 import { hashPassword, emailField } from "@/lib/domain/auth";
+import { sharedAuthEnabled } from "@/lib/auth/shared/runtime";
+import { sharedResetPassword } from "@/lib/auth/shared/bridge";
 
 const schema = z.object({
   token: z.string().min(1).max(PASSWORD_RESET_TOKEN_MAX_LENGTH),
@@ -31,6 +33,16 @@ export async function POST(req: Request) {
   }
 
   const { token, email, password } = parsed.data;
+
+  // Shared runtime: the token is AccountKit's own; the address is not needed.
+  if (sharedAuthEnabled()) {
+    return (await sharedResetPassword(req, token, password))
+      ? NextResponse.json({ success: true })
+      : NextResponse.json(
+          { success: false, error: "Invalid or expired link", code: "invalid_token" },
+          { status: 400 },
+        );
+  }
 
   let record;
   try {
