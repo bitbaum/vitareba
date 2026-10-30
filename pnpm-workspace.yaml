@@ -24,3 +24,11 @@ minimumReleaseAgeExclude:
   - "@bitbaum/ai-kit"
   - "@bitbaum/accountkit"
   - "@bitbaum/chartkit"
+
+# Security floors for transitive dependencies (2026-10-30). Each is the
+# advisory's first patched version, bounded to one major. vite arrives through
+# vitest (dev, and better-auth's optional vitest peer); nothing serves it at
+# runtime. Drop a line once its parent ships a fixed range.
+overrides:
+  vite: ^8.1.6
+  source-map-js@1: ^1.2.2
