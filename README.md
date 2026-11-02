@@ -10,7 +10,7 @@ Clinical patient management platform for **Vita GmbH** — a metabolic psychiatr
 - **Next.js 16** (App Router, `standalone` output) · TypeScript (strict)
 - **Tailwind v4** (tokens in `app/globals.css`, no `tailwind.config.*`)
 - **PostgreSQL** (self-hosted) via **Drizzle ORM** (`pg` driver)
-- **NextAuth 5** (auth) · **Resend** (transactional email)
+- **@bitbaum/accountkit** (accounts) · **Resend** (transactional email)
 - **next-intl** (i18n)
 
 ## Hosting

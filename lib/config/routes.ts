@@ -115,14 +115,13 @@ export const PORTAL_ROUTE_SHORT_LABELS: Partial<
 /**
  * API prefixes that must be reachable WITHOUT a session — the middleware
  * exempts these from its auth gate. Each route authenticates itself:
- * /api/auth via NextAuth + per-route guards, /api/webhooks via signature,
+ * /api/auth via AccountKit + per-route guards, /api/webhooks via signature,
  * /api/cron via CRON_SECRET bearer, the rest via Zod validation (no PII
  * without auth). Gating these in the middleware breaks login itself —
  * the session endpoint and credentials callback live under /api/auth.
  */
 export const PUBLIC_API_PREFIXES = [
   "/api/auth",
-  "/api/account",
   "/api/assessment-leads",
   "/api/webhooks",
   "/api/cron",

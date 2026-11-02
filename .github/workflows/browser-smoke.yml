@@ -1,9 +1,8 @@
 name: Browser smoke
 
-# The patient's way in, in real Chromium, against the production server and a
-# real PostgreSQL built from the committed migrations — once on today's
-# runtime (NextAuth) and once on AccountKit (AUTH_RUNTIME=accountkit) after the
-# real import. The fleet's shared-package gate requires this workflow on any
+# Every way into a Vita account, in real Chromium, against the production
+# server and a real PostgreSQL built from the committed migrations plus the
+# cutover's import (scripts/browser-smoke.mjs says what it checks). The fleet's shared-package gate requires this workflow on any
 # pull request that changes a shared account package. Synthetic people only;
 # no mail is sent (RESEND_API_KEY is unset).
 on:
@@ -40,9 +39,9 @@ jobs:
       NEXT_PUBLIC_APP_URL: http://localhost:3000
       NEXT_PUBLIC_SITE_URL: http://localhost:3000
       NEXT_TELEMETRY_DISABLED: "1"
-      AUTH_SECRET: synthetic-browser-smoke-secret-at-least-32-chars
       BETTER_AUTH_SECRET: synthetic-browser-smoke-secret-at-least-32-chars
-      AUTH_TRUST_HOST: "true"
+      # As on a switched box (loki accountkit-switch.yml).
+      AUTH_RUNTIME: accountkit
       BASE_URL: http://localhost:3000
       BROWSER_EXECUTABLE: /usr/bin/google-chrome
     steps:
@@ -63,29 +62,22 @@ jobs:
           cp -r .next/static .next/standalone/.next/static
           cp -r public .next/standalone/public
 
-      - name: Journey on NextAuth
-        run: |
-          (cd .next/standalone && PORT=3000 HOSTNAME=127.0.0.1 node server.js > ../../server-nextauth.log 2>&1 &)
-          for i in $(seq 60); do curl -sf -o /dev/null http://localhost:3000/de/login && break; sleep 1; done
-          SMOKE_LABEL=nextauth node scripts/browser-smoke.mjs
-          pkill -f next-server || true
-
-      # Only where the shared runtime is staged (lib/auth/shared, the import).
-      - name: Import into AccountKit, as the switch would
-        if: hashFiles('scripts/db/accountkit-import.sql') != ''
-        run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 --single-transaction -q -f scripts/db/accountkit-import.sql
-
-      - name: Journey on AccountKit
-        if: hashFiles('scripts/db/accountkit-import.sql') != ''
+      # One account as NextAuth left it, then the cutover's own import.
+      - name: Seed an account from before the move, then import it
         env:
-          AUTH_RUNTIME: accountkit
-          SMOKE_IMPORTED_EMAIL: smoke-nextauth@example.test
+          LEGACY_EMAIL: smoke-legacy@example.test
+          LEGACY_PASSWORD: synthetic legacy password
         run: |
-          for i in $(seq 30); do curl -sf -o /dev/null http://localhost:3000/ || break; sleep 1; done
-          (cd .next/standalone && PORT=3000 HOSTNAME=127.0.0.1 node server.js > ../../server-accountkit.log 2>&1 &)
+          node scripts/ci/seed-legacy-account.mjs
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 --single-transaction -q -f scripts/db/accountkit-import.sql
+      - name: Every way in, on AccountKit's screens
+        env:
+          LEGACY_EMAIL: smoke-legacy@example.test
+          LEGACY_PASSWORD: synthetic legacy password
+        run: |
+          (cd .next/standalone && PORT=3000 HOSTNAME=127.0.0.1 node server.js > ../../server.log 2>&1 &)
           for i in $(seq 60); do curl -sf -o /dev/null http://localhost:3000/de/login && break; sleep 1; done
-          SMOKE_LABEL=accountkit node scripts/browser-smoke.mjs
-
+          node scripts/browser-smoke.mjs
       - name: Keep screenshots and server logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -93,6 +85,6 @@ jobs:
           name: vita-browser-smoke
           path: |
             browser-smoke-artifacts/
-            server-*.log
+            server.log
           retention-days: 14
           if-no-files-found: warn

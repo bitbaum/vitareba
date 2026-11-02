@@ -1,132 +1,60 @@
-"use client";
-
-import "@bitbaum/accountkit/styles.css";
-import { PasswordField } from "@bitbaum/accountkit/auth/password-field";
-import { Suspense, useState, useEffect } from "react";
-import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
-// Locale-aware router & Link so /de/register → /de/login (not /register)
-import { Link, useRouter } from "@/lib/i18n/navigation";
+import { connection } from "next/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { authLabelsFor } from "@bitbaum/accountkit/auth";
+import { Link } from "@/lib/i18n/navigation";
+import { SignUpForm } from "@/components/auth/AuthForms";
+import { vitaMethods } from "@/lib/auth/methods";
+import { landingAfterSignIn } from "@/lib/auth/landing";
+import { AUTH_ROUTES } from "@/lib/config/routes";
 import styles from "../auth.module.css";
-import { AUTH_ROUTES, PORTAL_ROUTES } from "@/lib/config/routes";
-import { sanitizeReturnTo } from "@/lib/domain/auth";
-import { STORAGE_KEYS, safeSessionGet } from "@/lib/utils/storage";
+import { AssessmentBanner } from "./AssessmentBanner";
 
-function RegisterForm() {
-  const t = useTranslations("auth.register");
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  // Sanitize: must be a same-origin relative path. Prevents open-redirect to ?returnTo=https://evil.com.
-  const returnTo = sanitizeReturnTo(searchParams.get("returnTo"), PORTAL_ROUTES.dashboard);
-  const [hasAssessment, setHasAssessment] = useState(false);
+type Props = {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ returnTo?: string }>;
+};
 
-  useEffect(() => {
-    setHasAssessment(!!safeSessionGet(STORAGE_KEYS.pendingAssessment));
-  }, []);
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState<Record<string, string[]>>({});
-  const [loading, setLoading] = useState(false);
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setErrors({});
-
-    try {
-      const res = await fetch("/api/account", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-      if (!data.success) {
-        setErrors(data.error ?? {});
-        setLoading(false);
-        return;
-      }
-
-      const signInRes = await signIn("credentials", { email, password, redirect: false });
-      if (signInRes?.error) {
-        router.push(`${AUTH_ROUTES.login}?returnTo=${encodeURIComponent(returnTo)}`);
-        return;
-      }
-
-      router.push(returnTo);
-      router.refresh();
-    } catch {
-      setErrors({ email: [t("genericError")] });
-      setLoading(false);
-    }
-  }
-
+/** AccountKit's sign-up form: an email and a password, or any other way in offered here. */
+export default async function RegisterPage({ params, searchParams }: Props) {
+  await connection();
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("auth.register");
+  const { returnTo } = await searchParams;
+  const signInPath = `/${locale}${AUTH_ROUTES.login}`;
   return (
     <>
-      {hasAssessment && <div className={styles.contextBanner}>{t("assessmentBanner")}</div>}
-      <h2 className={styles.title}>
-        {t("title")}
-        <br />
-        <em>{t("titleEm")}</em>
-      </h2>
-      <p className={styles.subtitle}>{hasAssessment ? t("subAssessment") : t("sub")}</p>
-
-      <form className={styles.form} onSubmit={handleSubmit}>
-        <div className={styles.field}>
-          <label className={styles.label} htmlFor="email">
-            {t("emailLabel")}
-          </label>
-          <input
-            id="email"
-            className={styles.input}
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder={t("emailPlaceholder")}
-            required
-            autoComplete="email"
-            autoFocus
-          />
-          {errors.email && <p className={styles.error}>{errors.email[0]}</p>}
-        </div>
-        <div className={styles.field}>
-          <label className={styles.label} htmlFor="password">
-            {t("passwordLabel")}
-          </label>
-          <PasswordField
-            id="password"
-            classes={{ input: styles.input }}
-            value={password}
-            onChange={setPassword}
-          />
-          {errors.password && <p className={styles.error}>{errors.password[0]}</p>}
-        </div>
-        <button type="submit" className={styles.submit} disabled={loading}>
-          {loading ? t("submitting") : t("submit")}
-        </button>
-      </form>
-
-      <div className={styles.linkRow}>
-        <span>
-          {t("hasAccount")}{" "}
+      <AssessmentBanner
+        banner={t("assessmentBanner")}
+        sub={t("sub")}
+        subAssessment={t("subAssessment")}
+        title={
+          <h2 className={styles.title}>
+            {t("title")}
+            <br />
+            <em>{t("titleEm")}</em>
+          </h2>
+        }
+      />
+      <SignUpForm
+        labels={authLabelsFor(locale)}
+        methods={vitaMethods()}
+        next={landingAfterSignIn(returnTo, signInPath)}
+        signUpPath={`/${locale}${AUTH_ROUTES.register}`}
+        signInPath={signInPath}
+        signInLink={
           <Link
             className={styles.link}
-            href={`${AUTH_ROUTES.login}${returnTo !== PORTAL_ROUTES.dashboard ? `?returnTo=${returnTo}` : ""}`}
+            href={
+              returnTo
+                ? `${AUTH_ROUTES.login}?returnTo=${encodeURIComponent(returnTo)}`
+                : AUTH_ROUTES.login
+            }
           >
             {t("signInLink")}
           </Link>
-        </span>
-      </div>
+        }
+      />
     </>
-  );
-}
-
-export default function RegisterPage() {
-  return (
-    <Suspense>
-      <RegisterForm />
-    </Suspense>
   );
 }

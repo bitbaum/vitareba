@@ -1,10 +1,8 @@
-import { auth } from "@/lib/auth/edge";
 import createIntlMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
 import { legacyHostRedirect } from "@/lib/domain/legacy-host";
-import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import type { Session } from "next-auth";
-import { sharedAuthEnabled } from "@/lib/auth/shared/runtime";
 import { sharedSessionFor } from "@/lib/auth/shared/session";
 import { USER_ROLE } from "@/lib/config/auth";
 import {
@@ -37,9 +35,8 @@ function detectLocale(pathname: string): string {
 }
 
 /**
- * The routing rules, given the signed-in session (or none). Both runtimes feed
- * it: NextAuth's JWT through its middleware wrapper, AccountKit's shared session
- * read from the database (the proxy runs on Node).
+ * The routing rules, given the signed-in session (or none): AccountKit's
+ * shared session, read from the database (the proxy runs on Node).
  */
 function route(req: NextRequest, session: Session | null) {
   const { pathname } = req.nextUrl;
@@ -130,11 +127,8 @@ function route(req: NextRequest, session: Session | null) {
   return wrapped;
 }
 
-const legacyProxy = auth((req) => route(req, req.auth));
-
-export default async function proxy(req: NextRequest, event: NextFetchEvent) {
-  if (sharedAuthEnabled()) return route(req, await sharedSessionFor(req.headers));
-  return legacyProxy(req, event as never);
+export default async function proxy(req: NextRequest) {
+  return route(req, await sharedSessionFor(req.headers));
 }
 
 export const config = {

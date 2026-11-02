@@ -118,3 +118,14 @@
   height: 1px;
   background: var(--border);
 }
+
+/* Arriving from the self-assessment: the result is kept until there is an account. */
+.contextBanner {
+  font-size: 0.8rem;
+  color: var(--ink2);
+  background: var(--teal-6);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
