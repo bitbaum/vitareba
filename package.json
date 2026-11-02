@@ -23,8 +23,8 @@
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.3",
     "@better-auth/passkey": "^1.7.14",
-    "@bitbaum/accountkit": "^0.23.0",
-    "@bitbaum/ai-kit": "^1.22.0",
+    "@bitbaum/accountkit": "^0.23.1",
+    "@bitbaum/ai-kit": "^1.24.0",
     "@bitbaum/chartkit": "^0.7.0",
     "@bitbaum/chatkit": "^0.22.1",
     "@bitbaum/mail-kit": "^0.2.0",
