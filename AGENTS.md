@@ -66,7 +66,8 @@ Served at `https://vita.orangecat.ch` from the Hetzner box behind Caddy
 `vitareba.ch` is the intended domain but has no DNS yet — do not probe it; a
 "could not resolve host" there is not an outage. Stack: Next.js 16 (App
 Router, `standalone`) · TypeScript strict · CSS Modules · self-hosted
-PostgreSQL (`pg`) · Drizzle · NextAuth 5 · Resend · next-intl.
+PostgreSQL (`pg`) · Drizzle · AccountKit (accounts, `docs/ACCOUNTKIT-MIGRATION.md`) ·
+Resend · next-intl.
 
 Surf Your Life shares the founder and philosophy, not code: never merge the
 codebases or share components.

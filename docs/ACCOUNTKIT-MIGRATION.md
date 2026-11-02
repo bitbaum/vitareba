@@ -1,79 +1,88 @@
-# AccountKit migration staging
+# Accounts on AccountKit
 
-Vita still signs in through NextAuth (`lib/auth/index.ts`). Migration
-`drizzle/0017_accountkit_staging.sql` adds AccountKit's tables beside it under
-the `auth_` prefix (`createAuthTables("auth_")` in `lib/db/schema.ts`), because
-NextAuth already owns `users`, `accounts` and `sessions`. Nothing reads or
-writes the new tables yet. The fleet's acceptance queue is
+Vita's accounts live in AccountKit (`@bitbaum/accountkit`), in its tables
+beside Vita's own under the `auth_` prefix (`createAuthTables("auth_")` in
+`lib/db/schema.ts`, migration `drizzle/0017_accountkit_staging.sql`), because
+Vita's `users`, `accounts` and `sessions` keep their NextAuth-era names. The
+fleet's acceptance queue is
 [Fleet's checkpoint](https://github.com/bitbaum/fleet/blob/main/docs/remediation-resume-2026-10-29.md).
 
-## Rehearse the import
+## Ways in
 
-Against an isolated database holding an authorized snapshot, after the normal
-migrations:
+`/de/login`, `/de/register` and `/de/forgot-password` (and their `en`, `fr`
+twins) render AccountKit's `SignInForm`, `SignUpForm` and recovery form in the
+visitor's language (`authLabelsFor`). Each method is shown only when this
+deployment can serve it (`lib/auth/methods.ts`, from env, read per request):
 
-```sh
-node scripts/db/rehearse-accountkit-import.mjs
-```
+| Method                                    | Shown when                                                         |
+| ----------------------------------------- | ------------------------------------------------------------------ |
+| Email and password                        | always                                                             |
+| Passkey                                   | always (added from the profile once signed in)                     |
+| Second factor (authenticator app, codes)  | always (switched on from the profile)                              |
+| Email sign-in link, password recovery     | account mail works (`RESEND_*`, a verified sender)                 |
+| Continue with OrangeCat                   | `ORANGECAT_OAUTH_CLIENT_ID` and `_SECRET`                          |
+| The shared bitbaum sign-in (Morulia)      | `SIGNIN_*` set **and** Morulia publishes at least one provider     |
 
-It runs `scripts/db/accountkit-import.sql` in one transaction, always rolls
-back, and prints only counts. There is no apply mode. It takes locks even
-though it rolls back, so do not point it at the served database.
+The portal's profile renders AccountKit's `AccountPanel` (password, passkeys,
+second factor, linked sign-ins, sign-out). It has **no delete button**: Swiss
+law keeps medical records for ten years, so the runtime is created with
+`accountDeletion: false` (`/api/auth/delete-user` answers 404) and the panel's
+way out is the erasure request in "Privacy & data"
+(`/api/account/deletion-request`, a tracked thread to the clinicians).
 
-The import keeps each `users.id` as the shared user id, so the 31 tables that
-reference it never move. Addresses are lower-cased and their verification is
-kept (`email_verified IS NOT NULL`). Password hashes are copied byte for byte;
-plain bcrypt and AccountKit `$bs1$` both sign in through `legacyBcrypt`. Roles
-and `is_clinician` stay on `users`, never on AccountKit's generic role. Two
-addresses that collide once normalized, drift between runs, or an already-used
-shared runtime fail the transaction.
+A sign-in lands where the person was going (`returnTo`), or else back on the
+sign-in page, from which the proxy sends clinicians to the admin and patients
+to the dashboard, as before. Old reset links (`/reset-password?token=…`) are
+forwarded to the sign-in page, which sets the new password.
 
-`lib/db/accountkit-import.test.ts` runs this on the committed migration chain
-and signs the imported people in through AccountKit's runtime. It is not
-production or browser evidence.
+## What stayed Vita's
 
-## Known gap: Google
+- `users` is still the row every table references; `users.role` and
+  `is_clinician` are still the access model, never AccountKit's generic role.
+  The session (`lib/auth/shared/session.ts`) is read from that row on every
+  request, so a changed role or a removed row takes effect at once;
+  `ADMIN_EMAILS` still promotes, never demotes.
+- A person AccountKit creates gets the `users` row under the same id, an empty
+  profile and the welcome sequence (`lib/auth/shared/accounts.ts`).
+- The per-account lockout (`LOGIN_LOCKOUT_THRESHOLD` wrong passwords in a row,
+  then `LOGIN_LOCKOUT_DURATION_MS` refused even with the right one) runs on
+  AccountKit's sign-in as a plugin (`lib/auth/shared/vita-plugin.ts`), beside
+  AccountKit's own limiter.
+- The portal's `useSession` and `signOut` still speak next-auth/react;
+  AccountKit's compat layer answers them (`lib/auth/shared/compat.ts`).
 
-NextAuth signs people in with Google directly. AccountKit offers the fleet's
-shared sign-in broker and OrangeCat, not Google itself, and a broker subject is
-not a Google subject. The import keeps each Google link as an inert `google`
-row. Until Google reaches AccountKit (directly or through the broker with
-account linking), a person who only ever used Google signs in by setting a
-password through recovery to the address already on file.
+AccountKit is the only writer of credentials. Vita's own registration,
+forgot-, reset- and change-password routes and NextAuth itself are gone.
 
-## Shared runtime (built, off)
+## The switch (2026-11)
 
-With `AUTH_RUNTIME=accountkit` and `BETTER_AUTH_SECRET` set, the runtime in
-`lib/auth/shared/` answers every sign-in; unset, NextAuth answers as today.
+The import (`scripts/db/accountkit-import.sql`) keeps each `users.id` as the
+shared user id, lower-cases addresses, keeps their verification and copies
+password hashes byte for byte; plain bcrypt and AccountKit `$bs1$` both sign in
+through `legacyBcrypt`. Address collisions, drift between runs or an
+already-used shared runtime fail the whole transaction.
 
-- `auth()` keeps today's session shape (id, email, role, emailVerified), read
-  from the shared session and the `users` row on every request, so a deleted
-  account or changed role takes effect at once. Env-listed admins are promoted
-  as before, promote-only. The guards and the proxy use the same reader.
-- The pages keep `next-auth/react`. `/api/auth` answers its few calls
-  (`session`, `csrf`, `providers`, `signout`, `callback/credentials`) from
-  AccountKit and hands every other path to AccountKit itself.
-- Password sign-in keeps Vita's per-account lockout beside AccountKit's
-  limiter. Registration creates the `users` row and the shared account under
-  one id. Forgot, reset and change password go through AccountKit; the mailed
-  link still lands on `/reset-password?email=…&token=…`.
+It runs on the box through loki's `accountkit-switch.yml`
+(`scripts/hetzner/accountkit-cutover.sh`), never by hand:
 
-`lib/auth/shared/journeys.test.ts` runs these through the real handlers on the
-migration chain and the real import.
+- `rehearse` restores last night's dump into a temporary database, runs the
+  import there with a throwaway legacy account, prints counts, rolls back and
+  drops it: the import rehearsal and the restore proof of the backup.
+- `switch` takes a fresh dump and rehearses it, stops the app for the import,
+  sets `AUTH_RUNTIME=accountkit`, and proves on the public site that an
+  imported bcrypt account signs in and that roles are unchanged.
+- `prove` runs sign-up, sign-out, a wrong password, sign-in on the live site.
 
-`.github/workflows/browser-smoke.yml` drives Chromium through the patient's way
-in (`scripts/browser-smoke.mjs`) against the production server on a PostgreSQL
-built from `drizzle/`: once on NextAuth, then, after the real import, on
-AccountKit, where the person registered under NextAuth signs in with their old
-password. It also checks the auth pages at 390px. This is CI browser evidence,
-not deployed evidence.
+`lib/auth/shared/journeys.test.ts` runs the journeys through the real handlers
+on the migration chain and the real import; `.github/workflows/browser-smoke.yml`
+drives Chromium through every way in at 320 and 390px, including an account
+seeded before the import.
 
-## Before switching
+## Rolling back
 
-1. Stop NextAuth writes, import once under locks, then set both settings
-   together. Everyone signed in under NextAuth signs in again once. A rollback
-   after shared password changes needs credential reconciliation.
-2. Decide Google: wait for a Google provider in AccountKit, or accept that
-   Google-only patients recover by email.
-3. Prove sign-in, recovery, role changes and revocation on the deployed
-   artifact with an approved test identity.
+Revert the pull request that moved the screens first: the bridged NextAuth
+screens come back and keep answering from AccountKit. Only then, if needed,
+run the workflow's `rollback`, which empties `AUTH_RUNTIME` and restarts and
+never empties a table. Passwords changed, passkeys added or second factors set
+after the switch live only in the `auth_` tables, so a rollback past the
+switch needs credential reconciliation; it must not restore an older hash.

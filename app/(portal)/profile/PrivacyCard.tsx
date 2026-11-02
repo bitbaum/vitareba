@@ -69,7 +69,7 @@ export function PrivacyCard() {
   }
 
   return (
-    <div className={shared.card}>
+    <div className={shared.card} id="privacy">
       <p className={shared.cardTitle}>Privacy &amp; data</p>
 
       <label className={profileStyles.checkboxRow}>

@@ -43,10 +43,7 @@ const GUARD_IMPORT = /from ["']@\/lib\/auth\/guards["']/;
 // Public routes with no guard import — each must authenticate or constrain
 // itself by other means. Adding a file here is a deliberate act: say why.
 const SELF_AUTHENTICATING = new Set<string>([
-  "/api/auth/[...nextauth]", // NextAuth handler — its own CSRF/session machinery
-  "/api/auth/forgot-password", // deliberately unauthenticated; no data returned
-  "/api/auth/reset-password", // authenticates via single-use reset token
-  "/api/account", // registration; Zod-validated, creates (never reads) a user
+  "/api/auth/[...nextauth]", // AccountKit: its own origin checks, limiter and sessions
   "/api/assessment-leads", // anonymous funnel counter — no PII in or out
   "/api/health", // liveness probe — returns nothing sensitive
   // AI liveness probe. Authenticates itself with AI_PROBE_SECRET (constant-time

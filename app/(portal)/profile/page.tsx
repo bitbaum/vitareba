@@ -1,10 +1,14 @@
 import Link from "next/link";
+import { headers } from "next/headers";
+import { authLabelsFor, isDeliverable } from "@bitbaum/accountkit/auth";
 import { auth } from "@/lib/auth";
+import { AccountPanel } from "@/components/auth/AuthForms";
+import { vitaMethods } from "@/lib/auth/methods";
+import { sharedAuth } from "@/lib/auth/shared/runtime";
 import styles from "../portal.module.css";
 import profileStyles from "./profile.module.css";
 import { PortalPageHeader } from "@/components/portal/PortalPageHeader";
 import { ProfileForm } from "./ProfileForm";
-import { PasswordForm } from "./PasswordForm";
 import { PrivacyCard } from "./PrivacyCard";
 import { clinicianLabelFor } from "@/lib/domain/clinician-label";
 import { COMPANY } from "@/lib/config/company";
@@ -12,9 +16,17 @@ import { PORTAL_ROUTES } from "@/lib/config/routes";
 
 export default async function ProfilePage() {
   const session = await auth();
-  const clinician = session?.user?.id
-    ? await clinicianLabelFor(session.user.id)
-    : COMPANY.clinicianFallback;
+  const requestHeaders = await headers();
+  const [clinician, shared, accounts] = await Promise.all([
+    session?.user?.id ? clinicianLabelFor(session.user.id) : COMPANY.clinicianFallback,
+    sharedAuth.getSession(),
+    sharedAuth
+      .getAuth()
+      .api.listUserAccounts({ headers: requestHeaders })
+      .catch(() => []),
+  ]);
+  const user = shared?.user as
+    (NonNullable<typeof shared>["user"] & { twoFactorEnabled?: boolean | null }) | undefined;
 
   return (
     <div className={profileStyles.layout}>
@@ -42,7 +54,33 @@ export default async function ProfilePage() {
         </Link>
       </div>
       <PrivacyCard />
-      <PasswordForm />
+      {/* How this patient signs in: password, passkeys, a second factor and
+          linked sign-ins (AccountKit's panel). Medical records are kept for
+          ten years, so the panel's way out is the erasure request above, not
+          a delete button. The portal is English. */}
+      <section id="account">
+        <AccountPanel
+          labels={authLabelsFor("en")}
+          user={{
+            name: user?.name ?? session?.user.name ?? "",
+            email: user && isDeliverable(user.email) ? user.email : null,
+            emailVerified: Boolean(user?.emailVerified),
+            role: session?.user.role ?? "patient",
+            twoFactorEnabled: Boolean(user?.twoFactorEnabled),
+          }}
+          linked={accounts.map((a) => a.providerId)}
+          methods={vitaMethods()}
+          accountPath={PORTAL_ROUTES.profile}
+          homePath={PORTAL_ROUTES.dashboard}
+          // The name lives on users and is edited in "Personal" above.
+          ownProfile
+          deletion={
+            <Link href={`${PORTAL_ROUTES.profile}#privacy`} className={styles.btnSecondary}>
+              Request account deletion
+            </Link>
+          }
+        />
+      </section>
     </div>
   );
 }

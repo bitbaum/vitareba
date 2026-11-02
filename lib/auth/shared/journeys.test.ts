@@ -1,7 +1,8 @@
 /**
- * Vita's screens on the shared runtime: the handlers `next-auth/react` and the
- * password pages actually call, answered by AccountKit, on the real migration
- * chain plus the real import. Mail is captured at the shared mailer.
+ * Vita's accounts on AccountKit's own endpoints (the ones its sign-in,
+ * sign-up, recovery and account screens call) and on the next-auth/react
+ * protocol the portal still speaks, on the real migration chain plus the real
+ * import. Mail is captured at the shared mailer.
  */
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
@@ -31,6 +32,7 @@ vi.mock("next/headers.js", () => ({
 }));
 
 const PASSWORD = "synthetic legacy password";
+const PATIENT = "00000000-0000-4000-8000-000000000001";
 let pg: PGlite;
 let ip = 0;
 
@@ -54,10 +56,10 @@ afterAll(async () => pg?.close());
 beforeEach(async () => {
   state.cookie = "";
   await pg.exec(`TRUNCATE users, auth_users, auth_accounts, auth_sessions,
-    auth_verifications, auth_passkeys, auth_two_factors CASCADE`);
+    auth_verifications, auth_passkeys, auth_two_factors, email_queue CASCADE`);
   await pg.query(
     `INSERT INTO users (id, email, email_verified, password, role) VALUES
-      ('00000000-0000-4000-8000-000000000001', 'patient@example.test', now(), $1, 'patient'),
+      ('${PATIENT}', 'patient@example.test', now(), $1, 'patient'),
       ('00000000-0000-4000-8000-000000000002', 'lead@example.test', now(), $1, 'patient')`,
     [await bcrypt.hash(PASSWORD, 4)],
   );
@@ -87,42 +89,48 @@ const cookieOf = (response: Response) =>
     .map((c) => c.split(";")[0])
     .join("; ");
 
-async function signIn(email: string, password: string) {
+async function post(route: string, json: unknown) {
   const { handlers } = await import("@/lib/auth");
-  const form = new URLSearchParams({ email, password, csrfToken: "x" });
-  const response = await handlers.POST(request("/api/auth/callback/credentials", { body: form }));
-  return { url: String((await response.json()).url), cookie: cookieOf(response) };
+  return handlers.POST(request(`/api/auth${route}`, { json }));
 }
 
+/** AccountKit's own password sign-in, as SignInForm calls it. */
+async function signIn(email: string, password: string) {
+  const response = await post("/sign-in/email", { email, password });
+  return { status: response.status, cookie: cookieOf(response) };
+}
+
+/** next-auth/react's session call, as the portal's useSession makes it. */
 async function session() {
   const { handlers } = await import("@/lib/auth");
   return (await handlers.GET(request("/api/auth/session", { get: true }))).json();
 }
 
-test("next-auth/react signs an imported patient in and reads the same session shape", async () => {
+test("an imported patient signs in with their NextAuth password and reads the same session shape", async () => {
   const wrong = await signIn("patient@example.test", "wrong");
-  expect(wrong.url).toContain("error=CredentialsSignin");
+  expect(wrong.status).toBe(401);
   expect(wrong.cookie).toBe("");
 
   const ok = await signIn("patient@example.test", PASSWORD);
-  expect(ok.url).toBe(`${SITE}/dashboard`);
+  expect(ok.status).toBe(200);
   state.cookie = ok.cookie;
-  const current = await session();
-  expect(current.user).toMatchObject({
-    id: "00000000-0000-4000-8000-000000000001",
+  expect((await session()).user).toMatchObject({
+    id: PATIENT,
     email: "patient@example.test",
     role: "patient",
   });
   const { auth } = await import("@/lib/auth");
-  expect((await auth())?.user.id).toBe("00000000-0000-4000-8000-000000000001");
+  expect((await auth())?.user.id).toBe(PATIENT);
 
+  // next-auth/react's signOut, as the portal's menu calls it.
   const { handlers } = await import("@/lib/auth");
   const out = await handlers.POST(request("/api/auth/signout", { body: new URLSearchParams() }));
   expect(out.status).toBe(200);
-  expect(await session()).toEqual({});
+  state.cookie = cookieOf(out) || state.cookie;
+  expect(await session()).toBeNull();
 });
 
-test("env-listed admins are promoted, and a deleted or demoted row takes effect at once", async () => {
+test("env-listed admins are promoted, and a deleted row takes effect at once", async () => {
   state.cookie = (await signIn("lead@example.test", PASSWORD)).cookie;
   expect((await session()).user.role).toBe("admin");
   const { rows } = await pg.query<{ role: string }>(
@@ -132,107 +140,125 @@ test("env-listed admins are promoted, and a deleted or demoted row takes effect 
 
   state.cookie = (await signIn("patient@example.test", PASSWORD)).cookie;
   await pg.exec(`DELETE FROM users WHERE email = 'patient@example.test'`);
-  expect(await session()).toEqual({});
+  expect(await session()).toBeNull();
 });
 
-test("the per-account lockout still holds on the shared runtime", async () => {
+test("the per-account lockout holds on AccountKit's sign-in, and a success clears the count", async () => {
+  for (let i = 0; i < 4; i++)
+    expect((await signIn("patient@example.test", "wrong")).status).toBe(401);
+  expect((await signIn("patient@example.test", PASSWORD)).status).toBe(200);
+  const cleared = await pg.query<{ n: number }>(
+    `SELECT failed_login_attempts AS n FROM users WHERE id = '${PATIENT}'`,
+  );
+  expect(cleared.rows[0].n).toBe(0);
+
   for (let i = 0; i < 5; i++) await signIn("patient@example.test", "wrong");
   const locked = await signIn("patient@example.test", PASSWORD);
-  expect(locked.url).toContain("error=CredentialsSignin");
+  expect(locked.status).toBe(401);
   expect(locked.cookie).toBe("");
 });
 
-test("registration creates the domain row and the shared account under one id", async () => {
-  const { POST } = await import("@/app/api/account/route");
-  const created = await POST(
-    request("/api/account", { json: { email: "new@example.test", password: "synthetic new" } }),
-  );
-  expect(created.status).toBe(201);
-  const taken = await POST(
-    request("/api/account", { json: { email: "new@example.test", password: "synthetic new" } }),
-  );
-  expect(taken.status).toBe(409);
-  const ids = await pg.query<{ domain: string; shared: string }>(
-    `SELECT u.id::text AS domain, a.id AS shared FROM users u JOIN auth_users a ON a.id = u.id::text
+test("a sign-up gets Vita's users row under the shared id, a profile and the welcome sequence", async () => {
+  const created = await post("/sign-up/email", {
+    email: "new@example.test",
+    password: "synthetic new",
+    name: "",
+  });
+  expect(created.status).toBe(200);
+  const ids = await pg.query<{ domain: string; role: string }>(
+    `SELECT u.id::text AS domain, u.role FROM users u JOIN auth_users a ON a.id = u.id::text
      WHERE u.email = 'new@example.test'`,
   );
   expect(ids.rows).toHaveLength(1);
-  expect((await signIn("new@example.test", "synthetic new")).url).toBe(`${SITE}/dashboard`);
+  expect(ids.rows[0].role).toBe("patient");
+  const extra = await pg.query<{ profiles: number; queued: number }>(
+    `SELECT (SELECT count(*)::int FROM profiles WHERE user_id::text = $1) AS profiles,
+            (SELECT count(*)::int FROM email_queue WHERE user_id::text = $1) AS queued`,
+    [ids.rows[0].domain],
+  );
+  expect(extra.rows[0].profiles).toBe(1);
+  expect(extra.rows[0].queued).toBeGreaterThan(0);
+
+  const again = await post("/sign-up/email", {
+    email: "new@example.test",
+    password: "synthetic new",
+    name: "",
+  });
+  expect(again.status).not.toBe(200);
+  expect((await signIn("new@example.test", "synthetic new")).status).toBe(200);
 });
 
-test("forgot, reset and change password run through AccountKit, with the page's link shape", async () => {
-  const { sharedAuthMailer } = await import("@/lib/auth/shared/runtime");
-  const sent: string[] = [];
-  vi.spyOn(sharedAuthMailer, "configured", "get").mockReturnValue(true);
-  vi.spyOn(sharedAuthMailer, "send").mockImplementation(async (_kind, _to, url) => {
-    sent.push(url);
-  });
+test("recovery and a password change run through AccountKit; the reset link lands on sign-in", async () => {
   vi.resetModules();
-  // A fresh runtime picks up the mail switch.
   const runtime = await import("@/lib/auth/shared/runtime");
+  const sent: string[] = [];
   vi.spyOn(runtime.sharedAuthMailer, "configured", "get").mockReturnValue(true);
   vi.spyOn(runtime.sharedAuthMailer, "send").mockImplementation(async (_kind, _to, url) => {
     sent.push(url);
   });
 
-  const forgot = (await import("@/app/api/auth/forgot-password/route")).POST;
-  const reset = (await import("@/app/api/auth/reset-password/route")).POST;
-  process.env.RESEND_API_KEY = "re_synthetic";
-  process.env.RESEND_FROM = "Vita <vita@example.test>";
-  try {
-    expect(
-      (
-        await forgot(
-          request("/api/auth/forgot-password", { json: { email: "patient@example.test" } }),
-        )
-      ).status,
-    ).toBe(200);
-  } finally {
-    delete process.env.RESEND_API_KEY;
-    delete process.env.RESEND_FROM;
-  }
+  const asked = await post("/request-password-reset", {
+    email: "patient@example.test",
+    redirectTo: `${SITE}/de/login`,
+  });
+  expect(asked.status).toBe(200);
   expect(sent).toHaveLength(1);
-  // The mailed link redirects to the reset page with both values it reads.
   const { handlers } = await import("@/lib/auth");
   const link = new URL(sent[0]);
   const landing = await handlers.GET(request(`${link.pathname}${link.search}`, { get: true }));
   const page = new URL(landing.headers.get("location")!, SITE);
-  expect(page.pathname).toBe("/reset-password");
-  expect(page.searchParams.get("email")).toBe("patient@example.test");
+  expect(page.pathname).toBe("/de/login");
   const token = page.searchParams.get("token")!;
+  expect(token).toBeTruthy();
 
-  const done = await reset(
-    request("/api/auth/reset-password", {
-      json: { token, email: "patient@example.test", password: "synthetic reset" },
-    }),
+  expect((await post("/reset-password", { token, newPassword: "synthetic reset" })).status).toBe(
+    200,
   );
-  expect(done.status).toBe(200);
-  expect((await signIn("patient@example.test", "synthetic reset")).url).toBe(`${SITE}/dashboard`);
+  expect((await signIn("patient@example.test", PASSWORD)).status).toBe(401);
+  const reset = await signIn("patient@example.test", "synthetic reset");
+  expect(reset.status).toBe(200);
 
-  state.cookie = (await signIn("patient@example.test", "synthetic reset")).cookie;
-  const change = (await import("@/app/api/auth/change-password/route")).POST;
-  const refused = await change(
-    request("/api/auth/change-password", {
-      json: { currentPassword: "wrong", newPassword: "synthetic changed" },
-    }),
-  );
-  expect(refused.status).toBe(401);
-  const changed = await change(
-    request("/api/auth/change-password", {
-      json: { currentPassword: "synthetic reset", newPassword: "synthetic changed" },
-    }),
-  );
+  state.cookie = reset.cookie;
+  const refused = await post("/change-password", {
+    currentPassword: "wrong",
+    newPassword: "synthetic changed",
+  });
+  expect(refused.status).not.toBe(200);
+  const changed = await post("/change-password", {
+    currentPassword: "synthetic reset",
+    newPassword: "synthetic changed",
+    revokeOtherSessions: true,
+  });
   expect(changed.status).toBe(200);
-  expect((await signIn("patient@example.test", "synthetic changed")).url).toBe(`${SITE}/dashboard`);
+  expect((await signIn("patient@example.test", "synthetic changed")).status).toBe(200);
 });
 
-test("with the flag off, /api/auth is NextAuth's and the shared tables stay unused", async () => {
-  process.env.AUTH_RUNTIME = "nextauth";
+test("a patient cannot delete their account: records are kept, erasure is a request", async () => {
+  const ok = await signIn("patient@example.test", PASSWORD);
+  state.cookie = ok.cookie;
+  const refused = await post("/delete-user", { password: PASSWORD });
+  expect(refused.status).toBe(404);
+  const rows = await pg.query<{ users: number; shared: number }>(
+    `SELECT (SELECT count(*)::int FROM users WHERE id = '${PATIENT}') AS users,
+            (SELECT count(*)::int FROM auth_users WHERE id = '${PATIENT}') AS shared`,
+  );
+  expect(rows.rows[0]).toEqual({ users: 1, shared: 1 });
+  expect((await session()).user.id).toBe(PATIENT);
+});
+
+test("without AUTH_RUNTIME=accountkit nothing is written: every auth route is unavailable", async () => {
+  process.env.AUTH_RUNTIME = "";
   try {
-    const { handlers } = await import("@/lib/auth");
-    const csrf = await handlers.GET(request("/api/auth/csrf", { get: true }));
-    expect((await csrf.json()).csrfToken).not.toBe("accountkit");
-    expect((await pg.query("SELECT * FROM auth_sessions")).rows).toEqual([]);
+    const response = await post("/sign-up/email", {
+      email: "early@example.test",
+      password: "synthetic early",
+      name: "",
+    });
+    expect(response.status).toBe(503);
+    const rows = await pg.query<{ n: number }>(
+      `SELECT count(*)::int AS n FROM auth_users WHERE email = 'early@example.test'`,
+    );
+    expect(rows.rows[0].n).toBe(0);
   } finally {
     process.env.AUTH_RUNTIME = "accountkit";
   }
