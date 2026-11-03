@@ -430,7 +430,6 @@
       "submitting": "Signing in…",
       "error": "Invalid email or password.",
       "noAccount": "No account?",
-      "registerLink": "Register",
       "forgotPassword": "Forgot password?"
     },
     "register": {

@@ -440,7 +440,6 @@
       "submitting": "Connexion en cours…",
       "error": "Adresse e-mail ou mot de passe invalide.",
       "noAccount": "Pas de compte ?",
-      "registerLink": "S'inscrire",
       "forgotPassword": "Mot de passe oublié ?"
     },
     "register": {
