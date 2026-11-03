@@ -22,6 +22,8 @@ export default async function LoginPage({ params, searchParams }: Props) {
   const t = await getTranslations("auth.login");
   const { error, returnTo } = await searchParams;
   const signInPath = `/${locale}${AUTH_ROUTES.login}`;
+  // The link to sign-up says AccountKit's own words, as on every fleet app.
+  const labels = authLabelsFor(locale);
   return (
     <>
       <h2 className={styles.title}>
@@ -31,7 +33,7 @@ export default async function LoginPage({ params, searchParams }: Props) {
       </h2>
       <p className={styles.subtitle}>{t("sub")}</p>
       <SignInForm
-        labels={authLabelsFor(locale)}
+        labels={labels}
         methods={vitaMethods()}
         next={landingAfterSignIn(returnTo, signInPath)}
         signInPath={signInPath}
@@ -45,7 +47,7 @@ export default async function LoginPage({ params, searchParams }: Props) {
                 : AUTH_ROUTES.register
             }
           >
-            {t("registerLink")}
+            {labels.createAccount}
           </Link>
         }
       />

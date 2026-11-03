@@ -433,7 +433,6 @@
       "submitting": "Anmeldung läuft…",
       "error": "Ungültige E-Mail-Adresse oder Passwort.",
       "noAccount": "Noch kein Konto?",
-      "registerLink": "Registrieren",
       "forgotPassword": "Passwort vergessen?"
     },
     "register": {
