@@ -25,8 +25,8 @@ importers:
         specifier: ^0.7.0
         version: 0.7.0(react@19.3.1)
       '@bitbaum/chatkit':
-        specifier: ^0.22.1
-        version: 0.22.1(react@19.3.1)
+        specifier: github:bitbaum/chatkit#6451d3b9d0c3d467011a80f8cf023da90dffe92c
+        version: https://codeload.github.com/bitbaum/chatkit/tar.gz/6451d3b9d0c3d467011a80f8cf023da90dffe92c(react@19.3.1)
       '@bitbaum/mail-kit':
         specifier: ^0.2.0
         version: 0.2.0
@@ -330,8 +330,9 @@ packages:
     peerDependencies:
       react: '>=18'
 
-  '@bitbaum/chatkit@0.22.1':
-    resolution: {integrity: sha512-hAvxeJbpsMS6Jn0TTNyiVRpbhmsQqx52dG6woCH+UbZCZhuK4czldjIU8LpHppMk/NDuz7Yg+phKxJ6HDNiIkw==}
+  '@bitbaum/chatkit@https://codeload.github.com/bitbaum/chatkit/tar.gz/6451d3b9d0c3d467011a80f8cf023da90dffe92c':
+    resolution: {gitHosted: true, integrity: sha512-jJ+ZEEVUicjZchEwZ3z3VuXulbt5L2uAz1hwKjq4yauxS7mKpYYj/lagty8cDxgn0cnOg4cI7jLVs1/sjg4ZmA==, tarball: https://codeload.github.com/bitbaum/chatkit/tar.gz/6451d3b9d0c3d467011a80f8cf023da90dffe92c}
+    version: 0.23.0
     engines: {node: '>=20'}
     hasBin: true
     peerDependencies:
@@ -4750,7 +4751,7 @@ snapshots:
     dependencies:
       react: 19.3.1
 
-  '@bitbaum/chatkit@0.22.1(react@19.3.1)':
+  '@bitbaum/chatkit@https://codeload.github.com/bitbaum/chatkit/tar.gz/6451d3b9d0c3d467011a80f8cf023da90dffe92c(react@19.3.1)':
     dependencies:
       pdfjs-dist: 6.4.299
       react: 19.3.1
