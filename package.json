@@ -27,7 +27,7 @@
     "@bitbaum/chartkit": "^0.7.0",
     "@bitbaum/chatkit": "github:bitbaum/chatkit#6451d3b9d0c3d467011a80f8cf023da90dffe92c",
     "@bitbaum/mail-kit": "^0.2.0",
-    "@sentry/nextjs": "^10.78.0",
+    "@sentry/nextjs": "^11.10.0",
     "bcryptjs": "^3.0.3",
     "better-auth": "^1.7.14",
     "drizzle-orm": "^0.45.4",
