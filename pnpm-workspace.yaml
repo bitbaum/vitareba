@@ -7,23 +7,15 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
 
-# pnpm refuses packages published within its minimum-release-age window — a
-# supply-chain guard against a compromised release being installed before anyone
-# notices. threadkit 0.1.0 was published from maonakamoto/threadkit minutes
-# before this commit, so it needs an explicit exemption.
-#
-# This entry is temporary: once 0.1.0 is older than the window it is redundant
-# and should be deleted. Add a new line only for a version we published
-# ourselves — never to hurry along a third-party package, which is the exact
-# situation the guard exists for.
+# Our own packages are published by our own tagged workflows; minimumReleaseAge
+# would refuse each fresh publish until it ages. One scope glob covers every
+# @bitbaum package; the four unscoped ones are named (fleet SHARED.md).
 minimumReleaseAgeExclude:
-  - "@bitbaum/chatkit"
-  - "@bitbaum/accountkit"
-  - threadkit@0.1.0
-  - "@bitbaum/mail-kit"
-  - "@bitbaum/ai-kit"
-  - "@bitbaum/accountkit"
-  - "@bitbaum/chartkit"
+  - "@bitbaum/*"
+  - limitkit
+  - bip-kit
+  - threadkit
+  - ai-forms
 
 # Security floors for transitive dependencies (2026-10-30). Each is the
 # advisory's first patched version, bounded to one major. vite arrives through
