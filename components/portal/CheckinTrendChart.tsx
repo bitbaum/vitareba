@@ -13,7 +13,7 @@ type Props = {
 
 /**
  * Daily check-ins on @bitbaum/chartkit: one line per 1–5 metric, dated by
- * day. Renders on the server; the values are in the chart's own table.
+ * day, on a fixed 1–5 axis with integer ticks. Renders on the server; the values are in the chart's own table.
  */
 export function CheckinTrendChart({ data }: Props) {
   const days = [...data].sort((a, b) => a.date.localeCompare(b.date));
@@ -26,6 +26,7 @@ export function CheckinTrendChart({ data }: Props) {
       }))}
       caption={`Daily check-ins over ${days.length} day${days.length === 1 ? "" : "s"}, each metric on a 1–5 scale.`}
       height={220}
+      yDomain={{ min: 1, max: 5, step: 1 }}
       markers="none"
       locale={LOCALE}
       periodLabel="Day"
