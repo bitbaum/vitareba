@@ -21,7 +21,7 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
-    "@better-auth/passkey": "^1.7.16",
+    "@better-auth/passkey": "^1.7.20",
     "@bitbaum/accountkit": "^0.32.0",
     "@bitbaum/ai-kit": "^1.29.0",
     "@bitbaum/chartkit": "^0.8.0",
@@ -29,11 +29,11 @@
     "@bitbaum/mail-kit": "^0.4.0",
     "@sentry/nextjs": "^10.78.0",
     "bcryptjs": "^3.0.3",
-    "better-auth": "^1.7.16",
+    "better-auth": "^1.7.20",
     "drizzle-orm": "^0.45.4",
-    "next": "16.4.5",
+    "next": "16.4.6",
     "next-auth": "5.0.0-beta.32",
-    "next-intl": "^4.14.9",
+    "next-intl": "^4.15.0",
     "pg": "^8.23.1",
     "react": "19.3.1",
     "react-dom": "19.3.1",
@@ -41,7 +41,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "^0.5.15",
+    "@electric-sql/pglite": "^0.5.16",
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^3.0.0",
     "@types/node": "^26",
@@ -51,8 +51,8 @@
     "dotenv-cli": "^11.1.0",
     "drizzle-kit": "^0.31.11",
     "eslint": "^10",
-    "eslint-config-next": "16.4.5",
-    "playwright-core": "1.64.1",
+    "eslint-config-next": "16.4.6",
+    "playwright-core": "1.65.0",
     "prettier": "3.9.10",
     "tailwindcss": "^4",
     "typescript": "^6",
